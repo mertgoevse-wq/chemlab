@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtuelles Chemielabor - Visuelles Design & Architektur</title>
+  <style>
+    :root {
+      --bg: #0a0d14;
+      --card: #121824;
+      --card-border: #1e293b;
+      --accent: #00d2ff;
+      --accent-glow: rgba(0, 210, 255, 0.25);
+      --purple: #9d4edd;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; min-height: 100vh; }
+    header { max-width: 1200px; margin: 0 auto 32px auto; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
+    h1 { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #00d2ff, #9d4edd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .badge { background: rgba(0, 210, 255, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
+    .nav-tabs { display: flex; gap: 10px; max-width: 1200px; margin: 0 auto 28px auto; overflow-x: auto; }
+    .nav-btn { background: var(--card); border: 1px solid var(--card-border); color: var(--text-muted); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s ease; }
+    .nav-btn:hover { color: var(--text); border-color: var(--accent); }
+    .nav-btn.active { background: var(--accent); color: #050b14; border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+
+    .content-container { max-width: 1200px; margin: 0 auto; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; overflow: hidden; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .card h3 { font-size: 18px; margin-bottom: 12px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    .img-box { width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--card-border); background: #000; margin-bottom: 12px; position: relative; }
+    .img-box img { width: 100%; height: auto; display: block; transition: transform 0.3s ease; }
+    .img-box:hover img { transform: scale(1.02); }
+    .caption { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* Oscillation animation box */
+    .osc-sim { height: 160px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); animation: bzCycle 6s infinite; }
+    @keyframes bzCycle {
+      0%, 100% { background: #0f172a; color: #38bdf8; content: "Phase 1: Farblos klar (Ausgangslösung)"; }
+      33% { background: #b45309; color: #fef3c7; content: "Phase 2: Bernsteingold (Triiodid-Bildung)"; }
+      66% { background: #1e1b4b; color: #c084fc; content: "Phase 3: Tiefdunkelblau (Iod-Stärke-Komplex)"; }
+    }
+
+    .stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
+    .stat-label { color: var(--text-muted); }
+    .stat-val { font-weight: 600; color: var(--text); }
+    .tag-green { color: var(--green); }
+
+    .quest-step { display: flex; gap: 14px; align-items: flex-start; padding: 14px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--accent); }
+    .quest-step.locked { border-left-color: #475569; opacity: 0.6; }
+    .quest-num { background: var(--accent); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
+    .quest-step.locked .quest-num { background: #334155; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>ChemLab VR/Vision - 3D Simulation</h1>
+      <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Echtzeit Hand-Tracking & Reaktions-Simulation (Blender 5.2 EEVEE)</p>
+    </div>
+    <div class="badge">Hardware: Dell Latitude 5530 (Iris Xe 60 FPS)</div>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="switchTab('tab-blender')">1. Dein gerendertes 3D-Labor</button>
+    <button class="nav-btn" onclick="switchTab('tab-tracking')">2. Webcam Gesten-Steuerung</button>
+    <button class="nav-btn" onclick="switchTab('tab-osc')">3. Oszillierende Reaktionen</button>
+    <button class="nav-btn" onclick="switchTab('tab-modes')">4. Story-Modus vs. Sandbox</button>
+    <button class="nav-btn" onclick="switchTab('tab-perf')">5. Intel Iris Xe Optimierung</button>
+    <button class="nav-btn" onclick="switchTab('tab-hud')">6. HUD & 3D User Interface</button>
+  </div>
+
+  <div class="content-container">
+
+    <!-- Tab 1: Blender Renderings -->
+    <div id="tab-blender" class="tab-pane active">
+      <div class="grid-2">
+        <div class="card">
+          <h3><span>🔬</span> Werkbank-Detail (Reagenzgläser & Kolben)</h3>
+          <div class="img-box">
+            <img src="/preview_workbench.png" alt="Werkbank Nahaufnahme Borosilikatglas">
+          </div>
+          <p class="caption">
+            <strong>Fotorealistisches Borosilikatglas (Pyrex IOR 1.474):</strong> Direkt aus deiner Datei <code>chemlab.blend</code> gerendert.
+            Flüssigkeiten brechen das Licht exakt physikalisch korrekt und spiegeln die Labormöbel.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3><span>🏢</span> Labor-Gesamtübersicht (Raum & Abzug)</h3>
+          <div class="img-box">
+            <img src="/preview_overview.png" alt="Labor Gesamtansicht">
+          </div>
+          <p class="caption">
+            <strong>Laborinsel mit Sicherheitsabzug & Gasanschlüssen:</strong> Über 290 fertig modellierte Laborobjekte stehen bereit.
+            Über den Socket-Receiver werden die Geräte in Echtzeit von deinen Webcam-Gesten gegriffen.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Webcam Tracking -->
+    <div id="tab-tracking" class="tab-pane">
+      <div class="grid-2">
+        <div class="card">
+          <h3><span>🖐️</span> 21 Hand-Knochenpunkte (MediaPipe Hands)</h3>
+          <div style="background: #020617; border-radius: 10px; padding: 24px; text-align: center; border: 1px dashed var(--accent); margin-bottom: 14px;">
+            <svg viewBox="0 0 300 240" style="max-height: 200px; width: 100%;">
+              <!-- Skeleton illustration -->
+              <circle cx="150" cy="210" r="8" fill="#00d2ff"/>
+              <line x1="150" y1="210" x2="110" y2="160" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="110" y1="160" x2="80" y2="120" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="80" y1="120" x2="60" y2="90" stroke="#f59e0b" stroke-width="4"/> <!-- Thumb tip -->
+              <circle cx="60" cy="90" r="7" fill="#f59e0b"/>
+
+              <!-- Index finger -->
+              <line x1="150" y1="210" x2="135" y2="140" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="135" y1="140" x2="120" y2="90" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="120" y1="90" x2="110" y2="40" stroke="#f59e0b" stroke-width="4"/> <!-- Index tip -->
+              <circle cx="110" cy="40" r="7" fill="#f59e0b"/>
+
+              <!-- Middle, Ring, Pinky -->
+              <line x1="150" y1="210" x2="155" y2="135" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="155" y1="135" x2="155" y2="85" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="155" y1="85" x2="155" y2="35" stroke="#00d2ff" stroke-width="3"/>
+
+              <line x1="150" y1="210" x2="175" y2="145" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="175" y1="145" x2="185" y2="100" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="185" y1="100" x2="190" y2="55" stroke="#00d2ff" stroke-width="3"/>
+
+              <line x1="150" y1="210" x2="195" y2="160" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="195" y1="160" x2="215" y2="125" stroke="#00d2ff" stroke-width="3"/>
+              <line x1="215" y1="125" x2="230" y2="90" stroke="#00d2ff" stroke-width="3"/>
+
+              <!-- Pinch distance indicator -->
+              <line x1="60" y1="90" x2="110" y2="40" stroke="#10b981" stroke-dasharray="4" stroke-width="2"/>
+              <text x="95" y="75" fill="#10b981" font-size="12" font-weight="bold">PINCH < 35mm</text>
+            </svg>
+          </div>
+          <p class="caption">
+            <strong>Greifen im freien Raum:</strong> Führen Daumen- und Zeigefingerspitze zusammen, schließt sich der Griff. Das Reagenzglas rastet an deiner virtuellen Hand ein.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3><span>⚡</span> Gesten-Katalog (Air Guitar Prinzip)</h3>
+          <div class="stat-row">
+            <span class="stat-label">Pinch (Daumen + Zeigefinger)</span>
+            <span class="stat-val tag-green">Objekt greifen / festhalten</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Handgelenk drehen (> 45°)</span>
+            <span class="stat-val tag-green">Flüssigkeit ausgießen</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Schnelle Kreisbewegung</span>
+            <span class="stat-val tag-green">Schütteln / Mischen (Wirbel)</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Flache offene Hand</span>
+            <span class="stat-val tag-green">Loslassen / Abstellen auf Tisch</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Zweifinger-Drehgeste</span>
+            <span class="stat-val tag-green">Bunsenbrenner-Gashahn regulieren</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Oscillating Reactions -->
+    <div id="tab-osc" class="tab-pane">
+      <div class="card" style="margin-bottom: 24px;">
+        <h3><span>🧪</span> Live-Vorschau: Briggs-Rauscher Oszillierende Iod-Uhr</h3>
+        <div class="osc-sim" id="osc-box">
+          Oszilliert alle 2 Sekunden: Klar ➔ Bernstein ➔ Tiefblau ➔ Klar
+        </div>
+        <p class="caption">
+          <strong>Chemischer Mechanismus:</strong> Malonsäure + Kaliumiodat + Wasserstoffperoxid mit Mangan-Katalysator.
+          Die Konzentration von Iod und Iodid-Ionen schwankt rhythmisch. Im Spiel visualisieren wir dies über dynamische Farb-Shader im Kolben!
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3><span>🔥</span> Belousov-Zhabotinsky (BZ) Wellen</h3>
+          <p class="caption" style="margin-bottom: 12px;">
+            In einer flachen Petrischale breiten sich konzentrische kreisförmige Wellen von Rot/Orange nach Hellblau aus.
+          </p>
+          <div style="background: radial-gradient(circle, #38bdf8 10%, #ea580c 40%, #0369a1 70%, #9a3412 100%); height: 120px; border-radius: 8px;"></div>
+        </div>
+        <div class="card">
+          <h3><span>💥</span> Elefanten-Zahnpasta (Katalytischer Schaum)</h3>
+          <p class="caption" style="margin-bottom: 12px;">
+            Rasante Zersetzung von H₂O₂ durch Kaliumiodid erzeugt gewaltige, emporsteigende Schaumsäulen mit aufsteigendem warmem Dampf.
+          </p>
+          <div style="background: linear-gradient(180deg, #ec4899, #f43f5e); height: 120px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+            Aufsteigende Partikel-Volumensimulation
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Game Modes -->
+    <div id="tab-modes" class="tab-pane">
+      <div class="grid-2">
+        <div class="card">
+          <h3><span>🗺️</span> Story-Modus: Vom Praktikanten zum Alchemisten</h3>
+          <div class="quest-step">
+            <div class="quest-num">1</div>
+            <div>
+              <strong style="color: var(--text);">Level 1: Labortaufe & Indikator</strong>
+              <div style="font-size: 13px; color: var(--text-muted);">Sicherheitsbrille aufsetzen, Rotkohlsaft mit Natronlauge und Salzsäure mischen (Farbumschlag Rot ➔ Grün).</div>
+            </div>
+          </div>
+          <div class="quest-step">
+            <div class="quest-num">2</div>
+            <div>
+              <strong style="color: var(--text);">Level 2: Die Iod-Uhr (Kinetik)</strong>
+              <div style="font-size: 13px; color: var(--text-muted);">Präzise Dosierung im Becherglas – Farbwechsel exakt auf den Schlag von 5 Sekunden abstimmen.</div>
+            </div>
+          </div>
+          <div class="quest-step locked">
+            <div class="quest-num">3</div>
+            <div>
+              <strong style="color: var(--text);">Level 3: Die Oszillierende BZ-Reaktion [Gesperrt]</strong>
+              <div style="font-size: 13px; color: var(--text-muted);">Schaltet Magnetrührer und Spezial-Katalysatoren frei. Erzeuge eine stabile Farbwelle.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span>🧪</span> Freie Simulation (Sandbox Modus)</h3>
+          <p class="caption" style="margin-bottom: 16px;">
+            Unbeschränkte Experimentierfreiheit ohne Level-Barrieren oder verschlossene Schränke:
+          </p>
+          <div class="stat-row">
+            <span class="stat-label">Reagenzien-Katalog</span>
+            <span class="stat-val tag-green">100+ Chemikalien mit GHS-Gefahrenpiktogrammen</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Reaktions-Konsequenzen</span>
+            <span class="stat-val tag-green">Endotherm, Exotherm, Fällung, Gasentwicklung</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Explosions-Eindämmung</span>
+            <span class="stat-val" style="color: var(--amber);">Abzug schützt (Glasschild & Abluftfilter aktiv)</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Zeitsteuerung</span>
+            <span class="stat-val tag-green">Pause (0x), Slow-Motion (0.5x) bis Zeitraffer (50x)</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Laborbuch & Export</span>
+            <span class="stat-val tag-green">Rezept-Dateien (JSON) & In-Game Fotoschnappschüsse</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Hardware Optimization -->
+    <div id="tab-perf" class="tab-pane">
+      <div class="card">
+        <h3><span>⚡</span> Leistungs-Optimierung für Dell Latitude 5530 (Intel Iris Xe)</h3>
+        <p class="caption" style="margin-bottom: 20px;">
+          Da dein Laptop über eine integrierte Intel Iris Xe Grafikkarte mit 16 GB geteiltem Arbeitsspeicher verfügt,
+          haben wir die 3D-Einstellungen für konstante <strong>60 Bilder pro Sekunde (60 FPS)</strong> optimiert:
+        </p>
+        <div class="grid-2">
+          <div>
+            <div class="stat-row">
+              <span class="stat-label">Render-Engine</span>
+              <span class="stat-val tag-green">Blender EEVEE Realtime</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Viewport-Samples</span>
+              <span class="stat-val">Optimiert auf 24 (kein Ruckeln)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Shader-Modell</span>
+              <span class="stat-val">Screen-Space Transmission (Schnell & Edel)</span>
+            </div>
+          </div>
+          <div>
+            <div class="stat-row">
+              <span class="stat-label">Webcam-Vision Latenz</span>
+              <span class="stat-val tag-green">14 Millisekunden (MediaPipe Nano)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">CPU-Last</span>
+              <span class="stat-val">Nutzt effiziente E-Cores für Tracking</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">RAM-Verbrauch</span>
+              <span class="stat-val">Unter 2.5 GB (13.5 GB frei)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 6: 3D Spatial HUD & VR-Interface -->
+    <div id="tab-hud" class="tab-pane">
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 22px; color: #fff; margin-bottom: 4px;">Heads-Up Display (HUD) & 3D Spatial User Interface</h2>
+            <p style="color: var(--text-muted); font-size: 14px;">Entwickelt in Blender 5.2 EEVEE Next & Godot 4 Engine für Dell Latitude 5530 (Intel Iris Xe)</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span class="badge" style="border-color: #10b981; color: #10b981;">60 FPS Realtime</span>
+            <span class="badge" style="border-color: #00d2ff; color: #00d2ff;">3D Spatial Audio</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D Render Gallery: Real Blender Renders -->
+      <div class="grid-2">
+        <div class="card">
+          <h3><span>🥽</span> 1. Vollständiges First-Person HUD (Cam_Player_HUD_View)</h3>
+          <div class="img-box">
+            <img src="/preview_hud_player.png" alt="First Person HUD Player View">
+          </div>
+          <p class="caption">
+            <strong>Immersive VR/Desktop Perspektive:</strong> Oben fixierte Top Bar mit Quest-Ziel, Sicherheitsstatus und Modus-Schalter.
+            Im Blickfeld schweben die halbtransparenten Hände mit farbcodierten Fingerspitzen, schwebende Reagenz-Tags und die Level-Up-Feier.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3><span>🏷️</span> 2. Nicht-intrusives 3D Spatial Overlay (Cam_HUD_Spatial_Detail)</h3>
+          <div class="img-box">
+            <img src="/preview_hud_spatial_detail.png" alt="3D Spatial Overlay Detail">
+          </div>
+          <p class="caption">
+            <strong>Schwebende Tags & pH-Skala:</strong> Frosted-Glass Plaketten mit Haltefäden zum Flaschenrand.
+            Universelle pH-Farbskala (1–14) mit dynamischer Indikator-Nadel bei pH 2.40 ([H+] = 3.98e-3 M) und digitale 102.4 °C LED-Anzeige über dem Bunsenbrenner-Becher.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 24px;">
+        <h3><span>🖐️</span> 3. Holografische Hände & Farbcodierte Interaktionspunkte (Cam_Hands_Detail)</h3>
+        <div class="grid-2">
+          <div class="img-box" style="margin-bottom: 0;">
+            <img src="/preview_hands_detail.png" alt="Holographic Hands Interaction Dots">
+          </div>
+          <div style="display: flex; flex-direction: column; justify-content: center; gap: 14px;">
+            <div style="padding: 12px; background: rgba(0, 255, 102, 0.08); border-left: 3px solid #00ff66; border-radius: 8px;">
+              <strong style="color: #00ff66; display: flex; align-items: center; gap: 8px;">
+                <span style="width: 12px; height: 12px; background: #00ff66; border-radius: 50%; box-shadow: 0 0 10px #00ff66;"></span>
+                GRÜNE PUNKTE: Bereit zum Pinchen (Ready to Pinch)
+              </strong>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Aktives Hand-Tracking, Finger geöffnet, keine Glasware in unmittelbarem Greifradius. Linke Hand im Bild.</div>
+            </div>
+
+            <div style="padding: 12px; background: rgba(255, 210, 0, 0.08); border-left: 3px solid #ffd200; border-radius: 8px;">
+              <strong style="color: #ffd200; display: flex; align-items: center; gap: 8px;">
+                <span style="width: 12px; height: 12px; background: #ffd200; border-radius: 50%; box-shadow: 0 0 10px #ffd200;"></span>
+                GELBE PUNKTE: Hovering über Glaswaren (Proximity Lock)
+              </strong>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Fingerspitzen nähern sich Kolbenrand (&lt; 50mm). Gelber Zielring pulsiert sanft mit Annäherungs-Audio.</div>
+            </div>
+
+            <div style="padding: 12px; background: rgba(0, 153, 255, 0.08); border-left: 3px solid #0099ff; border-radius: 8px;">
+              <strong style="color: #0099ff; display: flex; align-items: center; gap: 8px;">
+                <span style="width: 12px; height: 12px; background: #0099ff; border-radius: 50%; box-shadow: 0 0 10px #0099ff;"></span>
+                BLAUE PUNKTE: Fest gegriffen (Firmly Held)
+              </strong>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Pinch-Geste geschlossen, kinematischer Griff aktiv. Kolben folgt der Handbewegung. Rechte Hand im Bild.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Top Bar HUD Live Mockup -->
+      <div class="card" style="margin-bottom: 24px;">
+        <h3><span>🧭</span> 4. Interaktive Top Bar Steuerung</h3>
+        <div style="background: rgba(10, 13, 20, 0.95); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <!-- Quest Section -->
+            <div style="flex: 1; min-width: 280px;">
+              <div style="font-size: 11px; text-transform: uppercase; color: var(--accent); letter-spacing: 1px; font-weight: 700;">Aktives Quest-Ziel</div>
+              <div style="font-size: 15px; font-weight: 700; color: #fff; margin-top: 2px;">Belousov-Zhabotinsky Oszillation</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Schritt 2/4: 50 mL Malonsäure-Lösung auf 45.0 °C erhitzen</div>
+              <div style="background: #1e293b; height: 6px; border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, #00d2ff, #10b981); width: 65%; height: 100%;"></div>
+              </div>
+            </div>
+
+            <!-- Safety Alert Section -->
+            <div id="safety-box" style="padding: 10px 18px; background: rgba(16, 185, 129, 0.12); border: 1px solid #10b981; border-radius: 8px; text-align: center;">
+              <div id="safety-title" style="font-size: 13px; font-weight: 700; color: #10b981;">SICHERHEIT: OPTIMAL</div>
+              <div id="safety-sub" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">PSA Aktiv | Abzug: 25 cm (0.52 m/s)</div>
+            </div>
+
+            <!-- Game Mode Toggle Section -->
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">[TAB] Modus wechseln</div>
+              <div style="display: flex; background: #0f172a; border-radius: 8px; padding: 3px; border: 1px solid var(--card-border);">
+                <button id="btn-mode-story" class="nav-btn active" style="padding: 6px 14px; font-size: 12px; border-radius: 6px;" onclick="setMode('story')">Story Modus</button>
+                <button id="btn-mode-sandbox" class="nav-btn" style="padding: 6px 14px; font-size: 12px; border-radius: 6px;" onclick="setMode('sandbox')">Sandbox</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="nav-btn" onclick="toggleSafetyAlert()">⚠ Sicherheits-Warnung simulieren</button>
+          <button class="nav-btn" onclick="playSfx('quest')">★ Quest-Abschluss testen</button>
+          <button class="nav-btn" onclick="playSfx('levelup')">🏆 Level-Up Fanfare testen</button>
+        </div>
+      </div>
+
+      <!-- Live Audio Feedback Console -->
+      <div class="card" style="margin-bottom: 24px;">
+        <h3><span>🔊</span> 5. Audio-Feedback Synthesizer Konsole (44.1 kHz PCM Stereo)</h3>
+        <p class="caption" style="margin-bottom: 16px;">
+          Alle Sound-Cues wurden prozedural synthetisiert und liegen als echte WAV-Audiodateien im Projektordner <code>C:\Users\Win11 Pro\Desktop\chemlab\audio</code>:
+        </p>
+        <div class="grid-2">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="nav-btn" style="text-align: left; padding: 14px; display: flex; justify-content: space-between; align-items: center;" onclick="playSfx('quest')">
+              <div>
+                <strong style="color: #00d2ff;">★ sfx_quest_complete.wav</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Kristallines C-Dur Arpeggio mit Reverb-Shimmer</div>
+              </div>
+              <span style="font-size: 18px;">▶</span>
+            </button>
+
+            <button class="nav-btn" style="text-align: left; padding: 14px; display: flex; justify-content: space-between; align-items: center;" onclick="playSfx('levelup')">
+              <div>
+                <strong style="color: #ffd700;">🏆 sfx_level_up.wav</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Triumphale Synth-Bläser-Fanfare mit 55Hz Sub-Bass Punch</div>
+              </div>
+              <span style="font-size: 18px;">▶</span>
+            </button>
+
+            <button class="nav-btn" style="text-align: left; padding: 14px; display: flex; justify-content: space-between; align-items: center;" onclick="playSfx('alert')">
+              <div>
+                <strong style="color: #ef4444;">⚠ sfx_safety_alert.wav</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Zweiton-Warnton (740 Hz ➔ 587 Hz) für Exothermie & Lecks</div>
+              </div>
+              <span style="font-size: 18px;">▶</span>
+            </button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="nav-btn" style="text-align: left; padding: 14px; display: flex; justify-content: space-between; align-items: center;" onclick="playSfx('ready')">
+              <div>
+                <strong style="color: #00ff66;">🟢 sfx_pinch_ready.wav</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Subtiler Sinus-Blip (880 Hz) für geöffnete Bereitschaftshand</div>
+              </div>
+              <span style="font-size: 18px;">▶</span>
+            </button>
+
+            <button class="nav-btn" style="text-align: left; padding: 14px; display: flex; justify-content: space-between; align-items: center;" onclick="playSfx('hover')">
+              <div>
+                <strong style="color: #ffd200;">🟡 sfx_pinch_hover.wav</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Resonanter Schwebungs-Ton bei Annäherung an Glasrand</div>
+              </div>
+              <span style="font-size: 18px;">▶</span>
+            </button>
+
+            <button class="nav-btn" style="text-align: left; padding: 14px; display: flex; justify-content: space-between; align-items: center;" onclick="playSfx('grip')">
+              <div>
+                <strong style="color: #0099ff;">🔵 sfx_pinch_grip.wav</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Dämpfender Glas-Klack mit Haptik-Impuls bei festem Griff</div>
+              </div>
+              <span style="font-size: 18px;">▶</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive pH Indicator Bar Simulator -->
+      <div class="card">
+        <h3><span>🌈</span> 6. Universelle 3D pH-Farbskala Simulator</h3>
+        <p class="caption" style="margin-bottom: 14px;">Bewege den Schieberegler, um die Reaktion des 3D Spatial pH-Balkens und die Molaritäts-Berechnung in Echtzeit zu sehen:</p>
+        <div style="margin-bottom: 16px;">
+          <input type="range" id="ph-slider" min="0" max="14" step="0.1" value="2.4" style="width: 100%; accent-color: var(--accent);" oninput="updatePh(this.value)">
+        </div>
+
+        <div style="height: 32px; border-radius: 8px; background: linear-gradient(90deg, #d62222, #ea580c, #f59e0b, #eab308, #84cc16, #10b981, #06b6d4, #0284c7, #2563eb, #4f46e5, #7c3aed, #9333ea, #a855f7, #6b21a8); position: relative; margin-bottom: 12px; border: 1px solid var(--card-border);">
+          <div id="ph-needle" style="position: absolute; top: -6px; left: 17.14%; width: 4px; height: 44px; background: #ffd700; border-radius: 2px; box-shadow: 0 0 10px #ffd700; transform: translateX(-50%);"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+          <span>pH 0 (Stark Sauer)</span>
+          <span>pH 7 (Neutral)</span>
+          <span>pH 14 (Stark Basisch)</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+          <div>
+            <strong id="ph-display" style="font-size: 18px; color: #ffd700;">pH 2.40 [Stark Sauer]</strong>
+            <div id="ph-conc" style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Oxonium-Ionen: [H₃O⁺] = 3.98 × 10⁻³ mol/L</div>
+          </div>
+          <div id="ph-sample-dot" style="width: 28px; height: 28px; border-radius: 50%; background: #ea580c; box-shadow: 0 0 15px #ea580c;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      if (btn) {
+        btn.classList.add('active');
+      } else if (typeof event !== 'undefined' && event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      } else {
+        const defaultBtn = document.querySelector(`[onclick*="${tabId}"]`);
+        if (defaultBtn) defaultBtn.classList.add('active');
+      }
+    }
+
+    // Audio SFX mapping
+    const sfxFiles = {
+      quest: '/audio/sfx_quest_complete.wav',
+      levelup: '/audio/sfx_level_up.wav',
+      ready: '/audio/sfx_pinch_ready.wav',
+      hover: '/audio/sfx_pinch_hover.wav',
+      grip: '/audio/sfx_pinch_grip.wav',
+      alert: '/audio/sfx_safety_alert.wav'
+    };
+
+    function playSfx(type) {
+      const url = sfxFiles[type];
+      if (!url) return;
+      const audio = new Audio(url);
+      audio.volume = 0.85;
+      audio.play().catch(e => {
+        console.warn('Audio play failed, using Web Audio fallback:', e);
+        playFallbackSynth(type);
+      });
+    }
+
+    // Web Audio Fallback Synthesizer
+    function playFallbackSynth(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (type === 'quest') {
+          [523.25, 659.25, 783.99, 987.77, 1046.50].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = freq;
+            osc.type = 'triangle';
+            const t = ctx.currentTime + idx * 0.12;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.25, t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 1.2);
+          });
+        } else if (type === 'levelup') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.setValueAtTime(55, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.4, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 1.5);
+        } else if (type === 'alert') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.setValueAtTime(740, ctx.currentTime);
+          osc.frequency.setValueAtTime(587, ctx.currentTime + 0.25);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.6);
+        } else {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.value = (type === 'ready') ? 880 : (type === 'hover') ? 660 : 320;
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.15);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Top Bar Mode Toggle
+    function setMode(mode) {
+      const bStory = document.getElementById('btn-mode-story');
+      const bSandbox = document.getElementById('btn-mode-sandbox');
+      if (mode === 'story') {
+        bStory.classList.add('active');
+        bSandbox.classList.remove('active');
+        playSfx('ready');
+      } else {
+        bSandbox.classList.add('active');
+        bStory.classList.remove('active');
+        playSfx('hover');
+      }
+    }
+
+    // Safety Alert Simulator
+    let isAlert = false;
+    function toggleSafetyAlert() {
+      isAlert = !isAlert;
+      const box = document.getElementById('safety-box');
+      const title = document.getElementById('safety-title');
+      const sub = document.getElementById('safety-sub');
+      if (isAlert) {
+        box.style.background = 'rgba(239, 68, 68, 0.15)';
+        box.style.borderColor = '#ef4444';
+        title.style.color = '#ef4444';
+        title.textContent = '⚠ SICHERHEITS-WARNUNG: EXOTHERMIE';
+        sub.textContent = 'ΔT > +15°C/min | Abzugshaube ganz schließen!';
+        playSfx('alert');
+      } else {
+        box.style.background = 'rgba(16, 185, 129, 0.12)';
+        box.style.borderColor = '#10b981';
+        title.style.color = '#10b981';
+        title.textContent = 'SICHERHEIT: OPTIMAL';
+        sub.textContent = 'PSA Aktiv | Abzug: 25 cm (0.52 m/s)';
+        playSfx('ready');
+      }
+    }
+
+    // Interactive pH Slider
+    function updatePh(val) {
+      const ph = parseFloat(val);
+      const pct = (ph / 14.0) * 100.0;
+      document.getElementById('ph-needle').style.left = pct + '%';
+
+      let cat = 'Neutral';
+      let color = '#10b981';
+      if (ph < 3.0) { cat = 'Stark Sauer'; color = '#d62222'; }
+      else if (ph < 6.5) { cat = 'Schwach Sauer'; color = '#f59e0b'; }
+      else if (ph <= 7.5) { cat = 'Neutral'; color = '#10b981'; }
+      else if (ph <= 11.5) { cat = 'Schwach Basisch'; color = '#0284c7'; }
+      else { cat = 'Stark Basisch'; color = '#7c3aed'; }
+
+      const h3o = Math.pow(10, -ph).toExponential(2);
+      document.getElementById('ph-display').textContent = `pH ${ph.toFixed(2)} [${cat}]`;
+      document.getElementById('ph-display').style.color = color;
+      document.getElementById('ph-conc').textContent = `Oxonium-Ionen: [H₃O⁺] = ${h3o} mol/L`;
+      document.getElementById('ph-sample-dot').style.background = color;
+      document.getElementById('ph-sample-dot').style.boxShadow = `0 0 15px ${color}`;
+    }
+  </script>
+</body>
+</html>
