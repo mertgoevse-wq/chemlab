@@ -1,0 +1,233 @@
+[gd_scene load_steps=26 format=3 uid="uid://chemlab_analytical_lab_01"]
+
+[ext_resource type="Script" path="res://scenes/laboratories/analytical_lab.gd" id="1_lab_script"]
+[ext_resource type="Environment" path="res://default_env.tres" id="2_lab_env"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/analytical_balance.tscn" id="4_balance"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/magnetic_stirrer.tscn" id="5_stirrer"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/titration_buret.tscn" id="6_buret"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/bunsen_burner.tscn" id="7_burner"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/erlenmeyer_flask.tscn" id="8_erlenmeyer"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/beaker.tscn" id="9_beaker"]
+[ext_resource type="PackedScene" path="res://scenes/quests/quest_overlay.tscn" id="10_quest_overlay"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_Floor"]
+albedo_color = Color(0.72, 0.76, 0.8, 1)
+roughness = 0.35
+metallic = 0.05
+
+[sub_resource type="BoxMesh" id="Mesh_Floor"]
+material = SubResource("Mat_Floor")
+size = Vector3(12, 0.2, 10)
+
+[sub_resource type="BoxShape3D" id="Shape_Floor"]
+size = Vector3(12, 0.2, 10)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Wall"]
+albedo_color = Color(0.92, 0.94, 0.96, 1)
+roughness = 0.65
+
+[sub_resource type="BoxMesh" id="Mesh_WallLong"]
+material = SubResource("Mat_Wall")
+size = Vector3(12, 3.5, 0.2)
+
+[sub_resource type="BoxShape3D" id="Shape_WallLong"]
+size = Vector3(12, 3.5, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_WallShort"]
+material = SubResource("Mat_Wall")
+size = Vector3(0.2, 3.5, 10)
+
+[sub_resource type="BoxShape3D" id="Shape_WallShort"]
+size = Vector3(0.2, 3.5, 10)
+
+[sub_resource type="StandardMaterial3D" id="Mat_BenchTop"]
+albedo_color = Color(0.18, 0.2, 0.22, 1)
+roughness = 0.25
+metallic = 0.1
+
+[sub_resource type="BoxMesh" id="Mesh_BenchTop"]
+material = SubResource("Mat_BenchTop")
+size = Vector3(4.0, 0.08, 1.2)
+
+[sub_resource type="BoxShape3D" id="Shape_BenchTop"]
+size = Vector3(4.0, 0.9, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_SashGlass"]
+transparency = 1
+albedo_color = Color(0.85, 0.92, 0.98, 0.25)
+roughness = 0.05
+metallic = 0.1
+
+[sub_resource type="BoxMesh" id="Mesh_SashGlass"]
+material = SubResource("Mat_SashGlass")
+size = Vector3(1.6, 0.8, 0.02)
+
+[sub_resource type="BoxShape3D" id="Shape_SashArea"]
+size = Vector3(2.0, 2.0, 1.5)
+
+[node name="AnalyticalLab" type="Node3D"]
+script = ExtResource("1_lab_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_lab_env")
+
+[node name="Lighting" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Lighting"]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 4, 0)
+light_color = Color(0.96, 0.98, 1, 1)
+light_energy = 0.65
+shadow_enabled = false
+
+[node name="Light_Bench_Spotlight" type="OmniLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+light_color = Color(1, 0.98, 0.94, 1)
+light_energy = 1.6
+omni_range = 4.8
+
+[node name="Light_FumeHood_Interior" type="OmniLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 2.0, -2.5)
+light_color = Color(0.92, 0.97, 1, 1)
+light_energy = 2.0
+omni_range = 2.6
+
+[node name="Light_Ceiling_Ambient" type="OmniLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 2.5)
+light_color = Color(0.95, 0.97, 1, 1)
+light_energy = 0.8
+omni_range = 7.0
+
+[node name="Structure" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Structure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Floor"]
+mesh = SubResource("Mesh_Floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Floor"]
+shape = SubResource("Shape_Floor")
+
+[node name="Wall_North" type="StaticBody3D" parent="Structure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Wall_North"]
+mesh = SubResource("Mesh_WallLong")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Wall_North"]
+shape = SubResource("Shape_WallLong")
+
+[node name="Wall_South" type="StaticBody3D" parent="Structure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Wall_South"]
+mesh = SubResource("Mesh_WallLong")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Wall_South"]
+shape = SubResource("Shape_WallLong")
+
+[node name="Wall_West" type="StaticBody3D" parent="Structure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.75, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Wall_West"]
+mesh = SubResource("Mesh_WallShort")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Wall_West"]
+shape = SubResource("Shape_WallShort")
+
+[node name="Wall_East" type="StaticBody3D" parent="Structure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.75, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Structure/Wall_East"]
+mesh = SubResource("Mesh_WallShort")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Structure/Wall_East"]
+shape = SubResource("Shape_WallShort")
+
+[node name="Furniture" type="Node3D" parent="."]
+
+[node name="MainWorkbench" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+
+[node name="BenchTopMesh" type="MeshInstance3D" parent="Furniture/MainWorkbench"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.41, 0)
+mesh = SubResource("Mesh_BenchTop")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Furniture/MainWorkbench"]
+shape = SubResource("Shape_BenchTop")
+
+[node name="FumeHoodStation" type="Node3D" parent="Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, -2.5)
+
+[node name="FumeHood_SashAssembly" type="Node3D" parent="Furniture/FumeHoodStation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0.6)
+
+[node name="SashGlassMesh" type="MeshInstance3D" parent="Furniture/FumeHoodStation/FumeHood_SashAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("Mesh_SashGlass")
+
+[node name="InteractionArea_Sash" type="Area3D" parent="Furniture/FumeHoodStation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 1.2)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Furniture/FumeHoodStation/InteractionArea_Sash"]
+shape = SubResource("Shape_SashArea")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="Spawn_Player" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2.2)
+
+[node name="Spawn_ErlenmeyerFlask" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.9, 0.2)
+
+[node name="Spawn_Beaker" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.9, 0.2)
+
+[node name="Spawn_BunsenBurner" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.9, 0.0)
+
+[node name="Spawn_MagneticStirrer" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.9, 0.0)
+
+[node name="Spawn_AnalyticalBalance" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0.9, 0.0)
+
+[node name="Spawn_Reagent_HCl" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.9, -0.3)
+
+[node name="Spawn_Reagent_NaOH" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.4, 0.0)
+
+[node name="Spawn_Reagent_Phenolphthalein" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.9, -0.3)
+
+[node name="Spawn_FumeHood_Apparatus" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0.9, -2.5)
+
+[node name="ApparatusInstances" type="Node3D" parent="."]
+
+[node name="AnalyticalBalance" parent="ApparatusInstances" instance=ExtResource("4_balance")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0.9, 0.0)
+
+[node name="MagneticStirrer" parent="ApparatusInstances" instance=ExtResource("5_stirrer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.9, 0.0)
+
+[node name="TitrationBuret" parent="ApparatusInstances" instance=ExtResource("6_buret")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.9, 0.0)
+
+[node name="BunsenBurner" parent="ApparatusInstances" instance=ExtResource("7_burner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.9, 0.0)
+
+[node name="ErlenmeyerFlask" parent="ApparatusInstances" instance=ExtResource("8_erlenmeyer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.9, 0.2)
+
+[node name="Beaker" parent="ApparatusInstances" instance=ExtResource("9_beaker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.9, 0.2)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0.05, 2.2)
+
+[node name="QuestOverlay" parent="." instance=ExtResource("10_quest_overlay")]

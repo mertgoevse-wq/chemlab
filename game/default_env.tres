@@ -1,0 +1,29 @@
+[gd_resource type="Environment" load_steps=3 format=3]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cleanroom"]
+sky_top_color = Color(0.385, 0.454, 0.55, 1)
+sky_horizon_color = Color(0.646, 0.656, 0.67, 1)
+sky_curve = 0.15
+ground_bottom_color = Color(0.2, 0.22, 0.25, 1)
+ground_horizon_color = Color(0.646, 0.656, 0.67, 1)
+ground_curve = 0.15
+sun_angle_max = 30.0
+sun_curve = 0.15
+
+[sub_resource type="Sky" id="Sky_cleanroom"]
+sky_material = SubResource("ProceduralSkyMaterial_cleanroom")
+
+[resource]
+background_mode = 2
+sky = SubResource("Sky_cleanroom")
+ambient_light_source = 3
+ambient_light_color = Color(0.85, 0.9, 0.95, 1)
+ambient_light_sky_contribution = 0.8
+ambient_light_energy = 1.0
+reflected_light_source = 2
+tonemap_mode = 2
+tonemap_exposure = 1.0
+tonemap_white = 1.0
+glow_enabled = true
+glow_intensity = 0.3
+glow_bloom = 0.1

@@ -1,0 +1,105 @@
+[gd_scene load_steps=6 format=3 uid="uid://c6j2y5k8mplayer"]
+
+[ext_resource type="Script" path="res://scenes/player/player_controller.gd" id="1_player"]
+[ext_resource type="Script" path="res://scenes/player/crosshair.gd" id="2_crosshair"]
+[ext_resource type="Script" path="res://scenes/player/spatial_hud_anchor.gd" id="3_spatial_anchor"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prompt"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.102, 0.114, 0.125, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.055, 0.227, 0.298, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+fov = 75.0
+near = 0.05
+far = 100.0
+
+[node name="InteractionRay" type="RayCast3D" parent="Head"]
+target_position = Vector3(0, 0, -2.5)
+collide_with_areas = true
+collide_with_bodies = true
+
+[node name="HeldItemSocket" type="Marker3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, -0.2, -0.65)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Crosshair" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_crosshair")
+
+[node name="InteractionPrompt" type="PanelContainer" parent="HUD"]
+visible = false
+custom_minimum_size = Vector2(360, 60)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -140.0
+offset_right = 240.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_prompt")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/InteractionPrompt"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="ApparatusLabel" type="Label" parent="HUD/InteractionPrompt/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Apparatus Name"
+horizontal_alignment = 1
+
+[node name="ActionHintsLabel" type="Label" parent="HUD/InteractionPrompt/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.95, 0.93, 0.9)
+theme_override_font_sizes/font_size = 12
+text = "[E] Take / Place | [Left Click] Interact / Pour | [Right Click] Swirl | [Q] Drop"
+horizontal_alignment = 1
+
+[node name="SpatialHUDAnchor" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("3_spatial_anchor")

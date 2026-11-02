@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/liquid_shader.gdshader" id="1_liquid"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_liquid")
+shader_parameter/fill_amount = 0.5
+shader_parameter/liquid_color = Color(0.94, 0.98, 0.99, 0.18)
+shader_parameter/turbidity = 0.0
+shader_parameter/meniscus_curvature = 0.028
+shader_parameter/wave_amplitude = 0.005
+shader_parameter/container_height = 0.15
+shader_parameter/container_radius = 0.045
+shader_parameter/wave_speed = 3.5
+shader_parameter/roughness = 0.02
+shader_parameter/ior = 1.338

@@ -1,0 +1,691 @@
+[gd_scene format=3]
+
+[ext_resource type="Theme" path="res://resources/theme/chemlab_theme.tres" id="1_0ebjn"]
+[ext_resource type="Script" path="res://scenes/main_menu/main_menu.gd" id="2_ob46e"]
+
+[sub_resource type="Environment" id="Environment_uqeha"]
+background_mode = 1
+background_color = Color(0.035, 0.048, 0.075, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.06, 0.1, 0.16, 1)
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.8
+glow_bloom = 0.12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wem23"]
+albedo_color = Color(1, 0.702, 0, 1)
+emission_enabled = true
+emission = Color(1, 0.702, 0, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_3ovsr"]
+radius = 0.32
+height = 0.64
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5seab"]
+albedo_color = Color(0, 0.898, 1, 1)
+metallic = 0.5
+roughness = 0.15
+emission_enabled = true
+emission = Color(0, 0.898, 1, 1)
+emission_energy_multiplier = 0.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_4xg86"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="SphereMesh" id="SphereMesh_thkx5"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x2yjq"]
+albedo_color = Color(0.08, 0.12, 0.18, 1)
+metallic = 0.85
+roughness = 0.2
+
+[sub_resource type="SphereMesh" id="SphereMesh_lqpn7"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="SphereMesh" id="SphereMesh_qel0l"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="SphereMesh" id="SphereMesh_rrgl4"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="SphereMesh" id="SphereMesh_dn3lk"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="SphereMesh" id="SphereMesh_4ujhu"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="SphereMesh" id="SphereMesh_vnpsp"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="SphereMesh" id="SphereMesh_a1gy5"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="SphereMesh" id="SphereMesh_bq5lc"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="SphereMesh" id="SphereMesh_xac7c"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="SphereMesh" id="SphereMesh_0m3cs"]
+radius = 0.12
+height = 0.24
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i7nm7"]
+albedo_color = Color(0.35, 0.45, 0.55, 0.9)
+metallic = 0.9
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tfctf"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_n7xlh"]
+top_radius = 0.02
+bottom_radius = 0.02
+height = 1.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_0xlsr"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_0oicw"]
+top_radius = 0.02
+bottom_radius = 0.02
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_83tid"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_t0qut"]
+top_radius = 0.02
+bottom_radius = 0.02
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_g8sw0"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jnwll"]
+top_radius = 0.02
+bottom_radius = 0.02
+height = 1.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_chxta"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_unaco"]
+top_radius = 0.02
+bottom_radius = 0.02
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_81nce"]
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.1999999
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hj072"]
+top_radius = 0.02
+bottom_radius = 0.02
+height = 1.1999999
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x5yu2"]
+albedo_color = Color(0, 0.898, 1, 0.6)
+emission_enabled = true
+emission = Color(0, 0.898, 1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_ptsf3"]
+radius = 0.04
+height = 0.08
+
+[node name="MainMenu" type="Control" unique_id=1532748958]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_0ebjn")
+script = ExtResource("2_ob46e")
+
+[node name="BackgroundViewport" type="SubViewportContainer" parent="." unique_id=660437229]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="BackgroundViewport" unique_id=1283393125]
+size = Vector2i(1920, 1080)
+render_target_update_mode = 4
+
+[node name="World3D" type="Node3D" parent="BackgroundViewport/SubViewport" unique_id=1743666083]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="BackgroundViewport/SubViewport/World3D" unique_id=2116872961]
+environment = SubResource("Environment_uqeha")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="BackgroundViewport/SubViewport/World3D" unique_id=2144613141]
+transform = Transform3D(0.8660254, -0.3213938, 0.38302222, 0, 0.76604444, 0.6427876, -0.5, -0.55667037, 0.66341394, 0, 4, 3)
+light_color = Color(0.7, 0.85, 1, 1)
+light_energy = 0.9
+
+[node name="CyanOmniLight" type="OmniLight3D" parent="BackgroundViewport/SubViewport/World3D" unique_id=1696939417]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, 1.8)
+light_color = Color(0, 0.898, 1, 1)
+light_energy = 2.4
+omni_range = 6.0
+
+[node name="AmberOmniLight" type="OmniLight3D" parent="BackgroundViewport/SubViewport/World3D" unique_id=1272355151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, -0.4, 1.2)
+light_color = Color(1, 0.702, 0, 1)
+light_energy = 1.6
+
+[node name="Camera3D" type="Camera3D" parent="BackgroundViewport/SubViewport/World3D" unique_id=1070579885]
+transform = Transform3D(1, 0, 0, 0, 0.99026805, 0.1391731, 0, -0.1391731, 0.99026805, 0.6, 0.4, 3.8)
+fov = 50.0
+
+[node name="MolecularCluster" type="Node3D" parent="BackgroundViewport/SubViewport/World3D" unique_id=1518486283]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0, 0)
+
+[node name="CoreCatalystAtom" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1479121895]
+material_override = SubResource("StandardMaterial3D_wem23")
+mesh = SubResource("SphereMesh_3ovsr")
+
+[node name="Atom_0" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=347542851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_4xg86")
+
+[node name="Hydrogen_0" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1291712824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.86, 0, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_thkx5")
+
+[node name="Atom_1" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=792081200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.0392305, 0)
+material_override = SubResource("StandardMaterial3D_x2yjq")
+mesh = SubResource("SphereMesh_lqpn7")
+
+[node name="Hydrogen_1" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=2081685423]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.93, 1.6108072, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_qel0l")
+
+[node name="Atom_2" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=732379661]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 1.0392305, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_rrgl4")
+
+[node name="Hydrogen_2" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=607082817]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.93, 1.6108072, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_dn3lk")
+
+[node name="Atom_3" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=800903685]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.4695277e-16, 0)
+material_override = SubResource("StandardMaterial3D_x2yjq")
+mesh = SubResource("SphereMesh_4ujhu")
+
+[node name="Hydrogen_3" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=20045145]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.86, 2.2777677e-16, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_vnpsp")
+
+[node name="Atom_4" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1598311260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, -1.0392305, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_a1gy5")
+
+[node name="Hydrogen_4" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1823002909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.93, -1.6108072, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_bq5lc")
+
+[node name="Atom_5" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1204278178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, -1.0392305, 0)
+material_override = SubResource("StandardMaterial3D_x2yjq")
+mesh = SubResource("SphereMesh_xac7c")
+
+[node name="Hydrogen_5" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1994220868]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.93, -1.6108072, 0)
+material_override = SubResource("StandardMaterial3D_5seab")
+mesh = SubResource("SphereMesh_0m3cs")
+
+[node name="RingBond_0" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=789161707]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, 0.90000004, 0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_tfctf")
+
+[node name="CoreBond_0" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=247846662]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 0.6, 0, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_n7xlh")
+
+[node name="RingBond_1" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=696559910]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 1.0392305, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_0xlsr")
+
+[node name="CoreBond_1" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=876302762]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, 0.3, 0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_0oicw")
+
+[node name="RingBond_2" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1211265401]
+transform = Transform3D(-0.8660254, -0.50000006, 0, 0.50000006, -0.8660254, 0, 0, 0, 1, -0.90000004, 0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_83tid")
+
+[node name="CoreBond_2" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=721892754]
+transform = Transform3D(0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0, 0, 1, -0.3, 0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_t0qut")
+
+[node name="RingBond_3" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1677023414]
+transform = Transform3D(-0.8660254, 0.50000006, 0, -0.50000006, -0.8660254, 0, 0, 0, 1, -0.90000004, -0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_g8sw0")
+
+[node name="CoreBond_3" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1296004458]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.6, 7.347638e-17, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_jnwll")
+
+[node name="RingBond_4" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=564017229]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 0, -1.0392305, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_chxta")
+
+[node name="CoreBond_4" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=1736859489]
+transform = Transform3D(-0.8660254, -0.50000006, 0, 0.50000006, -0.8660254, 0, 0, 0, 1, -0.3, -0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_unaco")
+
+[node name="RingBond_5" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=323098338]
+transform = Transform3D(0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0, 1, 0.90000004, -0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_81nce")
+
+[node name="CoreBond_5" type="MeshInstance3D" parent="BackgroundViewport/SubViewport/World3D/MolecularCluster" unique_id=2036620707]
+transform = Transform3D(-0.8660254, 0.50000006, 0, -0.50000006, -0.8660254, 0, 0, 0, 1, 0.3, -0.51961523, 0)
+material_override = SubResource("StandardMaterial3D_i7nm7")
+mesh = SubResource("CylinderMesh_hj072")
+
+[node name="ChemicalParticles" type="CPUParticles3D" parent="BackgroundViewport/SubViewport/World3D" unique_id=1315890109]
+material_override = SubResource("StandardMaterial3D_x5yu2")
+amount = 40
+lifetime = 5.0
+mesh = SubResource("SphereMesh_ptsf3")
+emission_shape = 3
+emission_box_extents = Vector3(3.5, 2, 3)
+direction = Vector3(0, 1, 0)
+spread = 25.0
+gravity = Vector3(0, 0.02, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.35
+scale_amount_min = 0.03
+scale_amount_max = 0.08
+
+[node name="UI" type="Control" parent="." unique_id=1929054624]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Vignette" type="ColorRect" parent="UI" unique_id=1025147948]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.043, 0.059, 0.098, 0.65)
+
+[node name="MarginContainer" type="MarginContainer" parent="UI" unique_id=1787550420]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 72
+theme_override_constants/margin_top = 54
+theme_override_constants/margin_right = 72
+theme_override_constants/margin_bottom = 54
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer" unique_id=954401476]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MenuContainer" type="VBoxContainer" parent="UI/MarginContainer/HBoxContainer" unique_id=1207193276]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="Header" type="VBoxContainer" parent="UI/MarginContainer/HBoxContainer/MenuContainer" unique_id=1438116768]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ConsortiumBadge" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=349270968]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0, 0.898, 1, 0.85)
+text = "KAVLI-HELMHOLTZ RESEARCH CONSORTIUM"
+
+[node name="TitleLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=1263548168]
+layout_mode = 2
+theme_override_font_sizes/font_size = 54
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0.898, 1, 0.4)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+text = "CHEMLAB"
+
+[node name="SubtitleLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=1441121799]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0, 0.8980392, 1, 1)
+text = "ORIGINS · VIRTUAL RESEARCH FACILITY"
+
+[node name="HeaderSeparator" type="HSeparator" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=888419654]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=1770422747]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.7019608, 0, 1)
+text = "SYSTEM STATUS: ALL SENSORS NOMINAL · 60 FPS"
+
+[node name="SpacerTop" type="Control" parent="UI/MarginContainer/HBoxContainer/MenuContainer" unique_id=492533304]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="NavMenu" type="VBoxContainer" parent="UI/MarginContainer/HBoxContainer/MenuContainer" unique_id=2115530328]
+custom_minimum_size = Vector2(460, 0)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="BtnSandbox" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=1358392695]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "🔬 Enter Free Sandbox Lab"
+
+[node name="BtnCampaign" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=638606925]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "📋 Quest Campaign: Orientation & Titration"
+
+[node name="BtnSettings" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=2137618509]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "⚙️ Graphics & Input Settings"
+
+[node name="BtnCredits" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=215869280]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "ℹ️ Research Team & Credits"
+
+[node name="BtnExit" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=1081385744]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "❌ Exit to Desktop"
+
+[node name="SpacerBottom" type="Control" parent="UI/MarginContainer/HBoxContainer/MenuContainer" unique_id=1570844502]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Footer" type="VBoxContainer" parent="UI/MarginContainer/HBoxContainer/MenuContainer" unique_id=913212223]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="VersionLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Footer" unique_id=2071134807]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.6, 0.68, 0.78, 1)
+text = "v0.1.0-alpha · Compatibility Engine (Iris Xe Optimized)"
+
+[node name="CopyrightLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Footer" unique_id=1477804626]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.42, 0.48, 0.58, 1)
+text = "Kavli-Helmholtz Institute · ChemLab Engineering Team"
+
+[node name="SettingsModal" type="PanelContainer" parent="UI" unique_id=1363131237]
+visible = false
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -280.0
+offset_right = 340.0
+offset_bottom = 280.0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/SettingsModal" unique_id=1892948751]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="UI/SettingsModal/MarginContainer" unique_id=655542314]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="UI/SettingsModal/MarginContainer/VBox" unique_id=1128881372]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0, 0.8980392, 1, 1)
+text = "GRAPHICS & INTERACTION SETTINGS"
+
+[node name="Subtitle" type="Label" parent="UI/SettingsModal/MarginContainer/VBox" unique_id=1745601880]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.65, 0.72, 0.82, 1)
+text = "Configured for Intel Iris Xe Integrated Graphics (15W cTDP)"
+
+[node name="HSeparator1" type="HSeparator" parent="UI/SettingsModal/MarginContainer/VBox" unique_id=526922414]
+layout_mode = 2
+
+[node name="SettingsGrid" type="GridContainer" parent="UI/SettingsModal/MarginContainer/VBox" unique_id=1242990187]
+layout_mode = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="LblGraphicsPreset" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=361383949]
+layout_mode = 2
+text = "Graphics Preset:"
+
+[node name="OptGraphicsPreset" type="OptionButton" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=891026208]
+custom_minimum_size = Vector2(360, 40)
+layout_mode = 2
+
+[node name="LblInputMode" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=893595897]
+layout_mode = 2
+text = "Laboratory Controls:"
+
+[node name="OptInputMode" type="OptionButton" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=455664688]
+custom_minimum_size = Vector2(360, 40)
+layout_mode = 2
+
+[node name="LblMaster" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=81423542]
+layout_mode = 2
+text = "Master Volume:"
+
+[node name="HBoxMaster" type="HBoxContainer" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=941865218]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SliderMaster" type="HSlider" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid/HBoxMaster" unique_id=294312578]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="LblMasterVal" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid/HBoxMaster" unique_id=194835852]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "100%"
+
+[node name="LblSFX" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=57370182]
+layout_mode = 2
+text = "SFX Volume:"
+
+[node name="HBoxSFX" type="HBoxContainer" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=1928991371]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SliderSFX" type="HSlider" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid/HBoxSFX" unique_id=1894625898]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="LblSFXVal" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid/HBoxSFX" unique_id=2070544502]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "100%"
+
+[node name="LblAmbience" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=1870778683]
+layout_mode = 2
+text = "Ambience Volume:"
+
+[node name="HBoxAmbience" type="HBoxContainer" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid" unique_id=875677287]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SliderAmbience" type="HSlider" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid/HBoxAmbience" unique_id=2140560221]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 0.8
+
+[node name="LblAmbienceVal" type="Label" parent="UI/SettingsModal/MarginContainer/VBox/SettingsGrid/HBoxAmbience" unique_id=58682704]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "80%"
+
+[node name="HSeparator2" type="HSeparator" parent="UI/SettingsModal/MarginContainer/VBox" unique_id=235955354]
+layout_mode = 2
+
+[node name="BtnSettingsClose" type="Button" parent="UI/SettingsModal/MarginContainer/VBox" unique_id=288700488]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Apply & Return"
+
+[node name="CreditsModal" type="PanelContainer" parent="UI" unique_id=533296919]
+visible = false
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -240.0
+offset_right = 320.0
+offset_bottom = 240.0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/CreditsModal" unique_id=374248172]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="UI/CreditsModal/MarginContainer" unique_id=1657609478]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="UI/CreditsModal/MarginContainer/VBox" unique_id=996364957]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0, 0.8980392, 1, 1)
+text = "CHEMLAB: ORIGINS · RESEARCH CREDITS"
+
+[node name="Subtitle" type="Label" parent="UI/CreditsModal/MarginContainer/VBox" unique_id=963745959]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.65, 0.72, 0.82, 1)
+text = "Virtual Chemistry Simulation Platform"
+
+[node name="HSeparator1" type="HSeparator" parent="UI/CreditsModal/MarginContainer/VBox" unique_id=1912483274]
+layout_mode = 2
+
+[node name="CreditsBody" type="Label" parent="UI/CreditsModal/MarginContainer/VBox" unique_id=2139651478]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 1)
+text = "• Lead Institutional Partner:
+  Kavli-Helmholtz Institute / ChemLab Engineering Team
+
+• Physical Chemistry Simulation:
+  Cantera NIST Thermodynamic Balances & RDKit 3D Conformers
+
+• Optical Materials & Shaders:
+  Borosilicate Glass 3.3 (IOR 1.474) & Mantaflow Fluid Physics
+
+• Natural Interaction Architecture:
+  Webcam MediaPipe Holistic Vision with 1-Euro Kinematic Filter
+
+• Runtime Optimization:
+  Godot Engine 4.x (Compatibility GLES3 / Iris Xe 60 FPS Target)"
+
+[node name="HSeparator2" type="HSeparator" parent="UI/CreditsModal/MarginContainer/VBox" unique_id=1474554932]
+layout_mode = 2
+
+[node name="BtnCreditsClose" type="Button" parent="UI/CreditsModal/MarginContainer/VBox" unique_id=1661865044]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Close"
+
+[node name="FadeOverlay" type="ColorRect" parent="UI" unique_id=1239779946]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.043, 0.059, 0.098, 1)
+
+[node name="Audio" type="Node" parent="." unique_id=254647811]
+
+[node name="SFXClick" type="AudioStreamPlayer" parent="Audio" unique_id=1099153930]
+bus = &"UI"
+
+[node name="SFXHover" type="AudioStreamPlayer" parent="Audio" unique_id=1188194124]
+volume_db = -6.0
+bus = &"UI"

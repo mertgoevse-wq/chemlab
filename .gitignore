@@ -33,6 +33,10 @@ venv/
 *.crash.txt
 cache/
 
+# Godot 4 Engine Artifacts
+.godot/
+*.translation
+
 # OS Specific
 Thumbs.db
 Desktop.ini

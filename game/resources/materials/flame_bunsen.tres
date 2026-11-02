@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/flame_shader.gdshader" id="1_flame"]
+
+[resource]
+render_priority = 2
+shader = ExtResource("1_flame")
+shader_parameter/flame_speed = 3.5
+shader_parameter/inner_color = Color(0, 0.65, 1, 1)
+shader_parameter/outer_color = Color(0.38, 0.14, 0.82, 0.55)
+shader_parameter/flicker_strength = 0.25
+shader_parameter/flame_state = 2
+shader_parameter/flame_intensity = 1.2
+shader_parameter/flame_height_scale = 1.0
+shader_parameter/safety_color = Color(1, 0.65, 0.08, 0.9)
+shader_parameter/core_hot_color = Color(0.85, 0.95, 1, 1)

@@ -1,0 +1,214 @@
+[gd_scene load_steps=23 format=3 uid="uid://d2x7titrationburet001"]
+
+[ext_resource type="Script" path="res://scenes/apparatus/titration_buret.gd" id="1_buret_script"]
+[ext_resource type="AudioStream" path="res://audio/sfx_buret_drop.wav" id="2_audio_drip"]
+[ext_resource type="AudioStream" path="res://audio/sfx_valve_click.wav" id="3_audio_valve"]
+
+[sub_resource type="BoxShape3D" id="BoxShape_RootCollision"]
+size = Vector3(0.24, 0.90, 0.32)
+
+[sub_resource type="StandardMaterial3D" id="Mat_CastIron"]
+albedo_color = Color(0.18, 0.20, 0.22, 1)
+metallic = 0.85
+roughness = 0.55
+
+[sub_resource type="BoxMesh" id="BoxMesh_RetortBase"]
+material = SubResource("Mat_CastIron")
+size = Vector3(0.20, 0.02, 0.28)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Chrome"]
+albedo_color = Color(0.90, 0.92, 0.94, 1)
+metallic = 0.98
+roughness = 0.08
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Rod"]
+material = SubResource("Mat_Chrome")
+top_radius = 0.007
+bottom_radius = 0.007
+height = 0.85
+radial_segments = 24
+
+[sub_resource type="BoxMesh" id="BoxMesh_Bosshead"]
+material = SubResource("Mat_Chrome")
+size = Vector3(0.04, 0.04, 0.05)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ClampArm"]
+material = SubResource("Mat_Chrome")
+top_radius = 0.005
+bottom_radius = 0.005
+height = 0.12
+radial_segments = 16
+
+[sub_resource type="BoxMesh" id="BoxMesh_ClampProng"]
+material = SubResource("Mat_CastIron")
+size = Vector3(0.024, 0.016, 0.028)
+
+[sub_resource type="StandardMaterial3D" id="Mat_BorosilicateGlass"]
+transparency = 1
+albedo_color = Color(0.94, 0.98, 1.0, 0.14)
+metallic = 0.05
+roughness = 0.03
+refraction_enabled = true
+refraction_scale = 0.018
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_BuretTube"]
+material = SubResource("Mat_BorosilicateGlass")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.58
+radial_segments = 32
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_TopFunnel"]
+material = SubResource("Mat_BorosilicateGlass")
+top_radius = 0.016
+bottom_radius = 0.009
+height = 0.035
+radial_segments = 32
+
+[sub_resource type="StandardMaterial3D" id="Mat_LiquidTitrant"]
+transparency = 1
+albedo_color = Color(0.93, 0.97, 1.0, 0.55)
+roughness = 0.08
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_LiquidColumn"]
+material = SubResource("Mat_LiquidTitrant")
+top_radius = 0.0075
+bottom_radius = 0.0075
+height = 0.50
+radial_segments = 24
+
+[sub_resource type="StandardMaterial3D" id="Mat_PTFE"]
+albedo_color = Color(0.2, 0.55, 0.88, 1)
+metallic = 0.1
+roughness = 0.25
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_StopcockBarrel"]
+material = SubResource("Mat_BorosilicateGlass")
+top_radius = 0.011
+bottom_radius = 0.011
+height = 0.032
+radial_segments = 24
+
+[sub_resource type="BoxMesh" id="BoxMesh_StopcockHandle"]
+material = SubResource("Mat_PTFE")
+size = Vector3(0.038, 0.008, 0.008)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_NeedleTip"]
+material = SubResource("Mat_BorosilicateGlass")
+top_radius = 0.008
+bottom_radius = 0.0018
+height = 0.035
+radial_segments = 16
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_Droplet"]
+direction = Vector3(0, -1, 0)
+spread = 1.0
+initial_velocity_min = 0.3
+initial_velocity_max = 0.6
+gravity = Vector3(0, -9.8, 0)
+scale_min = 0.003
+scale_max = 0.005
+
+[sub_resource type="SphereMesh" id="SphereMesh_Droplet"]
+material = SubResource("Mat_LiquidTitrant")
+radius = 0.004
+height = 0.008
+radial_segments = 12
+rings = 6
+
+[node name="TitrationBuret" type="StaticBody3D" groups=["interactive_apparatus"]]
+script = ExtResource("1_buret_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44, -0.01)
+shape = SubResource("BoxShape_RootCollision")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0.01)
+mesh = SubResource("BoxMesh_RetortBase")
+
+[node name="Rod" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.435, -0.09)
+mesh = SubResource("CylinderMesh_Rod")
+
+[node name="Clamp" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -0.09)
+
+[node name="Bosshead" type="MeshInstance3D" parent="Clamp"]
+mesh = SubResource("BoxMesh_Bosshead")
+
+[node name="Arm" type="MeshInstance3D" parent="Clamp"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.075)
+mesh = SubResource("CylinderMesh_ClampArm")
+
+[node name="Prongs" type="MeshInstance3D" parent="Clamp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+mesh = SubResource("BoxMesh_ClampProng")
+
+[node name="BuretAssembly" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.06)
+
+[node name="BuretTube" type="MeshInstance3D" parent="BuretAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("CylinderMesh_BuretTube")
+
+[node name="TopFunnel" type="MeshInstance3D" parent="BuretAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.855, 0)
+mesh = SubResource("CylinderMesh_TopFunnel")
+
+[node name="LiquidColumn" type="MeshInstance3D" parent="BuretAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51, 0)
+mesh = SubResource("CylinderMesh_LiquidColumn")
+
+[node name="MeniscusMarker" type="Marker3D" parent="BuretAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.76, 0)
+
+[node name="StopcockBarrel" type="MeshInstance3D" parent="BuretAssembly"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.26, 0)
+mesh = SubResource("CylinderMesh_StopcockBarrel")
+
+[node name="NeedleTip" type="MeshInstance3D" parent="BuretAssembly"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0)
+mesh = SubResource("CylinderMesh_NeedleTip")
+
+[node name="StopcockValve" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0.06)
+mesh = SubResource("BoxMesh_StopcockHandle")
+
+[node name="DropEmitter" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0.06)
+emitting = false
+amount = 4
+lifetime = 0.5
+one_shot = true
+process_material = SubResource("ParticleProcessMaterial_Droplet")
+draw_pass_1 = SubResource("SphereMesh_Droplet")
+
+[node name="DropTargetRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0.06)
+target_position = Vector3(0, -0.22, 0)
+collide_with_areas = true
+collide_with_bodies = true
+
+[node name="ReceivingFlaskPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.06)
+
+[node name="GraduationReadout" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.035, 0.52, 0.06)
+pixel_size = 0.0006
+modulate = Color(0.15, 0.92, 0.95, 1)
+outline_modulate = Color(0, 0.15, 0.2, 0.8)
+text = "Buret:  0.00 mL\nDelivered:  0.00 mL"
+font_size = 20
+outline_size = 2
+horizontal_alignment = 0
+
+[node name="AudioDrip" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0.06)
+stream = ExtResource("2_audio_drip")
+volume_db = -8.0
+
+[node name="AudioValve" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0.06)
+stream = ExtResource("3_audio_valve")
+volume_db = -6.0

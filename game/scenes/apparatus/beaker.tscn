@@ -1,0 +1,174 @@
+[gd_scene load_steps=18 format=3 uid="uid://chemlab_beaker_400ml"]
+
+[ext_resource type="Script" path="res://scenes/apparatus/beaker.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/glass_shader.gdshader" id="2_glass_shader"]
+[ext_resource type="Shader" path="res://shaders/liquid_shader.gdshader" id="3_liquid_shader"]
+[ext_resource type="AudioStream" path="res://audio/sfx_liquid_pour.wav" id="4_audio_pour"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_root"]
+height = 0.11
+radius = 0.039
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glass"]
+render_priority = 0
+shader = ExtResource("2_glass_shader")
+shader_parameter/glass_color = Color(0.96, 0.98, 1, 0.08)
+shader_parameter/roughness = 0.015
+shader_parameter/ior = 1.458
+shader_parameter/fresnel_power = 4.0
+shader_parameter/refraction_strength = 0.035
+shader_parameter/dispersion = 0.004
+shader_parameter/rim_intensity = 0.85
+shader_parameter/rim_color = Color(1, 1, 1, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
+material = SubResource("ShaderMaterial_glass")
+top_radius = 0.038
+bottom_radius = 0.038
+height = 0.11
+radial_segments = 32
+rings = 4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_spout"]
+material = SubResource("ShaderMaterial_glass")
+top_radius = 0.01
+bottom_radius = 0.006
+height = 0.01
+radial_segments = 16
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grad"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.65)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_grad_ring"]
+material = SubResource("StandardMaterial3D_grad")
+top_radius = 0.0383
+bottom_radius = 0.0383
+height = 0.0008
+radial_segments = 32
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_liquid"]
+render_priority = 1
+shader = ExtResource("3_liquid_shader")
+shader_parameter/fill_amount = 0.0
+shader_parameter/liquid_color = Color(0.9, 0.95, 1, 0.2)
+shader_parameter/turbidity = 0.0
+shader_parameter/meniscus_curvature = 0.025
+shader_parameter/wave_amplitude = 0.008
+shader_parameter/container_height = 0.11
+shader_parameter/container_radius = 0.038
+shader_parameter/wave_speed = 3.5
+shader_parameter/roughness = 0.02
+shader_parameter/ior = 1.333
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_liquid"]
+material = SubResource("ShaderMaterial_liquid")
+top_radius = 0.0365
+bottom_radius = 0.0365
+height = 0.105
+radial_segments = 32
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_recipient"]
+height = 0.03
+radius = 0.038
+
+[node name="Beaker" type="RigidBody3D" groups=["apparatus", "glassware", "interactable", "interactive_apparatus"]]
+collision_layer = 1
+collision_mask = 1
+mass = 0.135
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.055, 0)
+shape = SubResource("CylinderShape3D_root")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.055, 0)
+mesh = SubResource("CylinderMesh_body")
+
+[node name="SpoutMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0.11, -0.037)
+mesh = SubResource("CylinderMesh_spout")
+
+[node name="Graduations" type="Node3D" parent="."]
+
+[node name="Mark_100ml" type="MeshInstance3D" parent="Graduations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0275, 0)
+mesh = SubResource("CylinderMesh_grad_ring")
+
+[node name="Label_100ml" type="Label3D" parent="Graduations/Mark_100ml"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.039)
+pixel_size = 0.0003
+text = "100"
+font_size = 14
+outline_size = 0
+
+[node name="Mark_200ml" type="MeshInstance3D" parent="Graduations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.055, 0)
+mesh = SubResource("CylinderMesh_grad_ring")
+
+[node name="Label_200ml" type="Label3D" parent="Graduations/Mark_200ml"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.039)
+pixel_size = 0.0003
+text = "200"
+font_size = 14
+outline_size = 0
+
+[node name="Mark_300ml" type="MeshInstance3D" parent="Graduations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0825, 0)
+mesh = SubResource("CylinderMesh_grad_ring")
+
+[node name="Label_300ml" type="Label3D" parent="Graduations/Mark_300ml"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.039)
+pixel_size = 0.0003
+text = "300"
+font_size = 14
+outline_size = 0
+
+[node name="Mark_400ml" type="MeshInstance3D" parent="Graduations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.102, 0)
+mesh = SubResource("CylinderMesh_grad_ring")
+
+[node name="Label_400ml" type="Label3D" parent="Graduations/Mark_400ml"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.039)
+pixel_size = 0.0003
+text = "400 mL"
+font_size = 14
+outline_size = 0
+
+[node name="LiquidVolume" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0525, 0)
+mesh = SubResource("CylinderMesh_liquid")
+
+[node name="PourMouth" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, -0.04)
+
+[node name="PourRay" type="RayCast3D" parent="PourMouth"]
+target_position = Vector3(0, -0.45, 0)
+collision_mask = 3
+collide_with_areas = true
+
+[node name="PourStream" type="CPUParticles3D" parent="PourMouth"]
+emitting = false
+amount = 16
+lifetime = 0.35
+emission_shape = 1
+emission_sphere_radius = 0.005
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 0.2
+initial_velocity_max = 0.5
+
+[node name="RecipientArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.105, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RecipientArea"]
+shape = SubResource("CylinderShape3D_recipient")
+
+[node name="AudioPour" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_audio_pour")
+volume_db = -6.0
+unit_size = 5.0
+max_distance = 15.0

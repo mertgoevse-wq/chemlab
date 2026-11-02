@@ -1,0 +1,188 @@
+[gd_scene load_steps=2 format=3 uid="uid://bu8qv4lkmg1p0"]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_overlay.gd" id="1_quest_overlay_script"]
+
+[node name="QuestOverlay" type="CanvasLayer" node_paths=PackedStringArray("quest_card_panel", "quest_title_label", "quest_tier_label", "objectives_container", "safety_meter_bar", "safety_score_label", "safety_grade_label", "warning_banner_panel", "warning_title_label", "warning_msg_label", "warning_osha_label", "celebration_modal", "celebration_title_label", "celebration_xp_label", "celebration_stars_label", "celebration_continue_btn")]
+script = ExtResource("1_quest_overlay_script")
+quest_card_panel = NodePath("RootControl/QuestCard")
+quest_title_label = NodePath("RootControl/QuestCard/VBox/Header/TitleLabel")
+quest_tier_label = NodePath("RootControl/QuestCard/VBox/Header/TierLabel")
+objectives_container = NodePath("RootControl/QuestCard/VBox/ObjectivesContainer")
+safety_meter_bar = NodePath("RootControl/TopBar/SafetyPanel/HBox/SafetyBar")
+safety_score_label = NodePath("RootControl/TopBar/SafetyPanel/HBox/ScoreLabel")
+safety_grade_label = NodePath("RootControl/TopBar/SafetyPanel/HBox/GradeLabel")
+warning_banner_panel = NodePath("RootControl/WarningBanner")
+warning_title_label = NodePath("RootControl/WarningBanner/VBox/WarningTitle")
+warning_msg_label = NodePath("RootControl/WarningBanner/VBox/WarningMessage")
+warning_osha_label = NodePath("RootControl/WarningBanner/VBox/WarningOsha")
+celebration_modal = NodePath("RootControl/CelebrationModal")
+celebration_title_label = NodePath("RootControl/CelebrationModal/VBox/Title")
+celebration_xp_label = NodePath("RootControl/CelebrationModal/VBox/XPLabel")
+celebration_stars_label = NodePath("RootControl/CelebrationModal/VBox/StarsLabel")
+celebration_continue_btn = NodePath("RootControl/CelebrationModal/VBox/ContinueBtn")
+
+[node name="RootControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="RootControl"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = 56.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="SafetyPanel" type="PanelContainer" parent="RootControl/TopBar"]
+custom_minimum_size = Vector2(420, 40)
+layout_mode = 2
+
+[node name="HBox" type="HBoxContainer" parent="RootControl/TopBar/SafetyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="IconLabel" type="Label" parent="RootControl/TopBar/SafetyPanel/HBox"]
+layout_mode = 2
+text = "🛡 OSHA:"
+
+[node name="SafetyBar" type="ProgressBar" parent="RootControl/TopBar/SafetyPanel/HBox"]
+custom_minimum_size = Vector2(160, 16)
+layout_mode = 2
+size_flags_vertical = 4
+step = 1.0
+value = 100.0
+show_percentage = false
+
+[node name="ScoreLabel" type="Label" parent="RootControl/TopBar/SafetyPanel/HBox"]
+custom_minimum_size = Vector2(45, 0)
+layout_mode = 2
+text = "100%"
+
+[node name="GradeLabel" type="Label" parent="RootControl/TopBar/SafetyPanel/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OSHA COMPLIANT"
+
+[node name="QuestCard" type="PanelContainer" parent="RootControl"]
+custom_minimum_size = Vector2(380, 240)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -404.0
+offset_top = 72.0
+offset_right = -24.0
+offset_bottom = 330.0
+grow_horizontal = 0
+
+[node name="VBox" type="VBoxContainer" parent="RootControl/QuestCard"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="RootControl/QuestCard/VBox"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="RootControl/QuestCard/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Orientation & Safety Protocols"
+
+[node name="TierLabel" type="Label" parent="RootControl/QuestCard/VBox/Header"]
+layout_mode = 2
+text = "Tier 1: Basic"
+
+[node name="HSeparator" type="HSeparator" parent="RootControl/QuestCard/VBox"]
+layout_mode = 2
+
+[node name="ObjectivesContainer" type="VBoxContainer" parent="RootControl/QuestCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="WarningBanner" type="PanelContainer" parent="RootControl"]
+visible = false
+custom_minimum_size = Vector2(600, 70)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 80.0
+offset_right = 300.0
+offset_bottom = 150.0
+grow_horizontal = 2
+
+[node name="VBox" type="VBoxContainer" parent="RootControl/WarningBanner"]
+layout_mode = 2
+
+[node name="WarningTitle" type="Label" parent="RootControl/WarningBanner/VBox"]
+layout_mode = 2
+text = "⚠ OSHA 1910.133 Violation"
+
+[node name="WarningMessage" type="Label" parent="RootControl/WarningBanner/VBox"]
+layout_mode = 2
+text = "Chemical splash goggles must be equipped before operating instruments!"
+autowrap_mode = 3
+
+[node name="WarningOsha" type="Label" parent="RootControl/WarningBanner/VBox"]
+layout_mode = 2
+text = "Ref: 29 CFR 1910.133(a)(1)"
+
+[node name="CelebrationModal" type="PanelContainer" parent="RootControl"]
+visible = false
+custom_minimum_size = Vector2(460, 260)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -130.0
+offset_right = 230.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="RootControl/CelebrationModal"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="RootControl/CelebrationModal/VBox"]
+layout_mode = 2
+text = "QUEST COMPLETE!
+Orientation & Safety Protocols"
+horizontal_alignment = 1
+
+[node name="StarsLabel" type="Label" parent="RootControl/CelebrationModal/VBox"]
+layout_mode = 2
+text = "★ ★ ★"
+horizontal_alignment = 1
+
+[node name="XPLabel" type="Label" parent="RootControl/CelebrationModal/VBox"]
+layout_mode = 2
+text = "+500 XP"
+horizontal_alignment = 1
+
+[node name="ContinueBtn" type="Button" parent="RootControl/CelebrationModal/VBox"]
+custom_minimum_size = Vector2(160, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Continue"
+
+[node name="AudioPlayers" type="Node" parent="."]
+
+[node name="SFX_Tick" type="AudioStreamPlayer" parent="AudioPlayers"]
+
+[node name="SFX_Warning" type="AudioStreamPlayer" parent="AudioPlayers"]
+
+[node name="SFX_Fanfare" type="AudioStreamPlayer" parent="AudioPlayers"]

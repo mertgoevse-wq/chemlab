@@ -1,0 +1,214 @@
+[gd_scene load_steps=22 format=3 uid="uid://d2x7analyticalbalance001"]
+
+[ext_resource type="Script" path="res://scenes/apparatus/analytical_balance.gd" id="1_balance_script"]
+[ext_resource type="AudioStream" path="res://audio/sfx_balance_beep.wav" id="2_audio_beep"]
+[ext_resource type="AudioStream" path="res://audio/sfx_glass_slide.wav" id="3_audio_door"]
+
+[sub_resource type="BoxShape3D" id="BoxShape_RootCollision"]
+size = Vector3(0.24, 0.32, 0.34)
+
+[sub_resource type="StandardMaterial3D" id="Mat_CastAluminum"]
+albedo_color = Color(0.84, 0.86, 0.88, 1)
+metallic = 0.65
+roughness = 0.35
+
+[sub_resource type="BoxMesh" id="BoxMesh_BaseHousing"]
+material = SubResource("Mat_CastAluminum")
+size = Vector3(0.22, 0.06, 0.32)
+
+[sub_resource type="BoxMesh" id="BoxMesh_RearTower"]
+material = SubResource("Mat_CastAluminum")
+size = Vector3(0.22, 0.24, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_RoofCap"]
+material = SubResource("Mat_CastAluminum")
+size = Vector3(0.22, 0.015, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Pillar"]
+material = SubResource("Mat_CastAluminum")
+size = Vector3(0.008, 0.24, 0.008)
+
+[sub_resource type="StandardMaterial3D" id="Mat_StainlessSteel"]
+albedo_color = Color(0.92, 0.94, 0.96, 1)
+metallic = 0.95
+roughness = 0.15
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_WeighingPan"]
+material = SubResource("Mat_StainlessSteel")
+top_radius = 0.045
+bottom_radius = 0.045
+height = 0.005
+radial_segments = 32
+
+[sub_resource type="StandardMaterial3D" id="Mat_ShieldGlass"]
+transparency = 1
+albedo_color = Color(0.94, 0.98, 1, 0.18)
+metallic = 0.1
+roughness = 0.04
+refraction_enabled = true
+refraction_scale = 0.02
+
+[sub_resource type="BoxMesh" id="BoxMesh_FrontGlass"]
+material = SubResource("Mat_ShieldGlass")
+size = Vector3(0.188, 0.238, 0.003)
+
+[sub_resource type="BoxMesh" id="BoxMesh_SideGlass"]
+material = SubResource("Mat_ShieldGlass")
+size = Vector3(0.003, 0.238, 0.18)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Handle"]
+material = SubResource("Mat_StainlessSteel")
+top_radius = 0.003
+bottom_radius = 0.003
+height = 0.03
+radial_segments = 16
+
+[sub_resource type="BoxMesh" id="BoxMesh_TopGlass"]
+material = SubResource("Mat_ShieldGlass")
+size = Vector3(0.188, 0.003, 0.18)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape_WeighingPanArea"]
+height = 0.18
+radius = 0.055
+
+[sub_resource type="StandardMaterial3D" id="Mat_DisplayBezel"]
+albedo_color = Color(0.04, 0.06, 0.07, 1)
+metallic = 0.2
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_DisplayBezel"]
+material = SubResource("Mat_DisplayBezel")
+size = Vector3(0.19, 0.035, 0.002)
+
+[sub_resource type="StandardMaterial3D" id="Mat_TareButton"]
+albedo_color = Color(0.15, 0.75, 0.85, 1)
+metallic = 0.8
+roughness = 0.25
+emission_enabled = true
+emission = Color(0, 0.4, 0.5, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_TareButton"]
+material = SubResource("Mat_TareButton")
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.005
+radial_segments = 24
+
+[node name="AnalyticalBalance" type="StaticBody3D" groups=["interactive_apparatus"]]
+script = ExtResource("1_balance_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0.02)
+shape = SubResource("BoxShape_RootCollision")
+
+[node name="BaseHousing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0.02)
+mesh = SubResource("BoxMesh_BaseHousing")
+
+[node name="RearTower" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, -0.1)
+mesh = SubResource("BoxMesh_RearTower")
+
+[node name="RoofCap" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3075, 0.02)
+mesh = SubResource("BoxMesh_RoofCap")
+
+[node name="Pillars" type="Node3D" parent="."]
+
+[node name="PillarFL" type="MeshInstance3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.096, 0.18, 0.116)
+mesh = SubResource("BoxMesh_Pillar")
+
+[node name="PillarFR" type="MeshInstance3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.096, 0.18, 0.116)
+mesh = SubResource("BoxMesh_Pillar")
+
+[node name="PillarBL" type="MeshInstance3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.096, 0.18, -0.058)
+mesh = SubResource("BoxMesh_Pillar")
+
+[node name="PillarBR" type="MeshInstance3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.096, 0.18, -0.058)
+mesh = SubResource("BoxMesh_Pillar")
+
+[node name="WeighingPan" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.063, 0.02)
+mesh = SubResource("CylinderMesh_WeighingPan")
+
+[node name="DraftShield" type="Node3D" parent="."]
+
+[node name="FrontGlass" type="MeshInstance3D" parent="DraftShield"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0.118)
+mesh = SubResource("BoxMesh_FrontGlass")
+
+[node name="DoorLeft" type="Node3D" parent="DraftShield"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.098, 0.18, 0.029)
+
+[node name="DoorMesh" type="MeshInstance3D" parent="DraftShield/DoorLeft"]
+mesh = SubResource("BoxMesh_SideGlass")
+
+[node name="Handle" type="MeshInstance3D" parent="DraftShield/DoorLeft"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.006, 0, 0.075)
+mesh = SubResource("CylinderMesh_Handle")
+
+[node name="DoorRight" type="Node3D" parent="DraftShield"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.098, 0.18, 0.029)
+
+[node name="DoorMesh" type="MeshInstance3D" parent="DraftShield/DoorRight"]
+mesh = SubResource("BoxMesh_SideGlass")
+
+[node name="Handle" type="MeshInstance3D" parent="DraftShield/DoorRight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.006, 0, 0.075)
+mesh = SubResource("CylinderMesh_Handle")
+
+[node name="DoorTop" type="Node3D" parent="DraftShield"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.298, 0.029)
+
+[node name="DoorMesh" type="MeshInstance3D" parent="DraftShield/DoorTop"]
+mesh = SubResource("BoxMesh_TopGlass")
+
+[node name="Handle" type="MeshInstance3D" parent="DraftShield/DoorTop"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.006, 0.075)
+mesh = SubResource("CylinderMesh_Handle")
+
+[node name="WeighingPanArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.155, 0.02)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeighingPanArea"]
+shape = SubResource("CylinderShape_WeighingPanArea")
+
+[node name="DisplayBezel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.048, 0.165)
+mesh = SubResource("BoxMesh_DisplayBezel")
+
+[node name="DigitalDisplay" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, -0.018, 0.049, 0.166)
+pixel_size = 0.0009
+modulate = Color(0.08, 1, 0.82, 1)
+outline_modulate = Color(0, 0.25, 0.2, 0.8)
+text = "*   0.0000 g"
+font_size = 28
+outline_size = 3
+horizontal_alignment = 0
+
+[node name="TareButton" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.422618, -0.906308, 0, 0.906308, 0.422618, 0.078, 0.049, 0.166)
+mesh = SubResource("CylinderMesh_TareButton")
+
+[node name="TareLabel" type="Label3D" parent="TareButton"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.004, 0)
+pixel_size = 0.0006
+text = "TARE"
+font_size = 18
+outline_size = 2
+
+[node name="AudioBeep" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.16)
+stream = ExtResource("2_audio_beep")
+volume_db = -6.0
+
+[node name="AudioDoor" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0.02)
+stream = ExtResource("3_audio_door")
+volume_db = -8.0
