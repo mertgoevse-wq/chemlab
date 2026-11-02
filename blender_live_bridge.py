@@ -33,6 +33,8 @@ except (ImportError, ModuleNotFoundError):
         host: str = "127.0.0.1"
         port: int = 8765
         timeout_seconds: float = 5.0
+        command_timeout_seconds: float = 10.0
+        buffer_size: int = 8192
 
     class _SceneConfig:
         default_project_path: str = r"C:\Users\Win11 Pro\Desktop\chemlab\chemlab.blend"
@@ -251,6 +253,8 @@ def _handle_client(client_sock: socket.socket) -> None:
             if task["completed"]
             else {"status": "error", "error": f"Task timed out after {timeout}s"}
         )
+        if isinstance(response, dict) and "request_id" not in response:
+            response["request_id"] = json_data.get("request_id")
 
         response_bytes = (json.dumps(response) + "\n").encode("utf-8")
         client_sock.sendall(response_bytes)
