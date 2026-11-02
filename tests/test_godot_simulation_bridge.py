@@ -59,10 +59,28 @@ def test_reaction_evaluator_species_database_coverage():
 
     # Check essential species required by ChemLab curriculum
     essential = [
-        "H2O", "HCl_aq", "NaOH_aq", "NaCl_aq", "H2SO4_aq", "HNO3_aq", "NH3_aq",
-        "CuSO4_aq", "H2O2_aq", "O2_gas", "CO2_gas", "KMnO4_s", "KI_aq",
-        "salicylic_acid", "acetic_anhydride", "aspirin", "acetic_acid",
-        "paracetamol", "ethanol", "diethyl_ether", "AgCl_s", "phenolphthalein"
+        "H2O",
+        "HCl_aq",
+        "NaOH_aq",
+        "NaCl_aq",
+        "H2SO4_aq",
+        "HNO3_aq",
+        "NH3_aq",
+        "CuSO4_aq",
+        "H2O2_aq",
+        "O2_gas",
+        "CO2_gas",
+        "KMnO4_s",
+        "KI_aq",
+        "salicylic_acid",
+        "acetic_anhydride",
+        "aspirin",
+        "acetic_acid",
+        "paracetamol",
+        "ethanol",
+        "diethyl_ether",
+        "AgCl_s",
+        "phenolphthalein",
     ]
     for sp in essential:
         assert sp in species_keys, f"Missing essential species: {sp}"
@@ -76,7 +94,10 @@ def test_simulation_bridge_architecture():
     assert "extends Node" in content
 
     # Check Dual-Engine Enum
-    assert "enum EngineMode { IPC_CONNECTED, EMBEDDED_FALLBACK, IPC_CONNECTING, IPC_FAILED }" in content
+    assert (
+        "enum EngineMode { IPC_CONNECTED, EMBEDDED_FALLBACK, IPC_CONNECTING, IPC_FAILED }"
+        in content
+    )
     assert "enum ReactionType" in content
 
     # Required API methods from prompt specification
@@ -120,6 +141,7 @@ def test_neutralization_thermodynamics_math():
 
 def test_henderson_hasselbalch_math():
     """Verify Henderson-Hasselbalch equation and edge case handling."""
+
     def hh_ph(pka: float, conc_base: float, conc_acid: float) -> float:
         if conc_acid <= 0.0 and conc_base <= 0.0:
             return 7.0
@@ -152,10 +174,11 @@ def test_henderson_hasselbalch_math():
 
 def test_phenolphthalein_equilibrium_colors():
     """Test phenolphthalein color zones:
-       - colorless at pH < 8.2
-       - faint pink at 8.2 <= pH < 9.0
-       - vibrant magenta at pH >= 9.0
+    - colorless at pH < 8.2
+    - faint pink at 8.2 <= pH < 9.0
+    - vibrant magenta at pH >= 9.0
     """
+
     def eval_color(ph: float):
         if ph < 8.2:
             return (1.0, 1.0, 1.0, 0.0)  # Colorless
