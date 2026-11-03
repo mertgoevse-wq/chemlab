@@ -4,9 +4,8 @@ Compliant with Globally Harmonized System of Classification and Labelling of Che
 and OSHA Hazard Communication Standard (29 CFR 1910.1200).
 """
 
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Optional, Tuple
+from enum import Enum
 
 
 class GHSClass(str, Enum):
@@ -71,21 +70,21 @@ class ChemicalProfile:
     molar_mass: float  # g/mol
     density: float  # g/cm^3 or g/mL
     boiling_point_c: float  # Celsius
-    flash_point_c: Optional[float] = None  # Celsius
-    autoignition_temp_c: Optional[float] = None  # Celsius
+    flash_point_c: float | None = None  # Celsius
+    autoignition_temp_c: float | None = None  # Celsius
     vapor_pressure_kpa_20c: float = 0.0  # kPa at 20 C
     is_volatile: bool = False
     is_acid: bool = False
     is_base: bool = False
-    acid_pka: Optional[float] = None
-    hazard_classes: Set[GHSClass] = field(default_factory=set)
+    acid_pka: float | None = None
+    hazard_classes: set[GHSClass] = field(default_factory=set)
     signal_word: SignalWord = SignalWord.NONE
-    pictograms: List[GHSPictogram] = field(default_factory=list)
-    h_statements: List[str] = field(default_factory=list)
-    p_statements: List[str] = field(default_factory=list)
+    pictograms: list[GHSPictogram] = field(default_factory=list)
+    h_statements: list[str] = field(default_factory=list)
+    p_statements: list[str] = field(default_factory=list)
     storage_group: StorageGroup = StorageGroup.GENERAL_STORAGE
-    incompatible_with: List[str] = field(default_factory=list)
-    antoine_coefficients: Tuple[float, float, float] = (0.0, 0.0, 0.0)  # (A, B, C) for log10(P_mmHg) = A - B/(T+C)
+    incompatible_with: list[str] = field(default_factory=list)
+    antoine_coefficients: tuple[float, float, float] = (0.0, 0.0, 0.0)  # (A, B, C) for log10(P_mmHg) = A - B/(T+C)
 
     def calculate_vapor_pressure_kpa(self, temp_c: float) -> float:
         """Calculate vapor pressure using Antoine equation in kPa."""
@@ -102,7 +101,7 @@ class ChemicalProfile:
 
 
 # Master Chemical Catalog for the Laboratory Simulation
-CHEMICAL_DATABASE: Dict[str, ChemicalProfile] = {
+CHEMICAL_DATABASE: dict[str, ChemicalProfile] = {
     "hydrochloric_acid": ChemicalProfile(
         id="hydrochloric_acid",
         name="Hydrochloric Acid 37%",
@@ -448,9 +447,9 @@ CHEMICAL_DATABASE: Dict[str, ChemicalProfile] = {
 class IncompatibilityResult:
     compatible: bool
     risk_level: str  # "NONE", "LOW", "MODERATE", "SEVERE", "CRITICAL"
-    reaction_type: Optional[str] = None
-    hazard_description: Optional[str] = None
-    byproducts: List[str] = field(default_factory=list)
+    reaction_type: str | None = None
+    hazard_description: str | None = None
+    byproducts: list[str] = field(default_factory=list)
 
 
 def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> IncompatibilityResult:
@@ -545,7 +544,7 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
     return IncompatibilityResult(compatible=True, risk_level="NONE")
 
 
-def get_chemical_sds(chemical_id: str) -> Dict[str, object]:
+def get_chemical_sds(chemical_id: str) -> dict[str, object]:
     """Generates an OSHA 16-section compliant summary Safety Data Sheet (SDS)."""
     chem = CHEMICAL_DATABASE.get(chemical_id)
     if not chem:

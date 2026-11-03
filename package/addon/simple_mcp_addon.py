@@ -8,18 +8,19 @@ bl_info = {
     "category": "Development",
 }
 
-import bpy
-import socket
-import threading
-import json
-import time
 import io
+import json
+import os
 import queue
+import socket
+import tempfile
+import threading
+import time
 import traceback
 import urllib.request
-import os
-import tempfile
-from contextlib import redirect_stdout, redirect_stderr, suppress
+from contextlib import redirect_stderr, redirect_stdout
+
+import bpy
 
 socket_server = None
 server_running = False
@@ -42,7 +43,7 @@ def getSceneInfo():
                 "dimensions": list(obj.dimensions),
             }
             sceneInfo["objects"].append(obj_info)
-        return sceneInfo;
+        return sceneInfo
     except Exception as e:
         print(f"Error getting scene info: {e}")
         return {"error": str(e)}
@@ -68,7 +69,7 @@ def download_and_import_asset(asset_data):
 
         if not blend_url:
            return {"status": "error", "error": "No blend URL provided"}
-        
+
         temp_dir = tempfile.mkdtemp(prefix=f"polyhaven_{asset_name}_")
         print(f"creating temp dir: {temp_dir}")
 
@@ -78,11 +79,11 @@ def download_and_import_asset(asset_data):
         print(f"Downloading blend file from {blend_url} to {blend_filepath}")
         if not download_file(blend_url, blend_filepath):
             return {"status": "error", "error": "Failed to download blend file"}
-        
+
         textures_dir = os.path.join(temp_dir, "textures")
         os.makedirs(textures_dir, exist_ok=True)
 
-        downloaded_textures = [];
+        downloaded_textures = []
         for texture_path, texture_info in includes.items():
             texture_url = texture_info.get("url")
             if(texture_url):
@@ -93,22 +94,22 @@ def download_and_import_asset(asset_data):
                     downloaded_textures.append(texture_file_path)
                 else:
                     return {"status": "error", "error": "Failed to download texture"}
-                
+
         print(f"Importing blend file {blend_filepath}")
         with bpy.data.libraries.load(blend_filepath) as (data_from, data_to):
             data_to.objects = data_from.objects
             data_to.materials = data_from.materials
             data_to.meshes = data_from.meshes
-        
+
         imported_objects = []
         for obj in data_to.objects:
             if obj:
                 bpy.context.collection.objects.link(obj)
                 imported_objects.append(obj.name)
                 print(f"Imported object: {obj.name}")
-        
-        
-        
+
+
+
         return {
             "status": "success",
             "message": f"Asset '{asset_name}' imported successfully",
@@ -120,16 +121,16 @@ def download_and_import_asset(asset_data):
                 "temp_directory": temp_dir
             }
         }
-        
+
     except Exception as e:
         error_msg = f"Error importing asset: {str(e)}"
         print(error_msg)
         traceback.print_exc()
         return {"status": "error", "error": error_msg}
-        
 
 
-    
+
+
 def execute_code_in_main_thread(code):
     """Execute Python code with comprehensive error handling"""
     if not code.strip():
@@ -151,7 +152,7 @@ def execute_code_in_main_thread(code):
                 }
         stdout_output = stdout_capture.getvalue()
         stderr_output = stderr_capture.getvalue()
-    
+
         result = {
             "status": "executed",
             "result": stdout_output,
@@ -195,65 +196,65 @@ class SimpleMCPServer:
         self.port = port
         self.socket = None
         self.running = False
-        
+
     def start_server(self):
         """Start the TCP server"""
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            
+
             self.socket.bind(('localhost', self.port))
             self.socket.listen(1)
-            
+
             self.running = True
             print(f"MCP Server started on port {self.port}")
-            
+
             while self.running:
                 try:
                     client_socket, address = self.socket.accept()
                     print(f"Client connected from {address}")
-                    
+
                     self.handle_client(client_socket)
-                    
-                except socket.error as e:
-                    if self.running:  
+
+                except OSError as e:
+                    if self.running:
                         print(f"Socket error: {e}")
                     break
-                    
+
         except Exception as e:
             print(f"Server error: {e}")
         finally:
             if self.socket:
                 self.socket.close()
-    
+
     def handle_client(self, client_socket):
         buffer = ""
         try:
             client_socket.settimeout(10.0)
-            
+
             while True:
-                
+
                     data = client_socket.recv(1024)
                     if not data:
                         break
-                    
+
                     chunk = data.decode('utf-8')
                     buffer += chunk
                     print(f"Received chunk: {chunk}")
-                    
+
                     try:
                         json_data = json.loads(buffer)
                         print(f"Complete JSON received: {json_data}")
-                        
+
                         response = self.process_message(json_data)
                         client_socket.send((json.dumps(response) + "\n").encode('utf-8'))
                         print("Response sent to client")
                         break
-                        
+
                     except json.JSONDecodeError:
                         continue
-                        
-                
+
+
 
         except Exception as e:
             error_response = {"status": "error", "error": str(e)}
@@ -264,14 +265,14 @@ class SimpleMCPServer:
         finally:
             client_socket.close()
             print("Client disconnected")
-    
+
 
 
     def process_message(self, data):
         """Process the received JSON message"""
         print("=== MCP MESSAGE RECEIVED ===")
         print(f"Full message: {data}")
-        
+
         try:
             msg_type = data.get('type', 'unknown')
             if(msg_type == 'code'):
@@ -285,7 +286,7 @@ class SimpleMCPServer:
         except Exception as e:
             print(f"Error processing message: {e}")
             return {"status": "error", "error": str(e)}
-        
+
     def handle_asset_data(self, data):
         """Handle asset data received from Blender"""
         try:
@@ -297,7 +298,7 @@ class SimpleMCPServer:
                 'result': None
             }
             code_execution_queue.put(task)
-        
+
             timeout = 60.0
             start_time = time.time()
             while not task["completed"] and (time.time() - start_time) < timeout:
@@ -314,7 +315,7 @@ class SimpleMCPServer:
         """Execute Python code with comprehensive error handling"""
         if not code.strip():
             return {"status": "error", "error": "NO code provided"}
-        
+
         task = {
             'type': 'code',
             'code': code,
@@ -332,7 +333,7 @@ class SimpleMCPServer:
             return task["result"]
         else:
             return {"status": "error", "error": "Code execution timed out"}
-        
+
 
     def stop_server(self):
         """Stop the server"""
@@ -346,26 +347,26 @@ class MCP_OT_StartServer(bpy.types.Operator):
     bl_idname = "mcp.start_server"
     bl_label = "Start MCP Server"
     bl_description = "Start listening for MCP messages"
-    
+
     def execute(self, context):
         global socket_server, server_running
-        
+
         if server_running:
             self.report({'WARNING'}, "Server already running!")
             return {'CANCELLED'}
-        
+
         socket_server = SimpleMCPServer(8765)
-        
+
         server_thread = threading.Thread(target=socket_server.start_server)
-        server_thread.daemon = True  
+        server_thread.daemon = True
         server_thread.start()
 
         if not bpy.app.timers.is_registered(process_queue_timer):
             bpy.app.timers.register(process_queue_timer)
-        
+
         server_running = True
         self.report({'INFO'}, "MCP Server started on port 8765")
-        
+
         return {'FINISHED'}
 
 class MCP_OT_StopServer(bpy.types.Operator):
@@ -373,23 +374,23 @@ class MCP_OT_StopServer(bpy.types.Operator):
     bl_idname = "mcp.stop_server"
     bl_label = "Stop MCP Server"
     bl_description = "Stop the MCP server"
-    
+
     def execute(self, context):
         global socket_server, server_running
-        
+
         if not server_running:
             self.report({'WARNING'}, "Server not running!")
             return {'CANCELLED'}
-        
+
         if socket_server:
             socket_server.stop_server()
 
         if bpy.app.timers.is_registered(process_queue_timer):
             bpy.app.timers.unregister(process_queue_timer)
-        
+
         server_running = False
         self.report({'INFO'}, "MCP Server stopped")
-        
+
         return {'FINISHED'}
 
 class MCP_PT_Panel(bpy.types.Panel):
@@ -399,23 +400,23 @@ class MCP_PT_Panel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "MCP"
-    
+
     def draw(self, context):
         layout = self.layout
-        
+
         if server_running:
             layout.label(text="Status: Running on port 8765", icon='PLAY')
             layout.operator("mcp.stop_server", icon='PAUSE')
         else:
             layout.label(text="Status: Stopped", icon='PAUSE')
             layout.operator("mcp.start_server", icon='PLAY')
-        
+
         box = layout.box()
         box.label(text="Instructions:")
         box.label(text="1. Click 'Start MCP Server'")
         box.label(text="2. Send JSON to localhost:8765")
         box.label(text="3. Check Blender console for logs")
-        
+
         box = layout.box()
         box.label(text="Expected JSON format:")
         box.label(text='{"type": "code", "code": "..."}')
@@ -433,13 +434,13 @@ def register():
 
 def unregister():
     global socket_server, server_running
-    
+
     if server_running and socket_server:
         socket_server.stop_server()
 
     if bpy.app.timers.is_registered(process_queue_timer):
         bpy.app.timers.unregister(process_queue_timer)
-    
+
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
     print("Simple MCP addon unregistered")

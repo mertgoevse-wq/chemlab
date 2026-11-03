@@ -9,8 +9,8 @@ and catastrophic BLEVE / glass shrapnel fragmentation events.
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, List, Dict, Tuple
-from .ghs import ChemicalProfile, CHEMICAL_DATABASE, GHSClass
+
+from .ghs import CHEMICAL_DATABASE, ChemicalProfile, GHSClass
 
 
 class VesselType(str, Enum):
@@ -52,7 +52,7 @@ class RuptureReport:
     explosion_energy_joules: float = 0.0
     blast_radius_m: float = 0.0
     shrapnel_count: int = 0
-    fragments: List[ShrapnelFragment] = field(default_factory=list)
+    fragments: list[ShrapnelFragment] = field(default_factory=list)
     fire_flash_hazard: bool = False
 
 
@@ -62,7 +62,7 @@ class StopperPopReport:
     pop_pressure_kpa: float = 0.0
     launch_velocity_mps: float = 0.0
     peak_height_m: float = 0.0
-    trajectory: List[Tuple[float, float, float]] = field(default_factory=list)
+    trajectory: list[tuple[float, float, float]] = field(default_factory=list)
     vapor_jet_volume_liters: float = 0.0
 
 
@@ -131,8 +131,8 @@ class ThermalVesselSimulation:
         self.runaway_detected: bool = False
 
         # Logs & Events
-        self.last_pop_report: Optional[StopperPopReport] = None
-        self.last_rupture_report: Optional[RuptureReport] = None
+        self.last_pop_report: StopperPopReport | None = None
+        self.last_rupture_report: RuptureReport | None = None
 
     def set_heat_source(self, watts: float) -> None:
         """Applies external heating (e.g. Bunsen burner 300W, heating mantle 150W)."""
@@ -297,7 +297,7 @@ class ThermalVesselSimulation:
         total_glass_mass_g = 180.0  # standard flask tare
         num_fragments = 24
         frag_mass_g = total_glass_mass_g / num_fragments
-        fragments: List[ShrapnelFragment] = []
+        fragments: list[ShrapnelFragment] = []
 
         # Approx 20% of energy converts into fragment kinetic energy
         frag_ke_total = 0.20 * explosion_energy_j

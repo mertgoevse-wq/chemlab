@@ -5,8 +5,6 @@ and module_apparatus.py), generating animations, LED state updates, airflow draf
 stopper projectile trajectories, and spill/effervescence visual effects.
 """
 
-import math
-from typing import List, Tuple, Dict, Any, Optional
 
 try:
     import bpy
@@ -14,9 +12,6 @@ try:
 except ImportError:
     BLENDER_AVAILABLE = False
 
-from .fume_hood import FumeHoodSimulation, FumeHoodAlarmState
-from .thermal_runaway import StopperPopReport, RuptureReport
-from .neutralization_drill import NeutralizationState
 
 
 class BlenderSafetyVisualizer:
@@ -75,7 +70,7 @@ if mat_led and mat_led.use_nodes:
         return code
 
     @classmethod
-    def generate_draft_airflow_curves_code(cls, streamlines: List[List[Tuple[float, float, float]]]) -> str:
+    def generate_draft_airflow_curves_code(cls, streamlines: list[list[tuple[float, float, float]]]) -> str:
         """
         Generates Blender Python code to render 3D aerodynamic airflow streamlines as beveled curves
         with glowing blue-white cyan emission shaders.
@@ -122,7 +117,7 @@ for idx, pts in enumerate(streamlines):
         return code
 
     @classmethod
-    def animate_stopper_pop_code(cls, vessel_name: str, trajectory: List[Tuple[float, float, float]], start_frame: int = 1) -> str:
+    def animate_stopper_pop_code(cls, vessel_name: str, trajectory: list[tuple[float, float, float]], start_frame: int = 1) -> str:
         """
         Generates Blender Python code to keyframe a stopper popping out and arcing across the lab.
         """

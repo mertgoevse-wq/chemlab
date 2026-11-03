@@ -8,8 +8,8 @@ and 3D aerodynamic streamline draft fields for animation and real-time visualiza
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Dict, Tuple, Optional
-from .ghs import ChemicalProfile, CHEMICAL_DATABASE
+
+from .ghs import CHEMICAL_DATABASE, ChemicalProfile
 
 
 class FumeHoodMode(str, Enum):
@@ -41,7 +41,7 @@ class AirflowVector3D:
 @dataclass
 class StreamlineParticle:
     id: int
-    trail: List[Tuple[float, float, float]]
+    trail: list[tuple[float, float, float]]
     active: bool = True
     escaped_into_room: bool = False
     age: float = 0.0
@@ -55,8 +55,8 @@ class FumeHoodState:
     face_velocity_mps: float = 0.50  # m/s (normal standard: 0.40 - 0.60 m/s)
     exhaust_flow_rate_m3s: float = 0.35  # m^3/s
     alarm_state: FumeHoodAlarmState = FumeHoodAlarmState.SAFE
-    active_warnings: List[str] = field(default_factory=list)
-    chemicals_inside: List[str] = field(default_factory=list)
+    active_warnings: list[str] = field(default_factory=list)
+    chemicals_inside: list[str] = field(default_factory=list)
     vapor_leakage_rate_g_s: float = 0.0
     containment_efficiency: float = 1.0  # 1.0 = 100% containment, <0.95 = hazardous leak
 
@@ -85,7 +85,7 @@ class FumeHoodSimulation:
         self.center_x = center_x
         self.center_y = center_y
         self.state = FumeHoodState()
-        self.particles: List[StreamlineParticle] = []
+        self.particles: list[StreamlineParticle] = []
         self._next_particle_id = 1
         self.update(dt=0.0)
 
@@ -93,7 +93,7 @@ class FumeHoodSimulation:
         """Sets sash opening height clamped between 0.0 and MAX_SASH_HEIGHT."""
         self.state.sash_height_m = max(0.02, min(height_m, self.MAX_SASH_HEIGHT))
 
-    def toggle_purge(self, enable: Optional[bool] = None) -> bool:
+    def toggle_purge(self, enable: bool | None = None) -> bool:
         """Toggles or sets the Emergency Purge high-flow exhaust mode."""
         if enable is None:
             self.state.purge_active = not self.state.purge_active
@@ -111,7 +111,7 @@ class FumeHoodSimulation:
         if chemical_id in self.state.chemicals_inside:
             self.state.chemicals_inside.remove(chemical_id)
 
-    def has_volatile_chemicals(self) -> List[ChemicalProfile]:
+    def has_volatile_chemicals(self) -> list[ChemicalProfile]:
         """Returns list of volatile or toxic chemicals currently in the fume hood."""
         found = []
         for cid in self.state.chemicals_inside:
@@ -250,7 +250,7 @@ class FumeHoodSimulation:
         else:
             return AirflowVector3D(x=x, y=y, z=z, vx=0.0, vy=0.0, vz=0.0, magnitude=0.0)
 
-    def generate_draft_streamlines(self, num_streamlines: int = 24, steps: int = 50, dt: float = 0.04) -> List[List[Tuple[float, float, float]]]:
+    def generate_draft_streamlines(self, num_streamlines: int = 24, steps: int = 50, dt: float = 0.04) -> list[list[tuple[float, float, float]]]:
         """
         Generates 3D streamline coordinate paths for animation keyframing in Blender or particle systems in Godot.
         Returns a list of streamline polylines (list of (x,y,z) points in world space).

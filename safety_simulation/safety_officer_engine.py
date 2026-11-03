@@ -4,41 +4,21 @@ Coordinates GHS hazard management, fume hood ventilation, thermal runaway & pres
 neutralization drills, emergency eyewash/shower stations, and real-time laboratory telemetry.
 """
 
-from typing import Dict, List, Optional, Callable, Any
-from dataclasses import dataclass, field
-import json
 import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any
 
-from .ghs import (
-    CHEMICAL_DATABASE,
-    ChemicalProfile,
-    GHSClass,
-    check_chemical_compatibility,
-    IncompatibilityResult,
-    get_chemical_sds
-)
-from .fume_hood import (
-    FumeHoodSimulation,
-    FumeHoodState,
-    FumeHoodMode,
-    FumeHoodAlarmState
-)
-from .thermal_runaway import (
-    ThermalVesselSimulation,
-    VesselState,
-    VesselType,
-    ReliefType,
-    StopperPopReport,
-    RuptureReport
-)
+from .fume_hood import FumeHoodAlarmState, FumeHoodMode, FumeHoodSimulation, FumeHoodState
+from .ghs import IncompatibilityResult, check_chemical_compatibility, get_chemical_sds
 from .neutralization_drill import (
     AcidSpillNeutralizationDrill,
-    EmergencyShowerEyewashDrill,
     DrillScoreReport,
+    EmergencyShowerEyewashDrill,
     ExposureType,
-    StationType,
-    SpillLocation
+    SpillLocation,
 )
+from .thermal_runaway import ReliefType, ThermalVesselSimulation, VesselState, VesselType
 
 
 @dataclass
@@ -47,7 +27,7 @@ class SafetyIncidentEvent:
     event_type: str
     severity: str  # "INFO", "WARNING", "CRITICAL", "CATASTROPHIC"
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class ChemicalSafetyOfficerEngine:
@@ -58,16 +38,16 @@ class ChemicalSafetyOfficerEngine:
 
     def __init__(self):
         # Subsystems
-        self.fume_hoods: Dict[str, FumeHoodSimulation] = {
+        self.fume_hoods: dict[str, FumeHoodSimulation] = {
             "hood_primary": FumeHoodSimulation(mode=FumeHoodMode.VAV, center_x=-2.2, center_y=3.35)
         }
-        self.vessels: Dict[str, ThermalVesselSimulation] = {}
-        self.active_spills: Dict[str, AcidSpillNeutralizationDrill] = {}
-        self.active_drills: Dict[str, EmergencyShowerEyewashDrill] = {}
+        self.vessels: dict[str, ThermalVesselSimulation] = {}
+        self.active_spills: dict[str, AcidSpillNeutralizationDrill] = {}
+        self.active_drills: dict[str, EmergencyShowerEyewashDrill] = {}
 
         # Event bus & Incident log
-        self.event_log: List[SafetyIncidentEvent] = []
-        self._listeners: List[Callable[[SafetyIncidentEvent], None]] = []
+        self.event_log: list[SafetyIncidentEvent] = []
+        self._listeners: list[Callable[[SafetyIncidentEvent], None]] = []
 
         # Overall Laboratory Safety Status
         self.emergency_alarm_active: bool = False
@@ -77,7 +57,7 @@ class ChemicalSafetyOfficerEngine:
         """Subscribes a callback to safety events (alarms, pop events, spills, etc.)."""
         self._listeners.append(listener)
 
-    def dispatch_event(self, event_type: str, severity: str, message: str, details: Optional[Dict[str, Any]] = None) -> SafetyIncidentEvent:
+    def dispatch_event(self, event_type: str, severity: str, message: str, details: dict[str, Any] | None = None) -> SafetyIncidentEvent:
         event = SafetyIncidentEvent(
             timestamp=time.time(),
             event_type=event_type,
@@ -109,7 +89,7 @@ class ChemicalSafetyOfficerEngine:
             )
         return result
 
-    def get_sds(self, chemical_id: str) -> Dict[str, Any]:
+    def get_sds(self, chemical_id: str) -> dict[str, Any]:
         """Returns standard OSHA Safety Data Sheet summary."""
         return get_chemical_sds(chemical_id)
 
@@ -285,7 +265,7 @@ class ChemicalSafetyOfficerEngine:
     # =========================================================================
     # 5. SIMULATION TICK LOOP & TELEMETRY
     # =========================================================================
-    def tick(self, dt: float = 0.1) -> Dict[str, Any]:
+    def tick(self, dt: float = 0.1) -> dict[str, Any]:
         """
         Advances the global lab simulation by dt seconds.
         Updates all vessels, fume hoods, and drills.
@@ -329,7 +309,7 @@ class ChemicalSafetyOfficerEngine:
 
         return self.get_telemetry()
 
-    def get_telemetry(self) -> Dict[str, Any]:
+    def get_telemetry(self) -> dict[str, Any]:
         """Returns complete serializable snapshot of the chemical laboratory safety state."""
         hood_data = {}
         for h_id, h in self.fume_hoods.items():

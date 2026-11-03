@@ -7,8 +7,8 @@ and ANSI Z358.1 compliant Emergency Eyewash and Safety Deluge Shower drills.
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Dict, Optional, Tuple
-from .ghs import ChemicalProfile, CHEMICAL_DATABASE
+
+from .ghs import CHEMICAL_DATABASE
 
 
 class SpillLocation(str, Enum):
@@ -52,7 +52,7 @@ class DrillScoreReport:
     passed: bool
     score_percentage: float
     ansi_compliant: bool
-    feedback_notes: List[str] = field(default_factory=list)
+    feedback_notes: list[str] = field(default_factory=list)
     injury_severity_score: float = 0.0  # 0.0 = completely unharmed, 100.0 = irreversible necrosis/blindness
 
 
@@ -107,7 +107,7 @@ class AcidSpillNeutralizationDrill:
         )
 
         self.spill_spread_area_m2 = round(self.volume_liters * 1.8, 2)
-        self.powder_dispersion_steps: List[float] = []
+        self.powder_dispersion_steps: list[float] = []
 
     def apply_sodium_bicarbonate(self, grams: float) -> NeutralizationState:
         """
@@ -230,7 +230,7 @@ class EmergencyShowerEyewashDrill:
 
         # Incident status
         self.time_to_reach_station_s: float = 0.0
-        self.activated_station: Optional[StationType] = None
+        self.activated_station: StationType | None = None
         self.flush_duration_seconds: float = 0.0
         self.clothing_removed: bool = False
         self.water_temp_c: float = 21.0  # Tepid water range (16 - 38 C)
@@ -317,7 +317,7 @@ class EmergencyShowerEyewashDrill:
                 "Subsurface caustic absorption may continue without full 15-minute irrigation."
             )
         else:
-            feedback.append(f"FULL IRRIGATION: Completed required 15-minute (900s) continuous flush.")
+            feedback.append("FULL IRRIGATION: Completed required 15-minute (900s) continuous flush.")
 
         injury_score = max(0.0, min(100.0, round(injury_score, 1)))
         final_score = max(0.0, min(100.0, round(score, 1)))
