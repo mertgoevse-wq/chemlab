@@ -9,10 +9,14 @@ extends Node
 # =============================================================================
 
 enum EngineMode { IPC_CONNECTED, EMBEDDED_FALLBACK, IPC_CONNECTING, IPC_FAILED }
+enum IPCTransportMode { TCP, NAMED_PIPE }
 enum ReactionType { NONE, ACID_BASE_NEUTRALIZATION, PRECIPITATION, CATALYTIC_DECOMPOSITION, OSCILLATING, REDOX, COMPLEXATION, THERMAL_DECOMPOSITION }
 
+# --- IPC transport configuration (per ARCHITECTURE.md §4.1) ---
 const IPC_HOST: String = "127.0.0.1"
 const IPC_PORT: int = 8765
+const IPC_NAMED_PIPE_PATH: String = "\\\\.\\pipe\\chemlab_core"
+const IPC_TRANSPORT_MODE: IPCTransportMode = IPCTransportMode.TCP  # TCP preferred; NAMED_PIPE on Windows
 const IPC_TIMEOUT_MS: int = 5000
 const MAX_RECONNECT_ATTEMPTS: int = 3
 const RECONNECT_DELAY_MS: int = 500
@@ -51,6 +55,7 @@ const ReactionEvaluator = preload("res://scripts/chemistry/reaction_evaluator.gd
 
 var _engine_mode: EngineMode = EngineMode.IPC_CONNECTING
 var _tcp_peer: StreamPeerTCP
+var _pipe_connected: bool = false
 var _reconnect_attempts: int = 0
 var _reconnect_timer: Timer
 var _vessels: Dictionary = {}  # vessel_id -> VesselState
@@ -114,10 +119,19 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _tcp_peer and _tcp_peer.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 		_tcp_peer.disconnect_from_host()
+	if _pipe_file != null and _pipe_file.file_open:
+		_pipe_file.close()
+		_pipe_connected = false
 
 # =============================================================================
 # 6. IPC Connection Management
 # =============================================================================
+
+# -------------------------------------------------------------------------
+# IPC transport selection (TCP or Windows Named Pipe)
+# -------------------------------------------------------------------------
+
+var _pipe_file: FileAccess  # Named pipe handle when IPC_TRANSPORT_MODE == NAMED_PIPE
 
 func _attempt_ipc_connection() -> void:
 	if _engine_mode == EngineMode.IPC_CONNECTED:
@@ -126,11 +140,17 @@ func _attempt_ipc_connection() -> void:
 	_engine_mode = EngineMode.IPC_CONNECTING
 	engine_mode_changed.emit(_engine_mode)
 
+	if IPC_TRANSPORT_MODE == IPCTransportMode.NAMED_PIPE:
+		_attempt_named_pipe_connection()
+	else:
+		_attempt_tcp_connection()
+
+func _attempt_tcp_connection() -> void:
 	if _tcp_peer.get_status() != StreamPeerTCP.STATUS_NONE:
 		_tcp_peer.disconnect_from_host()
 	var err = _tcp_peer.connect_to_host(IPC_HOST, IPC_PORT)
 	if err != OK:
-		_handle_ipc_connection_failed("Connection error: %s" % err)
+		_handle_ipc_connection_failed("TCP connection error: %s" % err)
 		return
 
 	# Wait for connection with timeout
@@ -138,7 +158,7 @@ func _attempt_ipc_connection() -> void:
 	while _tcp_peer.get_status() == StreamPeerTCP.STATUS_CONNECTING:
 		_tcp_peer.poll()
 		if Time.get_ticks_msec() - start_time > IPC_TIMEOUT_MS:
-			_handle_ipc_connection_failed("Connection timeout")
+			_handle_ipc_connection_failed("TCP connection timeout")
 			return
 		OS.delay_msec(10)
 
@@ -146,7 +166,17 @@ func _attempt_ipc_connection() -> void:
 	if _tcp_peer.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 		_on_ipc_connected()
 	else:
-		_handle_ipc_connection_failed("Failed to establish connection")
+		_handle_ipc_connection_failed("Failed to establish TCP connection")
+
+func _attempt_named_pipe_connection() -> void:
+	var pipe = FileAccess.new()
+	var err = pipe.open(IPC_NAMED_PIPE_PATH, FileAccess.READ_WRITE)
+	if err != OK:
+		_handle_ipc_connection_failed("Named pipe open error: %s" % err)
+		return
+	_pipe_file = pipe
+	_pipe_connected = true
+	_on_ipc_connected()
 
 func _on_ipc_connected() -> void:
 	_engine_mode = EngineMode.IPC_CONNECTED
@@ -176,35 +206,43 @@ func _process_ipc_messages() -> void:
 	if _engine_mode != EngineMode.IPC_CONNECTED:
 		return
 
+	if IPC_TRANSPORT_MODE == IPCTransportMode.NAMED_PIPE:
+		_process_named_pipe_messages()
+		return
+
 	_tcp_peer.poll()
 	if _tcp_peer.get_status() != StreamPeerTCP.STATUS_CONNECTED:
 		_engine_mode = EngineMode.IPC_FAILED
 		engine_mode_changed.emit(_engine_mode)
-		_handle_ipc_connection_failed("Connection lost")
+		_handle_ipc_connection_failed("TCP connection lost")
 		return
 
-	# Process incoming data
+	# Process incoming TCP data
 	while _tcp_peer.get_available_bytes() > 0:
 		var bytes_avail = _tcp_peer.get_available_bytes()
 		var data = _tcp_peer.get_utf8_string(bytes_avail)
 		if data != "":
 			_parse_ipc_response(data)
 
-func _parse_ipc_response(data: String) -> void:
-	var lines = data.split("\n")
-	for line in lines:
-		line = line.strip_edges()
+func _process_named_pipe_messages() -> void:
+	if _pipe_file == null or not _pipe_connected:
+		_engine_mode = EngineMode.IPC_FAILED
+		engine_mode_changed.emit(_engine_mode)
+		_handle_ipc_connection_failed("Named pipe disconnected")
+		return
+
+	while _pipe_file.file_open and not _pipe_file.eof_reached():
+		var line = _pipe_file.get_line().strip_edges()
 		if line == "":
 			continue
 		var parsed = JSON.parse_string(line)
 		if parsed == null:
 			continue
-		var response = parsed
-		var req_id = response.get("request_id", "")
+		var req_id = parsed.get("request_id", "")
 		if _pending_requests.has(req_id):
 			var callback = _pending_requests[req_id]
 			_pending_requests.erase(req_id)
-			callback.call(response)
+			callback.call(parsed)
 
 func _send_ipc_request(command: String, payload: Dictionary, callback = null) -> String:
 	var req_id = "req_%d" % _request_id_counter
@@ -217,12 +255,22 @@ func _send_ipc_request(command: String, payload: Dictionary, callback = null) ->
 	}
 
 	var json_str = JSON.stringify(request) + "\n"
-	var err = _tcp_peer.put_data(json_str.to_utf8_buffer())
+	var sent: bool = false
 
-	if err != OK:
-		print("[SimulationBridge] Failed to send IPC request: %s" % err)
+	if IPC_TRANSPORT_MODE == IPCTransportMode.NAMED_PIPE and _pipe_file != null and _pipe_file.file_open:
+		var err = _pipe_file.store_string(json_str)
+		sent = (err == OK)
+		if err != OK:
+			print("[SimulationBridge] Failed to write to named pipe: %s" % err)
+	else:
+		var err = _tcp_peer.put_data(json_str.to_utf8_buffer())
+		sent = (err == OK)
+		if err != OK:
+			print("[SimulationBridge] Failed to send IPC request: %s" % err)
+
+	if not sent:
 		if callback != null and callback is Callable and callback.is_valid():
-			callback.call({"status": "ERROR", "error": "Send failed: %s" % err})
+			callback.call({"status": "ERROR", "error": "Send failed"})
 		return ""
 
 	if callback != null and callback is Callable and callback.is_valid():
@@ -341,16 +389,33 @@ func _mix_solutions_embedded(vessel_a: VesselState, vessel_b: VesselState, volum
 	}
 
 func _mix_solutions_ipc(vessel_a_id: String, vessel_b_id: String, volume_ml: float) -> Dictionary:
-	"""Delegate mixing to IPC Python core."""
+	"""Delegate mixing to IPC Python core.
+	Sends a contract-compliant MIX_REAGENTS request per ARCHITECTURE.md §4.1."""
 	var future = {
 		"success": false,
 		"pending": true
 	}
 
+	# Build reagent list from vessel_b's species (contract: reagents array of {id, moles})
+	var reagents: Array[Dictionary] = []
+	if _vessels.has(vessel_b_id):
+		var vb = _vessels[vessel_b_id]
+		for species_id in vb.species_moles:
+			var moles = vb.species_moles[species_id]
+			if moles > 0.0:
+				reagents.append({"id": species_id, "moles": moles})
+
+	var temp_c = 22.0
+	if _vessels.has(vessel_a_id):
+		temp_c = _vessels[vessel_a_id].temperature_c
+
 	_send_ipc_request("MIX_REAGENTS", {
-		"vessel_a": vessel_a_id,
-		"vessel_b": vessel_b_id,
-		"volume_ml": volume_ml
+		"vessel_id": vessel_a_id,
+		"reagents": reagents,
+		"catalyst": "",
+		"temperature_c": temp_c,
+		"addition_order_correct": true,
+		"in_fume_hood": true
 	}, Callable(self, "_on_mix_response").bind(future))
 
 	# Synchronous wait with timeout (for API compatibility)
@@ -370,11 +435,26 @@ func _mix_solutions_ipc(vessel_a_id: String, vessel_b_id: String, volume_ml: flo
 
 func _on_mix_response(response: Dictionary, future: Dictionary) -> void:
 	future["pending"] = false
+	# Contract response (ARCHITECTURE.md §4.1): top-level "data" object carries results
+	var data = response.get("data", {})
 	if response.get("status") == "SUCCESS":
 		future["success"] = true
-		future["vessel_a"] = response.get("vessel_a", {})
-		future["vessel_b"] = response.get("vessel_b", {})
-		future["reaction"] = response.get("reaction", {})
+		future["vessel_a"] = data.get("vessel_id", "")
+		future["vessel_b"] = data
+		future["reaction"] = {
+			"reaction_name": data.get("reaction_name", ""),
+			"conversion_ratio": data.get("conversion_ratio", 0.0),
+			"temperature_c": data.get("temperature_c", 0.0),
+			"is_exothermic": data.get("is_exothermic", false),
+			"delta_h_kj_mol": data.get("delta_h_kj_mol", 0.0),
+			"color_rgba": data.get("color_rgba", [1.0, 1.0, 1.0, 1.0]),
+			"turbidity": data.get("turbidity", 0.0),
+			"precipitate_formed": data.get("precipitate_formed", false),
+			"precipitate_name": data.get("precipitate_name", ""),
+			"bubbles_per_second": data.get("bubbles_per_second", 0.0),
+			"side_products": data.get("side_products", []),
+			"safety_warnings": data.get("safety_warnings", [])
+		}
 	else:
 		future["success"] = false
 		future["error"] = response.get("error", "Unknown IPC error")
