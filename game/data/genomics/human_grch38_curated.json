@@ -1,0 +1,467 @@
+{
+  "assembly": "GRCh38.p14",
+  "organism": "Homo sapiens",
+  "build": "2026-11 curation for Athanor Ascension",
+  "provenance": "Chromosome lengths and gene spans are GRCh38 primary-assembly values (Ensembl/NCBI). Gene spans are visualisation extents, not minimal transcripts. Curated hotspot positions are mapped proportionally inside the gene span; the HGVS c. notation is authoritative, not the pixel position.",
+  "chromosomes": [
+    {"name": "1", "length_bp": 248956422, "centromere_bp": 123400000},
+    {"name": "2", "length_bp": 242193529, "centromere_bp": 93900000},
+    {"name": "3", "length_bp": 198295559, "centromere_bp": 90900000},
+    {"name": "4", "length_bp": 190214555, "centromere_bp": 50400000},
+    {"name": "5", "length_bp": 181538259, "centromere_bp": 48400000},
+    {"name": "6", "length_bp": 170805979, "centromere_bp": 59800000},
+    {"name": "7", "length_bp": 159345973, "centromere_bp": 59900000},
+    {"name": "8", "length_bp": 145138636, "centromere_bp": 45600000},
+    {"name": "9", "length_bp": 138394717, "centromere_bp": 49000000},
+    {"name": "10", "length_bp": 133797422, "centromere_bp": 39800000},
+    {"name": "11", "length_bp": 135086622, "centromere_bp": 53400000},
+    {"name": "12", "length_bp": 133275309, "centromere_bp": 35800000},
+    {"name": "13", "length_bp": 114364328, "centromere_bp": 16000000},
+    {"name": "14", "length_bp": 107043718, "centromere_bp": 16000000},
+    {"name": "15", "length_bp": 101991189, "centromere_bp": 17500000},
+    {"name": "16", "length_bp": 90338345, "centromere_bp": 36300000},
+    {"name": "17", "length_bp": 83257441, "centromere_bp": 22700000},
+    {"name": "18", "length_bp": 80373285, "centromere_bp": 15400000},
+    {"name": "19", "length_bp": 58617616, "centromere_bp": 24200000},
+    {"name": "20", "length_bp": 64444167, "centromere_bp": 26200000},
+    {"name": "21", "length_bp": 46709983, "centromere_bp": 11900000},
+    {"name": "22", "length_bp": 50818468, "centromere_bp": 14400000},
+    {"name": "X", "length_bp": 156040895, "centromere_bp": 61000000},
+    {"name": "Y", "length_bp": 57227415, "centromere_bp": 10400000},
+    {"name": "MT", "length_bp": 16569, "centromere_bp": 0}
+  ],
+  "genes": [
+    {
+      "symbol": "HBB", "name": "Hemoglobin subunit beta", "chromosome": "11",
+      "start": 5225464, "end": 5227071, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive (HbS); autosomal recessive beta-thalassemia",
+      "summary": "Beta-globin. The HbS allele collapses deoxygenated hemoglobin into polymers.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Sickle cell trait", "severity": "mild", "note": "Usually asymptomatic; confers partial protection against Plasmodium falciparum malaria."},
+        {"zygosity": "homozygous", "label": "Sickle cell anemia", "severity": "severe", "note": "Chronic hemolysis, vaso-occlusive crises, splenic sequestration."}
+      ],
+      "hotspots": [
+        {"c": "c.20A>T", "fraction": 0.31, "ref": "A", "alt": "T", "protein": "p.Glu7Val (HbS)", "consequence": "missense_variant", "severity": "severe", "phenotype": "Sickle hemoglobin polymerises when deoxygenated."}
+      ]
+    },
+    {
+      "symbol": "CFTR", "name": "CF transmembrane conductance regulator", "chromosome": "7",
+      "start": 117287120, "end": 117715971, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive",
+      "summary": "cAMP-activated chloride/bicarbonate channel in epithelial apical membranes.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "CF carrier", "severity": "none", "note": "No disease; relevant for reproductive counselling."},
+        {"zygosity": "homozygous", "label": "Cystic fibrosis", "severity": "severe", "note": "Viscous mucus, bronchiectasis, pancreatic insufficiency, elevated sweat chloride."}
+      ],
+      "hotspots": [
+        {"c": "c.1521_1523delCTT", "fraction": 0.44, "ref": "CTT", "alt": "del", "protein": "p.Phe508del", "consequence": "inframe_deletion_alters_folding", "severity": "severe", "phenotype": "CFTR fails quality control in the ER; little channel reaches the apical membrane."}
+      ]
+    },
+    {
+      "symbol": "BRCA1", "name": "BRCA1 DNA repair associated", "chromosome": "17",
+      "start": 43044295, "end": 43125364, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant with incomplete penetrance",
+      "summary": "Scaffold for homologous-recombination repair of DNA double-strand breaks.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Hereditary breast/ovarian cancer predisposition", "severity": "severe", "note": "Lifetime risk is elevated but not deterministic; surveillance and risk-reducing options apply."}
+      ],
+      "hotspots": [
+        {"c": "c.5266dupC", "fraction": 0.78, "ref": "C", "alt": "CC", "protein": "p.Gln1756Profs*74", "consequence": "frameshift_variant", "severity": "severe", "phenotype": "Truncated BRCA1 loses BRCT-domain function; HR repair is impaired."}
+      ]
+    },
+    {
+      "symbol": "BRCA2", "name": "BRCA2 DNA repair associated", "chromosome": "13",
+      "start": 32315086, "end": 32400268, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant with incomplete penetrance",
+      "summary": "Delivers RAD51 to single-stranded DNA during homologous recombination.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Hereditary breast/ovarian/pancreatic cancer predisposition", "severity": "severe", "note": "Penetrance differs by variant and family history."}
+      ],
+      "hotspots": [
+        {"c": "c.5946delT", "fraction": 0.62, "ref": "T", "alt": "del", "protein": "p.Ser1982Argfs*22", "consequence": "frameshift_variant", "severity": "severe", "phenotype": "Loss of the RAD51-binding region blocks strand invasion."}
+      ]
+    },
+    {
+      "symbol": "TP53", "name": "Tumor protein p53", "chromosome": "17",
+      "start": 7668402, "end": 7687550, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant (Li-Fraumeni)",
+      "summary": "Transcription factor that arrests the cycle or triggers apoptosis after DNA damage.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Li-Fraumeni syndrome", "severity": "severe", "note": "Early-onset sarcomas, breast cancer, adrenocortical carcinoma, brain tumours."}
+      ],
+      "hotspots": [
+        {"c": "c.743G>A", "fraction": 0.28, "ref": "G", "alt": "A", "protein": "p.Arg248Gln", "consequence": "missense_variant_dominant_negative", "severity": "severe", "phenotype": "DNA-contact mutant p53; dominant-negative over the wild-type tetramer."},
+        {"c": "c.818G>A", "fraction": 0.31, "ref": "G", "alt": "A", "protein": "p.Arg273His", "consequence": "missense_variant_dominant_negative", "severity": "severe", "phenotype": "Destabilised p53 core domain; rapid degradation."}
+      ]
+    },
+    {
+      "symbol": "LDLR", "name": "Low density lipoprotein receptor", "chromosome": "19",
+      "start": 11089000, "end": 11133820, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant (familial hypercholesterolemia); co-dominant",
+      "summary": "Clears LDL particles from plasma by receptor-mediated endocytosis.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Familial hypercholesterolemia (heterozygous)", "severity": "moderate", "note": "LDL-C roughly doubled; premature atherosclerosis."},
+        {"zygosity": "homozygous", "label": "Familial hypercholesterolemia (homozygous)", "severity": "severe", "note": "LDL-C 4-6x; coronary events in the first decades."}
+      ],
+      "hotspots": [
+        {"c": "c.1775G>A", "fraction": 0.55, "ref": "G", "alt": "A", "protein": "p.Gly592Glu", "consequence": "missense_variant", "severity": "moderate", "phenotype": "Impaired LDL binding in the EGF-precursor homology domain."}
+      ]
+    },
+    {
+      "symbol": "PCSK9", "name": "Proprotein convertase subtilisin/kexin type 9", "chromosome": "1",
+      "start": 55039476, "end": 55064852, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "gain-of-function dominant; loss-of-function protective",
+      "summary": "Secreted protease that routes the LDL receptor to lysosomal degradation.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Hypercholesterolemia (gain of function)", "severity": "moderate", "note": "Less LDLR recycling, higher plasma LDL."},
+        {"zygosity": "homozygous", "label": "Very low LDL-C (loss of function)", "severity": "none", "note": "Naturally protective; the basis of PCSK9-inhibitor pharmacology."}
+      ],
+      "hotspots": [
+        {"c": "c.1120G>A", "fraction": 0.48, "ref": "G", "alt": "A", "protein": "p.Asp374Asn", "consequence": "missense_variant", "severity": "moderate", "phenotype": "Enhanced LDLR degradation (gain of function)."}
+      ]
+    },
+    {
+      "symbol": "APOE", "name": "Apolipoprotein E", "chromosome": "19",
+      "start": 44905791, "end": 44909393, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "complex / risk modifier",
+      "summary": "Lipid transport protein; isoforms differ at residues 112 and 158.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "APOE e4 carrier", "severity": "moderate", "note": "Elevated late-onset Alzheimer risk; risk, not destiny."}
+      ],
+      "hotspots": [
+        {"c": "c.388T>C (rs429358)", "fraction": 0.42, "ref": "T", "alt": "C", "protein": "p.Cys112Arg (e4 defining)", "consequence": "missense_variant", "severity": "moderate", "phenotype": "APOE4 isoform; altered amyloid clearance and lipid handling."},
+        {"c": "c.526C>T (rs7412)", "fraction": 0.45, "ref": "C", "alt": "T", "protein": "p.Arg158Cys (e2 defining)", "consequence": "missense_variant", "severity": "protective", "phenotype": "APOE2 isoform; lower Alzheimer risk, higher type III hyperlipoproteinemia risk in homozygotes."}
+      ]
+    },
+    {
+      "symbol": "ALDH2", "name": "Aldehyde dehydrogenase 2", "chromosome": "12",
+      "start": 111766000, "end": 111817000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant (functional deficiency)",
+      "summary": "Mitochondrial aldehyde dehydrogenase that clears acetaldehyde.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Alcohol flush / reduced acetaldehyde clearance", "severity": "mild", "note": "Flushing, tachycardia after small alcohol doses; increased oesophageal cancer risk with drinking."},
+        {"zygosity": "homozygous", "label": "Near-absent ALDH2 activity", "severity": "moderate", "note": "Marked intolerance to alcohol; strong protective effect against alcohol dependence."}
+      ],
+      "hotspots": [
+        {"c": "c.1510G>A", "fraction": 0.63, "ref": "G", "alt": "A", "protein": "p.Glu504Lys", "consequence": "missense_variant_enzyme_deficiency", "severity": "mild", "phenotype": "Lys504 enzyme assembles poorly; acetaldehyde accumulates."}
+      ]
+    },
+    {
+      "symbol": "G6PD", "name": "Glucose-6-phosphate dehydrogenase", "chromosome": "X",
+      "start": 154531390, "end": 154547000, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "X-linked recessive",
+      "summary": "Rate-limiting NADPH source protecting erythrocytes from oxidative stress.",
+      "phenotypes": [
+        {"zygosity": "hemizygous", "label": "G6PD deficiency", "severity": "moderate", "note": "Episodic hemolysis after fava beans, sulfonamides, primaquine or infection."},
+        {"zygosity": "heterozygous", "label": "G6PD carrier (mosaic)", "severity": "mild", "note": "X-inactivation gives two red-cell populations; usually mild."}
+      ],
+      "hotspots": [
+        {"c": "c.563C>T", "fraction": 0.36, "ref": "C", "alt": "T", "protein": "p.Ser188Phe (Mediterranean)", "consequence": "missense_variant_enzyme_deficiency", "severity": "moderate", "phenotype": "Unstable enzyme; NADPH collapse under oxidative challenge."}
+      ]
+    },
+    {
+      "symbol": "PAH", "name": "Phenylalanine hydroxylase", "chromosome": "12",
+      "start": 102836000, "end": 102958000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive",
+      "summary": "Converts phenylalanine to tyrosine using tetrahydrobiopterin.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "PAH carrier", "severity": "none", "note": "Unaffected; newborn screening relevant."},
+        {"zygosity": "homozygous", "label": "Phenylketonuria (PKU)", "severity": "severe", "note": "Phenylalanine neurotoxicity; prevented by dietary restriction started in infancy."}
+      ],
+      "hotspots": [
+        {"c": "c.1222C>T", "fraction": 0.58, "ref": "C", "alt": "T", "protein": "p.Arg408Trp", "consequence": "missense_variant", "severity": "severe", "phenotype": "Misfolded PAH; residual activity under 5%."}
+      ]
+    },
+    {
+      "symbol": "MECP2", "name": "Methyl-CpG binding protein 2", "chromosome": "X",
+      "start": 153287819, "end": 153363340, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "X-linked dominant",
+      "summary": "Binds methylated CpG and recruits repressors; dosage-sensitive in neurons.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Rett syndrome", "severity": "severe", "note": "Regression of language and hand use after 6-18 months; mostly de novo in females."},
+        {"zygosity": "hemizygous", "label": "Severe neonatal encephalopathy (males)", "severity": "severe", "note": "Most affected males do not survive without somatic mosaicism."}
+      ],
+      "hotspots": [
+        {"c": "c.502C>T", "fraction": 0.34, "ref": "C", "alt": "T", "protein": "p.Arg168Ter", "consequence": "stop_gained", "severity": "severe", "phenotype": "Truncated MECP2 loses the transcriptional repression domain."}
+      ]
+    },
+    {
+      "symbol": "HTT", "name": "Huntingtin", "chromosome": "4",
+      "start": 3074510, "end": 3086000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant",
+      "summary": "CAG repeat expansion above ~36 repeats yields a toxic polyglutamine protein.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Huntington disease", "severity": "severe", "note": "Chorea, cognitive decline, psychiatric symptoms; anticipation with paternal transmission."}
+      ],
+      "hotspots": [
+        {"c": "CAG repeat expansion", "fraction": 0.14, "ref": "CAG", "alt": "CAG(n>36)", "protein": "polyGln expansion", "consequence": "repeat_expansion", "severity": "severe", "phenotype": "Mutant huntingtin aggregates; striatal neuron loss."}
+      ]
+    },
+    {
+      "symbol": "FMR1", "name": "Fragile X messenger ribonucleoprotein 1", "chromosome": "X",
+      "start": 147911000, "end": 147951000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "X-linked dominant with anticipation",
+      "summary": "CGG repeat; >200 repeats silence the gene through methylation.",
+      "phenotypes": [
+        {"zygosity": "hemizygous", "label": "Fragile X syndrome", "severity": "severe", "note": "Intellectual disability, macroorchidism, autistic features."},
+        {"zygosity": "heterozygous", "label": "Premutation carrier", "severity": "mild", "note": "FXTAS/POI risk in carriers; expansion risk in offspring."}
+      ],
+      "hotspots": [
+        {"c": "CGG repeat expansion", "fraction": 0.22, "ref": "CGG", "alt": "CGG(n>200)", "protein": "FMRP silencing", "consequence": "repeat_expansion_hypermethylation", "severity": "severe", "phenotype": "Methylated CpG island shuts off FMRP expression."}
+      ]
+    },
+    {
+      "symbol": "DMD", "name": "Dystrophin", "chromosome": "X",
+      "start": 31119219, "end": 33339609, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "X-linked recessive",
+      "summary": "Links the actin cytoskeleton to the sarcolemma; absence causes membrane fragility.",
+      "phenotypes": [
+        {"zygosity": "hemizygous", "label": "Duchenne muscular dystrophy", "severity": "severe", "note": "Frame-disrupting deletions; progressive weakness, cardiomyopathy."},
+        {"zygosity": "heterozygous", "label": "DMD carrier", "severity": "mild", "note": "Usually asymptomatic; occasional cardiomyopathy."}
+      ],
+      "hotspots": [
+        {"c": "exon 45-52 deletion", "fraction": 0.47, "ref": "multi-exon", "alt": "del", "protein": "frameshift, absent dystrophin", "consequence": "frameshift_variant", "severity": "severe", "phenotype": "Out-of-frame deletion abolishes dystrophin."}
+      ]
+    },
+    {
+      "symbol": "APP", "name": "Amyloid precursor protein", "chromosome": "21",
+      "start": 25880550, "end": 26171128, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant (rare early-onset AD variants); dosage sensitive",
+      "summary": "Membrane protein cleaved to Abeta peptides; extra copies raise Abeta load.",
+      "dosage_sensitive": true,
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Early-onset Alzheimer disease (rare variants)", "severity": "severe", "note": "Missense variants near the secretase sites increase Abeta42/40."}
+      ],
+      "hotspots": [
+        {"c": "c.2149G>A (Swedish-like)", "fraction": 0.52, "ref": "G", "alt": "A", "protein": "p.Ala716Thr", "consequence": "missense_variant", "severity": "severe", "phenotype": "Altered gamma-secretase cleavage raises Abeta42."}
+      ]
+    },
+    {
+      "symbol": "SOD1", "name": "Superoxide dismutase 1", "chromosome": "21",
+      "start": 31669833, "end": 31679629, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant (ALS variants); dosage sensitive",
+      "summary": "Cu/Zn superoxide dismutase; misfolded variants are toxic to motor neurons.",
+      "dosage_sensitive": true,
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Familial ALS (subset)", "severity": "severe", "note": "Gain-of-function toxicity, not loss of dismutase activity."}
+      ],
+      "hotspots": [
+        {"c": "c.144A>C", "fraction": 0.29, "ref": "A", "alt": "C", "protein": "p.Asp48Ala (A4V-like)", "consequence": "missense_variant", "severity": "severe", "phenotype": "Destabilised SOD1 dimer aggregates in motor neurons."}
+      ]
+    },
+    {
+      "symbol": "DYRK1A", "name": "Dual specificity tyrosine phosphorylation regulated kinase 1A", "chromosome": "21",
+      "start": 37400000, "end": 37550000, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "dosage sensitive (Down syndrome candidate)",
+      "summary": "Kinase that balances neural progenitor proliferation and differentiation.",
+      "dosage_sensitive": true,
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Altered neurodevelopment", "severity": "moderate", "note": "Overexpression in trisomy 21 is linked to reduced cortical neuron output in models."}
+      ],
+      "hotspots": []
+    },
+    {
+      "symbol": "CBS", "name": "Cystathionine beta-synthase", "chromosome": "21",
+      "start": 43050000, "end": 43070000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive (homocystinuria); dosage sensitive",
+      "summary": "Transsulfuration enzyme lowering homocysteine.",
+      "dosage_sensitive": true,
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Classical homocystinuria", "severity": "severe", "note": "Thrombosis, lens dislocation, intellectual disability."}
+      ],
+      "hotspots": [
+        {"c": "c.919G>A", "fraction": 0.4, "ref": "G", "alt": "A", "protein": "p.Gly307Ser", "consequence": "missense_variant", "severity": "severe", "phenotype": "Reduced CBS activity; homocysteine accumulates."}
+      ]
+    },
+    {
+      "symbol": "COL6A1", "name": "Collagen type VI alpha 1", "chromosome": "21",
+      "start": 45990000, "end": 46020000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal dominant / recessive (myopathies); dosage sensitive",
+      "summary": "Extracellular matrix collagen in skeletal muscle.",
+      "dosage_sensitive": true,
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Bethlem myopathy spectrum", "severity": "moderate", "note": "Contractures and proximal weakness; collagen VI disorders."}
+      ],
+      "hotspots": []
+    },
+    {
+      "symbol": "HFE", "name": "Homeostatic iron regulator", "chromosome": "6",
+      "start": 26087000, "end": 26098000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive",
+      "summary": "Modulates hepcidin signalling; C282Y homozygosity causes iron overload.",
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Hereditary hemochromatosis", "severity": "moderate", "note": "Iron deposition in liver, pancreas, heart; phlebotomy is curative if early."},
+        {"zygosity": "heterozygous", "label": "HFE carrier", "severity": "none", "note": "Usually no iron overload."}
+      ],
+      "hotspots": [
+        {"c": "c.845G>A", "fraction": 0.38, "ref": "G", "alt": "A", "protein": "p.Cys282Tyr", "consequence": "missense_variant", "severity": "moderate", "phenotype": "Loss of beta-2-microglobulin association; hepcidin deficiency."}
+      ]
+    },
+    {
+      "symbol": "SERPINA1", "name": "Serpin family A member 1 (alpha-1 antitrypsin)", "chromosome": "14",
+      "start": 94376000, "end": 94388000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive / co-dominant",
+      "summary": "Protease inhibitor protecting alveolar elastin from neutrophil elastase.",
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Alpha-1 antitrypsin deficiency (PiZZ)", "severity": "severe", "note": "Early emphysema, liver cirrhosis from polymer retention."},
+        {"zygosity": "heterozygous", "label": "PiMZ carrier", "severity": "mild", "note": "Slightly reduced serum AAT; risk rises with smoking."}
+      ],
+      "hotspots": [
+        {"c": "c.1096G>A", "fraction": 0.7, "ref": "G", "alt": "A", "protein": "p.Glu366Lys (PiZ)", "consequence": "missense_variant", "severity": "severe", "phenotype": "Z alpha-1 antitrypsin polymerises in hepatocytes."}
+      ]
+    },
+    {
+      "symbol": "TYR", "name": "Tyrosinase", "chromosome": "11",
+      "start": 89110000, "end": 89278000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive",
+      "summary": "Rate-limiting enzyme of melanin synthesis.",
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Oculocutaneous albinism type 1", "severity": "moderate", "note": "Absent melanin; photophobia, nystagmus, high UV sensitivity."},
+        {"zygosity": "heterozygous", "label": "TYR carrier", "severity": "none", "note": "Unaffected pigmentation."}
+      ],
+      "hotspots": [
+        {"c": "c.832C>T", "fraction": 0.44, "ref": "C", "alt": "T", "protein": "p.Arg278Ter", "consequence": "stop_gained", "severity": "moderate", "phenotype": "Truncated tyrosinase; no melanin produced."}
+      ]
+    },
+    {
+      "symbol": "MC1R", "name": "Melanocortin 1 receptor", "chromosome": "16",
+      "start": 89910000, "end": 89919000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive (red hair); modifier",
+      "summary": "G-protein coupled receptor switching eumelanin to pheomelanin.",
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Red hair / fair skin phenotype", "severity": "none", "note": "Increased UV sensitivity and melanoma risk."}
+      ],
+      "hotspots": [
+        {"c": "c.451C>T", "fraction": 0.5, "ref": "C", "alt": "T", "protein": "p.Arg151Cys", "consequence": "missense_variant_loss_of_function", "severity": "benign", "phenotype": "Reduced cAMP signalling; pheomelanin dominates."}
+      ]
+    },
+    {
+      "symbol": "ACTN3", "name": "Actinin alpha 3", "chromosome": "11",
+      "start": 66554000, "end": 66574000, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive (null allele)",
+      "summary": "Z-disc protein in fast-twitch fibres; the R577X null is common.",
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Alpha-actinin-3 deficiency", "severity": "none", "note": "No disease; subtle shift toward endurance phenotypes in some cohorts."}
+      ],
+      "hotspots": [
+        {"c": "c.577C>T", "fraction": 0.46, "ref": "C", "alt": "T", "protein": "p.Arg193Ter", "consequence": "stop_gained", "severity": "benign", "phenotype": "Nonsense allele; no alpha-actinin-3 in fast fibres."}
+      ]
+    },
+    {
+      "symbol": "CYP2D6", "name": "Cytochrome P450 family 2 subfamily D member 6", "chromosome": "22",
+      "start": 42126499, "end": 42130865, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "autosomal recessive (poor metaboliser)",
+      "summary": "Polymorphic CYP450 enzyme handling ~25% of drugs.",
+      "phenotypes": [
+        {"zygosity": "homozygous", "label": "Poor metaboliser", "severity": "moderate", "note": "Reduced clearance of codeine, tramadol, tamoxifen and many antidepressants."}
+      ],
+      "hotspots": [
+        {"c": "c.1846G>A (CYP2D6*4)", "fraction": 0.6, "ref": "G", "alt": "A", "protein": "splice defect", "consequence": "splice_donor_variant", "severity": "moderate", "phenotype": "Aberrant splicing; non-functional enzyme."}
+      ]
+    },
+    {
+      "symbol": "EGFR", "name": "Epidermal growth factor receptor", "chromosome": "7",
+      "start": 55019017, "end": 55115745, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "somatic (oncogenic)",
+      "summary": "Receptor tyrosine kinase driving proliferation when constitutively active.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "EGFR-mutant tumour (somatic)", "severity": "severe", "note": "Sensitising L858R or exon 19 deletions respond to tyrosine-kinase inhibitors."}
+      ],
+      "hotspots": [
+        {"c": "c.2573T>G", "fraction": 0.66, "ref": "T", "alt": "G", "protein": "p.Leu858Arg", "consequence": "missense_variant_activating", "severity": "severe", "phenotype": "Kinase held in the active conformation; ligand-independent signalling."}
+      ]
+    },
+    {
+      "symbol": "KRAS", "name": "KRAS proto-oncogene", "chromosome": "12",
+      "start": 25205246, "end": 25250929, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "somatic (oncogenic); germline RASopathies",
+      "summary": "Small GTPase locked in GTP-bound state by codon 12 mutations.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "KRAS-driven tumour (somatic)", "severity": "severe", "note": "Constitutive MAPK signalling; historically undruggable."}
+      ],
+      "hotspots": [
+        {"c": "c.35G>T", "fraction": 0.24, "ref": "G", "alt": "T", "protein": "p.Gly12Val", "consequence": "missense_variant_activating", "severity": "severe", "phenotype": "GTPase activity lost; downstream RAF/MEK/ERK constitutive."}
+      ]
+    },
+    {
+      "symbol": "HLA-B", "name": "Major histocompatibility complex class I B", "chromosome": "6",
+      "start": 31353875, "end": 31357179, "strand": "+", "biotype": "protein_coding",
+      "inheritance": "codominant / pharmacogenomic",
+      "summary": "Antigen presentation; specific alleles drive drug hypersensitivity.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "HLA-B*57:01 carrier", "severity": "moderate", "note": "Abacavir hypersensitivity syndrome; screening is standard of care."}
+      ],
+      "hotspots": [
+        {"c": "HLA-B*57:01 haplotype", "fraction": 0.5, "ref": "haplotype", "alt": "B*57:01", "protein": "altered peptide repertoire", "consequence": "pharmacogenomic_risk_allele", "severity": "moderate", "phenotype": "Abacavir binds the antigen-binding cleft and re-shapes presented peptides."}
+      ]
+    },
+    {
+      "symbol": "INS", "name": "Insulin", "chromosome": "11",
+      "start": 2159779, "end": 2161209, "strand": "-", "biotype": "protein_coding",
+      "inheritance": "complex; rare monogenic",
+      "summary": "Beta-cell hormone regulating glucose uptake.",
+      "phenotypes": [
+        {"zygosity": "heterozygous", "label": "Neonatal diabetes (rare variants)", "severity": "severe", "note": "Proinsulin misfolding triggers beta-cell ER stress."}
+      ],
+      "hotspots": [
+        {"c": "c.94G>A", "fraction": 0.3, "ref": "G", "alt": "A", "protein": "p.Gly32Ser", "consequence": "missense_variant", "severity": "severe", "phenotype": "Mutant proinsulin misfolds; dominant-negative ER stress."}
+      ]
+    }
+  ],
+  "mutagens": [
+    {
+      "id": "ems", "name": "Ethyl methanesulfonate (EMS)", "class": "alkylating agent",
+      "mechanism": "Ethylates O6-guanine; replication pairs O6-ethyl-G with thymine, producing GC to AT transitions.",
+      "unit": "mM·h", "rate_per_unit": 0.9, "hazard": "mutagen, carcinogen, teratogen",
+      "spectrum": {"transition": 0.86, "transversion": 0.08, "frameshift": 0.06}
+    },
+    {
+      "id": "enu", "name": "N-ethyl-N-nitrosourea (ENU)", "class": "alkylating agent",
+      "mechanism": "Alkylates thymine and adenine; the workhorse mutagen for mouse forward genetics.",
+      "unit": "mM·h", "rate_per_unit": 1.4, "hazard": "mutagen, carcinogen",
+      "spectrum": {"transition": 0.55, "transversion": 0.39, "frameshift": 0.06}
+    },
+    {
+      "id": "mms", "name": "Methyl methanesulfonate (MMS)", "class": "alkylating agent",
+      "mechanism": "N7-methylguanine and N3-methyladenine; depurination and replication blocks.",
+      "unit": "mM·h", "rate_per_unit": 1.1, "hazard": "mutagen, corrosive",
+      "spectrum": {"transition": 0.7, "transversion": 0.14, "frameshift": 0.16}
+    },
+    {
+      "id": "uv254", "name": "Ultraviolet C (254 nm)", "class": "physical",
+      "mechanism": "Cyclobutane pyrimidine dimers and 6-4 photoproducts; polymerase bypass inserts adenines, giving C to T and CC to TT.",
+      "unit": "J/m²", "rate_per_unit": 0.05, "hazard": "phototoxic, mutagenic",
+      "spectrum": {"transition": 0.9, "transversion": 0.05, "frameshift": 0.05}
+    },
+    {
+      "id": "aflatoxin", "name": "Aflatoxin B1 (CYP3A4-activated)", "class": "bulky adduct",
+      "mechanism": "Epoxide forms N7-guanine adducts; depurination and GC to TA transversions, with a hotspot at TP53 codon 249.",
+      "unit": "µM·h", "rate_per_unit": 0.7, "hazard": "hepatocarcinogen",
+      "spectrum": {"transition": 0.12, "transversion": 0.76, "frameshift": 0.12}
+    },
+    {
+      "id": "benzene", "name": "Benzene metabolites (quinones)", "class": "oxidative/clastogenic",
+      "mechanism": "Reactive quinones cause oxidative lesions plus chromosome breaks, deletions and aneuploidy.",
+      "unit": "µM·h", "rate_per_unit": 0.5, "hazard": "leukemogen",
+      "spectrum": {"transition": 0.1, "transversion": 0.2, "frameshift": 0.7}
+    },
+    {
+      "id": "ionising", "name": "Ionising radiation (gamma)", "class": "physical",
+      "mechanism": "Direct strand breaks and clustered lesions; repair failure yields deletions and translocations.",
+      "unit": "Gy", "rate_per_unit": 2.0, "hazard": "radiogenic",
+      "spectrum": {"transition": 0.08, "transversion": 0.12, "frameshift": 0.8}
+    },
+    {
+      "id": "colchicine", "name": "Colchicine (spindle poison)", "class": "aneugen",
+      "mechanism": "Tubulin binding blocks spindle formation; cells exit mitosis with wrong chromosome numbers. No point mutations.",
+      "unit": "µM·h", "rate_per_unit": 0.35, "hazard": "cytotoxic",
+      "spectrum": {"transition": 0.0, "transversion": 0.0, "frameshift": 0.0}
+    },
+    {
+      "id": "azacytidine", "name": "5-Azacytidine", "class": "epigenetic analogue",
+      "mechanism": "Incorporated into DNA and traps DNMTs, causing demethylation and re-expression of silenced genes.",
+      "unit": "µM·h", "rate_per_unit": 0.6, "hazard": "cytotoxic, teratogenic",
+      "spectrum": {"transition": 0.35, "transversion": 0.1, "frameshift": 0.55}
+    }
+  ]
+}

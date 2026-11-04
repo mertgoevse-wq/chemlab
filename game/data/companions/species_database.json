@@ -1,0 +1,2231 @@
+{
+  "version": 1,
+  "category_note": "REAL_ANIMAL are ordinary working animals. AETHERKIN are original alchemical creatures; no borrowed bestiary names remain.",
+  "species": {
+    "lab_rat": {
+      "species_id": "lab_rat",
+      "display_name": "Lab Rat",
+      "category": "REAL_ANIMAL",
+      "rarity": "COMMON",
+      "description": "Keen-nosed and unimpressed. Learns a maze faster than most interns learn the SDS.",
+      "base_stats": {
+        "health": 45,
+        "mana": 15,
+        "attack": 8,
+        "defense": 6,
+        "speed": 18,
+        "intelligence": 14
+      },
+      "growth_rates": {
+        "health": 1.15,
+        "mana": 1.107,
+        "attack": 1.097,
+        "defense": 1.095,
+        "speed": 1.095,
+        "intelligence": 1.116
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Flags off-odour reagent lots 15% faster",
+          "magnitude": 0.15,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "analytical",
+            "safety"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "sniff_out",
+        "quick_bite",
+        "scurry"
+      ],
+      "ability_unlock_levels": {
+        "sniff_out": 1,
+        "quick_bite": 8,
+        "scurry": 15
+      },
+      "evolution_line": {
+        "evolves_to": "enhanced_lab_rat",
+        "trigger": "LEVEL_UP",
+        "condition": {
+          "level": 25
+        }
+      },
+      "care_profile": {
+        "hunger_rate": 0.89,
+        "happiness_decay": 0.556,
+        "preferred_food": [
+          "cheese",
+          "seeds",
+          "pellets"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "rodent",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "lab_rat",
+          "enhanced_lab_rat"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/lab_rat.tscn",
+      "portrait_path": "res://assets/companions/portraits/lab_rat.png"
+    },
+    "enhanced_lab_rat": {
+      "species_id": "enhanced_lab_rat",
+      "display_name": "Instrumented Lab Rat",
+      "category": "REAL_ANIMAL",
+      "rarity": "UNCOMMON",
+      "description": "A rat with a subcutaneous telemetry chip; its stress response is a real toxicity readout.",
+      "base_stats": {
+        "health": 60,
+        "mana": 25,
+        "attack": 10,
+        "defense": 9,
+        "speed": 22,
+        "intelligence": 20
+      },
+      "growth_rates": {
+        "health": 1.167,
+        "mana": 1.118,
+        "attack": 1.099,
+        "defense": 1.098,
+        "speed": 1.098,
+        "intelligence": 1.122
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Live toxicity telemetry during dosing studies",
+          "magnitude": 0.3,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "toxicology"
+          ]
+        },
+        {
+          "bonus_type": "XP_MULTIPLIER",
+          "description": "+8% toxicology XP from animal work",
+          "magnitude": 0.08,
+          "unlock_level": 15,
+          "skill_synergy": [
+            "toxicology"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "sniff_out",
+        "telemetry_ping",
+        "scurry"
+      ],
+      "ability_unlock_levels": {
+        "sniff_out": 1,
+        "telemetry_ping": 8,
+        "scurry": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.91,
+        "happiness_decay": 0.58,
+        "preferred_food": [
+          "pellets",
+          "seeds"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "rodent",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "enhanced_lab_rat"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/enhanced_lab_rat.tscn",
+      "portrait_path": "res://assets/companions/portraits/enhanced_lab_rat.png"
+    },
+    "lab_cat": {
+      "species_id": "lab_cat",
+      "display_name": "Contraband Cat",
+      "category": "REAL_ANIMAL",
+      "rarity": "COMMON",
+      "description": "Sleeps on the fume hood, wakes for solvent vapours and strangers.",
+      "base_stats": {
+        "health": 55,
+        "mana": 20,
+        "attack": 14,
+        "defense": 8,
+        "speed": 24,
+        "intelligence": 16
+      },
+      "growth_rates": {
+        "health": 1.161,
+        "mana": 1.112,
+        "attack": 1.103,
+        "defense": 1.097,
+        "speed": 1.1,
+        "intelligence": 1.118
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "HAZARD_IMMUNITY",
+          "description": "Detects hidden solvent containers nearby",
+          "magnitude": 0.2,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "forensics"
+          ]
+        }
+      ],
+      "battle_role": "CONTROL",
+      "battle_abilities": [
+        "silent_step",
+        "swipe",
+        "hiss"
+      ],
+      "ability_unlock_levels": {
+        "silent_step": 1,
+        "swipe": 8,
+        "hiss": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.92,
+        "happiness_decay": 0.5640000000000001,
+        "preferred_food": [
+          "fish",
+          "poultry"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "feline",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "lab_cat"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/lab_cat.tscn",
+      "portrait_path": "res://assets/companions/portraits/lab_cat.png"
+    },
+    "lab_dog": {
+      "species_id": "lab_dog",
+      "display_name": "Search Dog",
+      "category": "REAL_ANIMAL",
+      "rarity": "UNCOMMON",
+      "description": "Trained on three odour signatures and stubbornly loyal to all of them.",
+      "base_stats": {
+        "health": 80,
+        "mana": 15,
+        "attack": 18,
+        "defense": 14,
+        "speed": 20,
+        "intelligence": 12
+      },
+      "growth_rates": {
+        "health": 1.189,
+        "mana": 1.107,
+        "attack": 1.106,
+        "defense": 1.103,
+        "speed": 1.097,
+        "intelligence": 1.113
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "REAGENT_FINDER",
+          "description": "Finds misplaced reagents on site",
+          "magnitude": 0.18,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "fieldwork"
+          ]
+        },
+        {
+          "bonus_type": "SAFETY_BUFFER",
+          "description": "Warns before you enter a contaminated room",
+          "magnitude": 0.1,
+          "unlock_level": 10,
+          "skill_synergy": [
+            "safety"
+          ]
+        }
+      ],
+      "battle_role": "TANK",
+      "battle_abilities": [
+        "track",
+        "bark_alert",
+        "guard"
+      ],
+      "ability_unlock_levels": {
+        "track": 1,
+        "bark_alert": 8,
+        "guard": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9,
+        "happiness_decay": 0.548,
+        "preferred_food": [
+          "kibble",
+          "meat"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "canine",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "lab_dog"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/lab_dog.tscn",
+      "portrait_path": "res://assets/companions/portraits/lab_dog.png"
+    },
+    "carrier_pigeon": {
+      "species_id": "carrier_pigeon",
+      "display_name": "Carrier Pigeon",
+      "category": "REAL_ANIMAL",
+      "rarity": "COMMON",
+      "description": "A living sample courier. Temperature-sensitive and utterly unimpressed by weather.",
+      "base_stats": {
+        "health": 30,
+        "mana": 10,
+        "attack": 5,
+        "defense": 4,
+        "speed": 30,
+        "intelligence": 10
+      },
+      "growth_rates": {
+        "health": 1.133,
+        "mana": 1.101,
+        "attack": 1.095,
+        "defense": 1.094,
+        "speed": 1.105,
+        "intelligence": 1.111
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "LOOT_QUALITY",
+          "description": "Reliable sample transfer between sites",
+          "magnitude": 0.1,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "fieldwork"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "fly",
+        "homing_return",
+        "peck"
+      ],
+      "ability_unlock_levels": {
+        "fly": 1,
+        "homing_return": 8,
+        "peck": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9500000000000001,
+        "happiness_decay": 0.54,
+        "preferred_food": [
+          "grain"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "avian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "carrier_pigeon"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/carrier_pigeon.tscn",
+      "portrait_path": "res://assets/companions/portraits/carrier_pigeon.png"
+    },
+    "gecko": {
+      "species_id": "gecko",
+      "display_name": "Wall Gecko",
+      "category": "REAL_ANIMAL",
+      "rarity": "COMMON",
+      "description": "Sticks to glassware cupboards and eats the insects you did not know were there.",
+      "base_stats": {
+        "health": 35,
+        "mana": 18,
+        "attack": 6,
+        "defense": 7,
+        "speed": 26,
+        "intelligence": 9
+      },
+      "growth_rates": {
+        "health": 1.139,
+        "mana": 1.11,
+        "attack": 1.095,
+        "defense": 1.096,
+        "speed": 1.102,
+        "intelligence": 1.11
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Catches fungal and insect contamination early",
+          "magnitude": 0.12,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "biology"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "cling",
+        "tongue_flick",
+        "camouflage"
+      ],
+      "ability_unlock_levels": {
+        "cling": 1,
+        "tongue_flick": 8,
+        "camouflage": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.93,
+        "happiness_decay": 0.536,
+        "preferred_food": [
+          "insects"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "reptile",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "gecko"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/gecko.tscn",
+      "portrait_path": "res://assets/companions/portraits/gecko.png"
+    },
+    "axolotl": {
+      "species_id": "axolotl",
+      "display_name": "Lab Axolotl",
+      "category": "REAL_ANIMAL",
+      "rarity": "RARE",
+      "description": "Regenerates limbs and, in this lab, your confidence in vertebrate models.",
+      "base_stats": {
+        "health": 50,
+        "mana": 40,
+        "attack": 6,
+        "defense": 10,
+        "speed": 12,
+        "intelligence": 22
+      },
+      "growth_rates": {
+        "health": 1.156,
+        "mana": 1.134,
+        "attack": 1.095,
+        "defense": 1.099,
+        "speed": 1.09,
+        "intelligence": 1.124
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "XP_MULTIPLIER",
+          "description": "+12% developmental biology XP",
+          "magnitude": 0.12,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "biology"
+          ]
+        },
+        {
+          "bonus_type": "REBIRTH",
+          "description": "Once per session, a failed protocol is not fatal to the batch",
+          "magnitude": 0.25,
+          "unlock_level": 30,
+          "skill_synergy": [
+            "biology"
+          ]
+        }
+      ],
+      "battle_role": "SUPPORT",
+      "battle_abilities": [
+        "regenerate",
+        "gill_pulse",
+        "heal_aura"
+      ],
+      "ability_unlock_levels": {
+        "regenerate": 1,
+        "gill_pulse": 8,
+        "heal_aura": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.8600000000000001,
+        "happiness_decay": 0.588,
+        "preferred_food": [
+          "brine shrimp",
+          "worms"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "amphibian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "axolotl"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/axolotl.tscn",
+      "portrait_path": "res://assets/companions/portraits/axolotl.png"
+    },
+    "raven": {
+      "species_id": "raven",
+      "display_name": "Archive Raven",
+      "category": "REAL_ANIMAL",
+      "rarity": "UNCOMMON",
+      "description": "Steals labels, remembers faces, and has strong opinions about your handwriting.",
+      "base_stats": {
+        "health": 40,
+        "mana": 25,
+        "attack": 10,
+        "defense": 6,
+        "speed": 27,
+        "intelligence": 24
+      },
+      "growth_rates": {
+        "health": 1.144,
+        "mana": 1.118,
+        "attack": 1.099,
+        "defense": 1.095,
+        "speed": 1.103,
+        "intelligence": 1.127
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "XP_MULTIPLIER",
+          "description": "+10% notebook and literature XP",
+          "magnitude": 0.1,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "research"
+          ]
+        },
+        {
+          "bonus_type": "REAGENT_FINDER",
+          "description": "Retrieves dropped small items",
+          "magnitude": 0.08,
+          "unlock_level": 12,
+          "skill_synergy": [
+            "research"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "recon",
+        "mimic",
+        "retrieve"
+      ],
+      "ability_unlock_levels": {
+        "recon": 1,
+        "mimic": 8,
+        "retrieve": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.935,
+        "happiness_decay": 0.596,
+        "preferred_food": [
+          "nuts",
+          "fruit"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "avian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "raven"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "DEFAULT",
+        "value": null
+      },
+      "sprite_path": "res://assets/companions/raven.tscn",
+      "portrait_path": "res://assets/companions/portraits/raven.png"
+    },
+    "cinderling": {
+      "species_id": "cinderling",
+      "display_name": "Cinderling",
+      "category": "AETHERKIN",
+      "rarity": "COMMON",
+      "description": "A palm-sized ember that nests in burner cones. It eats soot and sulks when the flame is too lean.",
+      "base_stats": {
+        "health": 40,
+        "mana": 35,
+        "attack": 16,
+        "defense": 5,
+        "speed": 22,
+        "intelligence": 12
+      },
+      "growth_rates": {
+        "health": 1.144,
+        "mana": 1.129,
+        "attack": 1.105,
+        "defense": 1.095,
+        "speed": 1.098,
+        "intelligence": 1.113
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "HEAT_RESISTANCE",
+          "description": "Cuts heat damage by 20% and steadies a flame",
+          "magnitude": 0.2,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "safety",
+            "synthesis"
+          ]
+        },
+        {
+          "bonus_type": "CATALYST_EFFICIENCY",
+          "description": "Combustion catalysts last 10% longer",
+          "magnitude": 0.1,
+          "unlock_level": 12,
+          "skill_synergy": [
+            "synthesis"
+          ]
+        }
+      ],
+      "battle_role": "DPS",
+      "battle_abilities": [
+        "ember_spit",
+        "flare",
+        "ash_veil"
+      ],
+      "ability_unlock_levels": {
+        "ember_spit": 1,
+        "flare": 8,
+        "ash_veil": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.91,
+        "happiness_decay": 0.548,
+        "preferred_food": [
+          "soot",
+          "charcoal",
+          "ethanol"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "elemental",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "cinderling"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 2
+      },
+      "sprite_path": "res://assets/companions/cinderling.tscn",
+      "portrait_path": "res://assets/companions/portraits/cinderling.png"
+    },
+    "brinejack": {
+      "species_id": "brinejack",
+      "display_name": "Brinejack",
+      "category": "AETHERKIN",
+      "rarity": "COMMON",
+      "description": "A crab-like scavenger with salt crystals on its shell. Drinks brine and spits distilled water.",
+      "base_stats": {
+        "health": 65,
+        "mana": 20,
+        "attack": 12,
+        "defense": 20,
+        "speed": 12,
+        "intelligence": 14
+      },
+      "growth_rates": {
+        "health": 1.172,
+        "mana": 1.112,
+        "attack": 1.101,
+        "defense": 1.108,
+        "speed": 1.09,
+        "intelligence": 1.116
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "PURITY_BOOST",
+          "description": "+8% purity on aqueous workups",
+          "magnitude": 0.08,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "analytical"
+          ]
+        },
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Senses chloride and sulfate contamination",
+          "magnitude": 0.2,
+          "unlock_level": 8,
+          "skill_synergy": [
+            "analytical"
+          ]
+        }
+      ],
+      "battle_role": "TANK",
+      "battle_abilities": [
+        "brine_spray",
+        "shell_guard",
+        "desalinate"
+      ],
+      "ability_unlock_levels": {
+        "brine_spray": 1,
+        "shell_guard": 8,
+        "desalinate": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.8600000000000001,
+        "happiness_decay": 0.556,
+        "preferred_food": [
+          "seawater",
+          "salt"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "aquatic",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "brinejack"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 3
+      },
+      "sprite_path": "res://assets/companions/brinejack.tscn",
+      "portrait_path": "res://assets/companions/portraits/brinejack.png"
+    },
+    "glasswing_moth": {
+      "species_id": "glasswing_moth",
+      "display_name": "Glasswing Moth",
+      "category": "AETHERKIN",
+      "rarity": "UNCOMMON",
+      "description": "Wings of silica scale so thin they show Newton's rings. It lands on cracks and refuses to move.",
+      "base_stats": {
+        "health": 30,
+        "mana": 30,
+        "attack": 6,
+        "defense": 4,
+        "speed": 26,
+        "intelligence": 26
+      },
+      "growth_rates": {
+        "health": 1.133,
+        "mana": 1.123,
+        "attack": 1.095,
+        "defense": 1.094,
+        "speed": 1.102,
+        "intelligence": 1.129
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Detects microfractures in glassware before they fail",
+          "magnitude": 0.35,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "safety"
+          ]
+        },
+        {
+          "bonus_type": "PURITY_BOOST",
+          "description": "UV inspection improves crystal purity checks",
+          "magnitude": 0.1,
+          "unlock_level": 14,
+          "skill_synergy": [
+            "analytical"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "fracture_sense",
+        "uv_flash",
+        "dust_wing"
+      ],
+      "ability_unlock_levels": {
+        "fracture_sense": 1,
+        "uv_flash": 8,
+        "dust_wing": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.93,
+        "happiness_decay": 0.604,
+        "preferred_food": [
+          "nectar",
+          "silica dust"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "insect",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "glasswing_moth"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 4
+      },
+      "sprite_path": "res://assets/companions/glasswing_moth.tscn",
+      "portrait_path": "res://assets/companions/portraits/glasswing_moth.png"
+    },
+    "calcine_hound": {
+      "species_id": "calcine_hound",
+      "display_name": "Calcine Hound",
+      "category": "AETHERKIN",
+      "rarity": "UNCOMMON",
+      "description": "An ash-grey canid with furnace breath. Tracks residues by their thermal signature.",
+      "base_stats": {
+        "health": 90,
+        "mana": 30,
+        "attack": 24,
+        "defense": 16,
+        "speed": 24,
+        "intelligence": 18
+      },
+      "growth_rates": {
+        "health": 1.2,
+        "mana": 1.123,
+        "attack": 1.112,
+        "defense": 1.105,
+        "speed": 1.1,
+        "intelligence": 1.12
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "REAGENT_FINDER",
+          "description": "Follows a residue trail across the facility",
+          "magnitude": 0.25,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "forensics"
+          ]
+        },
+        {
+          "bonus_type": "HEAT_RESISTANCE",
+          "description": "Shrugs off radiant heat near furnaces",
+          "magnitude": 0.3,
+          "unlock_level": 10,
+          "skill_synergy": [
+            "safety"
+          ]
+        }
+      ],
+      "battle_role": "TANK",
+      "battle_abilities": [
+        "track_ash",
+        "heat_wave",
+        "guard"
+      ],
+      "ability_unlock_levels": {
+        "track_ash": 1,
+        "heat_wave": 8,
+        "guard": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.92,
+        "happiness_decay": 0.572,
+        "preferred_food": [
+          "ash",
+          "bone char"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "elemental",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "calcine_hound"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 6
+      },
+      "sprite_path": "res://assets/companions/calcine_hound.tscn",
+      "portrait_path": "res://assets/companions/portraits/calcine_hound.png"
+    },
+    "mercurial_ferret": {
+      "species_id": "mercurial_ferret",
+      "display_name": "Mercurial Ferret",
+      "category": "AETHERKIN",
+      "rarity": "RARE",
+      "description": "Its fur flows like liquid metal. It can round up a mercury spill into a single bright bead.",
+      "base_stats": {
+        "health": 50,
+        "mana": 40,
+        "attack": 18,
+        "defense": 10,
+        "speed": 30,
+        "intelligence": 20
+      },
+      "growth_rates": {
+        "health": 1.156,
+        "mana": 1.134,
+        "attack": 1.106,
+        "defense": 1.099,
+        "speed": 1.105,
+        "intelligence": 1.122
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "REAGENT_FINDER",
+          "description": "Recovers spilled reagents instead of losing them",
+          "magnitude": 0.3,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "preparative"
+          ]
+        },
+        {
+          "bonus_type": "HAZARD_IMMUNITY",
+          "description": "Safe handling of mercury and heavy-metal spills",
+          "magnitude": 0.4,
+          "unlock_level": 18,
+          "skill_synergy": [
+            "safety"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "spill_recover",
+        "amalgam_sense",
+        "slip_through"
+      ],
+      "ability_unlock_levels": {
+        "spill_recover": 1,
+        "amalgam_sense": 8,
+        "slip_through": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9500000000000001,
+        "happiness_decay": 0.58,
+        "preferred_food": [
+          "metal dust",
+          "oil"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "elemental",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "mercurial_ferret"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 8
+      },
+      "sprite_path": "res://assets/companions/mercurial_ferret.tscn",
+      "portrait_path": "res://assets/companions/portraits/mercurial_ferret.png"
+    },
+    "lumen_eel": {
+      "species_id": "lumen_eel",
+      "display_name": "Lumen Eel",
+      "category": "AETHERKIN",
+      "rarity": "UNCOMMON",
+      "description": "A ribbon of cold light in a dark tank. Its glow tracks reactive oxygen species.",
+      "base_stats": {
+        "health": 45,
+        "mana": 55,
+        "attack": 10,
+        "defense": 8,
+        "speed": 20,
+        "intelligence": 24
+      },
+      "growth_rates": {
+        "health": 1.15,
+        "mana": 1.151,
+        "attack": 1.099,
+        "defense": 1.097,
+        "speed": 1.097,
+        "intelligence": 1.127
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Reactive-oxygen and peroxide sensing",
+          "magnitude": 0.28,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "analytical"
+          ]
+        },
+        {
+          "bonus_type": "MANA_REGEN",
+          "description": "Restores stamina faster during long protocols",
+          "magnitude": 0.15,
+          "unlock_level": 12,
+          "skill_synergy": [
+            "endurance"
+          ]
+        }
+      ],
+      "battle_role": "SUPPORT",
+      "battle_abilities": [
+        "glow",
+        "ros_pulse",
+        "shock"
+      ],
+      "ability_unlock_levels": {
+        "glow": 1,
+        "ros_pulse": 8,
+        "shock": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9,
+        "happiness_decay": 0.596,
+        "preferred_food": [
+          "plankton",
+          "hydrogen peroxide"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "aquatic",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "lumen_eel"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 5
+      },
+      "sprite_path": "res://assets/companions/lumen_eel.tscn",
+      "portrait_path": "res://assets/companions/portraits/lumen_eel.png"
+    },
+    "verdant_sloth": {
+      "species_id": "verdant_sloth",
+      "display_name": "Verdant Sloth",
+      "category": "AETHERKIN",
+      "rarity": "RARE",
+      "description": "Moss grows in its fur in the exact pattern of its last meal. It moves once an hour, decisively.",
+      "base_stats": {
+        "health": 85,
+        "mana": 45,
+        "attack": 8,
+        "defense": 22,
+        "speed": 5,
+        "intelligence": 20
+      },
+      "growth_rates": {
+        "health": 1.194,
+        "mana": 1.14,
+        "attack": 1.097,
+        "defense": 1.11,
+        "speed": 1.084,
+        "intelligence": 1.122
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "YIELD_BOOST",
+          "description": "+18% yield from plant extractions",
+          "magnitude": 0.18,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "phytochemistry"
+          ]
+        },
+        {
+          "bonus_type": "PURITY_BOOST",
+          "description": "Slows oxidation of sensitive botanicals",
+          "magnitude": 0.12,
+          "unlock_level": 16,
+          "skill_synergy": [
+            "phytochemistry"
+          ]
+        }
+      ],
+      "battle_role": "SUPPORT",
+      "battle_abilities": [
+        "slow_aura",
+        "terpene_sense",
+        "regrow"
+      ],
+      "ability_unlock_levels": {
+        "slow_aura": 1,
+        "terpene_sense": 8,
+        "regrow": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.8250000000000001,
+        "happiness_decay": 0.58,
+        "preferred_food": [
+          "leaves",
+          "moss"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "plant",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "verdant_sloth"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "SKILL",
+        "value": 25
+      },
+      "sprite_path": "res://assets/companions/verdant_sloth.tscn",
+      "portrait_path": "res://assets/companions/portraits/verdant_sloth.png"
+    },
+    "obsidian_beetle": {
+      "species_id": "obsidian_beetle",
+      "display_name": "Obsidian Beetle",
+      "category": "AETHERKIN",
+      "rarity": "RARE",
+      "description": "Its carapace is a natural radiation shield. It walks toward the source, which is the problem.",
+      "base_stats": {
+        "health": 95,
+        "mana": 20,
+        "attack": 20,
+        "defense": 34,
+        "speed": 10,
+        "intelligence": 10
+      },
+      "growth_rates": {
+        "health": 1.206,
+        "mana": 1.112,
+        "attack": 1.108,
+        "defense": 1.121,
+        "speed": 1.088,
+        "intelligence": 1.111
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "FIRE_RESISTANCE",
+          "description": "Reduces fire and arc-flash damage by 35%",
+          "magnitude": 0.35,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "safety"
+          ]
+        },
+        {
+          "bonus_type": "HAZARD_IMMUNITY",
+          "description": "Shields against beta and low-energy gamma",
+          "magnitude": 0.3,
+          "unlock_level": 20,
+          "skill_synergy": [
+            "radiological"
+          ]
+        }
+      ],
+      "battle_role": "TANK",
+      "battle_abilities": [
+        "shell_wall",
+        "radiation_soak",
+        "iridesce"
+      ],
+      "ability_unlock_levels": {
+        "shell_wall": 1,
+        "radiation_soak": 8,
+        "iridesce": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.8500000000000001,
+        "happiness_decay": 0.54,
+        "preferred_food": [
+          "minerals",
+          "basalt dust"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "insect",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "obsidian_beetle"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "SKILL",
+        "value": 30
+      },
+      "sprite_path": "res://assets/companions/obsidian_beetle.tscn",
+      "portrait_path": "res://assets/companions/portraits/obsidian_beetle.png"
+    },
+    "null_moth": {
+      "species_id": "null_moth",
+      "display_name": "Null Moth",
+      "category": "AETHERKIN",
+      "rarity": "RARE",
+      "description": "It feeds on static. Balances settle in its presence, and so do your nerves.",
+      "base_stats": {
+        "health": 35,
+        "mana": 45,
+        "attack": 5,
+        "defense": 8,
+        "speed": 24,
+        "intelligence": 30
+      },
+      "growth_rates": {
+        "health": 1.139,
+        "mana": 1.14,
+        "attack": 1.095,
+        "defense": 1.097,
+        "speed": 1.1,
+        "intelligence": 1.133
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "CATALYST_EFFICIENCY",
+          "description": "Removes static interference from microbalances",
+          "magnitude": 0.25,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "analytical"
+          ]
+        },
+        {
+          "bonus_type": "SAFETY_BUFFER",
+          "description": "Prevents solvent-vapour ignition from static discharge",
+          "magnitude": 0.2,
+          "unlock_level": 15,
+          "skill_synergy": [
+            "safety"
+          ]
+        }
+      ],
+      "battle_role": "SUPPORT",
+      "battle_abilities": [
+        "static_ward",
+        "calm",
+        "dust_wing"
+      ],
+      "ability_unlock_levels": {
+        "static_ward": 1,
+        "calm": 8,
+        "dust_wing": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.92,
+        "happiness_decay": 0.62,
+        "preferred_food": [
+          "static",
+          "pollen"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "insect",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "null_moth"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 9
+      },
+      "sprite_path": "res://assets/companions/null_moth.tscn",
+      "portrait_path": "res://assets/companions/portraits/null_moth.png"
+    },
+    "tideglass_serpent": {
+      "species_id": "tideglass_serpent",
+      "display_name": "Tideglass Serpent",
+      "category": "AETHERKIN",
+      "rarity": "EPIC",
+      "description": "Swims through microgravity water without surface tension. Its scales nucleate crystals on command.",
+      "base_stats": {
+        "health": 70,
+        "mana": 60,
+        "attack": 22,
+        "defense": 14,
+        "speed": 26,
+        "intelligence": 28
+      },
+      "growth_rates": {
+        "health": 1.178,
+        "mana": 1.157,
+        "attack": 1.11,
+        "defense": 1.103,
+        "speed": 1.102,
+        "intelligence": 1.131
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "YIELD_BOOST",
+          "description": "+20% crystal yield; controls nucleation",
+          "magnitude": 0.2,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "crystallography"
+          ]
+        },
+        {
+          "bonus_type": "REACTION_ACCELERATOR",
+          "description": "Crystallisation runs 15% faster",
+          "magnitude": 0.15,
+          "unlock_level": 22,
+          "skill_synergy": [
+            "crystallography"
+          ]
+        }
+      ],
+      "battle_role": "CONTROL",
+      "battle_abilities": [
+        "nucleate",
+        "fluid_weave",
+        "coil"
+      ],
+      "ability_unlock_levels": {
+        "nucleate": 1,
+        "fluid_weave": 8,
+        "coil": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.93,
+        "happiness_decay": 0.612,
+        "preferred_food": [
+          "mineral water",
+          "glass"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "aquatic",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "tideglass_serpent"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 12
+      },
+      "sprite_path": "res://assets/companions/tideglass_serpent.tscn",
+      "portrait_path": "res://assets/companions/portraits/tideglass_serpent.png"
+    },
+    "auric_kite": {
+      "species_id": "auric_kite",
+      "display_name": "Auric Kite",
+      "category": "AETHERKIN",
+      "rarity": "RARE",
+      "description": "A paper-thin raptor that circles anything conductive. Its feathers ring faintly near gold.",
+      "base_stats": {
+        "health": 45,
+        "mana": 35,
+        "attack": 18,
+        "defense": 8,
+        "speed": 32,
+        "intelligence": 22
+      },
+      "growth_rates": {
+        "health": 1.15,
+        "mana": 1.129,
+        "attack": 1.106,
+        "defense": 1.097,
+        "speed": 1.107,
+        "intelligence": 1.124
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "LOOT_QUALITY",
+          "description": "Locates noble-metal residues and ore traces",
+          "magnitude": 0.3,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "fieldwork"
+          ]
+        },
+        {
+          "bonus_type": "REAGENT_FINDER",
+          "description": "Aerial recon of the site",
+          "magnitude": 0.15,
+          "unlock_level": 10,
+          "skill_synergy": [
+            "fieldwork"
+          ]
+        }
+      ],
+      "battle_role": "DPS",
+      "battle_abilities": [
+        "dive",
+        "metal_sense",
+        "wind_slash"
+      ],
+      "ability_unlock_levels": {
+        "dive": 1,
+        "metal_sense": 8,
+        "wind_slash": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9600000000000001,
+        "happiness_decay": 0.588,
+        "preferred_food": [
+          "insects",
+          "copper"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "avian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "auric_kite"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 10
+      },
+      "sprite_path": "res://assets/companions/auric_kite.tscn",
+      "portrait_path": "res://assets/companions/portraits/auric_kite.png"
+    },
+    "sable_lynx": {
+      "species_id": "sable_lynx",
+      "display_name": "Sable Lynx",
+      "category": "AETHERKIN",
+      "rarity": "EPIC",
+      "description": "A shadow with eyes. It sees heat, hears lies, and dislikes being photographed.",
+      "base_stats": {
+        "health": 80,
+        "mana": 40,
+        "attack": 28,
+        "defense": 12,
+        "speed": 34,
+        "intelligence": 20
+      },
+      "growth_rates": {
+        "health": 1.189,
+        "mana": 1.134,
+        "attack": 1.115,
+        "defense": 1.101,
+        "speed": 1.108,
+        "intelligence": 1.122
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "HAZARD_IMMUNITY",
+          "description": "Night operations and contraband detection",
+          "magnitude": 0.35,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "forensics"
+          ]
+        },
+        {
+          "bonus_type": "XP_MULTIPLIER",
+          "description": "+12% investigation XP",
+          "magnitude": 0.12,
+          "unlock_level": 20,
+          "skill_synergy": [
+            "forensics"
+          ]
+        }
+      ],
+      "battle_role": "DPS",
+      "battle_abilities": [
+        "pounce",
+        "thermal_sight",
+        "vanish"
+      ],
+      "ability_unlock_levels": {
+        "pounce": 1,
+        "thermal_sight": 8,
+        "vanish": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9700000000000001,
+        "happiness_decay": 0.58,
+        "preferred_food": [
+          "meat"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "feline",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "sable_lynx"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 14
+      },
+      "sprite_path": "res://assets/companions/sable_lynx.tscn",
+      "portrait_path": "res://assets/companions/portraits/sable_lynx.png"
+    },
+    "halide_newt": {
+      "species_id": "halide_newt",
+      "display_name": "Halide Newt",
+      "category": "AETHERKIN",
+      "rarity": "UNCOMMON",
+      "description": "Its skin changes colour with halogen concentration. A living indicator paper with opinions.",
+      "base_stats": {
+        "health": 40,
+        "mana": 35,
+        "attack": 10,
+        "defense": 8,
+        "speed": 18,
+        "intelligence": 24
+      },
+      "growth_rates": {
+        "health": 1.144,
+        "mana": 1.129,
+        "attack": 1.099,
+        "defense": 1.097,
+        "speed": 1.095,
+        "intelligence": 1.127
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Halide and halogen sensing in the fume hood",
+          "magnitude": 0.3,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "analytical"
+          ]
+        },
+        {
+          "bonus_type": "SAFETY_BUFFER",
+          "description": "Early warning for chlorine and bromine leaks",
+          "magnitude": 0.15,
+          "unlock_level": 10,
+          "skill_synergy": [
+            "safety"
+          ]
+        }
+      ],
+      "battle_role": "SUPPORT",
+      "battle_abilities": [
+        "halide_sense",
+        "colour_flash",
+        "slip"
+      ],
+      "ability_unlock_levels": {
+        "halide_sense": 1,
+        "colour_flash": 8,
+        "slip": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.89,
+        "happiness_decay": 0.596,
+        "preferred_food": [
+          "brine",
+          "insects"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "amphibian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "halide_newt"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 7
+      },
+      "sprite_path": "res://assets/companions/halide_newt.tscn",
+      "portrait_path": "res://assets/companions/portraits/halide_newt.png"
+    },
+    "xenon_owl": {
+      "species_id": "xenon_owl",
+      "display_name": "Xenon Owl",
+      "category": "AETHERKIN",
+      "rarity": "EPIC",
+      "description": "It hunts vacuum leaks by sound. Its eyes are the colour of a discharge tube.",
+      "base_stats": {
+        "health": 55,
+        "mana": 50,
+        "attack": 12,
+        "defense": 10,
+        "speed": 24,
+        "intelligence": 34
+      },
+      "growth_rates": {
+        "health": 1.161,
+        "mana": 1.146,
+        "attack": 1.101,
+        "defense": 1.099,
+        "speed": 1.1,
+        "intelligence": 1.138
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "IMPURITY_DETECTION",
+          "description": "Locates vacuum leaks and noble-gas contamination",
+          "magnitude": 0.4,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "physics"
+          ]
+        },
+        {
+          "bonus_type": "CATALYST_EFFICIENCY",
+          "description": "Improves vacuum stability during distillations",
+          "magnitude": 0.15,
+          "unlock_level": 20,
+          "skill_synergy": [
+            "physics"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "leak_sense",
+        "silent_flight",
+        "glow_eyes"
+      ],
+      "ability_unlock_levels": {
+        "leak_sense": 1,
+        "silent_flight": 8,
+        "glow_eyes": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.92,
+        "happiness_decay": 0.636,
+        "preferred_food": [
+          "moths",
+          "argon"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "avian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "xenon_owl"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 16
+      },
+      "sprite_path": "res://assets/companions/xenon_owl.tscn",
+      "portrait_path": "res://assets/companions/portraits/xenon_owl.png"
+    },
+    "prism_finch": {
+      "species_id": "prism_finch",
+      "display_name": "Prism Finch",
+      "category": "AETHERKIN",
+      "rarity": "RARE",
+      "description": "Its plumage splits light across a spectrum. It can tell two nearly identical yellows apart.",
+      "base_stats": {
+        "health": 35,
+        "mana": 30,
+        "attack": 8,
+        "defense": 6,
+        "speed": 30,
+        "intelligence": 28
+      },
+      "growth_rates": {
+        "health": 1.139,
+        "mana": 1.123,
+        "attack": 1.097,
+        "defense": 1.095,
+        "speed": 1.105,
+        "intelligence": 1.131
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "PURITY_BOOST",
+          "description": "Colour-based purity grading at a glance",
+          "magnitude": 0.22,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "analytical"
+          ]
+        },
+        {
+          "bonus_type": "XP_MULTIPLIER",
+          "description": "+10% spectroscopy XP",
+          "magnitude": 0.1,
+          "unlock_level": 14,
+          "skill_synergy": [
+            "analytical"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "spectrum_sight",
+        "colour_call",
+        "dart"
+      ],
+      "ability_unlock_levels": {
+        "spectrum_sight": 1,
+        "colour_call": 8,
+        "dart": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9500000000000001,
+        "happiness_decay": 0.612,
+        "preferred_food": [
+          "seeds",
+          "nectar"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "avian",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "prism_finch"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 11
+      },
+      "sprite_path": "res://assets/companions/prism_finch.tscn",
+      "portrait_path": "res://assets/companions/portraits/prism_finch.png"
+    },
+    "ferro_snail": {
+      "species_id": "ferro_snail",
+      "display_name": "Ferro Snail",
+      "category": "AETHERKIN",
+      "rarity": "UNCOMMON",
+      "description": "Its shell is a magnetic lattice. It hoovers iron nanoparticles off glass without scratching.",
+      "base_stats": {
+        "health": 55,
+        "mana": 20,
+        "attack": 6,
+        "defense": 26,
+        "speed": 4,
+        "intelligence": 12
+      },
+      "growth_rates": {
+        "health": 1.161,
+        "mana": 1.112,
+        "attack": 1.095,
+        "defense": 1.114,
+        "speed": 1.083,
+        "intelligence": 1.113
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "PURITY_BOOST",
+          "description": "Removes magnetic nanoparticle contamination",
+          "magnitude": 0.25,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "materials"
+          ]
+        },
+        {
+          "bonus_type": "REAGENT_FINDER",
+          "description": "Recovers magnetic catalysts",
+          "magnitude": 0.15,
+          "unlock_level": 12,
+          "skill_synergy": [
+            "materials"
+          ]
+        }
+      ],
+      "battle_role": "UTILITY",
+      "battle_abilities": [
+        "magnet_shell",
+        "slow_crawl",
+        "adsorb"
+      ],
+      "ability_unlock_levels": {
+        "magnet_shell": 1,
+        "slow_crawl": 8,
+        "adsorb": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.8200000000000001,
+        "happiness_decay": 0.548,
+        "preferred_food": [
+          "iron oxide",
+          "algae"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "mollusc",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "ferro_snail"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 9
+      },
+      "sprite_path": "res://assets/companions/ferro_snail.tscn",
+      "portrait_path": "res://assets/companions/portraits/ferro_snail.png"
+    },
+    "ember_drake": {
+      "species_id": "ember_drake",
+      "display_name": "Ember Drake",
+      "category": "AETHERKIN",
+      "rarity": "MYTHIC",
+      "description": "A furnace with wings. Bonding one is less a capture and more a negotiated ceasefire.",
+      "base_stats": {
+        "health": 140,
+        "mana": 90,
+        "attack": 42,
+        "defense": 30,
+        "speed": 30,
+        "intelligence": 26
+      },
+      "growth_rates": {
+        "health": 1.256,
+        "mana": 1.19,
+        "attack": 1.128,
+        "defense": 1.117,
+        "speed": 1.105,
+        "intelligence": 1.129
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "HEAT_RESISTANCE",
+          "description": "Ignores furnace heat; can carry a crucible",
+          "magnitude": 0.6,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "synthesis"
+          ]
+        },
+        {
+          "bonus_type": "HAZARD_IMMUNITY",
+          "description": "Fire and molten-metal splash protection",
+          "magnitude": 0.55,
+          "unlock_level": 40,
+          "skill_synergy": [
+            "safety"
+          ]
+        },
+        {
+          "bonus_type": "YIELD_BOOST",
+          "description": "+15% yield on high-temperature syntheses",
+          "magnitude": 0.15,
+          "unlock_level": 55,
+          "skill_synergy": [
+            "synthesis"
+          ]
+        }
+      ],
+      "battle_role": "DPS",
+      "battle_abilities": [
+        "breath_fire",
+        "wing_buffet",
+        "crucible_carry",
+        "molten_roar"
+      ],
+      "ability_unlock_levels": {
+        "breath_fire": 1,
+        "wing_buffet": 8,
+        "crucible_carry": 15,
+        "molten_roar": 22
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.9500000000000001,
+        "happiness_decay": 0.604,
+        "preferred_food": [
+          "coal",
+          "metal ore",
+          "ethanol"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "elemental",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "ember_drake"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "SKILL",
+        "value": 75
+      },
+      "sprite_path": "res://assets/companions/ember_drake.tscn",
+      "portrait_path": "res://assets/companions/portraits/ember_drake.png"
+    },
+    "chrysalis_warden": {
+      "species_id": "chrysalis_warden",
+      "display_name": "Chrysalis Warden",
+      "category": "AETHERKIN",
+      "rarity": "MYTHIC",
+      "description": "A cocoon that never quite hatches. It absorbs one fatal mistake per cycle and remembers it.",
+      "base_stats": {
+        "health": 110,
+        "mana": 100,
+        "attack": 14,
+        "defense": 36,
+        "speed": 18,
+        "intelligence": 38
+      },
+      "growth_rates": {
+        "health": 1.222,
+        "mana": 1.201,
+        "attack": 1.103,
+        "defense": 1.123,
+        "speed": 1.095,
+        "intelligence": 1.142
+      },
+      "chemistry_bonuses": [
+        {
+          "bonus_type": "REBIRTH",
+          "description": "Once per session, prevents a fatal laboratory accident",
+          "magnitude": 1.0,
+          "unlock_level": 1,
+          "skill_synergy": [
+            "safety"
+          ]
+        },
+        {
+          "bonus_type": "SAFETY_BUFFER",
+          "description": "Cuts safety-rating decay by 40%",
+          "magnitude": 0.4,
+          "unlock_level": 30,
+          "skill_synergy": [
+            "safety"
+          ]
+        },
+        {
+          "bonus_type": "MANA_REGEN",
+          "description": "Restores stamina between long protocols",
+          "magnitude": 0.2,
+          "unlock_level": 45,
+          "skill_synergy": [
+            "endurance"
+          ]
+        }
+      ],
+      "battle_role": "SUPPORT",
+      "battle_abilities": [
+        "ward",
+        "rebirth",
+        "cocoon_shield"
+      ],
+      "ability_unlock_levels": {
+        "ward": 1,
+        "rebirth": 8,
+        "cocoon_shield": 15
+      },
+      "evolution_line": {
+        "evolves_to": null,
+        "trigger": "NONE",
+        "condition": {}
+      },
+      "care_profile": {
+        "hunger_rate": 0.89,
+        "happiness_decay": 0.652,
+        "preferred_food": [
+          "silk",
+          "moonlight"
+        ],
+        "favorite_activity": "bench_supervision"
+      },
+      "breeding": {
+        "breeding_group": "insect",
+        "breeding_time_hours": 4,
+        "egg_type": "live_birth",
+        "offspring_species": [
+          "chrysalis_warden"
+        ],
+        "inheritable_traits": [
+          "intelligence",
+          "speed"
+        ]
+      },
+      "unlock_requirement": {
+        "type": "QUEST",
+        "value": 20
+      },
+      "sprite_path": "res://assets/companions/chrysalis_warden.tscn",
+      "portrait_path": "res://assets/companions/portraits/chrysalis_warden.png"
+    }
+  }
+}

@@ -1,113 +1,122 @@
-# ChemLab – Interactive Virtual Chemistry Lab
+# Athanor Ascension
 
-## Übersicht
-Ein hochwertiger, fotorealistischer 3D-Chemielabor in Echtzeit, gesteuert durch Echtzeit-Hand-Tracking mit einer normalen Webcam. Mischung und Reaktion von Substanzen werden live animiert, mit realistischen Oszillations-Uhren, spektakulären Schaumeffekten und eigenen Story-Modus-Quests.
+**An offline alchemy and laboratory simulation.** Real chemistry, real physics, no
+server in the loop. You start as a nobody with a borrowed bench and end up running
+a network of laboratories — legal, clandestine and orbital — while every mistake
+costs blood, lung capacity or radiation dose rather than experience points.
 
-> **„Es ist, als ob du einen echten Chemielabor vor dir hättest, greifst hinein und bringst die Teile ins Spiel!“**
+[Deutsch](README.de.md) · [Español](README.es.md) · [日本語](README.ja.md)
 
-## 🤖 Was erledigt dieses Repo?
-- **3D-Labor** – erstellt und gerendert in Blender 5.2 für eine hochdetaillierte, physikalisch korrekte Darstellung der Borosilikatglaswaren und Chemikalien.
-- **Echtzeit-Hand-Tracking** – nutzt MediaPipe Vision via Python für 21-knotige Hand-Positionen in 60 FPS und einen „Air-Guitar“-Interaktionskatalog (Greifen, Gießen, Schütteln).
-- **Chemikalien-Echtzeit-Simulation** – präzise Werkzeug für Brutt-Rauscher-Oszillation, Säure-Base-Neutralisation, Schaumbildung, Fällung und Chemolumineszenz.
-- **HTML/JS-Visualizer** – Live-Vorschau und Überwachung der Reaktionen, Erkundung der Modi (Story/Sandbox) und Echtzeit-Statistiken.
-- **Multi-Agent-Studio** – 16 selbstständige Subagents von der Aufsicht entwickelten sowohl über Auto-Instaltion der `_claude_studio`-Abteilung als auch über `superpowers:brainstorming`.
-- **Story-Modus** – ein Lineares Quest-System des Fortschritts vom Praktikanten bis zum Meister-Alchemisten.
-- **Sandbox-Modus** – Freies Spiel ohne Levelgrenzen, mit 100+ natürlichen Substanzen, Vollständiger Unisex-Verfügbarkeit von Reagenzien, Reaktions- und Toxizitäts-GHS-Aufklebern.
-- **Hardware-Optimierung** – Fokus auf den Intel Iris Xe der Dell Latitude 5530 für stabile 60 FPS.
+> Current state: **playable vertical slice**, not a finished game. The chemistry
+> core is mature; the 3D world is early. The status table below is the truth.
 
-## 🚀 Schnelle Übersicht
+![Analytical laboratory asset render](docs/screenshots/lab_overview.png)
+*Blender render of the analytical bench set (`chemlab.blend`), not a runtime capture.*
 
-### 1️⃣ Deine erste chemische Mischung
-- **Start:** Einrichten des Chemielabors (Sicherheitsbrille aufsetzen, Bunsenbrenner entflammen, Reagenzgläser aufbauen).
-- **Tracking:** Stelle sicher, dass deine rechte Hand sichtbar ist und natürlich Gesten ausführst.
-- **Greifen:** Ohne zu klicken – strecke Daumen- und Zeigefinger einfach aneinander, um Reagenzgläser zu greifen.
-- **Mischen:** Drehe Handgelenk und gieße Flüssigkeit hinein (der Pfeil zeigt die Geschwindigkeitsvektorrichtung an).
-- **Schütteln:** Schnelle Kreisbewegung, um zu schütteln.
-- **Loslassen:** Strecke die Handfläche flach aus und stehe einen kleinen Schritt zurück.
+## What works today
 
-### 2️⃣ Erste chemische Reaktionen
-- **Säure-Base-Neutralisation:** Mische HCl mit NaOH – farbige Anzeige wechselt zu dunkelblau.
-- **Oszillierende Iod-Uhr:** Brigg-Rauscher mit chemilumineszierenden Phasen. Siehst du Perioden, in denen die Flüssigkeit orangefarben → weiß → tiefblau umschlägt? Der blaue Punkt ist genau das Ergebnis von Iod-Stärke-Stabilisierung.
-- **Elefanten-Zahn-Schäumung:** Peroxid + Spülvonmittel-Bibliothek (bestimmt durch pip Petrischalen)
-- **Fällung:** Mische Bleinitrat + Kaliumiodid → goldfarbene gelbe Kristalle (Rieselfälle).
-- **Lumineszenz:** Luminol + Oxidationsmittel (blau leuchtend).
+| System | State | Notes |
+|---|---|---|
+| Loading window | ✅ Live | Animated alchemical sigil, procedural glassware backdrop |
+| Main menu | ✅ Live | Research terminals, settings, input and audio presets |
+| Laboratory Network hub | ✅ Live | 15 real lab archetypes, 14 suits, unlock tiers |
+| Genome archive | ✅ Live | Zoomable karyotype → locus → base view, curated variants |
+| Mutation simulation | ✅ Live | Point mutations, chemical mutagen spectra, VUS handling |
+| Chromosome dosage | ✅ Live | Trisomy 21 / monosomy X expression model |
+| Accelerator terminal | ✅ Live | Relativistic kinematics, rigidity, Cherenkov, activation |
+| Fusor workshop | ✅ Live | Build checklist, Paschen window, neutron yield, dose |
+| Player vitals | ✅ Live | HP, injuries, ppm·min exposure, mSv dose, incapacity |
+| 3D analytical bench | 🟡 Partial | Walkable room and apparatus; interaction still being wired |
+| Aetherkin companions | 🟡 Data live | 26 species defined; runtime abilities incomplete |
+| Chemistry core | ✅ Live | 256 Python tests, NIST/CRC constants, offline |
+| Nintendo Switch | ⬜ Planned | Target documented; SDK/NDA required |
 
-### 3️⃣ Öffne das Story-Modus-Menü – Upgrade-Quest-Reihenfolge
-| Level | Questziel | Freischaltung | Notiz |
-|--------|---------|--------------|--------|
-| **1** | Labortaufe und Indikator | Sicherheitsausrüstung und Grundreagenzien | Einführung in pH-Tests |
-| **2** | Die Iod-Uhr (Kinetik) | Magnetrührstab und genau abgemessene Bechergläser | Messung der Zeit für Farbwechsel |
-| **3** | Oszillierende BZ-Reaktion | Magnetrührstab und Spezial-Katalysatoren | Beobachtung der Farbwelle |
-| **4** | Destillation | Destillierapparat | Extraktion von Ethanol und Wasser |
-| **5** | Goldener Regen | Bunsenbrenner und Kreuzinstrument | Kristallisationsreaktion |
-| **6** | Chemisches Leuchten | Luminol-Anfangsmischung und Basische Korrektur | Aufnahme von Lichtmuster |
-| **7** | Thermische Sicherheitskontrolle | Sicherheitsabzug und Feuerlöscher | Thermische Handhabung |
-| **8** | Katalytische Schaumbildung | Flaschenverschluss und Rührschnecke | Effektive Beschleunigung |
-| **9** | Schnelle Oszillation | Zusatzmenge an Malonsäure | Verbesserung der Oszillationsfrequenz |
-| **10** | Meister-Alchemist | Alle Gerätschaften, Lehrbuch und digitale Lehre | Volles Spiel ohne Einschränkungen |
+Full plan, including what is explicitly **not** implemented: [docs/ROADMAP.md](docs/ROADMAP.md).
 
-### 4️⃣ Sandbox-Modus – Deine chemische Welt
-- **100+ natürliche Reagenzien** – Alkohol, Säuren, Basen, Oxidationsmittel, Salze, Indikatoren, Reaktionen unter Kamera im Zapfluft herzen.
-- **Beliebiger Reaktionszustand** – sofort, spontan, ohne Levelbarriere.
-- **Zeitreihensteuerung** – verlangsamt, beschleunigt, time-lapse. Perfekt für das Experimentieren von Granaten, Säure-Base-Verhältnis oder neuer Katalysatoren.
-- **Auto-Sicherheit** – Sicherer Feuerlöscher, Abzug und praktischer Schutzmechanismus.
-- **Vollständiges Digitallabor** – Ohne die Laboreinrichtung für halbdurchsuchte Behälter.
+![Main menu, runtime capture](docs/screenshots/runtime_menu.png)
+*Runtime capture of the actual menu: loading window, research terminals, tightened layout.*
 
-### 5️⃣ Berufliche Simulationseffekte
-| Effekt | Realistisches Modell | Echtzeit-Schlüsselwort |
-|----------|-------------------|----------------------|
-| **Oszillation** | 3-Phasen-Verhaltens-Pseudocode (Farbberechnung mit RGB-Schwellwert und in-situ-Schwindel-Puffer) | `oscillation_phase` | `oscillation_timer_s` |
-| **Schaumbildung** | partikelbasierte Volumen-Zunahme + topfierendiges Gasblasen mit Decay-Flag | `bubble_rate`, `foam_volume_ml` |
-| **Chemische Färbung** | Proportionale Mischen der RGB-Färbungssignaturen aller Reactanten | `color_rgb` pro Substanz | `turbidity` für Trübung |
-| **Volumenänderung** | Speicherung von Reaktions- und Verdünnungseffekten. Durch mischen (Summe von Volumen) | `volume_ml` |
-| **Stundenstunden** | Verringerung der End-Kabel-Effizienz des Lösungsstoff-Konzentrats mit der Zeit (Molekulare Bruchionen) | `reagent_moles` | `reagent_modes` |
-| **Temperaturänderung** | Exotherme/Endotherme-Offset basierend auf den Enthalpien-Nährung und -Thermischen Effekten | `temperature_c` |
-| **Fällung** | Fluoridations-/Fällungs-Effekt mit visueller Trübung | `turbidity` | `emission_glow` |
+## The four live terminals
 
-### 6️⃣ Hardware- und Softwarearchitektur
-- **Engine:** Blender 5.2 EEVEE Next für 3D-Assets.
-- **Computer Vision:** MediaPipe Hands (60 FPS, 21-Knoten-Skelett) + OpenCV für Live-Bildanalyse.
-- **Netzwerk:** Socket-Bridge TCP (127.0.0.1:8765) für verzögerungsfreie Echtzeit-Synchronisation.
-- **Plattform:** Windows 11 Pro, Python 3.12 (Tensor-Profil für i5-1240U), Intel Iris Xe Grafikkarte (80 Execution Units), 16 GB RAM.
-- **Frontend:** Browser-basiertes HTML/JS Visualisierungspanel.
-- **Multi-Agent:** 16 spezialisierte Unteragenten, die Themen von Reaktionen bis zu GPS-Tracking abdecken, und innerhalb von ~2 Minuten Feedback bereitstellen.
+### Genome archive
+A karyotype you can zoom from whole chromosomes down to a single base. Curated
+hotspots carry real HGVS and protein annotations (HbS `p.Glu7Val`, CFTR
+`p.Phe508del`, BRCA1 `c.5266dupC`, TP53 `p.Arg248Gln`, …). Anything outside a
+curated hotspot is reported honestly as a **variant of uncertain significance** —
+the simulator never invents a diagnosis. Chemical mutagens use real mutation
+spectra: EMS drives GC→AT transitions, UV drives C→T, aflatoxin B1 drives GC→TA,
+colchicine causes nondisjunction rather than substitutions.
 
-## 🛠 Wie man ChemLab auf einem Laptop läuft
+*Genome archive: karyotype map, locus track and phenotype report.*
 
-### Voraussetzungen
+### Ignis beam facility
+Pick a particle and energy; the terminal computes the Lorentz factor, β, magnetic
+rigidity, required dipole field, revolution frequency, beam power, Cherenkov angle
+and synchrotron loss. Reactions have real Q values and thresholds (p+Li-7 ≈ 1.88
+MeV, D–T exothermic). Target activity uses `A = N·σ·Φ·(1−e^(−λt))`.
+
+
+### Fusor workshop
+Build the vacuum chamber, grid, feedthrough, pump, deuterium supply, ballast
+resistor and detector — each with a one-line "why". Then energise: Paschen
+breakdown, mean free path, empirical neutron yield, fusion power, Q and operator
+dose rate. Failures are named after real phenomena.
+
+
+### Analytical bench (3D)
+The walkable laboratory: benches, fume hood, balance, stirrer, burette, burner and
+glassware. Controls are keyboard/mouse today; webcam hand tracking exists in the
+Python core and is not required.
+
+## Run it
+
+Requirements: Godot 4.7.x (Compatibility renderer) for the game; Python 3.12 for
+the chemistry core and tests.
+
 ```bash
-# Verwende die mitgelieferte Python 3.12 aus der Umgebung
-git clone https://github.com/Donchitos/Claude-Code-Game-Studios C:/Users/Win11 Pro/Desktop/game-studios
-cd "/c/Users/Win11 Pro/Desktop/chemlab"
-# Pip installiere Abhängigkeiten
-"/c/Users/Win11 Pro/AppData/Local/Programs/Python/Python312/python.exe" -m pip install -e .[dev]
+# Game (windowed)
+tools/bin/godot --path game
+
+# Headless scene smoke test
+tools/bin/godot --headless --path game --script res://scripts/smoke_test.gd
+
+# Genome + lab physics tests
+tools/bin/godot --headless --path game --script res://tests/test_genome_simulation.gd
+tools/bin/godot --headless --path game --script res://tests/test_lab_physics.gd
+
+# Python chemistry core
+.venv/Scripts/python.exe -m pytest
 ```
 
-### Führe die Simulation aus
-```bash
-# Starter-Skript (Öffnet http://localhost:8089)
-"/c/Users/Win11 Pro/AppData/Local/Programs/Python/Python312/python.exe" -m pip install fastapi websockets
-# Nutzung: Server öffnet HTTP-Vorschau auf port 8089
-"/c/Users/Win11 Pro/AppData/Local/Programs/Python/Python312/python.exe" -m http.server 8089 --bind 127.0.0.1 --directory "C:/Users/Win11 Pro/Desktop/chemlab"
-# Öffne das interaktive visuelle Dashboard für das Labor
-# (Dieses Fenster bleibt geöffnet und kann über das In-App-Browser-Fenster geöffnet werden)
+## Design constraints
+
+- **Offline first.** No runtime API keys, no LLM required to run an experiment.
+- **Compatibility renderer.** Intel Iris Xe target, 60 FPS, ≤ 65 draw calls in the
+  bench scene.
+- **Honest numbers.** Real constants for thermodynamics and beam physics. Where a
+  model is empirical (fusor neutron yield) it is labelled as such in code and UI.
+- **Real labs.** Containment levels follow WHO BSL and ISO 14644 conventions.
+- **Build-time AI only.** Nano Banana / Veo / Flow Music are used to produce assets
+  before shipping; the game never calls them. Prompts: [docs/ASSET_PROMPTS.md](docs/ASSET_PROMPTS.md).
+
+## Repository map
+
+```
+game/                 Godot project (scenes, scripts, data, ui)
+  scenes/genomics/    interactive genome archive
+  scenes/laboratories accelerator, fusor, lab hub, analytical bench
+  scripts/labs/       offline physics models
+  scripts/core/       player vitals
+  data/labs/          lab + suit catalog
+  data/genomics/      curated GRCh38 teaching dataset
+  data/companions/    Aetherkin species database
+src/chemlab/          Python chemistry, genomics, world, vision
+chemlab_core/         legacy IPC core
+tests/                Python test suite
+docs/                 roadmap, asset prompts, architecture, audits
 ```
 
-### Spielen mit Story- und Sandbox-Modus
-- **Story-Modus:** Folge den Anweisungen im Story-Modus-Panel (Quest-Antworten, Freischaltung der Ausrüstung).
-- **Sandbox-Modus:** Kein Bedarf an Freischaltung – alles sofort verfügbar.
-- **Web-Dashboard:** Die In-App-Browser-Fenster öffnen das interaktive Dashboard mit Monitor-Oberfläche.
+## License
 
-## 📰 Lizenz
-MIT Lizenz – Veröffentlicht unter der MIT Lizenz. Frei für kommerzielle und private Verwendung.
-
-## 📚 Referenzen
-- **Google MediaPipe Vision:** https://developers.google.com/mediapipe
-- **Blender**: https://www.blender.org
-- **Python 3.12 Optimierung für i5-1240U:** gehaltener Server auf /cpu-benchmarks
-- **Python-Paketmanager:** pip/setuptools
-- **GitHub-Dokumentation:** https://docs.github.com
-- **Claude Code Multi-Agent Engine:** https://github.com/Donchitos/Claude-Code-Game-Studios
-
-## 👥 Beiträge
-Wir begrüßen Open-Source-Mitwirkende! Öffne einfach ein Problem oder PR und erstelle eine Funktionsliste.
+MIT for the code. Third-party assets retain their own licenses; see
+`docs/integrations/THIRD_PARTY_LICENSES.md`.

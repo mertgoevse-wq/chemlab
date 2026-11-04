@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "note": "Laboratory archetypes are based on real facility classes. Containment levels follow WHO BSL and ISO 14644 cleanroom conventions; the game abstracts staffing and licensing.",
+  "labs": [
+    {
+      "id": "teaching_lab", "name": "Teaching Laboratory", "tier": 1, "category": "academic",
+      "containment": "BSL-1", "cleanroom": "ISO 8",
+      "hazards": ["dilute acids", "bunsen burners", "glassware"],
+      "equipment": ["benches", "bunsen burners", "analytical balances", "titration burettes", "fume hood"],
+      "unlock": "start", "notes": "Open bench, no recirculated air. The first place a mistake is cheap."
+    },
+    {
+      "id": "analytical_lab", "name": "Analytical Instrument Laboratory", "tier": 2, "category": "analytical",
+      "containment": "BSL-1", "cleanroom": "ISO 7",
+      "hazards": ["organic solvents", "high-pressure gas", "UV lamps"],
+      "equipment": ["HPLC-DAD", "GC-MS", "UV-Vis", "NMR", "analytical balance", "pH meter"],
+      "unlock": "quest_titration", "notes": "Vibration-isolated benches and a nitrogen supply; instruments punish bad sample prep."
+    },
+    {
+      "id": "synthesis_lab", "name": "Organic Synthesis Laboratory", "tier": 2, "category": "synthesis",
+      "containment": "BSL-1", "cleanroom": "none",
+      "hazards": ["flammable solvents", "reflux", "exothermic reactions", "cryogenics"],
+      "equipment": ["fume hoods", "schlenk line", "rotary evaporator", "reflux condensers", "magnetic stirrers"],
+      "unlock": "quest_exotherm", "notes": "Two exits, blast shields, solvent cabinets and a dry powder extinguisher."
+    },
+    {
+      "id": "electrochem_lab", "name": "Electrochemistry Laboratory", "tier": 3, "category": "physical",
+      "containment": "BSL-1", "cleanroom": "ISO 7",
+      "hazards": ["DC current", "hydrogen evolution", "corrosive electrolytes"],
+      "equipment": ["potentiostat", "glovebox", "reference electrodes", "conductivity meter"],
+      "unlock": "skill_physics_20", "notes": "Grounding and hydrogen ventilation are non-negotiable around water electrolysis."
+    },
+    {
+      "id": "genomics_lab", "name": "Genomics Institute 'Helix'", "tier": 4, "category": "life_science",
+      "containment": "BSL-2", "cleanroom": "ISO 7",
+      "hazards": ["ethidium bromide", "UV transilluminator", "aerosols"],
+      "equipment": ["thermal cycler", "gel electrophoresis", "next-gen sequencer", "CRISPR workstation", "chromosome archive terminal"],
+      "unlock": "quest_genome", "notes": "Amplification rooms are physically separated to stop PCR contamination."
+    },
+    {
+      "id": "cell_culture", "name": "Cell Culture Suite", "tier": 4, "category": "life_science",
+      "containment": "BSL-2", "cleanroom": "ISO 7",
+      "hazards": ["biological aerosols", "liquid nitrogen", "antibiotics"],
+      "equipment": ["biosafety cabinet", "CO2 incubator", "cryostorage", "inverted microscope"],
+      "unlock": "skill_biology_25", "notes": "Positive-pressure suits for BSL-4 work; class II cabinets for BSL-2."
+    },
+    {
+      "id": "radiochem_lab", "name": "Radiochemistry Hot Cell", "tier": 5, "category": "nuclear",
+      "containment": "BSL-2", "cleanroom": "none",
+      "hazards": ["gamma", "contamination", "criticality"],
+      "equipment": ["lead shielding", "remote manipulators", "gamma survey meter", "fume hood with HEPA + charcoal"],
+      "unlock": "quest_isotope", "notes": "Time, distance, shielding. Every gram of shielding has a mass budget."
+    },
+    {
+      "id": "accelerator", "name": "Ignis Beam Facility", "tier": 5, "category": "physics",
+      "containment": "controlled radiation area", "cleanroom": "ISO 8",
+      "hazards": ["ionising radiation", "high voltage", "vacuum", "activation"],
+      "equipment": ["cyclotron", "dipole magnets", "beam dump", "target hot cell", "radiation interlock"],
+      "unlock": "quest_beam", "notes": "Beam-on is a permit condition, not a button."
+    },
+    {
+      "id": "fusor_workshop", "name": "Fusor & Plasma Workshop", "tier": 4, "category": "physics",
+      "containment": "controlled radiation area", "cleanroom": "none",
+      "hazards": ["high voltage", "X-rays from HV", "2.45 MeV neutrons", "vacuum implosion"],
+      "equipment": ["vacuum chamber", "HV feedthrough", "deuterium supply", "neutron detector", "ballast resistor"],
+      "unlock": "skill_physics_30", "notes": "A neutron source that fits on a bench; the shielding does not."
+    },
+    {
+      "id": "materials_lab", "name": "Materials & Metallurgy Laboratory", "tier": 3, "category": "materials",
+      "containment": "BSL-1", "cleanroom": "ISO 7",
+      "hazards": ["arc flash", "metal fume", "high temperature"],
+      "equipment": ["arc furnace", "SEM", "hardness tester", "rolling mill", "inert glovebox"],
+      "unlock": "skill_materials_20", "notes": "Grain structure is a process record; you cannot polish away a bad heat treatment."
+    },
+    {
+      "id": "cleanroom_fab", "name": "Cleanroom Fabrication Bay", "tier": 4, "category": "engineering",
+      "containment": "BSL-1", "cleanroom": "ISO 5",
+      "hazards": ["HF", "vacuum", "nanoparticles"],
+      "equipment": ["photolithography", "sputter coater", "wire bonder", "particle counter"],
+      "unlock": "skill_engineering_30", "notes": "Gowning is the experiment. One skin flake ends a wafer."
+    },
+    {
+      "id": "pilot_plant", "name": "Industrial Pilot Plant", "tier": 5, "category": "industrial",
+      "containment": "BSL-1", "cleanroom": "none",
+      "hazards": ["pressure", "thermal runaway", "rotating equipment", "dust explosion"],
+      "equipment": ["continuous reactor", "distillation column", "heat exchangers", "PLC control room", "relief systems"],
+      "unlock": "quest_scaleup", "notes": "Scaling changes the physics: heat removal stops being a detail and becomes the design."
+    },
+    {
+      "id": "forensic_lab", "name": "Forensic Toxicology Laboratory", "tier": 3, "category": "forensic",
+      "containment": "BSL-2", "cleanroom": "ISO 8",
+      "hazards": ["evidence contamination", "solvents", "unknown biologicals"],
+      "equipment": ["GC-MS", "LC-MS/MS", "evidence locker", "comparison microscope"],
+      "unlock": "quest_forensics", "notes": "Chain of custody is the method; a result without provenance is not evidence."
+    },
+    {
+      "id": "microgravity", "name": "Orbital Research Station 'Apex'", "tier": 6, "category": "space",
+      "containment": "closed-loop life support", "cleanroom": "ISO 6",
+      "hazards": ["microgravity fluids", "vacuum", "radiation", "limited resupply"],
+      "equipment": ["protein crystallisation plates", "electrophoresis unit", "centrifuge", "sample freezer"],
+      "unlock": "quest_orbital", "notes": "No convection, no buoyancy. Crystals grow differently and spills do not fall."
+    },
+    {
+      "id": "cryo_lab", "name": "Cryogenic & Vacuum Laboratory", "tier": 4, "category": "physical",
+      "containment": "BSL-1", "cleanroom": "ISO 7",
+      "hazards": ["liquid helium", "asphyxiation", "cold burns", "vacuum"],
+      "equipment": ["dilution refrigerator", "turbo pump", "cryostat", "oxygen monitor"],
+      "unlock": "skill_physics_35", "notes": "Oxygen deficiency alarms exist because nitrogen is invisible."
+    }
+  ],
+  "suits": [
+    {
+      "id": "lab_coat", "name": "Cotton Lab Coat + Nitrile Gloves", "tier": 1,
+      "protection": {"chemical": 0.15, "thermal": 0.05, "radiological": 0.0, "biological": 0.1, "mechanical": 0.1},
+      "penalty": {"mobility": 0.0, "vision": 0.0, "endurance": 0.0},
+      "unlock": "start", "notes": "Open cuffs, no splash resistance. Better than skin, not a barrier suit."
+    },
+    {
+      "id": "fr_lab_coat", "name": "Flame-Resistant Lab Coat", "tier": 2,
+      "protection": {"chemical": 0.25, "thermal": 0.35, "radiological": 0.0, "biological": 0.1, "mechanical": 0.15},
+      "penalty": {"mobility": 0.05, "vision": 0.0, "endurance": 0.05},
+      "unlock": "quest_exotherm", "notes": "Pyrovatex-treated cotton. Slows ignition; does not make a fire survivable."
+    },
+    {
+      "id": "acid_apron", "name": "Acid-Resistant Apron + Face Shield", "tier": 2,
+      "protection": {"chemical": 0.55, "thermal": 0.05, "radiological": 0.0, "biological": 0.1, "mechanical": 0.2},
+      "penalty": {"mobility": 0.15, "vision": 0.1, "endurance": 0.1},
+      "unlock": "skill_safety_10", "notes": "For HF and concentrated mineral acids; still no vapour protection."
+    },
+    {
+      "id": "full_face_respirator", "name": "Full-Face Respirator (ABEK P3)", "tier": 3,
+      "protection": {"chemical": 0.5, "thermal": 0.1, "radiological": 0.05, "biological": 0.6, "mechanical": 0.2},
+      "penalty": {"mobility": 0.1, "vision": 0.2, "endurance": 0.2},
+      "unlock": "skill_safety_20", "notes": "Filter choice matters: ABEK does not protect against carbon monoxide."
+    },
+    {
+      "id": "acid_suit", "name": "Level B Splash Suit", "tier": 3,
+      "protection": {"chemical": 0.75, "thermal": 0.15, "radiological": 0.05, "biological": 0.5, "mechanical": 0.3},
+      "penalty": {"mobility": 0.3, "vision": 0.15, "endurance": 0.3},
+      "unlock": "quest_scaleup", "notes": "Liquid-tight, not vapour-tight. Level A when the hazard is a gas."
+    },
+    {
+      "id": "hazmat_a", "name": "Level A Encapsulated Suit + SCBA", "tier": 4,
+      "protection": {"chemical": 0.95, "thermal": 0.25, "radiological": 0.1, "biological": 0.9, "mechanical": 0.4},
+      "penalty": {"mobility": 0.55, "vision": 0.3, "endurance": 0.6},
+      "unlock": "quest_containment", "notes": "20 minutes of air, heat stress, and no fine manipulation. Plan the task before dressing."
+    },
+    {
+      "id": "lead_apron", "name": "0.5 mm Pb-Equivalent Apron", "tier": 3,
+      "protection": {"chemical": 0.1, "thermal": 0.05, "radiological": 0.55, "biological": 0.0, "mechanical": 0.15},
+      "penalty": {"mobility": 0.25, "vision": 0.0, "endurance": 0.35},
+      "unlock": "quest_isotope", "notes": "Good for 99mTc gamma; useless against 2.45 MeV neutrons."
+    },
+    {
+      "id": "lead_glass_visor", "name": "Lead-Glass Visor", "tier": 3,
+      "protection": {"chemical": 0.1, "thermal": 0.1, "radiological": 0.4, "biological": 0.1, "mechanical": 0.4},
+      "penalty": {"mobility": 0.05, "vision": 0.25, "endurance": 0.1},
+      "unlock": "quest_isotope", "notes": "Cherenkov blue is pretty; the dose is not."
+    },
+    {
+      "id": "cleanroom_bunny", "name": "ISO 5 Cleanroom Coverall", "tier": 3,
+      "protection": {"chemical": 0.1, "thermal": 0.05, "radiological": 0.0, "biological": 0.3, "mechanical": 0.1},
+      "penalty": {"mobility": 0.3, "vision": 0.2, "endurance": 0.25},
+      "unlock": "skill_engineering_30", "notes": "Protects the product, not the wearer. Do not confuse the direction."
+    },
+    {
+      "id": "cryo_suit", "name": "Cryogenic Apron + Face Shield", "tier": 3,
+      "protection": {"chemical": 0.2, "thermal": 0.7, "radiological": 0.0, "biological": 0.05, "mechanical": 0.3},
+      "penalty": {"mobility": 0.2, "vision": 0.15, "endurance": 0.2},
+      "unlock": "skill_physics_35", "notes": "Loose fit so it can be torn off. Liquid nitrogen soaks fabric and then boils."
+    },
+    {
+      "id": "arc_flash", "name": "Arc-Flash Suit (8 cal/cm²)", "tier": 4,
+      "protection": {"chemical": 0.1, "thermal": 0.8, "radiological": 0.0, "biological": 0.05, "mechanical": 0.5},
+      "penalty": {"mobility": 0.35, "vision": 0.15, "endurance": 0.3},
+      "unlock": "skill_engineering_25", "notes": "Rated for a specific incident energy. Exceeding it is a test you fail once."
+    },
+    {
+      "id": "anti_static", "name": "ESD Smock + Wrist Strap", "tier": 2,
+      "protection": {"chemical": 0.05, "thermal": 0.0, "radiological": 0.0, "biological": 0.05, "mechanical": 0.05},
+      "penalty": {"mobility": 0.05, "vision": 0.0, "endurance": 0.05},
+      "unlock": "skill_engineering_10", "notes": "Prevents ignition of solvent vapour and protects sensitive electronics."
+    },
+    {
+      "id": "positive_pressure", "name": "Positive-Pressure BSL-4 Suit", "tier": 6,
+      "protection": {"chemical": 0.7, "thermal": 0.2, "radiological": 0.05, "biological": 1.0, "mechanical": 0.45},
+      "penalty": {"mobility": 0.6, "vision": 0.35, "endurance": 0.65},
+      "unlock": "quest_bsl4", "notes": "Air supply is the lifeline. Suit breaches trigger immediate exit, not repair."
+    },
+    {
+      "id": "remote_manipulator", "name": "Teleoperated Manipulator Station", "tier": 5,
+      "protection": {"chemical": 1.0, "thermal": 1.0, "radiological": 0.95, "biological": 1.0, "mechanical": 1.0},
+      "penalty": {"mobility": 0.9, "vision": 0.5, "endurance": 0.0},
+      "unlock": "quest_hotcell", "notes": "Nothing touches you, and nothing feels like it should. Force feedback is a lie with latency."
+    }
+  ]
+}

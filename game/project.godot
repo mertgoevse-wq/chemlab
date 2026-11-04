@@ -10,8 +10,9 @@ config_version=5
 
 [application]
 
-config/name="ChemLab: Origins"
-run/main_scene="res://scenes/main_menu/main_menu.tscn"
+config/name="Athanor Ascension"
+config/description="Open-world alchemy and laboratory simulation. Real chemistry, real physics, offline."
+run/main_scene="res://scenes/loading/loading_screen.tscn"
 config/features=PackedStringArray("4.3", "Compatibility")
 
 [autoload]
@@ -20,6 +21,7 @@ SimulationBridge="*res://scripts/chemistry/simulation_bridge.gd"
 InputManager="*res://scripts/input/input_manager.gd"
 QuestManager="*res://scripts/quests/quest_manager.gd"
 SaveManager="*res://scripts/save/save_manager.gd"
+PlayerVitals="*res://scripts/core/player_vitals.gd"
 
 [display]
 

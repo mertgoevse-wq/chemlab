@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "note": "Build-time generated media only. The runtime never calls Google services. Files are optional; every slot has a procedural fallback so the game runs without them.",
+  "assets": [
+    {
+      "id": "brand_sigil",
+      "path": "res://assets/branding/sigil.png",
+      "type": "image",
+      "size": "1024x1024",
+      "prompt_ref": "ASSET_PROMPTS.md §1",
+      "fallback": "procedural sigil drawn in loading_screen.gd",
+      "provenance": "not generated in this environment"
+    },
+    {
+      "id": "menu_background_loop",
+      "path": "res://assets/video/menu_background_loop.mp4",
+      "type": "video",
+      "size": "1920x1080",
+      "prompt_ref": "ASSET_PROMPTS.md §4",
+      "fallback": "apparatus_backdrop.gd procedural animation",
+      "provenance": "not generated in this environment"
+    },
+    {
+      "id": "intro_story_clip",
+      "path": "res://assets/video/intro_story.mp4",
+      "type": "video",
+      "size": "1920x1080",
+      "prompt_ref": "ASSET_PROMPTS.md §5",
+      "fallback": "loading screen -> main menu",
+      "provenance": "not generated in this environment"
+    },
+    {
+      "id": "lab_analytical",
+      "path": "res://assets/art/labs/analytical.png",
+      "type": "image",
+      "size": "1920x1080",
+      "prompt_ref": "ASSET_PROMPTS.md §3",
+      "fallback": "3D analytical_lab scene",
+      "provenance": "not generated in this environment"
+    },
+    {
+      "id": "lab_accelerator",
+      "path": "res://assets/art/labs/accelerator.png",
+      "type": "image",
+      "size": "1920x1080",
+      "prompt_ref": "ASSET_PROMPTS.md §3",
+      "fallback": "accelerator_lab.gd schematic",
+      "provenance": "not generated in this environment"
+    },
+    {
+      "id": "lab_fusor",
+      "path": "res://assets/art/labs/fusor.png",
+      "type": "image",
+      "size": "1920x1080",
+      "prompt_ref": "ASSET_PROMPTS.md §3",
+      "fallback": "fusor_lab.gd schematic",
+      "provenance": "not generated in this environment"
+    },
+    {
+      "id": "lab_genomics",
+      "path": "res://assets/art/labs/genomics.png",
+      "type": "image",
+      "size": "1920x1080",
+      "prompt_ref": "ASSET_PROMPTS.md §3",
+      "fallback": "genome_browser.gd UI",
+      "provenance": "not generated in this environment"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# ChemLab 3D Scientific Main Menu Controller (Godot 4.x Engine)
+# Athanor Ascension — Main Menu Controller (Godot 4.x Engine)
 # Extends Control for modern cleanroom dark UI with 3D animated molecular backdrop.
 # Provides seamless scene transitions, Iris Xe hardware profile scaling,
 # audio mixing, dual-input configuration, and gamepad/keyboard navigation.
@@ -13,8 +13,13 @@ extends Control
 signal laboratory_launch_requested(lab_scene_path: String)
 signal settings_saved(settings_dictionary: Dictionary)
 
-const SCENE_ANALYTICAL_LAB: String = "res://scenes/laboratories/analytical_lab.tscn"
-const SCENE_SANDBOX_LAB: String = "res://scenes/laboratories/analytical_lab.tscn"
+const SCENE_HUB: String = "res://scenes/laboratories/lab_hub.tscn"
+const SCENE_ANALYTICAL_LAB: String = "res://scenes/laboratories/lab_hub.tscn"
+const SCENE_SANDBOX_LAB: String = "res://scenes/laboratories/lab_hub.tscn"
+const SCENE_GENOME_BROWSER: String = "res://scenes/genomics/genome_browser.tscn"
+const SCENE_ACCELERATOR: String = "res://scenes/laboratories/accelerator_lab.tscn"
+const SCENE_FUSOR: String = "res://scenes/laboratories/fusor_lab.tscn"
+const BACKDROP_SCRIPT = preload("res://ui/apparatus_backdrop.gd")
 
 # Color tokens from ChemLab Design System
 const COLOR_CYAN_ACCENT: Color = Color(0.0, 0.898, 1.0, 1.0) # #00E5FF
@@ -78,8 +83,14 @@ func _ready() -> void:
 	fade_overlay.visible = true
 	fade_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
+	# Procedural apparatus backdrop behind the 3D molecular cluster
+	_install_apparatus_backdrop()
+
 	# Connect all button signals
 	_connect_signals()
+
+	# Research terminals: genome archive, accelerator, fusor workshop
+	_install_research_terminals()
 
 	# Populate option buttons
 	_populate_settings_options()
@@ -146,6 +157,58 @@ func _connect_signals() -> void:
 	slider_master.value_changed.connect(_on_master_slider_changed)
 	slider_sfx.value_changed.connect(_on_sfx_slider_changed)
 	slider_ambience.value_changed.connect(_on_ambience_slider_changed)
+
+
+func _install_apparatus_backdrop() -> void:
+	if get_node_or_null("ApparatusBackdrop") != null:
+		return
+	var backdrop := Control.new()
+	backdrop.name = "ApparatusBackdrop"
+	backdrop.set_script(BACKDROP_SCRIPT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(backdrop)
+	move_child(backdrop, 0)
+
+
+func _install_research_terminals() -> void:
+	var nav := get_node_or_null("UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu")
+	if nav != null:
+		for child in nav.get_children():
+			if child is Button:
+				child.text = child.text.replace("Enter Free Sandbox Lab", "Laboratory Network")
+				child.text = child.text.replace("Quest Campaign: Orientation & Titration", "Campaign: Orientation & Titration")
+	if nav == null:
+		push_warning("MainMenu: NavMenu missing, research terminals not installed")
+		return
+	# Eight buttons at 52 px plus 14 px separation overflow a 720p viewport, which
+	# clipped the title. Tighten the rhythm instead of hiding navigation.
+	nav.add_theme_constant_override("separation", 8)
+	for child in nav.get_children():
+		if child is Button:
+			child.custom_minimum_size = Vector2(0, 40)
+	var title := get_node_or_null("UI/MarginContainer/HBoxContainer/MenuContainer/Header/TitleLabel")
+	if title != null:
+		title.add_theme_font_size_override("font_size", 40)
+	var margin := get_node_or_null("UI/MarginContainer")
+	if margin != null:
+		margin.add_theme_constant_override("margin_top", 26)
+
+	var terminals := [
+		["🧬 Genome Archive (chromosome browser)", SCENE_GENOME_BROWSER],
+		["⚛ Ignis Accelerator (beam physics)", SCENE_ACCELERATOR],
+		["⚡ Fusor Workshop (plasma & circuits)", SCENE_FUSOR]
+	]
+	for entry in terminals:
+		var btn := Button.new()
+		btn.text = str(entry[0])
+		btn.custom_minimum_size = Vector2(0, 38)
+		btn.pressed.connect(_on_research_terminal_pressed.bind(str(entry[1])))
+		btn.mouse_entered.connect(_play_hover_sfx)
+		nav.add_child(btn)
+
+
+func _on_research_terminal_pressed(scene_path: String) -> void:
+	transition_to_laboratory(scene_path)
 
 
 func _populate_settings_options() -> void:

@@ -396,7 +396,7 @@ theme_override_constants/separation = 6
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0, 0.898, 1, 0.85)
-text = "KAVLI-HELMHOLTZ RESEARCH CONSORTIUM"
+text = "ATHANOR ASCENSION PROJECT"
 
 [node name="TitleLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=1263548168]
 layout_mode = 2
@@ -405,13 +405,13 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0.898, 1, 0.4)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-text = "CHEMLAB"
+text = "ATHANOR"
 
 [node name="SubtitleLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=1441121799]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0, 0.8980392, 1, 1)
-text = "ORIGINS · VIRTUAL RESEARCH FACILITY"
+text = "ASCENSION · ALCHEMY & LABORATORY SIMULATION"
 
 [node name="HeaderSeparator" type="HSeparator" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Header" unique_id=888419654]
 layout_mode = 2
@@ -434,12 +434,12 @@ theme_override_constants/separation = 14
 [node name="BtnSandbox" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=1358392695]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-text = "🔬 Enter Free Sandbox Lab"
+text = "🧪 Laboratory Network"
 
 [node name="BtnCampaign" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=638606925]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-text = "📋 Quest Campaign: Orientation & Titration"
+text = "📋 Campaign: Orientation & Titration"
 
 [node name="BtnSettings" type="Button" parent="UI/MarginContainer/HBoxContainer/MenuContainer/NavMenu" unique_id=2137618509]
 custom_minimum_size = Vector2(0, 52)
@@ -468,13 +468,13 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.6, 0.68, 0.78, 1)
-text = "v0.1.0-alpha · Compatibility Engine (Iris Xe Optimized)"
+text = "v0.2.0-alpha · Compatibility Renderer · Offline Simulation"
 
 [node name="CopyrightLabel" type="Label" parent="UI/MarginContainer/HBoxContainer/MenuContainer/Footer" unique_id=1477804626]
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(0.42, 0.48, 0.58, 1)
-text = "Kavli-Helmholtz Institute · ChemLab Engineering Team"
+text = "Athanor Ascension · Independent Research Project"
 
 [node name="SettingsModal" type="PanelContainer" parent="UI" unique_id=1363131237]
 visible = false
@@ -650,7 +650,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 1)
 text = "• Lead Institutional Partner:
-  Kavli-Helmholtz Institute / ChemLab Engineering Team
+  Athanor Ascension / Independent Research Project
 
 • Physical Chemistry Simulation:
   Cantera NIST Thermodynamic Balances & RDKit 3D Conformers

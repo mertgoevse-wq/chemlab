@@ -5,7 +5,12 @@
 extends SceneTree
 
 const SCENES_TO_VALIDATE: Array[String] = [
+	"res://scenes/loading/loading_screen.tscn",
 	"res://scenes/main_menu/main_menu.tscn",
+	"res://scenes/genomics/genome_browser.tscn",
+	"res://scenes/laboratories/accelerator_lab.tscn",
+	"res://scenes/laboratories/fusor_lab.tscn",
+	"res://scenes/laboratories/lab_hub.tscn",
 	"res://scenes/laboratories/analytical_lab.tscn",
 	"res://scenes/player/player.tscn",
 	"res://scenes/player/player_controller.tscn",

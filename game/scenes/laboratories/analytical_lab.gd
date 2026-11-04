@@ -81,6 +81,10 @@ var lab_parameters: Dictionary = {
 
 func _ready() -> void:
 	print(">>> [AnalyticalLab] Initializing 3D Analytical Chemistry Laboratory...")
+	# Vitals HUD only belongs on gameplay scenes, never on the menu/loading screen.
+	var vitals := get_node_or_null("/root/PlayerVitals")
+	if vitals != null and vitals.has_method("set_hud_visible"):
+		vitals.set_hud_visible(true)
 	_resolve_node_references()
 	_initialize_laboratory_state()
 	_spawn_or_position_player()
@@ -88,6 +92,12 @@ func _ready() -> void:
 	_notify_quest_manager()
 	laboratory_initialized.emit(LAB_NAME, lab_parameters)
 	print(">>> [AnalyticalLab] Laboratory initialization complete. Ready for experiment simulation.")
+
+
+func _exit_tree() -> void:
+	var vitals := get_node_or_null("/root/PlayerVitals")
+	if vitals != null and vitals.has_method("set_hud_visible"):
+		vitals.set_hud_visible(false)
 
 
 func _resolve_node_references() -> void:
