@@ -1,0 +1,774 @@
+# Athanor Ascension — Organic Synthesis Terminal
+# Playable aspirin protocol from design/gdd/synthesis-protocols.md.
+#
+# Four stages: weigh & charge -> reflux -> quench/recrystallise -> analytical
+# assay. The evaluation is offline, deterministic and stoichiometric; the player
+# can fail by missing catalyst, overheating, skipping the hood or rushing the
+# reflux, and each failure teaches the actual constraint.
+extends Control
+
+const Chem = preload("res://scripts/labs/synthesis_chemistry.gd")
+const SCENE_HUB: String = "res://scenes/laboratories/lab_hub.tscn"
+
+const BG: Color = Color(0.028, 0.038, 0.05, 1.0)
+const PANEL: Color = Color(0.052, 0.068, 0.085, 0.97)
+const PANEL_SOFT: Color = Color(0.045, 0.058, 0.073, 0.92)
+const TEXT: Color = Color(0.83, 0.89, 0.92)
+const DIM: Color = Color(0.52, 0.61, 0.67)
+const CYAN: Color = Color(0.26, 0.85, 0.93)
+const AMBER: Color = Color(1.0, 0.71, 0.29)
+const RED: Color = Color(1.0, 0.41, 0.37)
+const GREEN: Color = Color(0.42, 0.86, 0.67)
+const GLASS: Color = Color(0.68, 0.82, 0.88, 0.22)
+
+var _stage: int = 1
+var _mass_g: float = 13.8
+var _anhydride_ml: float = 14.2
+var _catalyst_drops: int = 5
+var _stir_rpm: float = 450.0
+var _temp_c: float = 70.0
+var _reflux_min: float = 20.0
+var _hood: bool = true
+var _ice_c: float = 2.0
+var _water_ml: float = 30.0
+var _ethanol_ml: float = 15.0
+var _seeded: bool = true
+var _ppe: Dictionary = {"goggles": false, "gloves": false, "coat": false}
+
+var _reflux_done: bool = false
+var _submitted: bool = false
+var _last_result: Dictionary = {}
+var _batch_count: int = 0
+var _time: float = 0.0
+
+var _controls: VBoxContainer
+var _report: RichTextLabel
+var _status: Label
+var _next_btn: Button
+
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+	_build_ui()
+	_set_stage(1)
+	set_process(true)
+
+
+func _process(delta: float) -> void:
+	_time += delta
+	queue_redraw()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		queue_redraw()
+
+
+func _params() -> Dictionary:
+	return {
+		"salicylic_mass_g": _mass_g,
+		"anhydride_ml": _anhydride_ml,
+		"catalyst_drops": _catalyst_drops,
+		"stir_rpm": _stir_rpm,
+		"reflux_temp_c": _temp_c,
+		"reflux_min": _reflux_min,
+		"fume_hood": _hood,
+		"ice_bath_c": _ice_c,
+		"quench_water_ml": _water_ml,
+		"recryst_ethanol_ml": _ethanol_ml,
+		"seed_crystal": _seeded,
+		"ppe": _ppe_ok()
+	}
+
+
+func _ppe_ok() -> bool:
+	return bool(_ppe.get("goggles", false)) and bool(_ppe.get("gloves", false)) and bool(_ppe.get("coat", false))
+
+
+# =============================================================================
+# UI CONSTRUCTION
+# =============================================================================
+
+func _build_ui() -> void:
+	var title := Label.new()
+	title.text = "ORGANIC SYNTHESIS  ·  ACETYLSALICYLIC ACID"
+	title.position = Vector2(22.0, 14.0)
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", TEXT)
+	add_child(title)
+
+	var subtitle := Label.new()
+	subtitle.text = "Salicylic acid + acetic anhydride  ·  H₂SO₄ catalysed  ·  offline stoichiometry"
+	subtitle.position = Vector2(22.0, 40.0)
+	subtitle.add_theme_font_size_override("font_size", 11)
+	subtitle.add_theme_color_override("font_color", DIM)
+	add_child(subtitle)
+
+	var back := Button.new()
+	back.text = "← Laboratory network"
+	back.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	back.offset_left = -208.0
+	back.offset_right = -20.0
+	back.offset_top = 14.0
+	back.offset_bottom = 44.0
+	back.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_HUB))
+	add_child(back)
+
+	var briefing := RichTextLabel.new()
+	briefing.bbcode_enabled = true
+	briefing.position = Vector2(20.0, 70.0)
+	briefing.custom_minimum_size = Vector2(300.0, 610.0)
+	briefing.size = Vector2(300.0, 610.0)
+	briefing.add_theme_font_size_override("normal_font_size", 11)
+	briefing.add_theme_font_size_override("bold_font_size", 12)
+	briefing.text = """[font_size=15][b]PROTOCOL  SYN-01[/b][/font_size]
+[color=#85949f]Aspirin · CAS 50-78-2 · M = 180.16 g/mol[/color]
+
+[b]Reaction[/b]
+Salicylic acid + acetic anhydride → acetylsalicylic acid + acetic acid. One equivalent each; the anhydride is charged at 1.4–1.6 eq so the acid is limiting.
+
+[b]Stages[/b]
+1  Weigh 13.8 g acid, charge 14.2 mL anhydride and 5 drops H₂SO₄.
+2  Reflux at 65–75 °C for 20 min. Below 60 °C conversion stalls; above 85 °C the batch tars.
+3  Quench on ice with water, then recrystallise from ethanol/water.
+4  Assay: purity, isolated yield, melting point and TLC.
+
+[b]Hazards[/b]
+[color=#ffb45c]GHS05[/color]  corrosive (anhydride, H₂SO₄)
+[color=#ffb45c]GHS07[/color]  harmful / lachrymator
+[color=#ff6b60]GHS08[/color]  respiratory sensitisation
+
+[b]Safety gate[/b]
+Fume hood on, sash low. Goggles, nitrile gloves and lab coat are required before the first reagent is opened.
+
+[i]The assay does not reward luck. It reports what your conditions actually produced.[/i]"""
+	add_child(briefing)
+
+	_controls = VBoxContainer.new()
+	_controls.position = Vector2(0.0, 0.0)
+	_controls.custom_minimum_size = Vector2(500.0, 0.0)
+	_controls.add_theme_constant_override("separation", 4)
+	var scroll := ScrollContainer.new()
+	scroll.position = Vector2(338.0, 450.0)
+	scroll.custom_minimum_size = Vector2(522.0, 234.0)
+	scroll.size = Vector2(522.0, 234.0)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.add_child(_controls)
+	add_child(scroll)
+
+	_report = RichTextLabel.new()
+	_report.bbcode_enabled = true
+	_report.position = Vector2(874.0, 70.0)
+	_report.custom_minimum_size = Vector2(386.0, 614.0)
+	_report.size = Vector2(386.0, 614.0)
+	_report.add_theme_font_size_override("normal_font_size", 11)
+	_report.add_theme_font_size_override("bold_font_size", 12)
+	_report.scroll_active = true
+	add_child(_report)
+
+	_status = Label.new()
+	_status.position = Vector2(22.0, 692.0)
+	_status.custom_minimum_size = Vector2(1230.0, 20.0)
+	_status.add_theme_font_size_override("font_size", 11)
+	_status.add_theme_color_override("font_color", DIM)
+	_status.text = "Stage 1 — don PPE, then weigh the acid and charge the flask."
+	add_child(_status)
+
+
+func _clear_controls() -> void:
+	for child in _controls.get_children():
+		child.queue_free()
+
+
+func _add_intro(title: String, body: String) -> void:
+	var label := RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.fit_content = true
+	label.custom_minimum_size = Vector2(500.0, 0.0)
+	label.add_theme_font_size_override("normal_font_size", 11)
+	label.text = "[b][color=#%s]%s[/color][/b]\n[color=#85949f]%s[/color]" % [CYAN.to_html(false), title, body]
+	_controls.add_child(label)
+
+
+func _add_slider(title: String, unit: String, min_v: float, max_v: float, step: float,
+		value: float, decimals: int, callback: Callable) -> void:
+	# One compact row: label | slider | live value. Keeping every control on a
+	# single line leaves room for the PPE gate and the stage navigation at 720p.
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var name_label := Label.new()
+	name_label.text = title
+	name_label.custom_minimum_size = Vector2(142.0, 0.0)
+	name_label.add_theme_font_size_override("font_size", 11)
+	name_label.add_theme_color_override("font_color", TEXT)
+	row.add_child(name_label)
+
+	var slider := HSlider.new()
+	slider.min_value = min_v
+	slider.max_value = max_v
+	slider.step = step
+	slider.value = value
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.custom_minimum_size = Vector2(238.0, 18.0)
+	row.add_child(slider)
+
+	var value_label := Label.new()
+	value_label.text = _format_value(value, unit, decimals)
+	value_label.custom_minimum_size = Vector2(74.0, 0.0)
+	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value_label.add_theme_font_size_override("font_size", 11)
+	value_label.add_theme_color_override("font_color", AMBER)
+	row.add_child(value_label)
+
+	slider.value_changed.connect(func(v: float):
+		callback.call(v)
+		value_label.text = _format_value(v, unit, decimals)
+		_refresh_live()
+	)
+	_controls.add_child(row)
+
+
+func _add_check(title: String, pressed: bool, callback: Callable) -> CheckButton:
+	var check := CheckButton.new()
+	check.text = title
+	check.button_pressed = pressed
+	check.add_theme_font_size_override("font_size", 11)
+	check.toggled.connect(callback)
+	_controls.add_child(check)
+	return check
+
+
+func _format_value(value: float, unit: String, decimals: int) -> String:
+	return ("%." + str(decimals) + "f %s") % [value, unit]
+
+
+func _make_ppe_check(text: String, pressed: bool, callback: Callable) -> CheckButton:
+	var check := CheckButton.new()
+	check.text = text
+	check.button_pressed = pressed
+	check.add_theme_font_size_override("font_size", 11)
+	check.toggled.connect(callback)
+	return check
+
+
+func _add_nav(allow_next: bool, next_text: String = "Continue →") -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var prev := Button.new()
+	prev.text = "← Previous stage"
+	prev.custom_minimum_size = Vector2(168.0, 30.0)
+	prev.disabled = _stage <= 1
+	prev.pressed.connect(_on_previous)
+	row.add_child(prev)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(spacer)
+	if _stage < 4:
+		_next_btn = Button.new()
+		_next_btn.text = next_text
+		_next_btn.custom_minimum_size = Vector2(156.0, 30.0)
+		_next_btn.disabled = not allow_next
+		_next_btn.pressed.connect(_on_next)
+		row.add_child(_next_btn)
+	_controls.add_child(row)
+
+
+func _set_stage(stage: int) -> void:
+	_stage = clampi(stage, 1, 4)
+	_clear_controls()
+	match _stage:
+		1:
+			_build_stage_one()
+		2:
+			_build_stage_two()
+		3:
+			_build_stage_three()
+		4:
+			_build_stage_four()
+	_refresh_live()
+	queue_redraw()
+
+
+func _build_stage_one() -> void:
+	_add_intro("STAGE 1 / 4 — WEIGH & CHARGE", "Tare the balance, weigh the acid, then charge the anhydride and catalyst into the dry flask.")
+	_add_slider("Salicylic acid", "g", 10.0, 17.0, 0.1, _mass_g, 1, func(v): _mass_g = v)
+	_add_slider("Acetic anhydride", "mL", 8.0, 22.0, 0.1, _anhydride_ml, 1, func(v): _anhydride_ml = v)
+	_add_slider("H₂SO₄ catalyst", "drops", 0.0, 8.0, 1.0, float(_catalyst_drops), 0, func(v): _catalyst_drops = int(v))
+	_add_slider("Stirrer", "rpm", 0.0, 1200.0, 50.0, _stir_rpm, 0, func(v): _stir_rpm = v)
+
+	var ppe_row := HBoxContainer.new()
+	ppe_row.add_theme_constant_override("separation", 6)
+	ppe_row.add_child(_make_ppe_check("Goggles", bool(_ppe["goggles"]), _on_goggles))
+	ppe_row.add_child(_make_ppe_check("Gloves", bool(_ppe["gloves"]), _on_gloves))
+	ppe_row.add_child(_make_ppe_check("Lab coat", bool(_ppe["coat"]), _on_coat))
+	_controls.add_child(ppe_row)
+	_add_nav(_ppe_ok(), "Begin reflux →")
+
+
+func _build_stage_two() -> void:
+	_add_intro("STAGE 2 / 4 — REFLUX", "Bring the mantle to 65–75 °C and hold reflux for 20 minutes. The condenser must stay cold; vapour leaving the top is lost reagent.")
+	_add_slider("Mantle temperature", "°C", 40.0, 110.0, 1.0, _temp_c, 0, func(v): _temp_c = v)
+	_add_slider("Reflux time", "min", 5.0, 40.0, 1.0, _reflux_min, 0, func(v): _reflux_min = v)
+	_add_check("Fume hood running / sash low", _hood, _on_hood)
+
+	var run := Button.new()
+	run.text = "Run reflux" if not _reflux_done else "Reflux complete ✓"
+	run.disabled = _reflux_done
+	run.custom_minimum_size = Vector2(220.0, 32.0)
+	run.pressed.connect(_on_run_reflux)
+	_controls.add_child(run)
+	if _reflux_done:
+		var note := Label.new()
+		note.text = "Acylation finished. Cool the flask before quenching."
+		note.add_theme_font_size_override("font_size", 10)
+		note.add_theme_color_override("font_color", GREEN)
+		_controls.add_child(note)
+	_add_nav(_reflux_done, "Quench & crystallise →")
+
+
+func _build_stage_three() -> void:
+	_add_intro("STAGE 3 / 4 — QUENCH & CRYSTALLISE", "Pour the cooled mixture onto ice water to hydrolyse excess anhydride. Filter, then recrystallise from ethanol/water and dry.")
+	_add_slider("Ice bath", "°C", -5.0, 25.0, 1.0, _ice_c, 0, func(v): _ice_c = v)
+	_add_slider("Quench water", "mL", 0.0, 60.0, 1.0, _water_ml, 0, func(v): _water_ml = v)
+	_add_slider("Recrystallisation ethanol", "mL", 0.0, 30.0, 1.0, _ethanol_ml, 0, func(v): _ethanol_ml = v)
+	_add_check("Add seed crystal", _seeded, _on_seed)
+	_add_nav(true, "Go to assay →")
+
+
+func _build_stage_four() -> void:
+	_add_intro("STAGE 4 / 4 — ANALYTICAL ASSAY", "TLC, melting point and gravimetric purity decide whether the batch meets the contract. Submit the dried product.")
+	if not _submitted:
+		var submit := Button.new()
+		submit.text = "Submit batch to analytical"
+		submit.custom_minimum_size = Vector2(260.0, 34.0)
+		submit.pressed.connect(_on_submit)
+		_controls.add_child(submit)
+		var note := Label.new()
+		note.text = "The assay is computed from the conditions you actually ran."
+		note.add_theme_font_size_override("font_size", 10)
+		note.add_theme_color_override("font_color", DIM)
+		_controls.add_child(note)
+	else:
+		var again := Button.new()
+		again.text = "Start a new batch"
+		again.custom_minimum_size = Vector2(200.0, 32.0)
+		again.pressed.connect(_on_new_batch)
+		_controls.add_child(again)
+	_add_nav(false)
+
+
+func _on_goggles(pressed: bool) -> void:
+	_ppe["goggles"] = pressed
+	_refresh_ppe()
+
+
+func _on_gloves(pressed: bool) -> void:
+	_ppe["gloves"] = pressed
+	_refresh_ppe()
+
+
+func _on_coat(pressed: bool) -> void:
+	_ppe["coat"] = pressed
+	_refresh_ppe()
+
+
+func _refresh_ppe() -> void:
+	if _stage != 1:
+		return
+	# Rebuild so the Continue button reflects the PPE gate immediately.
+	_set_stage(1)
+	_status.text = "PPE complete. Weigh the acid and continue." if _ppe_ok() else "PPE incomplete — the flask stays closed."
+
+
+func _on_hood(pressed: bool) -> void:
+	_hood = pressed
+	_refresh_live()
+
+
+func _on_seed(pressed: bool) -> void:
+	_seeded = pressed
+
+
+func _on_run_reflux() -> void:
+	if not _ppe_ok():
+		_status.text = "The safety gate is still closed. Return to stage 1 and don PPE."
+		_status.add_theme_color_override("font_color", RED)
+		return
+	_reflux_done = true
+	if not _hood:
+		_status.text = "Reflux finished — but the hood was off. Expect exposure and a safety failure at assay."
+		_status.add_theme_color_override("font_color", AMBER)
+	elif _temp_c > 85.0:
+		_status.text = "Reflux finished at %.0f °C. The batch is discoloured; tar is forming." % _temp_c
+		_status.add_theme_color_override("font_color", AMBER)
+	else:
+		_status.text = "Reflux finished at %.0f °C after %.0f min. Cool before quenching." % [_temp_c, _reflux_min]
+		_status.add_theme_color_override("font_color", GREEN)
+	_set_stage(2)
+
+
+func _on_next() -> void:
+	if _stage == 1:
+		if not _ppe_ok():
+			_status.text = "Cannot open the reagents without goggles, gloves and a lab coat."
+			_status.add_theme_color_override("font_color", RED)
+			return
+		_set_stage(2)
+		_status.text = "Stage 2 — set the mantle and run the reflux."
+	elif _stage == 2:
+		if not _reflux_done:
+			_status.text = "Run the reflux before moving on; the acylation has not happened yet."
+			_status.add_theme_color_override("font_color", RED)
+			return
+		_set_stage(3)
+		_status.text = "Stage 3 — quench on ice, filter, recrystallise."
+	elif _stage == 3:
+		_set_stage(4)
+		_status.text = "Stage 4 — submit the dried product for assay."
+
+
+func _on_previous() -> void:
+	if _stage > 1:
+		_set_stage(_stage - 1)
+		_status.text = "Returned to stage %d. Conditions are preserved." % _stage
+
+
+func _on_submit() -> void:
+	submit_batch()
+	var result := _last_result
+	if not bool(result.get("ok", false)):
+		_status.text = str(result.get("error", "The batch could not be evaluated."))
+		_status.add_theme_color_override("font_color", RED)
+		return
+	var stars := int(result.get("stars", 0))
+	_status.text = "%s  ·  %.1f %% purity  ·  %.1f g isolated  ·  MP %.1f °C  ·  %d XP chemistry" % [
+		str(result.get("grade", "")), float(result.get("purity", 0.0)), float(result.get("yield_g", 0.0)),
+		float(result.get("melting_point_c", 0.0)), int(result.get("xp_awarded", 0))
+	]
+	_status.add_theme_color_override("font_color", GREEN if stars >= 2 else AMBER if stars == 1 else RED)
+
+
+func submit_batch() -> Dictionary:
+	if _submitted:
+		return {"ok": false, "error": "This batch has already been submitted."}
+	var result: Dictionary = Chem.evaluate(_params())
+	_last_result = result
+	if not bool(result.get("ok", false)):
+		return result
+	_submitted = true
+	_batch_count += 1
+	var cap: float = clampf(1.0 - 0.25 * float(maxi(0, _batch_count - 1)), 0.35, 1.0)
+	var xp: int = int(round(float(result.get("xp_chemistry", 0)) * cap))
+	var xp_eng: int = int(round(float(result.get("xp_engineering", 0)) * cap))
+	result["xp_awarded"] = xp
+	result["xp_engineering_awarded"] = xp_eng
+	result["xp_multiplier"] = cap
+
+	var skills := get_node_or_null("/root/SkillManager")
+	if skills != null:
+		skills.add_xp("chemistry", xp, "Aspirin synthesis")
+		if xp_eng > 0:
+			skills.add_xp("engineering", xp_eng, "Reflux rig operation")
+
+	var vitals := get_node_or_null("/root/PlayerVitals")
+	if vitals != null:
+		if not _hood:
+			if vitals.has_method("add_chemical_exposure"):
+				vitals.add_chemical_exposure("acetic_anhydride", 120.0, 2.0)
+			if vitals.has_method("apply_hazard_damage"):
+				vitals.apply_hazard_damage(4.0, "chemical_burn", "open-bench acetic anhydride")
+		if _temp_c > 100.0:
+			if vitals.has_method("apply_hazard_damage"):
+				vitals.apply_hazard_damage(5.0, "thermal_burn", "reflux runaway")
+
+	_save_record(result)
+	_set_stage(4)
+	return result
+
+
+func _save_record(result: Dictionary) -> void:
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager == null:
+		return
+	var data: Dictionary = save_manager.get("save_data")
+	var record: Dictionary = data.get("synthesis", {})
+	if record.is_empty():
+		record = {"runs": 0, "best_purity": 0.0, "best_yield_g": 0.0, "best_score": 0.0}
+	record["runs"] = int(record.get("runs", 0)) + 1
+	record["best_purity"] = maxf(float(record.get("best_purity", 0.0)), float(result.get("purity", 0.0)))
+	record["best_yield_g"] = maxf(float(record.get("best_yield_g", 0.0)), float(result.get("yield_g", 0.0)))
+	record["best_score"] = maxf(float(record.get("best_score", 0.0)), float(result.get("score", 0.0)))
+	record["last"] = {
+		"purity": float(result.get("purity", 0.0)),
+		"yield_g": float(result.get("yield_g", 0.0)),
+		"grade": str(result.get("grade", "")),
+		"stars": int(result.get("stars", 0))
+	}
+	data["synthesis"] = record
+	if save_manager.has_method("save_game"):
+		save_manager.save_game()
+
+
+func _on_new_batch() -> void:
+	_submitted = false
+	_last_result = {}
+	_reflux_done = false
+	_mass_g = 13.8
+	_anhydride_ml = 14.2
+	_catalyst_drops = 5
+	_stir_rpm = 450.0
+	_temp_c = 70.0
+	_reflux_min = 20.0
+	_hood = true
+	_ice_c = 2.0
+	_water_ml = 30.0
+	_ethanol_ml = 15.0
+	_seeded = true
+	_set_stage(1)
+	_status.text = "New batch. PPE is retained; reagents reset to the protocol defaults."
+	_status.add_theme_color_override("font_color", DIM)
+
+
+# =============================================================================
+# LIVE REPORT
+# =============================================================================
+
+func _refresh_live() -> void:
+	if _report == null:
+		return
+	var moles_sal: float = _mass_g / Chem.MW_SALICYLIC
+	var moles_anh: float = _anhydride_ml * Chem.DENSITY_ANHYDRIDE / Chem.MW_ANHYDRIDE
+	var equivalents: float = moles_anh / moles_sal if moles_sal > 0.0 else 0.0
+	var theoretical: float = minf(moles_sal, moles_anh) * Chem.MW_ASPIRIN
+	var limiting := "salicylic acid" if moles_sal <= moles_anh else "acetic anhydride"
+	var hood_color := GREEN if _hood else RED
+	var ppe_color := GREEN if _ppe_ok() else AMBER
+	var text := "[font_size=15][b]BATCH RECORD[/b][/font_size]\n"
+	text += "[color=#85949f]SYN-01 · Aspirin · stage %d / 4[/color]\n\n" % _stage
+	text += "[b]STOICHIOMETRY[/b]\n"
+	text += "Salicylic acid   %.2f g  →  %.1f mmol\n" % [_mass_g, moles_sal * 1000.0]
+	text += "Acetic anhydride %.1f mL → %.1f mmol\n" % [_anhydride_ml, moles_anh * 1000.0]
+	text += "Molar ratio      %.2f eq\n" % equivalents
+	text += "Limiting         [color=#ffb45c]%s[/color]\n" % limiting
+	text += "Theoretical      %.2f g\n\n" % theoretical
+	text += "[b]CONDITIONS[/b]\n"
+	text += "Reflux           %.0f °C · %.0f min\n" % [_temp_c, _reflux_min]
+	text += "Stirrer          %.0f rpm\n" % _stir_rpm
+	text += "Catalyst         %d drops H₂SO₄\n" % _catalyst_drops
+	text += "Crystallisation  %.0f °C ice · %d mL EtOH%s\n" % [_ice_c, int(_ethanol_ml), " · seeded" if _seeded else ""]
+	text += "Fume hood        [color=#%s]%s[/color]\n" % [hood_color.to_html(false), "ON" if _hood else "OFF"]
+	text += "PPE              [color=#%s]%s[/color]\n\n" % [ppe_color.to_html(false), "complete" if _ppe_ok() else "incomplete"]
+
+	text += "[b]LIVE HAZARD READ[/b]\n"
+	if not _hood:
+		text += "[color=#ff6b60]• Open bench. Acetic anhydride vapour is a lachrymator.[/color]\n"
+	if _temp_c > 85.0:
+		text += "[color=#ff6b60]• Above 85 °C: tar and colour body formation.[/color]\n"
+	if _temp_c > 100.0:
+		text += "[color=#ff6b60]• Above 100 °C: pyrolysis; the batch is lost.[/color]\n"
+	if _catalyst_drops == 0:
+		text += "[color=#ffb45c]• No catalyst: most of the acid will survive unreacted.[/color]\n"
+	if _catalyst_drops > 6:
+		text += "[color=#ffb45c]• Excess acid catalyst chars product and attacks the flask.[/color]\n"
+	if _hood and _temp_c <= 85.0 and _catalyst_drops > 0:
+		text += "[color=#6ddbaa]• Conditions inside the validated window.[/color]\n"
+
+	if _submitted:
+		text += "\n[font_size=14][b]ASSAY RESULT[/b][/font_size]\n"
+		text += _format_result()
+	else:
+		text += "\n[color=#85949f]Assay pending. Complete stages 1–4 and submit the dried product.[/color]\n"
+		if _reflux_done:
+			text += "[color=#6ddbaa]Reflux recorded.[/color]\n"
+
+	_report.text = text
+
+
+func _format_result() -> String:
+	var result := _last_result
+	if not bool(result.get("ok", false)):
+		return "[color=#ff6b60]%s[/color]" % str(result.get("error", "invalid batch"))
+	var checks: Dictionary = result.get("checks", {})
+	var stars := int(result.get("stars", 0))
+	var star_text := "★".repeat(stars) + "☆".repeat(3 - stars)
+	var grade_color := GREEN if stars >= 2 else AMBER if stars == 1 else RED
+	var out := "[color=#%s]%s  %s[/color]\n\n" % [grade_color.to_html(false), star_text, str(result.get("grade", ""))]
+	out += "[b]Purity[/b]        %.1f %%  %s\n" % [float(result.get("purity", 0.0)), _check_mark(bool(checks.get("purity", false)))]
+	out += "[b]Isolated[/b]      %.2f g  %s\n" % [float(result.get("yield_g", 0.0)), _check_mark(bool(checks.get("yield", false)))]
+	out += "[b]Melting point[/b] %.1f °C (%.1f–%.1f)  %s\n" % [
+		float(result.get("melting_point_c", 0.0)),
+		float(result.get("melting_point_c", 0.0)) - float(result.get("melting_range_c", 0.0)) * 0.5,
+		float(result.get("melting_point_c", 0.0)) + float(result.get("melting_range_c", 0.0)) * 0.5,
+		_check_mark(bool(checks.get("melting_point", false)))
+	]
+	out += "[b]TLC[/b]           Rf %.2f (lit. 0.45)  %s\n" % [float(result.get("tlc_rf", 0.0)), _check_mark(bool(checks.get("tlc", false)))]
+	out += "[b]Conversion[/b]    %.0f %%\n" % (float(result.get("conversion", 0.0)) * 100.0)
+	out += "[b]Theoretical[/b]   %.2f g\n\n" % float(result.get("theoretical_g", 0.0))
+	out += "[b]XP[/b]            %d chemistry · %d engineering\n" % [int(result.get("xp_awarded", 0)), int(result.get("xp_engineering_awarded", 0))]
+	if float(result.get("xp_multiplier", 1.0)) < 0.999:
+		out += "[color=#85949f]Repeat batch: %.0f %% XP. New technique earns the full amount on a fresh route.[/color]\n" % (float(result.get("xp_multiplier", 1.0)) * 100.0)
+	var warnings: Array = result.get("warnings", [])
+	var shown := 0
+	if not warnings.is_empty():
+		out += "\n[b]DIAGNOSIS[/b]\n"
+		for warning in warnings:
+			if shown >= 5:
+				break
+			out += "[color=#ffb45c]• %s[/color]\n" % str(warning)
+			shown += 1
+	if bool(result.get("safety_pass", false)):
+		out += "\n[color=#6ddbaa]Safety gate passed.[/color]"
+	else:
+		out += "\n[color=#ff6b60]Safety gate failed — the batch cannot be sold or used for the contract.[/color]"
+	return out
+
+
+func _check_mark(ok: bool) -> String:
+	return "[color=#6ddbaa]PASS[/color]" if ok else "[color=#ff6b60]FAIL[/color]"
+
+
+# =============================================================================
+# APPARATUS RENDERING
+# =============================================================================
+
+func _draw() -> void:
+	draw_rect(Rect2(Vector2.ZERO, size), BG, true)
+	draw_line(Vector2(0, 64), Vector2(size.x, 64), Color(0.16, 0.24, 0.28, 0.7), 1.0)
+	draw_rect(Rect2(16, 70, 308, 614), PANEL, true)
+	draw_rect(Rect2(334, 70, 530, 388), PANEL_SOFT, true)
+	draw_rect(Rect2(334, 70, 2, 614), Color(CYAN.r, CYAN.g, CYAN.b, 0.38), true)
+	draw_rect(Rect2(870, 70, 394, 614), PANEL, true)
+	_draw_stepper()
+	_draw_apparatus()
+
+
+func _draw_stepper() -> void:
+	var font := ThemeDB.fallback_font
+	var labels := ["WEIGH", "REFLUX", "WORKUP", "ASSAY"]
+	var start := Vector2(366.0, 90.0)
+	for i in range(4):
+		var center := Vector2(start.x + float(i) * 118.0, start.y + 8.0)
+		if i > 0:
+			var prev := Vector2(start.x + float(i - 1) * 118.0, center.y)
+			draw_line(prev, center, Color(0.25, 0.36, 0.4, 0.8), 1.5)
+		var active: bool = (i + 1) <= _stage
+		var current: bool = (i + 1) == _stage
+		var color := CYAN if current else (GREEN if active else Color(0.3, 0.38, 0.43))
+		draw_circle(center, 9.0 if current else 7.0, Color(color.r, color.g, color.b, 0.22))
+		draw_arc(center, 8.0, 0.0, TAU, 24, color, 1.6)
+		draw_string(font, center + Vector2(-3.0, 4.0), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, color)
+		draw_string(font, Vector2(center.x - 27.0, center.y + 24.0), labels[i], HORIZONTAL_ALIGNMENT_LEFT, -1, 8, color if active else DIM)
+
+
+func _draw_apparatus() -> void:
+	var font := ThemeDB.fallback_font
+	var cx := 599.0
+	var body_bottom := 404.0
+	var body_top := 288.0
+	var body_left := 534.0
+	var body_right := 664.0
+
+	# Bench
+	draw_rect(Rect2(360, 408, 478, 6), Color(0.16, 0.21, 0.24), true)
+	draw_line(Vector2(360, 414), Vector2(838, 414), Color(0.24, 0.31, 0.34, 0.8), 1.0)
+
+	# Heating mantle
+	var mantle_glow := clampf((_temp_c - 30.0) / 70.0, 0.0, 1.0)
+	draw_arc(Vector2(cx, 397), 80.0, PI + 0.28, TAU - 0.28, 32, Color(0.2, 0.24, 0.27), 12.0)
+	draw_arc(Vector2(cx, 397), 80.0, PI + 0.28, TAU - 0.28, 32, Color(0.95, 0.35, 0.16, 0.18 + 0.4 * mantle_glow), 4.0)
+	draw_string(font, Vector2(cx - 38.0, 430.0), "HEATING MANTLE", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, DIM)
+
+	# Condenser (Dimroth style, schematic)
+	var cond_left := cx - 24.0
+	var cond_right := cx + 24.0
+	var cond_top := 118.0
+	var cond_bottom := 214.0
+	draw_rect(Rect2(cond_left, cond_top, cond_right - cond_left, cond_bottom - cond_top), Color(GLASS.r, GLASS.g, GLASS.b, 0.13), true)
+	draw_rect(Rect2(cond_left, cond_top, cond_right - cond_left, cond_bottom - cond_top), GLASS, false, 1.5)
+	var coil := PackedVector2Array()
+	for i in range(13):
+		var y := cond_top + 8.0 + float(i) * 7.0
+		coil.append(Vector2(cond_left + 6.0 if i % 2 == 0 else cond_right - 6.0, y))
+	draw_polyline(coil, Color(0.32, 0.76, 0.88, 0.75), 1.4)
+	# Cooling hoses
+	draw_arc(Vector2(cond_left - 12.0, 150.0), 14.0, -PI * 0.5, PI * 0.5, 14, Color(0.28, 0.55, 0.65, 0.8), 2.0)
+	draw_arc(Vector2(cond_right + 12.0, 190.0), 14.0, PI * 0.5, PI * 1.5, 14, Color(0.28, 0.55, 0.65, 0.8), 2.0)
+	draw_string(font, Vector2(cond_left - 6.0, 110.0), "CONDENSER", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, DIM)
+
+	# Flask neck and body
+	var flask := PackedVector2Array([
+		Vector2(cx - 13.0, 214.0), Vector2(cx - 13.0, 258.0),
+		Vector2(cx - 66.0, 380.0), Vector2(cx - 52.0, 404.0),
+		Vector2(cx + 52.0, 404.0), Vector2(cx + 66.0, 380.0),
+		Vector2(cx + 13.0, 258.0), Vector2(cx + 13.0, 214.0)
+	])
+	var closed := flask.duplicate()
+	closed.append(flask[0])
+	draw_colored_polygon(flask, Color(GLASS.r, GLASS.g, GLASS.b, 0.14))
+	draw_polyline(closed, Color(0.7, 0.84, 0.9, 0.75), 1.8)
+
+	# Liquid volume: 55 % of the flask body.
+	var level_y: float = body_bottom - (body_bottom - body_top) * 0.55
+	var liquid_color := Color(0.78, 0.87, 0.88, 0.5)
+	if _temp_c > 85.0:
+		liquid_color = Color(0.55, 0.36, 0.14, 0.62)
+	if _stage >= 3:
+		liquid_color = Color(0.66, 0.82, 0.86, 0.38)
+	var liquid := PackedVector2Array()
+	var steps := 18
+	for i in range(steps + 1):
+		var y := lerpf(level_y, body_bottom, float(i) / float(steps))
+		var half := lerpf(13.0, 66.0, clampf((y - 258.0) / (380.0 - 258.0), 0.0, 1.0))
+		if y > 380.0:
+			half = lerpf(66.0, 52.0, (y - 380.0) / 24.0)
+		liquid.append(Vector2(cx - half, y))
+	for i in range(steps + 1):
+		var y := lerpf(body_bottom, level_y, float(i) / float(steps))
+		var half := lerpf(13.0, 66.0, clampf((y - 258.0) / (380.0 - 258.0), 0.0, 1.0))
+		if y > 380.0:
+			half = lerpf(66.0, 52.0, (y - 380.0) / 24.0)
+		liquid.append(Vector2(cx + half, y))
+	draw_colored_polygon(liquid, liquid_color)
+	draw_line(Vector2(cx - 46.0, level_y), Vector2(cx + 46.0, level_y), Color(0.86, 0.95, 0.97, 0.65), 1.2)
+
+	# Bubbles while reflux is running
+	if _stage >= 2 and _reflux_done and _stage < 3:
+		for i in range(7):
+			var phase: float = fmod(_time * (0.5 + float(i) * 0.11) + float(i) * 0.37, 1.0)
+			var bx: float = cx - 30.0 + float(i) * 10.0 + sin(_time * 2.0 + float(i)) * 4.0
+			var by: float = level_y + 6.0 - phase * (level_y - 300.0)
+			draw_circle(Vector2(bx, by), 2.2 + float(i % 3), Color(0.9, 0.97, 1.0, 0.35))
+
+	# Crystals after workup
+	if _stage >= 3:
+		for i in range(9):
+			var px: float = cx - 40.0 + float(i % 5) * 19.0
+			var py: float = 398.0 - float(i / 5) * 8.0 - 2.0
+			var diamond := PackedVector2Array([
+				Vector2(px, py - 4.0), Vector2(px + 3.5, py), Vector2(px, py + 4.0), Vector2(px - 3.5, py)
+			])
+			draw_colored_polygon(diamond, Color(0.9, 0.96, 1.0, 0.72))
+
+	# Thermometer
+	draw_line(Vector2(cx + 88.0, 250.0), Vector2(cx + 88.0, 380.0), Color(0.6, 0.7, 0.76, 0.7), 2.0)
+	draw_circle(Vector2(cx + 88.0, 384.0), 5.0, Color(0.95, 0.35, 0.3, 0.8))
+	draw_string(font, Vector2(cx + 72.0, 238.0), "%.0f °C" % _temp_c, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, AMBER if _temp_c > 85.0 else TEXT)
+
+	# Hood status plate
+	var hood_color := GREEN if _hood else RED
+	draw_rect(Rect2(748, 78, 100, 24), Color(hood_color.r, hood_color.g, hood_color.b, 0.14), true)
+	draw_rect(Rect2(748, 78, 100, 24), Color(hood_color.r, hood_color.g, hood_color.b, 0.6), false, 1.0)
+	draw_string(font, Vector2(758, 94), "HOOD %s" % ("ON" if _hood else "OFF"), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, hood_color)
+
+	# Vapour when the hood is off and the flask is hot.
+	if not _hood and _temp_c > 60.0:
+		for i in range(3):
+			var points := PackedVector2Array()
+			for j in range(12):
+				var t := float(j) / 11.0
+				points.append(Vector2(cx - 18.0 + float(i) * 18.0 + sin(t * 6.0 + _time * 2.0 + float(i)) * 6.0, 205.0 - t * 70.0))
+			draw_polyline(points, Color(0.85, 0.75, 0.6, 0.22), 1.5)
+
+	draw_string(font, Vector2(360, 442), "250 mL 3-neck flask · Dimroth condenser · oil bath", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, DIM)

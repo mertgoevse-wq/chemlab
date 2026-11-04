@@ -25,6 +25,7 @@ costs blood, lung capacity or radiation dose rather than experience points.
 | Chromosome dosage | ✅ Live | Trisomy 21 / monosomy X expression model |
 | Accelerator terminal | ✅ Live | Relativistic kinematics, rigidity, Cherenkov, activation |
 | Fusor workshop | ✅ Live | Build checklist, Paschen window, neutron yield, dose |
+| Organic synthesis | ✅ Live | Aspirin protocol: stoichiometry, reflux, workup, TLC/MP assay |
 | Player vitals | ✅ Live | HP, injuries, ppm·min exposure, mSv dose, incapacity |
 | 3D analytical bench | 🟡 Partial | Walkable room and apparatus; interaction still being wired |
 | Aetherkin companions | 🟡 Data live | 26 species defined; runtime abilities incomplete |
@@ -36,7 +37,7 @@ Full plan, including what is explicitly **not** implemented: [docs/ROADMAP.md](d
 ![Main menu, runtime capture](docs/screenshots/runtime_menu.png)
 *Runtime capture of the actual menu: loading window, research terminals, tightened layout.*
 
-## The four live terminals
+## The playable terminals
 
 ### Genome archive
 A karyotype you can zoom from whole chromosomes down to a single base. Curated
@@ -63,6 +64,17 @@ breakdown, mean free path, empirical neutron yield, fusion power, Q and operator
 dose rate. Failures are named after real phenomena.
 
 
+### Organic synthesis bench
+Four stages: weigh and charge, reflux, quench/recrystallise, assay. The model uses
+the real molar masses (138.12 / 102.09 / 180.16 g/mol) and fails the batch for the
+actual reasons: no catalyst leaves ~72 % of the acid unreacted, >85 °C tars the
+product, and a warm ice bath loses crystals. The assay reports purity, isolated
+yield, melting point and TLC Rf; only a correct, hood-safe run earns three stars.
+
+![Aspirin synthesis assay, runtime capture](docs/screenshots/runtime_synthesis_result.png)
+*Runtime capture: 99.8 % purity, 15.58 g isolated, MP 135.4 °C, three stars.*
+
+
 ### Analytical bench (3D)
 The walkable laboratory: benches, fume hood, balance, stirrer, burette, burner and
 glassware. Controls are keyboard/mouse today; webcam hand tracking exists in the
@@ -83,6 +95,10 @@ tools/bin/godot --headless --path game --script res://scripts/smoke_test.gd
 # Genome + lab physics tests
 tools/bin/godot --headless --path game --script res://tests/test_genome_simulation.gd
 tools/bin/godot --headless --path game --script res://tests/test_lab_physics.gd
+
+# Aspirin model + terminal flow
+tools/bin/godot --headless --path game --script res://tests/test_synthesis_chemistry.gd
+tools/bin/godot --headless --path game --script res://tests/test_synthesis_flow.gd
 
 # Python chemistry core
 .venv/Scripts/python.exe -m pytest

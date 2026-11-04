@@ -22,11 +22,25 @@ func _run() -> void:
 		return
 	var node = packed.instantiate()
 	root.add_child(node)
+	if args.size() > 2:
+		var mode := str(args[2])
+		if mode.begins_with("stage") and node.has_method("_set_stage"):
+			node._set_stage(int(mode.substr(5)))
+		elif mode == "submitted" and node.has_method("submit_batch"):
+			node._ppe = {"goggles": true, "gloves": true, "coat": true}
+			node._hood = true
+			node._reflux_done = true
+			node.submit_batch()
 	for _i in range(6):
 		await process_frame
 	RenderingServer.force_draw()
 	await process_frame
 	var image := root.get_viewport().get_texture().get_image()
-	var error := image.save_png(output)
-	print("CAPTURE %s -> %s (err %d, %dx%d)" % [scene_path, output, error, image.get_width(), image.get_height()])
+	# Relative paths are repo-relative (docs/screenshots/...), not game/-relative.
+	var output_path := output
+	if not output.begins_with("res://") and not output.is_absolute_path():
+		output_path = ProjectSettings.globalize_path("res://").path_join("..").path_join(output).simplify_path()
+	DirAccess.make_dir_recursive_absolute(output_path.get_base_dir())
+	var error := image.save_png(output_path)
+	print("CAPTURE %s -> %s (err %d, %dx%d)" % [scene_path, output_path, error, image.get_width(), image.get_height()])
 	quit(0 if error == OK else 4)

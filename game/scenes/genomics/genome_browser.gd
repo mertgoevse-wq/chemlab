@@ -547,8 +547,8 @@ func _gui_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 			_dragging = false
 	elif event is InputEventMouseMotion and _dragging:
-		var span := _span_bp()
-		var delta_bp := (event.position.x - _last_mouse_x) / maxf(_track_rect().size.x, 1.0) * span
+		var span: float = _span_bp()
+		var delta_bp: float = (event.position.x - _last_mouse_x) / maxf(_track_rect().size.x, 1.0) * span
 		_center_bp = clampf(_center_bp - delta_bp, span * 0.5, maxf(float(_chrom_length()) - span * 0.5, span * 0.5))
 		_last_mouse_x = event.position.x
 		queue_redraw()
@@ -808,10 +808,10 @@ func _draw_legend() -> void:
 func _nice_step(raw: float) -> float:
 	if raw <= 0.0:
 		return 1.0
-	var exponent := floor(log(raw) / log(10.0))
-	var base := pow(10.0, exponent)
-	var fraction := raw / base
-	var nice := 1.0
+	var exponent: float = floor(log(raw) / log(10.0))
+	var base: float = pow(10.0, exponent)
+	var fraction: float = raw / base
+	var nice: float = 1.0
 	if fraction > 5.0:
 		nice = 10.0
 	elif fraction > 2.0:

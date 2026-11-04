@@ -13,6 +13,7 @@ const SCENE_ACCELERATOR: String = "res://scenes/laboratories/accelerator_lab.tsc
 const SCENE_FUSOR: String = "res://scenes/laboratories/fusor_lab.tscn"
 const SCENE_BENCH_3D: String = "res://scenes/laboratories/analytical_lab.tscn"
 const SCENE_TITRATION: String = "res://scenes/laboratories/titration_practicum.tscn"
+const SCENE_SYNTHESIS: String = "res://scenes/laboratories/synthesis_lab.tscn"
 const SCENE_CODEX: String = "res://scenes/progression/skill_codex.tscn"
 const SCENE_MENU: String = "res://scenes/main_menu/main_menu.tscn"
 
@@ -20,7 +21,8 @@ const PLAYABLE: Dictionary = {
 	"genomics_lab": SCENE_GENOME,
 	"accelerator": SCENE_ACCELERATOR,
 	"fusor_workshop": SCENE_FUSOR,
-	"analytical_lab": SCENE_BENCH_3D
+	"analytical_lab": SCENE_BENCH_3D,
+	"synthesis_lab": SCENE_SYNTHESIS
 }
 
 const BG: Color = Color(0.026, 0.037, 0.048, 1.0)
@@ -88,7 +90,7 @@ func _build_ui() -> void:
 	add_child(title)
 
 	var sub := Label.new()
-	sub.text = "%d laboratory archetypes · %d suits · 4 live terminals + practicum" % [_labs.size(), _suits.size()]
+	sub.text = "%d laboratory archetypes · %d suits · 5 live terminals + practicum" % [_labs.size(), _suits.size()]
 	sub.position = Vector2(26.0, 46.0)
 	sub.add_theme_font_size_override("font_size", 11)
 	sub.add_theme_color_override("font_color", DIM)
@@ -140,10 +142,17 @@ func _build_ui() -> void:
 	titration.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_TITRATION))
 	add_child(titration)
 
+	var synthesis := Button.new()
+	synthesis.text = "⚗ Synthesis bench"
+	synthesis.position = Vector2(382.0, 652.0)
+	synthesis.custom_minimum_size = Vector2(200.0, 30.0)
+	synthesis.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_SYNTHESIS))
+	add_child(synthesis)
+
 	var codex := Button.new()
 	codex.text = "◇ Skill codex & unlocks"
-	codex.position = Vector2(382.0, 652.0)
-	codex.custom_minimum_size = Vector2(454.0, 30.0)
+	codex.position = Vector2(592.0, 652.0)
+	codex.custom_minimum_size = Vector2(244.0, 30.0)
 	codex.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_CODEX))
 	add_child(codex)
 
@@ -181,7 +190,7 @@ func _build_ui() -> void:
 	_status.position = Vector2(26.0, 690.0)
 	_status.add_theme_font_size_override("font_size", 11)
 	_status.add_theme_color_override("font_color", DIM)
-	_status.text = "Select a laboratory. Live terminals are real, blueprint entries are specified but not yet fitted out."
+	_status.text = "Select a laboratory. Five terminals are playable; blueprint entries are specified but not yet fitted out."
 	add_child(_status)
 
 	if not _suits.is_empty():

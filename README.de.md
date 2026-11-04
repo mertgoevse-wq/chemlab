@@ -25,6 +25,7 @@ kosten Blut, Lungenkapazität oder Strahlendosis, keine Erfahrungspunkte.
 | Chromosomen-Dosis | ✅ Live | Trisomie-21-/Monosomie-X-Expressionsmodell |
 | Beschleuniger-Terminal | ✅ Live | Relativistische Kinematik, Steifigkeit, Cherenkov, Aktivierung |
 | Fusor-Werkstatt | ✅ Live | Aufbau-Checkliste, Paschen-Fenster, Neutronenausbeute, Dosis |
+| Organische Synthese | ✅ Live | Aspirin-Protokoll: Stöchiometrie, Reflux, Aufarbeitung, MP/TLC-Assay |
 | Spieler-Vitalwerte | ✅ Live | HP, Verletzungen, ppm·min, mSv, Handlungsunfähigkeit |
 | 3D-Analytikbank | 🟡 Teilweise | Begehbarer Raum; Interaktion wird noch verdrahtet |
 | Aetherkin-Begleiter | 🟡 Daten live | 26 Arten definiert; Fähigkeiten im Runtime unvollständig |
@@ -34,7 +35,7 @@ kosten Blut, Lungenkapazität oder Strahlendosis, keine Erfahrungspunkte.
 Vollständiger Plan inklusive dessen, was **nicht** implementiert ist:
 [docs/ROADMAP.md](docs/ROADMAP.md).
 
-## Die vier spielbaren Terminals
+## Die spielbaren Terminals
 
 ### Genom-Archiv
 Ein Karyotyp, zoombar vom ganzen Chromosom bis zur einzelnen Base. Kuratierte

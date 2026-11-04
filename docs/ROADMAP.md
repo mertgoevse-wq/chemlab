@@ -17,6 +17,7 @@ This is the working plan, not a marketing page. Items are marked **LIVE**, **PAR
 | Point mutations with curated HGVS/protein/phenotype output | `game/scripts/genomics/genome_simulation.gd` | LIVE |
 | Chemical mutagen exposure with real mutation spectra | same | LIVE |
 | Chromosome dosage model (trisomy/monosomy) | same | LIVE |
+| Aspirin synthesis (stoichiometry, reflux, workup, assay) | `game/scenes/laboratories/synthesis_lab.gd` | LIVE |
 | Relativistic beam physics + activation terminal | `game/scenes/laboratories/accelerator_lab.gd` | LIVE |
 | Fusor build checklist + plasma/neutron/dose model | `game/scenes/laboratories/fusor_lab.gd` | LIVE |
 | Player health, injuries, chemical and radiation dose | `game/scripts/core/player_vitals.gd` | LIVE |
@@ -36,9 +37,9 @@ cell culture, radiochemistry hot cell, accelerator, fusor/plasma, materials &
 metallurgy, cleanroom fabrication, industrial pilot plant, forensic toxicology,
 orbital microgravity, cryogenic & vacuum.
 
-**LIVE terminals:** analytical (3D bench), genomics, accelerator, fusor.  
-**Next to fit out:** synthesis, electrochemistry, cell culture, radiochemistry,
-materials, cleanroom, pilot plant, forensic, orbital, cryogenic.
+**LIVE terminals:** analytical (3D bench), genomics, accelerator, fusor, organic synthesis (aspirin).<br>
+**Next to fit out:** electrochemistry, cell culture, radiochemistry, materials,
+cleanroom, pilot plant, forensic, orbital, cryogenic.
 
 Each remaining lab needs, in this order:
 1. A terminal scene driven by physical quantities (not a static menu).

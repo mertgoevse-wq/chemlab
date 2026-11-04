@@ -25,6 +25,7 @@ sangre, capacidad pulmonar o dosis de radiación en lugar de experiencia.
 | Dosis cromosómica | ✅ | Modelo de expresión para trisomía 21 / monosomía X |
 | Terminal del acelerador | ✅ | Cinemática relativista, rigidez, Cherenkov, activación |
 | Taller fusor | ✅ | Lista de montaje, ventana de Paschen, neutrones, dosis |
+| Síntesis orgánica | ✅ | Protocolo de aspirina: estequiometría, reflujo, aislamiento, ensayo TLC/PF |
 | Vitales del jugador | ✅ | Vida, lesiones, exposición ppm·min, dosis mSv |
 | Banco analítico 3D | 🟡 | Sala transitable; interacción aún en curso |
 | Compañeros Aetherkin | 🟡 | 26 especies definidas; habilidades incompletas |
@@ -33,7 +34,7 @@ sangre, capacidad pulmonar o dosis de radiación en lugar de experiencia.
 
 Plan completo: [docs/ROADMAP.md](docs/ROADMAP.md).
 
-## Los cuatro terminales
+## Los terminales jugables
 
 ### Archivo del genoma
 Cariotipo navegable desde el cromosoma completo hasta una base. Los puntos

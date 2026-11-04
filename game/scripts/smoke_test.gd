@@ -12,6 +12,7 @@ const SCENES_TO_VALIDATE: Array[String] = [
 	"res://scenes/laboratories/fusor_lab.tscn",
 	"res://scenes/laboratories/lab_hub.tscn",
 	"res://scenes/laboratories/titration_practicum.tscn",
+	"res://scenes/laboratories/synthesis_lab.tscn",
 	"res://scenes/progression/skill_codex.tscn",
 	"res://scenes/laboratories/analytical_lab.tscn",
 	"res://scenes/player/player.tscn",
@@ -51,6 +52,13 @@ func _init() -> void:
 		if not instance:
 			printerr("FAIL: Could not instantiate scene: %s" % scene_path)
 			total_failed += 1
+			continue
+		# A scene whose root script failed to parse still instantiates as a bare
+		# Control. Without this check the suite happily passes an empty room.
+		if instance.get_script() == null:
+			printerr("FAIL: root script missing or failed to load: %s" % scene_path)
+			total_failed += 1
+			instance.free()
 			continue
 
 		print("  -> Instantiated successfully: %s (%s)" % [instance.name, instance.get_class()])
