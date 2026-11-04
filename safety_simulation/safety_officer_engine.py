@@ -272,7 +272,7 @@ class ChemicalSafetyOfficerEngine:
         Dispatches any critical events (stopper pops, explosions, alarms).
         """
         # 1. Update Fume Hoods
-        for hood_id, hood in self.fume_hoods.items():
+        for _hood_id, hood in self.fume_hoods.items():
             hood.update(dt)
 
         # 2. Update Vessels

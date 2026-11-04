@@ -169,10 +169,9 @@ func _attempt_tcp_connection() -> void:
 		_handle_ipc_connection_failed("Failed to establish TCP connection")
 
 func _attempt_named_pipe_connection() -> void:
-	var pipe = FileAccess.new()
-	var err = pipe.open(IPC_NAMED_PIPE_PATH, FileAccess.READ_WRITE)
-	if err != OK:
-		_handle_ipc_connection_failed("Named pipe open error: %s" % err)
+	var pipe = FileAccess.open(IPC_NAMED_PIPE_PATH, FileAccess.READ_WRITE)
+	if pipe == null:
+		_handle_ipc_connection_failed("Named pipe open error")
 		return
 	_pipe_file = pipe
 	_pipe_connected = true

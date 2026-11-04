@@ -7,17 +7,17 @@ and 3D aerodynamic streamline draft fields for animation and real-time visualiza
 
 import math
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 from .ghs import CHEMICAL_DATABASE, ChemicalProfile
 
 
-class FumeHoodMode(str, Enum):
+class FumeHoodMode(StrEnum):
     CAV = "CAV"  # Constant Air Volume
     VAV = "VAV"  # Variable Air Volume (dynamically throttles blower)
 
 
-class FumeHoodAlarmState(str, Enum):
+class FumeHoodAlarmState(StrEnum):
     SAFE = "SAFE"
     WARNING_SASH_ELEVATED = "WARNING_SASH_ELEVATED"
     ALARM_SASH_TOO_HIGH_VOLATILE = "ALARM_SASH_TOO_HIGH_VOLATILE"

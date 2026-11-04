@@ -6,24 +6,24 @@ and ANSI Z358.1 compliant Emergency Eyewash and Safety Deluge Shower drills.
 
 import math
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 from .ghs import CHEMICAL_DATABASE
 
 
-class SpillLocation(str, Enum):
+class SpillLocation(StrEnum):
     WORKBENCH = "WORKBENCH"
     FUME_HOOD_DECK = "FUME_HOOD_DECK"
     LAB_FLOOR = "LAB_FLOOR"
 
 
-class StationType(str, Enum):
+class StationType(StrEnum):
     EYEWASH = "EYEWASH"
     DELUGE_SHOWER = "DELUGE_SHOWER"
     BOTH = "BOTH"
 
 
-class ExposureType(str, Enum):
+class ExposureType(StrEnum):
     EYE_SPLASH = "EYE_SPLASH"
     SKIN_SPLASH = "SKIN_SPLASH"
     WHOLE_BODY_CLOTHING = "WHOLE_BODY_CLOTHING"

@@ -8,12 +8,12 @@ and catastrophic BLEVE / glass shrapnel fragmentation events.
 
 import math
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 from .ghs import CHEMICAL_DATABASE, ChemicalProfile, GHSClass
 
 
-class VesselType(str, Enum):
+class VesselType(StrEnum):
     ERLENMEYER_FLASK_STOPPERED = "ERLENMEYER_FLASK_STOPPERED"
     SCREW_CAP_BOROSILICATE_VIAL = "SCREW_CAP_BOROSILICATE_VIAL"
     ROUND_BOTTOM_FLASK_STOPPERED = "ROUND_BOTTOM_FLASK_STOPPERED"
@@ -21,13 +21,13 @@ class VesselType(str, Enum):
     SEALED_TEST_TUBE = "SEALED_TEST_TUBE"
 
 
-class ReliefType(str, Enum):
+class ReliefType(StrEnum):
     GROUND_GLASS_STOPPER = "GROUND_GLASS_STOPPER"
     SPRING_RELIEF_VALVE = "SPRING_RELIEF_VALVE"
     SEALED_NO_RELIEF = "SEALED_NO_RELIEF"
 
 
-class VesselState(str, Enum):
+class VesselState(StrEnum):
     NORMAL = "NORMAL"
     HEATING = "HEATING"
     OVERPRESSURE_WARNING = "OVERPRESSURE_WARNING"
@@ -213,9 +213,8 @@ class ThermalVesselSimulation:
                 self.valve_open = False
 
         # 6. Stopper Pop Handling
-        if self.relief_type == ReliefType.GROUND_GLASS_STOPPER:
-            if self.pressure_kpa >= self.stopper_pop_pressure_kpa and not self.stopper_popped:
-                return self._trigger_stopper_pop()
+        if self.relief_type == ReliefType.GROUND_GLASS_STOPPER and self.pressure_kpa >= self.stopper_pop_pressure_kpa and not self.stopper_popped:
+            return self._trigger_stopper_pop()
 
         # 7. Catastrophic Rupture / Explosion Check
         if self.pressure_kpa >= self.burst_pressure_kpa:

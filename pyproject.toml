@@ -24,7 +24,8 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = [".", "src"]
+include = ["chemlab*", "chemlab_core*", "simulation*", "safety_simulation*", "storage*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -54,6 +55,8 @@ ignore = ["E501"]
 "tests/*" = ["PLR2004", "ARG001", "S101", "F401", "F841", "B007", "PTH", "UP035"]
 "scripts/*" = ["PLR2004", "ARG001", "F841", "B007", "B905", "PTH", "E402", "E741"]
 "blender_live_bridge.py" = ["PLW0603"]
+"safety_simulation/ghs.py" = ["SIM102"]
+"safety_simulation/blender_bridge.py" = ["F401"]
 
 [tool.mypy]
 python_version = "3.12"

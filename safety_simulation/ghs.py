@@ -5,10 +5,10 @@ and OSHA Hazard Communication Standard (29 CFR 1910.1200).
 """
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class GHSClass(str, Enum):
+class GHSClass(StrEnum):
     """GHS Hazard Classes."""
     EXPLOSIVE = "EXPLOSIVE"
     FLAMMABLE = "FLAMMABLE"
@@ -21,7 +21,7 @@ class GHSClass(str, Enum):
     ENVIRONMENTAL = "ENVIRONMENTAL"
 
 
-class GHSPictogram(str, Enum):
+class GHSPictogram(StrEnum):
     """Standard GHS Pictogram designations (GHS01 - GHS09)."""
     GHS01_EXPLODING_BOMB = "GHS01_EXPLODING_BOMB"
     GHS02_FLAME = "GHS02_FLAME"
@@ -34,14 +34,14 @@ class GHSPictogram(str, Enum):
     GHS09_ENVIRONMENT = "GHS09_ENVIRONMENT"
 
 
-class SignalWord(str, Enum):
+class SignalWord(StrEnum):
     """GHS Signal Words."""
     DANGER = "DANGER"
     WARNING = "WARNING"
     NONE = "NONE"
 
 
-class StorageGroup(str, Enum):
+class StorageGroup(StrEnum):
     """Segregated chemical storage classes."""
     FLAMMABLE_CABINET = "FLAMMABLE_CABINET"
     ACID_CABINET = "ACID_CABINET"
