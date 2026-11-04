@@ -21,6 +21,7 @@ SimulationBridge="*res://scripts/chemistry/simulation_bridge.gd"
 InputManager="*res://scripts/input/input_manager.gd"
 QuestManager="*res://scripts/quests/quest_manager.gd"
 SaveManager="*res://scripts/save/save_manager.gd"
+SkillManager="*res://scripts/progression/skill_manager.gd"
 PlayerVitals="*res://scripts/core/player_vitals.gd"
 
 [display]

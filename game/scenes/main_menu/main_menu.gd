@@ -182,10 +182,10 @@ func _install_research_terminals() -> void:
 		return
 	# Eight buttons at 52 px plus 14 px separation overflow a 720p viewport, which
 	# clipped the title. Tighten the rhythm instead of hiding navigation.
-	nav.add_theme_constant_override("separation", 8)
+	nav.add_theme_constant_override("separation", 6)
 	for child in nav.get_children():
 		if child is Button:
-			child.custom_minimum_size = Vector2(0, 40)
+			child.custom_minimum_size = Vector2(0, 38)
 	var title := get_node_or_null("UI/MarginContainer/HBoxContainer/MenuContainer/Header/TitleLabel")
 	if title != null:
 		title.add_theme_font_size_override("font_size", 40)
@@ -196,7 +196,8 @@ func _install_research_terminals() -> void:
 	var terminals := [
 		["🧬 Genome Archive (chromosome browser)", SCENE_GENOME_BROWSER],
 		["⚛ Ignis Accelerator (beam physics)", SCENE_ACCELERATOR],
-		["⚡ Fusor Workshop (plasma & circuits)", SCENE_FUSOR]
+		["⚡ Fusor Workshop (plasma & circuits)", SCENE_FUSOR],
+		["◇ Skill Codex (four tracks & unlocks)", "res://scenes/progression/skill_codex.tscn"]
 	]
 	for entry in terminals:
 		var btn := Button.new()

@@ -22,6 +22,7 @@ var _pressure_mtorr: float = 6.0
 var _distance_m: float = 1.5
 var _last_result: Dictionary = {}
 var _time: float = 0.0
+var _awarded_stable: bool = false
 var _log: RichTextLabel
 var _readout: RichTextLabel
 var _why_panel: RichTextLabel
@@ -236,6 +237,12 @@ func _on_energise() -> void:
 			CYAN.to_html(false), str(result.get("message", "")), float(result.get("dose_usv_h", 0.0)),
 			_sci(float(result.get("q", 0.0))), "A fusor is a neutron source, not a power plant. Q stays far below 1."
 		]
+		if not _awarded_stable:
+			_awarded_stable = true
+			var skill_manager := get_node_or_null("/root/SkillManager")
+			if skill_manager != null:
+				skill_manager.add_xp("engineering", 90, "First stable fusor discharge")
+				_log.text += "\n[color=#3ddc97]+90 Engineering XP · first stable discharge.[/color]"
 	else:
 		_log.text = "[b][color=#ff5c52]RUN FAILED · %s[/color][/b]\n%s\n\n[color=#7f8c9b]Diagnose, adjust one variable, run again. That is the actual experimental method.[/color]" % [
 			str(result.get("failure", "unknown")).replace("_", " ").to_upper(), str(result.get("message", ""))

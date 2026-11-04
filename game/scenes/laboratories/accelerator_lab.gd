@@ -23,6 +23,7 @@ var _reaction_id: String = "p_li7"
 var _target_mass_g: float = 2.0
 var _irradiation_s: float = 600.0
 var _cross_section_barn: float = 0.05
+var _awarded_reactions: Dictionary = {}
 
 var _particle_opt: OptionButton
 var _medium_opt: OptionButton
@@ -252,6 +253,12 @@ func _on_run() -> void:
 		"Activity uses A = N·σ·Φ·(1-e^-λt) for Be-7 (53.22 d). Cross-section is an operator input, not a prediction."
 	]
 	_status.text = "[color=#%s]Run complete. Beam stable at %.4f c.[/color]" % [CYAN.to_html(false), beam["beta"]]
+	if not _awarded_reactions.has(_reaction_id):
+		_awarded_reactions[_reaction_id] = true
+		var skill_manager := get_node_or_null("/root/SkillManager")
+		if skill_manager != null:
+			skill_manager.add_xp("engineering", 70, "First beam run: %s" % _reaction_id)
+			_status.text += "\n[color=#3ddc97]+70 Engineering XP · first successful run of this channel.[/color]"
 
 
 func _sci(value: float) -> String:

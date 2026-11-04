@@ -23,6 +23,9 @@ This is the working plan, not a marketing page. Items are marked **LIVE**, **PAR
 | 3D analytical bench (walkable) | `game/scenes/laboratories/analytical_lab.tscn` | PARTIAL |
 | Aetherkin companions (26 species, data-driven) | `game/data/companions/species_database.json` | LIVE data, PARTIAL runtime |
 | Chemistry core (256 Python tests) | `src/chemlab/`, `chemlab_core/` | LIVE offline |
+| Data-driven skill tracks, XP curve, milestone unlocks | `game/scripts/progression/skill_manager.gd` | LIVE |
+| Skill codex (levels, milestone ladder, unlock ledger) | `game/scenes/progression/` | LIVE |
+| Titration practicum (real charge-balance pH, endpoint scoring) | `game/scenes/laboratories/titration_practicum.gd` | LIVE |
 
 ## 2. Laboratories
 

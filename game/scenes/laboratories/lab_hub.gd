@@ -12,6 +12,8 @@ const SCENE_GENOME: String = "res://scenes/genomics/genome_browser.tscn"
 const SCENE_ACCELERATOR: String = "res://scenes/laboratories/accelerator_lab.tscn"
 const SCENE_FUSOR: String = "res://scenes/laboratories/fusor_lab.tscn"
 const SCENE_BENCH_3D: String = "res://scenes/laboratories/analytical_lab.tscn"
+const SCENE_TITRATION: String = "res://scenes/laboratories/titration_practicum.tscn"
+const SCENE_CODEX: String = "res://scenes/progression/skill_codex.tscn"
 const SCENE_MENU: String = "res://scenes/main_menu/main_menu.tscn"
 
 const PLAYABLE: Dictionary = {
@@ -49,8 +51,15 @@ func _ready() -> void:
 	_load_data()
 	_build_ui()
 	if not _labs.is_empty():
-		_lab_list.select(0)
-		_on_lab_selected(0)
+		# Open on the first playable room, not on a blueprint the player
+		# cannot enter — the hub's first impression should be an open door.
+		var start_index := 0
+		for i in range(_labs.size()):
+			if PLAYABLE.has(str((_labs[i] as Dictionary).get("id", ""))):
+				start_index = i
+				break
+		_lab_list.select(start_index)
+		_on_lab_selected(start_index)
 
 
 func _load_data() -> void:
@@ -79,7 +88,7 @@ func _build_ui() -> void:
 	add_child(title)
 
 	var sub := Label.new()
-	sub.text = "%d laboratory archetypes · %d suits · 4 live terminals" % [_labs.size(), _suits.size()]
+	sub.text = "%d laboratory archetypes · %d suits · 4 live terminals + practicum" % [_labs.size(), _suits.size()]
 	sub.position = Vector2(26.0, 46.0)
 	sub.add_theme_font_size_override("font_size", 11)
 	sub.add_theme_color_override("font_color", DIM)
@@ -104,7 +113,7 @@ func _build_ui() -> void:
 	for i in range(_labs.size()):
 		var lab: Dictionary = _labs[i]
 		var tag := "LIVE" if PLAYABLE.has(str(lab.get("id", ""))) else "BLUEPRINT"
-		_lab_list.add_item("%s\n%s · %s · %s" % [str(lab.get("name", "")), str(lab.get("containment", "")), str(lab.get("cleanroom", "")), tag])
+		_lab_list.add_item("%s  [%s]" % [str(lab.get("name", "")), tag])
 
 	_detail = RichTextLabel.new()
 	_detail.bbcode_enabled = true
@@ -121,12 +130,22 @@ func _build_ui() -> void:
 	_enter_btn.pressed.connect(_on_enter)
 	add_child(_enter_btn)
 
-	var bench := Button.new()
-	bench.text = "3D analytical bench"
-	bench.position = Vector2(636.0, 606.0)
-	bench.custom_minimum_size = Vector2(200.0, 40.0)
-	bench.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_BENCH_3D))
-	add_child(bench)
+	# The 3D analytical bench is still PARTIAL; routing players into an empty
+	# room was the bug this hub replaced. Ship the working practicum instead of
+	# a button that drops the player into unfinished geometry.
+	var titration := Button.new()
+	titration.text = "🧪 Titration practicum"
+	titration.position = Vector2(636.0, 606.0)
+	titration.custom_minimum_size = Vector2(200.0, 40.0)
+	titration.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_TITRATION))
+	add_child(titration)
+
+	var codex := Button.new()
+	codex.text = "◇ Skill codex & unlocks"
+	codex.position = Vector2(382.0, 652.0)
+	codex.custom_minimum_size = Vector2(454.0, 30.0)
+	codex.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_CODEX))
+	add_child(codex)
 
 	var right_top := 78.0
 	var suit_label := Label.new()

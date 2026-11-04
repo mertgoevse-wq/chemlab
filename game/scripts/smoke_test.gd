@@ -11,6 +11,8 @@ const SCENES_TO_VALIDATE: Array[String] = [
 	"res://scenes/laboratories/accelerator_lab.tscn",
 	"res://scenes/laboratories/fusor_lab.tscn",
 	"res://scenes/laboratories/lab_hub.tscn",
+	"res://scenes/laboratories/titration_practicum.tscn",
+	"res://scenes/progression/skill_codex.tscn",
 	"res://scenes/laboratories/analytical_lab.tscn",
 	"res://scenes/player/player.tscn",
 	"res://scenes/player/player_controller.tscn",

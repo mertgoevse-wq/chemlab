@@ -486,6 +486,14 @@ func _on_expose() -> void:
 			counts.append("%s ×%d" % [str(key), int(summary[key])])
 		_status = "%s: %d point events (%s)." % [str(result.get("mutagen", mutagen_id)), added, ", ".join(counts)]
 		_exposure_panel.text = "[color=#7f8c9b]%s[/color]" % str(result.get("note", ""))
+	var applied_count := 0
+	for entry in result.get("mutations", []):
+		if bool(entry.get("ok", false)):
+			applied_count += 1
+	if applied_count > 0:
+		var skill_manager := get_node_or_null("/root/SkillManager")
+		if skill_manager != null:
+			skill_manager.add_xp("biology", mini(12 + applied_count * 4, 40), "Mutagen exposure series: %s" % mutagen_id)
 	_refresh()
 
 
