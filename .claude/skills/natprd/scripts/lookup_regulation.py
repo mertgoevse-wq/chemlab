@@ -23,7 +23,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 DEFAULT_REGISTRY = Path(__file__).resolve().parent.parent / "references" / "regulations.json"
 
@@ -46,7 +46,7 @@ def country_of(code: str) -> str:
     return COUNTRY_ALIASES.get(country, country)
 
 
-def geo_matches(requested: str, geographies: List[str]) -> bool:
+def geo_matches(requested: str, geographies: list[str]) -> bool:
     """A regulation matches if it is GLOBAL, shares a country with the request,
     or carries the umbrella code EU and the request is an EU/EEA member."""
     req_country = country_of(requested)
@@ -62,10 +62,10 @@ def geo_matches(requested: str, geographies: List[str]) -> bool:
 
 
 def lookup(
-    registry: Dict[str, Any], signals: List[str], geo: str
-) -> List[Dict[str, Any]]:
+    registry: dict[str, Any], signals: list[str], geo: str
+) -> list[dict[str, Any]]:
     wanted = {s.strip().lower() for s in signals if s.strip()}
-    matches: List[Dict[str, Any]] = []
+    matches: list[dict[str, Any]] = []
     for reg in registry.get("regulations", []):
         reg_signals = {s.lower() for s in reg.get("signals", [])}
         if not (wanted & reg_signals):

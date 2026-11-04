@@ -8,13 +8,13 @@ particle/color data, GHS hazards, and lookup by ID / formula / CAS number.
 import pytest
 
 from chemlab.simulation.reagents import (
+    REAGENT_REGISTRY,
     Reagent,
     ReagentCategory,
-    REAGENT_REGISTRY,
     get_reagent,
     list_reagents,
-    search_by_formula,
     search_by_category,
+    search_by_formula,
 )
 
 

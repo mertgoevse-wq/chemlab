@@ -30,7 +30,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 SECTION_MAX = {
     "§1": 3, "§2": 5, "§3": 10, "§4": 10, "§5": 8, "§6": 8,
@@ -80,9 +80,9 @@ DIAGRAM_PLACEHOLDER = re.compile(
 )
 
 
-def split_sections(content: str) -> Dict[str, str]:
+def split_sections(content: str) -> dict[str, str]:
     """Split the PRD by top-level numbered H2 headings."""
-    sections: Dict[str, str] = {}
+    sections: dict[str, str] = {}
     matches = list(H2_PATTERN.finditer(content))
     for i, m in enumerate(matches):
         key = f"§{m.group(1)}"
@@ -92,9 +92,9 @@ def split_sections(content: str) -> Dict[str, str]:
     return sections
 
 
-def parse_kv_table(section_text: str) -> Dict[str, str]:
+def parse_kv_table(section_text: str) -> dict[str, str]:
     """Parse | **Field** | Value | rows. Returns {field: value}."""
-    kv: Dict[str, str] = {}
+    kv: dict[str, str] = {}
     for line in section_text.splitlines():
         m = re.match(r"\|\s*\*\*([^*]+)\*\*\s*\|\s*(.+?)\s*\|", line)
         if m:
@@ -102,9 +102,9 @@ def parse_kv_table(section_text: str) -> Dict[str, str]:
     return kv
 
 
-def parse_tables(section_text: str) -> List[Dict[str, str]]:
+def parse_tables(section_text: str) -> list[dict[str, str]]:
     """Parse all markdown tables in a section. Returns list of row dicts."""
-    rows: List[Dict[str, str]] = []
+    rows: list[dict[str, str]] = []
     lines = section_text.splitlines()
     i = 0
     while i < len(lines):
@@ -159,8 +159,8 @@ def deduct_unfilled(
     value: str,
     points: int,
     message: str,
-    violations: List[str],
-    warnings: List[str],
+    violations: list[str],
+    warnings: list[str],
     hard: bool = False,
 ) -> int:
     """Apply the rubric deduction when a field is not genuinely filled.
@@ -179,7 +179,7 @@ def deduct_unfilled(
     return points
 
 
-def find_subsection(text: str, title_pattern: str) -> Optional[str]:
+def find_subsection(text: str, title_pattern: str) -> str | None:
     """Body of the first heading whose line matches title_pattern, up to the
     next heading. None when no such heading exists."""
     m = re.search(
@@ -218,8 +218,8 @@ def prose_or_tbd(
     points: int,
     missing_msg: str,
     tbd_msg: str,
-    violations: List[str],
-    warnings: List[str],
+    violations: list[str],
+    warnings: list[str],
 ) -> int:
     """Deduct when a subsection is absent, empty, or TBD-only."""
     body = find_subsection(section, title_pattern)
@@ -249,9 +249,9 @@ def score_band(score: int) -> str:
 
 # ---------- Per-section deterministic checks ----------
 
-def check_section_1(text: str) -> Tuple[int, List[str], List[str]]:
-    violations: List[str] = []
-    warnings: List[str] = []
+def check_section_1(text: str) -> tuple[int, list[str], list[str]]:
+    violations: list[str] = []
+    warnings: list[str] = []
     name = ""
     for line in text.splitlines()[1:]:
         s = line.strip()
@@ -279,9 +279,9 @@ def check_section_1(text: str) -> Tuple[int, List[str], List[str]]:
     return 3, violations, warnings
 
 
-def check_section_2(text: str) -> Tuple[int, List[str], List[str]]:
-    violations: List[str] = []
-    warnings: List[str] = []
+def check_section_2(text: str) -> tuple[int, list[str], list[str]]:
+    violations: list[str] = []
+    warnings: list[str] = []
     kv = parse_kv_table(text)
     score = 5
     status = kv.get("Status", "").strip("`").strip()
@@ -314,12 +314,12 @@ def check_section_2(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_3(text: str) -> Tuple[int, List[str], List[str]]:
+def check_section_3(text: str) -> tuple[int, list[str], list[str]]:
     """Structural: Evidence & Data and Cost of Inaction must carry content.
     Pain-led ordering, paragraph counts, and the Regulatory Context requirement
     stay with the model (it knows the intake state; this script does not)."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 10
     score -= prose_or_tbd(
         text, r"Evidence", 3,
@@ -336,11 +336,11 @@ def check_section_3(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_4(text: str) -> Tuple[int, List[str], List[str]]:
+def check_section_4(text: str) -> tuple[int, list[str], list[str]]:
     """Structural: KR rows need a filled baseline and target; OKR alignment must
     have content. Outcome-vs-feature phrasing stays with the model."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 10
     kr_rows = [r for r in parse_tables(text) if "Baseline" in r and "Target" in r]
     real_krs = [
@@ -374,12 +374,12 @@ def check_section_4(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_5(text: str) -> Tuple[int, List[str], List[str]]:
+def check_section_5(text: str) -> tuple[int, list[str], list[str]]:
     """Structural: Out of Scope must exist with content and reasons; platform
     and segment coverage must be stated. Regulatory scope items stay with the
     model."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 8
     out = find_subsection(text, r"Out of Scope")
     if out is None:
@@ -411,9 +411,9 @@ def check_section_5(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_6(text: str) -> Tuple[int, List[str], List[str]]:
-    violations: List[str] = []
-    warnings: List[str] = []
+def check_section_6(text: str) -> tuple[int, list[str], list[str]]:
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 8
     # A hypothesis only counts when its placeholders are gone. The template
     # sentence ("We believe that [X] for [segment] …") must not pass as real.
@@ -451,9 +451,9 @@ def check_section_6(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_7(text: str) -> Tuple[int, List[str], List[str]]:
-    violations: List[str] = []
-    warnings: List[str] = []
+def check_section_7(text: str) -> tuple[int, list[str], list[str]]:
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 10
     rows = parse_tables(text)
     if not rows:
@@ -503,7 +503,7 @@ def check_section_7(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def _real_story_matches(block: str) -> List["re.Match"]:
+def _real_story_matches(block: str) -> list["re.Match"]:
     """User-story matches whose role is actually filled in — the template's
     own '\"As a [specific role], I want to [action]…\"' line must not count."""
     return [
@@ -512,9 +512,9 @@ def _real_story_matches(block: str) -> List["re.Match"]:
     ]
 
 
-def check_section_8(text: str) -> Tuple[int, List[str], List[str]]:
-    violations: List[str] = []
-    warnings: List[str] = []
+def check_section_8(text: str) -> tuple[int, list[str], list[str]]:
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 20
     blocks = re.split(r"(?=^#{3,4}\s+(?:US-|User Story|Story))", text, flags=re.MULTILINE)
     story_blocks = [b for b in blocks if _real_story_matches(b)]
@@ -556,12 +556,12 @@ def check_section_8(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_9(text: str) -> Tuple[int, List[str], List[str]]:
+def check_section_9(text: str) -> tuple[int, list[str], list[str]]:
     """Structural: at least one real design link, a non-empty coverage map, and
     at least one alternative with a rejection reason. Whether the coverage map
     spans every §8 story stays with the model."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 8
     rows = parse_tables(text)
     link_states = [field_state(r.get("Link", "")) for r in rows if "Link" in r]
@@ -595,10 +595,10 @@ def check_section_9(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_10(text: str) -> Tuple[int, List[str], List[str]]:
+def check_section_10(text: str) -> tuple[int, list[str], list[str]]:
     """Structural checks for Metric Monitoring. Named-vs-team DRI stays semantic."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 5
     kv = parse_kv_table(text)
     tool = kv.get("Dashboard / Tool") or kv.get("Dashboard/Tool") or kv.get("Dashboard") or ""
@@ -621,9 +621,9 @@ def check_section_10(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_11(text: str) -> Tuple[int, List[str], List[str]]:
-    violations: List[str] = []
-    warnings: List[str] = []
+def check_section_11(text: str) -> tuple[int, list[str], list[str]]:
+    violations: list[str] = []
+    warnings: list[str] = []
     score = 8
     rows = parse_tables(text)
     if not rows:
@@ -646,10 +646,10 @@ def check_section_11(text: str) -> Tuple[int, List[str], List[str]]:
     return max(0, score), violations, warnings
 
 
-def check_section_12(text: str) -> Tuple[int, List[str], List[str]]:
+def check_section_12(text: str) -> tuple[int, list[str], list[str]]:
     """FAQ: present + at least one real entry + open items have owners = full marks."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     faq_rows = [
         r for r in parse_tables(text)
         if "Status" in r and field_state(r.get("Question", "")) == "filled"
@@ -668,10 +668,10 @@ def check_section_12(text: str) -> Tuple[int, List[str], List[str]]:
     return (3 if open_missing_owner else 5), violations, warnings
 
 
-def check_citations(content: str) -> List[str]:
+def check_citations(content: str) -> list[str]:
     """Cross-cutting (not scored): every [source: …] needs a retrieved: date and a
     References/Sources section to consolidate provenance."""
-    warnings: List[str] = []
+    warnings: list[str] = []
     sources = SOURCE_PATTERN.findall(content)
     flagged: set = set()
     for raw in sources:
@@ -686,14 +686,14 @@ def check_citations(content: str) -> List[str]:
     return warnings
 
 
-def check_compliance(sections: Dict[str, str]) -> Tuple[List[str], List[str]]:
+def check_compliance(sections: dict[str, str]) -> tuple[list[str], list[str]]:
     """Cross-cutting (not scored, blocks Approved): §13 regulatory-risk rows must
     name a specific regulation and a named owner. Scoped to what is verifiable from
     the document — the validator cannot know the intake state, so it only checks
     §13 when it is present. Untouched template rows (no regulation, no description)
     are skipped."""
-    violations: List[str] = []
-    warnings: List[str] = []
+    violations: list[str] = []
+    warnings: list[str] = []
     s13 = sections.get("§13", "")
     if not s13:
         return violations, warnings
@@ -718,13 +718,13 @@ def check_compliance(sections: Dict[str, str]) -> Tuple[List[str], List[str]]:
     return violations, warnings
 
 
-def check_diagrams(content: str) -> List[str]:
+def check_diagrams(content: str) -> list[str]:
     """Cross-cutting (not scored): Mermaid diagrams are an advisory enhancement and
     never change the score. Each ```mermaid block must close, start with a supported
     header (flowchart / graph / sequenceDiagram), have a non-empty body with at least
     one node or message, and carry no leftover skeleton placeholders. A `[TBD]` node
     label is allowed (per prompts/diagram-rules.md) and is not flagged here."""
-    warnings: List[str] = []
+    warnings: list[str] = []
     blocks = MERMAID_BLOCK.findall(content)
     if len(MERMAID_OPEN.findall(content)) > len(blocks):
         warnings.append("§diagrams: a ```mermaid block is not closed with a matching ```")
@@ -767,10 +767,10 @@ CHECKERS = {
 }
 
 
-def validate(path: Path) -> Dict[str, Any]:
+def validate(path: Path) -> dict[str, Any]:
     content = path.read_text(encoding="utf-8")
     sections = split_sections(content)
-    results: Dict[str, Any] = {
+    results: dict[str, Any] = {
         "path": str(path),
         "note": (
             "Structural baseline only — the model layers semantic checks "
