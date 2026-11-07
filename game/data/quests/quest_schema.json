@@ -1,0 +1,343 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AthanorAscensionQuestDefinition",
+  "type": "object",
+  "description": "Quest definition schema for Athanor Ascension. Supports 3 starting backgrounds, 10 acts, faction missions, dynamic events.",
+  "required": [
+    "quest_id",
+    "act",
+    "title",
+    "narrative_briefing",
+    "instructor_id",
+    "prerequisites",
+    "objectives",
+    "failure_conditions",
+    "state_validation",
+    "rewards"
+  ],
+  "properties": {
+    "quest_id": {
+      "type": "string",
+      "pattern": "^quest_[0-9]{3}_[a-z0-9_]+$",
+      "description": "Unique identifier: quest_001_induction_safety"
+    },
+    "act": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Story act (1-10)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display title shown in quest log"
+    },
+    "narrative_briefing": {
+      "type": "object",
+      "required": ["intro_text", "instructor_npc", "audio_log_id"],
+      "properties": {
+        "intro_text": {
+          "type": "string",
+          "description": "Opening narrative text for quest"
+        },
+        "instructor_npc": {
+          "type": "string",
+          "enum": ["dr_elena_vance", "prof_aris_thorne", "dr_marcus_lin", "faction_contact", "companion"],
+          "description": "Primary NPC giving quest"
+        },
+        "audio_log_id": {
+          "type": ["string", "null"],
+          "description": "Optional audio log ID for voice acting"
+        },
+        "background_variants": {
+          "type": "object",
+          "description": "Different briefing text per starting background",
+          "properties": {
+            "academic": { "type": "string" },
+            "hobbyist": { "type": "string" },
+            "ex_pharma": { "type": "string" }
+          }
+        }
+      }
+    },
+    "prerequisites": {
+      "type": "object",
+      "required": ["completed_quests", "min_safety_score", "required_skills", "background_requirements"],
+      "properties": {
+        "completed_quests": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Quest IDs that must be completed first"
+        },
+        "min_safety_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "description": "Minimum safety compliance score (0-100)"
+        },
+        "required_skills": {
+          "type": "object",
+          "description": "Minimum skill levels required",
+          "patternProperties": {
+            "^[a-z_]+$": { "type": "integer", "minimum": 1, "maximum": 120 }
+          }
+        },
+        "background_requirements": {
+          "type": "object",
+          "description": "Background-specific requirements",
+          "properties": {
+            "academic": { "type": "boolean" },
+            "hobbyist": { "type": "boolean" },
+            "ex_pharma": { "type": "boolean" }
+          }
+        },
+        "faction_reputation": {
+          "type": "object",
+          "description": "Minimum faction reputation required",
+          "patternProperties": {
+            "^(khacs|cartel|intelligence|biotech|aetherkin)$": {
+              "type": "integer",
+              "minimum": -100,
+              "maximum": 100
+            }
+          }
+        }
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["objective_id", "description", "target_entity", "evaluation_mode", "target_value", "tolerance"],
+        "properties": {
+          "objective_id": {
+            "type": "string",
+            "description": "Unique objective ID within quest"
+          },
+          "description": {
+            "type": "string",
+            "description": "Player-facing objective text"
+          },
+          "target_entity": {
+            "type": "string",
+            "description": "What to evaluate (vessel_id, reagent_id, skill_id, npc_id, location_id)"
+          },
+          "evaluation_mode": {
+            "type": "string",
+            "enum": [
+              "EQUIPMENT_STATE",
+              "METROLOGY_VALUE",
+              "CHEMICAL_REACTION",
+              "SAFETY_COMPLIANCE",
+              "SPECTRAL_MATCH",
+              "SKILL_CHECK",
+              "INVENTORY_ITEM",
+              "NPC_INTERACTION",
+              "LOCATION_VISIT",
+              "COMPANION_ACTION"
+            ]
+          },
+          "target_value": {
+            "type": ["number", "string", "boolean", "object"],
+            "description": "Target value to achieve"
+          },
+          "tolerance": {
+            "type": ["number", "null"],
+            "description": "Acceptable deviation (null = exact match)"
+          },
+          "hints": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Progressive hints (unlock over time/stuck)"
+          },
+          "optional": {
+            "type": "boolean",
+            "default": false,
+            "description": "Optional objective (bonus rewards)"
+          },
+          "hidden": {
+            "type": "boolean",
+            "default": false,
+            "description": "Hidden objective (discovered through exploration)"
+          }
+        }
+      }
+    },
+    "failure_conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["condition_id", "severity", "trigger_metric", "operator", "threshold", "narrative_reprimand"],
+        "properties": {
+          "condition_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["WARNING", "SCORE_PENALTY", "INSTANT_FAIL_EXPLOSION", "CONTAINMENT_LOCKDOWN", "INJURY", "RADIATION_SICKNESS", "FACTION_STANDING_LOSS"]
+          },
+          "trigger_metric": {
+            "type": "string",
+            "description": "Metric to monitor (temperature_c, pressure_kpa, radiation_msv, chemical_ppm, safety_score, faction_rep)"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [">", "<", "==", "!=", ">=", "<="]
+          },
+          "threshold": {
+            "type": ["number", "string", "boolean"]
+          },
+          "narrative_reprimand": {
+            "type": "string",
+            "description": "In-character reprimand from instructor/NPC"
+          },
+          "background_variants": {
+            "type": "object",
+            "properties": {
+              "academic": { "type": "string" },
+              "hobbyist": { "type": "string" },
+              "ex_pharma": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "state_validation": {
+      "type": "object",
+      "required": ["engine_checks", "required_products", "unwanted_byproducts"],
+      "properties": {
+        "engine_checks": {
+          "type": "object",
+          "description": "Simulation engine state checks",
+          "properties": {
+            "vessel_temperature_max_c": { "type": "number" },
+            "vessel_pressure_max_kpa": { "type": "number" },
+            "reaction_conversion_min": { "type": "number" },
+            "purity_min": { "type": "number" },
+            "yield_min": { "type": "number" }
+          }
+        },
+        "required_products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "species_id": { "type": "string" },
+              "min_moles": { "type": "number" },
+              "min_purity": { "type": "number" }
+            },
+            "required": ["species_id"]
+          }
+        },
+        "unwanted_byproducts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "species_id": { "type": "string" },
+              "max_moles": { "type": "number" }
+            },
+            "required": ["species_id"]
+          }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "required": ["skill_xp", "intelligence_points"],
+      "properties": {
+        "skill_xp": {
+          "type": "object",
+          "description": "XP per skill",
+          "patternProperties": {
+            "^[a-z_]+$": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "intelligence_points": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "faction_reputation": {
+          "type": "object",
+          "patternProperties": {
+            "^(khacs|cartel|intelligence|biotech|aetherkin)$": { "type": "integer" }
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "item_id": { "type": "string" },
+              "quantity": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["item_id", "quantity"]
+          }
+        },
+        "equipment": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "companion_unlock": {
+          "type": ["string", "null"]
+        },
+        "lab_access": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "background_specific": {
+          "type": "object",
+          "properties": {
+            "academic": { "type": "object" },
+            "hobbyist": { "type": "object" },
+            "ex_pharma": { "type": "object" }
+          }
+        }
+      }
+    },
+    "dynamic_events": {
+      "type": "array",
+      "description": "Random events that can trigger during quest",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_id": { "type": "string" },
+          "trigger_chance": { "type": "number", "minimum": 0, "maximum": 1 },
+          "trigger_condition": { "type": "string" },
+          "event_type": {
+            "type": "string",
+            "enum": ["equipment_failure", "contamination", "inspection", "accident", "discovery", "npc_interruption", "companion_need"]
+          },
+          "description": { "type": "string" },
+          "consequences": { "type": "object" }
+        }
+      }
+    },
+    "investigation_mode": {
+      "type": "object",
+      "description": "Assassin's Creed Eagle Vision equivalent for this quest",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "vision_modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["spectral", "contamination", "reaction", "structural", "temporal"]
+          }
+        },
+        "clues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "clue_id": { "type": "string" },
+              "location": { "type": "string" },
+              "vision_mode_required": { "type": "string" },
+              "reveals": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

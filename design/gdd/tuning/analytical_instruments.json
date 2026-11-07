@@ -1,0 +1,76 @@
+{
+  "instruments": {
+    "nmr": {
+      "spectrometer_frequency_mhz": 400.13,
+      "default_scans_1h": 16,
+      "default_scans_13c": 512,
+      "chemical_shift_tolerance_ppm": 0.05,
+      "integral_tolerance_percent": 10.0,
+      "minimum_sample_height_cm": 4.0,
+      "spinning_rate_hz": 20.0,
+      "residual_solvent_shifts_1h": {
+        "cdcl3": 7.26,
+        "dmso_d6": 2.50,
+        "d2o": 4.79,
+        "cd3od": 3.31
+      },
+      "residual_solvent_shifts_13c": {
+        "cdcl3": 77.16,
+        "dmso_d6": 39.52,
+        "d2o": 0.0,
+        "cd3od": 49.00
+      }
+    },
+    "gc_ms": {
+      "carrier_gas": "Helium",
+      "flow_rate_ml_min": 1.0,
+      "injector_temp_c": 250.0,
+      "ionization_energy_ev": 70.0,
+      "retention_time_tolerance_min": 0.10,
+      "purity_pass_area_percent": 85.0,
+      "library_match_threshold": 800,
+      "maximum_injection_concentration_mg_ml": 2.0,
+      "column_temp_start_c": 50.0,
+      "column_temp_end_c": 280.0,
+      "ramp_rate_c_min": 15.0,
+      "initial_hold_min": 1.0,
+      "final_hold_min": 5.0,
+      "scan_range_mz_min": 35,
+      "scan_range_mz_max": 500
+    },
+    "titrator": {
+      "buret_capacity_ml": 50.00,
+      "drop_volume_ml": 0.05,
+      "drop_interval_s": 0.80,
+      "stream_flow_rate_ml_s": 2.5,
+      "meniscus_parallax_tolerance_ml": 0.05,
+      "equivalence_point_tolerance_ml": 0.15,
+      "phenolphthalein_ph_start": 8.2,
+      "phenolphthalein_ph_full": 10.0
+    },
+    "analytical_balance": {
+      "readout_precision_decimals": 4,
+      "air_draft_flutter_amplitude_g": 0.0003,
+      "flutter_frequency_hz": [1.2, 3.7],
+      "stabilization_time_s": 1.5,
+      "tare_drift_per_spill_g": 0.0015,
+      "thermal_buoyancy_coefficient_g_per_c": 0.00008
+    },
+    "ph_meter": {
+      "ideal_nernst_slope_mv_per_ph_25c": 59.16,
+      "minimum_acceptable_slope_percent": 95.0,
+      "maximum_acceptable_slope_percent": 105.0,
+      "buffer_standards": [4.01, 7.00, 10.01],
+      "electrode_response_time_s": 4.0,
+      "dry_bulb_damage_timeout_s": 600.0
+    },
+    "melting_point": {
+      "fast_ramp_rate_c_min": 10.0,
+      "precision_ramp_rate_c_min": 1.0,
+      "max_acceptable_mp_depression_c": 2.5,
+      "pure_substance_range_max_c": 2.0,
+      "thermal_lag_fast_ramp_error_c": 5.0,
+      "capillary_bed_height_optimal_mm": 2.5
+    }
+  }
+}

@@ -1,178 +1,185 @@
-# Athanor Ascension — Loading Screen
-# Animated alchemical sigil + procedural laboratory backdrop. Loads the main menu
-# on a worker thread and never blocks the window: the first frame is up in <100 ms.
+# Athanor Ascension - Loading Screen
+# Animated alchemical sigil with procedural glassware backdrop
 
 extends Control
 
-const MAIN_MENU: String = "res://scenes/main_menu/main_menu.tscn"
-const BACKDROP_SCRIPT = preload("res://ui/apparatus_backdrop.gd")
-const MIN_DISPLAY_SECONDS: float = 1.8
+class_name LoadingScreen
 
-const TIPS: Array[String] = [
-	"Paschen's law decides whether a plasma strikes, not the voltage alone.",
-	"Curated genome hotspots carry real HGVS annotations; everything else is a VUS.",
-	"Suits trade mobility for protection. Read the hazard before the label.",
-	"A fusor is a neutron source, not a power plant. Distance is free shielding.",
-	"Record the mass, the moles and the temperature. Memory is not a lab notebook.",
-	"Cooling water flows opposite to vapour. Counter-current is not a detail."
-]
+@export var minimum_display_time: float = 3.0
+@export var sigil_animation_speed: float = 1.0
 
-var _progress: float = 0.0
-var _elapsed: float = 0.0
-var _tip_index: int = 0
-var _tip_timer: float = 0.0
-var _thread_id: int = -1
-var _load_state: int = 0
-var _target_scene: PackedScene = null
-var _changing: bool = false
-var _title_label: Label
-var _status_label: Label
-var _tip_label: Label
+var _start_time: float = 0.0
+var _sigil_rotation: float = 0.0
+var _pulse_phase: float = 0.0
+var _particles: Array[Dictionary] = []
+var _loading_complete: bool = false
+var _transitioning: bool = false
 
+# UI elements
+var _sigil_texture: TextureRect
+var _progress_bar: ProgressBar
+var _loading_text: Label
+var _subtitle_text: Label
+var _apparatus_backdrop: ApparatusBackdrop
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	_cache_nodes()
+	_start_time = Time.get_ticks_msec() / 1000.0
+	_init_particles()
+	_start_loading()
 
-	var backdrop := Control.new()
-	backdrop.set_script(BACKDROP_SCRIPT)
-	add_child(backdrop)
-	move_child(backdrop, 0)
+func _cache_nodes() -> void:
+	_sigil_texture = %SigilTexture
+	_progress_bar = %ProgressBar
+	_loading_text = %LoadingText
+	_subtitle_text = %SubtitleText
+	_apparatus_backdrop = %ApparatusBackdrop
 
-	_title_label = Label.new()
-	_title_label.text = "ATHANOR ASCENSION"
-	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_title_label.offset_left = -320.0
-	_title_label.offset_right = 320.0
-	_title_label.offset_top = 92.0
-	_title_label.add_theme_font_size_override("font_size", 44)
-	_title_label.add_theme_color_override("font_color", Color(0.88, 0.93, 0.96))
-	add_child(_title_label)
+	# Set initial text
+	_loading_text.text = "Initializing Athanor..."
+	_subtitle_text.text = "Real chemistry. Real physics. Offline."
+	_progress_bar.value = 0
 
-	var subtitle := Label.new()
-	subtitle.text = "the furnace remembers"
-	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	subtitle.offset_left = -220.0
-	subtitle.offset_right = 220.0
-	subtitle.offset_top = 148.0
-	subtitle.add_theme_font_size_override("font_size", 13)
-	subtitle.add_theme_color_override("font_color", Color(0.55, 0.68, 0.74))
-	add_child(subtitle)
+func _start_loading() -> void:
+	# Simulate loading steps
+	var steps = [
+		{ "text": "Loading thermodynamic database...", "progress": 10, "delay": 0.5 },
+		{ "text": "Initializing reaction engine...", "progress": 25, "delay": 0.8 },
+		{ "text": "Loading PiHKAL/TiHKAL catalog...", "progress": 40, "delay": 1.0 },
+		{ "text": "Preparing Aetherkin companions...", "progress": 55, "delay": 0.8 },
+		{ "text": "Calibrating laboratory instruments...", "progress": 70, "delay": 0.6 },
+		{ "text": "Establishing faction relations...", "progress": 80, "delay": 0.5 },
+		{ "text": "Rendering cinematic environments...", "progress": 90, "delay": 0.5 },
+		{ "text": "Finalizing safety protocols...", "progress": 95, "delay": 0.3 },
+		{ "text": "Athanor ready.", "progress": 100, "delay": 0.5 }
+	]
 
-	_status_label = Label.new()
-	_status_label.text = "preparing the athanor"
-	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_status_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_status_label.offset_left = -280.0
-	_status_label.offset_right = 280.0
-	_status_label.offset_top = -96.0
-	_status_label.add_theme_font_size_override("font_size", 12)
-	_status_label.add_theme_color_override("font_color", Color(0.62, 0.75, 0.8))
-	add_child(_status_label)
+	_run_loading_sequence(steps)
 
-	_tip_label = Label.new()
-	_tip_label.text = TIPS[0]
-	_tip_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_tip_label.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_tip_label.offset_left = -380.0
-	_tip_label.offset_right = 380.0
-	_tip_label.offset_top = -56.0
-	_tip_label.add_theme_font_size_override("font_size", 11)
-	_tip_label.add_theme_color_override("font_color", Color(0.42, 0.52, 0.58))
-	add_child(_tip_label)
+async func _run_loading_sequence(steps: Array[Dictionary]) -> void:
+	for step in steps:
+		_loading_text.text = step.text
+		_progress_bar.value = step.progress
+		await get_tree().create_timer(step.delay).timeout
 
-	var skip := Button.new()
-	skip.text = "skip  ›"
-	skip.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	skip.offset_left = -96.0
-	skip.offset_right = -20.0
-	skip.offset_top = -40.0
-	skip.offset_bottom = -12.0
-	skip.pressed.connect(_go_to_menu)
-	add_child(skip)
+	_loading_complete = true
+	_loading_text.text = "Press any key to begin"
+	_subtitle_text.text = "Your laboratory awaits, Alchemist."
+	_progress_bar.value = 100
 
-	var fade := ColorRect.new()
-	fade.color = Color(0.02, 0.03, 0.04, 1.0)
-	fade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(fade)
-	var tween := create_tween()
-	tween.tween_property(fade, "color:a", 0.0, 0.45)
-	tween.tween_callback(func(): fade.queue_free())
+	# Wait for minimum display time
+	var elapsed = Time.get_ticks_msec() / 1000.0 - _start_time
+	if elapsed < minimum_display_time:
+		await get_tree().create_timer(minimum_display_time - elapsed).timeout
 
-	_thread_id = ResourceLoader.load_threaded_request(MAIN_MENU)
-	set_process(true)
+	# Wait for input
+	await _wait_for_input()
 
+	_transition_to_main_menu()
+
+func _wait_for_input() -> void:
+	var timer = Timer.new()
+	timer.wait_time = 0.1
+	timer.autostart = true
+
+	while true:
+		await timer.timeout
+		if Input.is_any_key_pressed() or Input.is_mouse_button_pressed(0) or Input.is_joy_button_pressed(0, 0):
+			break
+
+func _transition_to_main_menu() -> void:
+	_transitioning = true
+
+	# Fade out
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "modulate:a", 0.0, 1.0)
+	tween.tween_property(_progress_bar, "modulate:a", 0.0, 1.0)
+	tween.tween_property(_loading_text, "modulate:a", 0.0, 1.0)
+	tween.tween_property(_subtitle_text, "modulate:a", 0.0, 1.0)
+
+	await tween.finished
+
+	# Change scene
+	get_tree().change_scene_to_file("res://scenes/main_menu/main_menu.tscn")
 
 func _process(delta: float) -> void:
-	_elapsed += delta
-	_tip_timer += delta
-	if _tip_timer > 3.2:
-		_tip_timer = 0.0
-		_tip_index = (_tip_index + 1) % TIPS.size()
-		_tip_label.text = TIPS[_tip_index]
+	# Rotate sigil
+	_sigil_rotation += delta * sigil_animation_speed * 0.3
 
-	if _thread_id >= 0:
-		var status := ResourceLoader.load_threaded_get_status(MAIN_MENU, [])
-		match status:
-			ResourceLoader.THREAD_LOAD_IN_PROGRESS:
-				_load_state = 0
-			ResourceLoader.THREAD_LOAD_LOADED:
-				_load_state = 1
-			_:
-				_load_state = -1
+	# Pulse effect
+	_pulse_phase += delta * 2.0
 
-	var target := clampf(_elapsed / MIN_DISPLAY_SECONDS, 0.0, 1.0)
-	if _load_state == 1:
-		target = maxf(target, 0.55)
-	_progress = maxf(_progress, target)
-	_status_label.text = "preparing the athanor  ·  %d%%" % int(_progress * 100.0)
+	# Update particles
+	_update_particles(delta)
 
-	if _elapsed >= MIN_DISPLAY_SECONDS and _load_state == 1 and not _changing:
-		_go_to_menu()
-	queue_redraw()
+	# Rotate sigil texture
+	if has_node("SigilTexture"):
+		var sigil = get_node("SigilTexture")
+		sigil.rotation = _sigil_rotation
+		sigil.modulate = Color(1, 1, 1, 0.8 + sin(Time.get_ticks_msec() / 500.0) * 0.2)
 
+	# Particle effects
+	_update_sigil_particles()
 
-func _go_to_menu() -> void:
-	if _changing:
-		return
-	_changing = true
-	if _load_state == 1:
-		_target_scene = ResourceLoader.load_threaded_get(MAIN_MENU)
-	if _target_scene != null:
-		get_tree().change_scene_to_packed(_target_scene)
-	else:
-		get_tree().change_scene_to_file(MAIN_MENU)
+func _update_particles(delta: float) -> void:
+	# Spawn new particles around sigil
+	if randf() < 0.02:
+		_spawn_sigil_particle()
 
+	# Update existing particles
+	for particle in _particles:
+		particle.life -= delta
+		particle.alpha = particle.life / particle.max_life
+		particle.pos += particle.vel * delta
+		particle.vel *= 0.98  # Drag
+
+	# Remove dead particles
+	var alive = []
+	for p in _particles:
+		if p.life > 0:
+			alive.append(p)
+	_particles = alive
+
+func _spawn_sigil_particle() -> void:
+	var angle = randf_range(0.0, TAU)
+	var radius = randf_range(50, 150)
+	var speed = randf_range(20, 60)
+
+	_particles.append({
+		"pos": Vector2(cos(randf_range(0.0, TAU)) * 100, sin(randf_range(0.0, TAU)) * 100),
+		"vel": Vector2(cos(randf_range(0.0, TAU)), sin(randf_range(0.0, TAU))) * randf_range(20, 60),
+		"size": randf_range(2, 6),
+		"color": Color(randf_range(0.2, 1.0), randf_range(0.4, 1.0), randf_range(0.8, 1.0), 1.0),
+		"life": randf_range(1.0, 3.0),
+		"max_life": randf_range(1.0, 3.0)
+	})
+
+func _update_sigil_particles() -> void:
+	var canvas = get_canvas_item()
+	for particle in _particles:
+		var alpha = particle.life / particle.max_life
+		draw_circle(particle.pos, particle.size * particle.life, particle.color * particle.alpha)
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.022, 0.032, 0.042, 0.55), true)
+	# Draw background glow behind sigil
+	var center = get_rect().size / 2
+	var time = Time.get_ticks_msec() / 1000.0
 
-	# Alchemical sigil: concentric rings, triangle and square, rotating at
-	# different rates. Drawn with plain geometry, no textures.
-	var center := Vector2(size.x * 0.5, size.y * 0.44)
-	var radius := minf(size.y * 0.2, 170.0)
-	draw_circle(center, radius * 0.42, Color(0.06, 0.12, 0.14, 0.55))
-	draw_arc(center, radius, 0, TAU, 96, Color(0.32, 0.72, 0.78, 0.45), 1.5)
-	draw_arc(center, radius * 0.86, 0, TAU, 96, Color(0.32, 0.72, 0.78, 0.22), 1.0)
-	draw_arc(center, radius * 0.3, 0, TAU, 48, Color(0.85, 0.65, 0.3, 0.5), 1.4)
-
-	var t := _elapsed
+	# Outer glow rings
 	for i in range(3):
-		var angle := t * (0.25 + i * 0.18) + TAU * float(i) / 3.0
-		var r := radius * (0.62 + i * 0.11)
-		var a := center + Vector2(cos(angle), sin(angle)) * r
-		var b := center + Vector2(cos(angle + TAU / 3.0), sin(angle + TAU / 3.0)) * r
-		var c := center + Vector2(cos(angle + 2.0 * TAU / 3.0), sin(angle + 2.0 * TAU / 3.0)) * r
-		draw_polyline(PackedVector2Array([a, b, c, a]), Color(0.5, 0.8, 0.82, 0.16), 1.0)
+		var radius = 120 + i * 40 + sin(time * 2.0 + i) * 5
+		var alpha = 0.15 / (i + 1)
+		draw_circle(Vector2(0, 0), radius, Color(0.2, 0.5, 1.0, alpha), false, 3)
 
-	# Progress arc.
-	var arc_radius := radius * 1.12
-	draw_arc(center, arc_radius, -PI * 0.5, -PI * 0.5 + TAU * _progress, 128, Color(0.35, 0.85, 0.9, 0.85), 3.0)
-	for i in range(12):
-		var angle := -PI * 0.5 + TAU * float(i) / 12.0
-		var inner := center + Vector2(cos(angle), sin(angle)) * (arc_radius + 6.0)
-		var outer := center + Vector2(cos(angle), sin(angle)) * (arc_radius + 11.0)
-		draw_line(inner, outer, Color(0.3, 0.5, 0.55, 0.35), 1.0)
+	# Alchemical symbols rotating
+	for i in range(7):
+		var angle = time * 0.5 + i * TAU / 7
+		var r = 180 + sin(time * 0.7) * 10
+		var pos = Vector2(cos(time * 0.5 + i * TAU / 7) * r, sin(time * 0.5 + i * TAU / 7) * r)
+		var symbol = _get_alchemical_symbol(i)
+		draw_string(get_theme_default_font(), pos, symbol, HORIZONTAL_ALIGNMENT_CENTER, -1, 24, Color(0.3, 0.6, 1.0, 0.6))
+
+func _get_alchemical_symbol(index: int) -> String:
+	var symbols = ["☉", "☽", "☿", "♀", "♁", "♂", "♃"]
+	return symbols[index % symbols.size()]

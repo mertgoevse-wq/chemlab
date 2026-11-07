@@ -1,139 +1,280 @@
-# Athanor Ascension — Apparatus Backdrop
-# Procedural lab glassware silhouettes with animated liquid, bubbles and vapour.
-# Used behind the main menu and the loading screen; zero texture cost, ~60 draw calls.
+# Athanor Ascension - Apparatus Backdrop (UI)
+# Animated procedural glassware backdrop for loading screen and menus
 
 extends Control
 
-const COLOR_LINE: Color = Color(0.42, 0.72, 0.82, 0.32)
-const COLOR_GLASS: Color = Color(0.55, 0.82, 0.9, 0.1)
-const COLOR_LIQUID: Color = Color(0.1, 0.62, 0.6, 0.2)
-const COLOR_AMBER: Color = Color(0.95, 0.62, 0.22, 0.5)
-const COLOR_VAPOUR: Color = Color(0.7, 0.85, 0.9, 0.08)
+class_name ApparatusBackdrop
 
+@export var animation_speed: float = 1.0
+@export var glassware_count: int = 12
+@export var color_palette: Array[Color] = [
+	Color(0.9, 0.95, 1.0, 0.3),   # Clear glass
+	Color(0.2, 0.6, 1.0, 0.4),    # Blue solution
+	Color(1.0, 0.4, 0.2, 0.4),    # Orange reaction
+	Color(0.2, 0.8, 0.4, 0.4),    # Green precipitate
+	Color(1.0, 0.8, 0.0, 0.4),    # Yellow indicator
+	Color(0.6, 0.3, 0.9, 0.4),    # Purple organic
+	Color(0.0, 1.0, 0.5, 0.4),    # Radioluminescent green
+	Color(1.0, 0.2, 0.6, 0.4),    # Pink phenolphthalein
+]
+
+var _glassware: Array[Dictionary] = []
 var _time: float = 0.0
-var _bubbles: Array[Dictionary] = []
-
+var _animation_enabled: bool = true
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	set_anchors_preset(Control.PRESET_FULL_RECT)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 1147
-	for i in range(46):
-		_bubbles.append({
-			"x": rng.randf_range(0.0, 1.0),
-			"y": rng.randf_range(0.0, 1.0),
-			"r": rng.randf_range(1.0, 3.4),
-			"speed": rng.randf_range(0.02, 0.09),
-			"phase": rng.randf_range(0.0, TAU)
-		})
+	_generate_glassware()
+	set_process(true)
 
+func _generate_glassware() -> void:
+	_randomize()
+
+	for i in range(glassware_count):
+		var gw = {
+			"type": randi() % 6,  # 0=beaker, 1=flask, 2=graduated, 3=test_tube, 4=condenser, 5=buret
+			"x": randf_range(0.05, 0.95),
+			"y": randf_range(0.1, 0.9),
+			"scale": randf_range(0.08, 0.18),
+			"rotation": randf_range(-0.1, 0.1),
+			"color": color_palette[randi() % color_palette.size()],
+			"fill": randf_range(0.1, 0.9),
+			"bubbles": [],
+			 "condensation": randf_range(0.0, 0.3),
+			"liquid_wave_phase": randf_range(0.0, TAU),
+			"liquid_wave_speed": randf_range(0.5, 2.0),
+			"bubble_timer": randf_range(0.0, 2.0),
+			"bubble_interval": randf_range(1.0, 4.0),
+			"glint_timer": randf_range(0.0, 5.0),
+			"glint_interval": randf_range(3.0, 8.0)
+		}
+		_glassware.append(gw)
 
 func _process(delta: float) -> void:
-	_time += delta
-	for bubble in _bubbles:
-		bubble["y"] = float(bubble["y"]) - float(bubble["speed"]) * delta
-		if float(bubble["y"]) < 0.02:
-			bubble["y"] = 0.9
-	queue_redraw()
-
-
-func _draw() -> void:
-	var w := size.x
-	var h := size.y
-	if w <= 1.0 or h <= 1.0:
+	if not _animation_enabled:
 		return
 
-	# Bench line.
-	draw_line(Vector2(0, h * 0.82), Vector2(w, h * 0.82), Color(0.35, 0.5, 0.58, 0.25), 2.0)
+	_time += delta
 
-	_draw_distillation_rig(Vector2(w * 0.08, h * 0.82), h * 0.42)
-	_draw_flask(Vector2(w * 0.44, h * 0.82), h * 0.2, COLOR_LIQUID)
-	_draw_flask(Vector2(w * 0.63, h * 0.82), h * 0.14, Color(0.7, 0.3, 0.55, 0.22))
-	_draw_burette(Vector2(w * 0.78, h * 0.82), h * 0.34)
-	_draw_condenser(Vector2(w * 0.9, h * 0.82), h * 0.3)
+	for gw in _glassware:
+		# Liquid wave animation
+		gw.liquid_wave_phase += gw.liquid_wave_speed * delta
 
-	for bubble in _bubbles:
-		var pos := Vector2(float(bubble["x"]) * w, float(bubble["y"]) * h * 0.8)
-		var drift := sin(_time * 0.7 + float(bubble["phase"])) * 6.0
-		draw_circle(pos + Vector2(drift, 0), float(bubble["r"]), Color(0.45, 0.8, 0.85, 0.16))
+		# Bubble generation
+		gw.bubble_timer += delta
+		if gw.bubble_timer >= gw.bubble_interval and gw.fill > 0.2:
+			_add_bubble(gw)
+			gw.bubble_timer = 0.0
+			gw.bubble_interval = randf_range(1.0, 4.0)
 
+		# Update bubbles
+		for bubble in gw.bubbles:
+			bubble.y -= delta * bubble.speed * 0.1
+			bubble.x += sin(_time * 2.0 + bubble.phase) * delta * 0.01
+			bubble.life -= delta
+			bubble.alpha = clamp(bubble.life / bubble.max_life, 0.0, 1.0)
 
-func _draw_flask(base: Vector2, height: float, liquid_color: Color) -> void:
-	var width := height * 0.9
-	var neck_w := width * 0.28
-	var top := base.y - height
-	var points := PackedVector2Array([
-		Vector2(base.x - width * 0.5, base.y),
-		Vector2(base.x - width * 0.5, base.y - height * 0.42),
-		Vector2(base.x - neck_w * 0.5, top),
-		Vector2(base.x + neck_w * 0.5, top),
-		Vector2(base.x + width * 0.5, base.y - height * 0.42),
-		Vector2(base.x + width * 0.5, base.y)
-	])
-	draw_colored_polygon(points, COLOR_GLASS)
-	for i in range(points.size()):
-		draw_line(points[i], points[(i + 1) % points.size()], COLOR_LINE, 1.5)
+		# Remove dead bubbles
+		var alive = []
+		for bubble in gw.bubbles:
+			if bubble.life > 0:
+				alive.append(bubble)
+		gw.bubbles = alive
 
-	var liquid_level := base.y - height * 0.26
-	var liquid := PackedVector2Array([
-		Vector2(base.x - width * 0.46, base.y - 2.0),
-		Vector2(base.x - width * 0.46, liquid_level),
-		Vector2(base.x + width * 0.46, liquid_level + sin(_time * 1.3) * 1.5),
-		Vector2(base.x + width * 0.46, base.y - 2.0)
-	])
-	draw_colored_polygon(liquid, liquid_color)
-	# Meniscus.
-	draw_line(Vector2(base.x - width * 0.46, liquid_level), Vector2(base.x + width * 0.46, liquid_level), Color(0.7, 0.95, 1.0, 0.35), 1.2)
+		# Glint effect
+		gw.glint_timer += delta
+		if gw.glint_timer >= gw.glint_interval:
+			gw.glint_timer = 0.0
+			gw.glint_interval = randf_range(3.0, 8.0)
 
+func _add_bubble(gw: Dictionary) -> void:
+	var bubble = {
+		"x": randf_range(-0.3, 0.3),
+		"y": 0.5 * gw.fill,
+		"size": randf_range(0.01, 0.03),
+		"speed": randf_range(0.5, 1.5),
+		"phase": randf_range(0.0, TAU),
+		"life": randf_range(1.0, 3.0),
+		"max_life": randf_range(1.0, 3.0),
+		"alpha": 1.0
+	}
+	gw.bubbles.append(bubble)
 
-func _draw_distillation_rig(base: Vector2, height: float) -> void:
-	var column_w := height * 0.12
-	var x := base.x
-	# Round-bottom boiling flask.
-	draw_circle(Vector2(x, base.y - height * 0.16), height * 0.16, COLOR_GLASS)
-	draw_arc(Vector2(x, base.y - height * 0.16), height * 0.16, 0, TAU, 40, COLOR_LINE, 1.5)
-	draw_circle(Vector2(x, base.y - height * 0.16), height * 0.13, Color(0.9, 0.55, 0.18, 0.22))
-	# Fractionating column.
-	var col_rect := Rect2(x - column_w * 0.5, base.y - height * 0.95, column_w, height * 0.62)
-	draw_rect(col_rect, COLOR_GLASS, true)
-	draw_rect(col_rect, COLOR_LINE, false, 1.4)
-	for i in range(7):
-		var y := col_rect.position.y + col_rect.size.y * (float(i) + 0.5) / 7.0
-		draw_line(Vector2(col_rect.position.x, y), Vector2(col_rect.end.x, y), Color(0.5, 0.75, 0.82, 0.18), 1.0)
-	# Vapour pulses rising in the column.
-	for i in range(4):
-		var t := fmod(_time * 0.18 + float(i) * 0.25, 1.0)
-		var y := lerpf(col_rect.end.y, col_rect.position.y, t)
-		draw_circle(Vector2(x + sin(t * 8.0 + i) * column_w * 0.4, y), 2.2, Color(0.75, 0.92, 1.0, 0.25 * (1.0 - t)))
-	# Take-off arm and receiver.
-	var arm_y := col_rect.position.y + 12.0
-	draw_line(Vector2(x + column_w * 0.5, arm_y), Vector2(x + height * 0.42, arm_y + height * 0.12), COLOR_LINE, 2.0)
-	_draw_flask(Vector2(x + height * 0.46, base.y), height * 0.2, Color(0.92, 0.7, 0.24, 0.25))
+func _draw() -> void:
+	var size = get_rect().size
+	var center = size / 2
 
+	for gw in _glassware:
+		var pos = Vector2(gw.x * size.x, gw.y * size.y)
+		var scale = min(size.x, size.y) * gw.scale
 
-func _draw_burette(base: Vector2, height: float) -> void:
-	var tube := Rect2(base.x - 4.0, base.y - height, 8.0, height * 0.82)
-	draw_rect(tube, COLOR_GLASS, true)
-	draw_rect(tube, COLOR_LINE, false, 1.2)
+		# Draw glassware based on type
+		match gw.type:
+			0: _draw_beaker(pos, scale, gw)
+			1: _draw_flask(pos, scale, gw)
+			2: _draw_graduated(pos, scale, gw)
+			3: _draw_test_tube(pos, scale, gw)
+			4: _draw_condenser(pos, scale, gw)
+			5: _draw_buret(pos, scale, gw)
+
+func _draw_beaker(pos: Vector2, scale: float, gw: Dictionary) -> void:
+	var w = scale * 0.8
+	var h = scale * 1.2
+	var rect = Rect2(pos - Vector2(w/2, h/2), Vector2(w, h))
+
+	# Glass walls
+	draw_rect(rect, gw.color, false, max(1.0, scale * 0.5))
+
+	# Liquid
+	var liquid_h = h * gw.fill
+	var liquid_rect = Rect2(pos.x - w/2, pos.y + h/2 - liquid_h, w, liquid_h)
+	draw_rect(liquid_rect, gw.color, true)
+
+	# Liquid wave
+	var wave_h = sin(_time * gw.liquid_wave_speed + gw.liquid_wave_phase) * scale * 0.02
+	var wave_y = pos.y + h/2 - liquid_h + wave_h
+	draw_line(Vector2(pos.x - w/2, wave_y), Vector2(pos.x + w/2, wave_y), gw.color, max(1.0, scale * 0.3))
+
+	# Bubbles
+	for bubble in gw.bubbles:
+		var bp = pos + Vector2(bubble.x * w, bubble.y * h)
+		draw_circle(bp, bubble.size * scale * bubble.alpha, Color(gw.color.r, gw.color.g, gw.color.b, bubble.alpha * 0.8))
+
+	# Condensation
+	if gw.condensation > 0.05:
+		for i in range(int(gw.condensation * 5)):
+			var cx = pos.x + randf_range(-w/2, w/2)
+			var cy = pos.y + randf_range(-h/2, h/2)
+			draw_circle(Vector2(cx, cy), scale * 0.01, Color(1, 1, 1, gw.condensation * 0.3))
+
+	# Glint
+	if gw.glint_timer < 0.1:
+		var glint_pos = pos + Vector2(randf_range(-w/2, w/2), randf_range(-h/2, h/2))
+		draw_circle(glint_pos, scale * 0.15, Color(1, 1, 1, 0.8 * (1.0 - gw.glint_timer * 10)))
+
+func _draw_flask(pos: Vector2, scale: float, gw: Dictionary) -> void:
+	var w = scale * 0.7
+	var h = scale * 1.4
+	var neck_w = w * 0.3
+	var neck_h = h * 0.25
+
+	# Body
+	var body_rect = Rect2(pos.x - w/2, pos.y - h/2 + neck_h, w, h - neck_h)
+	draw_rect(body_rect, gw.color, false, max(1.0, scale * 0.5))
+
+	# Neck
+	var neck_rect = Rect2(pos.x - neck_w/2, pos.y - h/2, neck_w, neck_h)
+	draw_rect(neck_rect, gw.color, false, max(1.0, scale * 0.5))
+
+	# Liquid
+	var liquid_h = (h - neck_h) * gw.fill
+	var liquid_rect = Rect2(pos.x - w/2, pos.y + h/2 - liquid_h, w, liquid_h)
+	draw_rect(liquid_rect, gw.color, true)
+
+	# Bubbles
+	for bubble in gw.bubbles:
+		var bp = pos + Vector2(bubble.x * w, bubble.y * h)
+		draw_circle(bp, bubble.size * scale * bubble.alpha, Color(gw.color.r, gw.color.g, gw.color.b, bubble.alpha * 0.8))
+
+func _draw_graduated(pos: Vector2, scale: float, gw: Dictionary) -> void:
+	var w = scale * 0.5
+	var h = scale * 1.6
+	var rect = Rect2(pos - Vector2(w/2, h/2), Vector2(w, h))
+
+	draw_rect(rect, gw.color, false, max(1.0, scale * 0.4))
+
+	# Graduation marks
 	for i in range(10):
-		var y := tube.position.y + tube.size.y * float(i) / 10.0
-		draw_line(Vector2(tube.position.x - 5.0, y), Vector2(tube.position.x, y), COLOR_LINE, 1.0)
-	var filled := Rect2(tube.position + Vector2(1.0, 4.0), Vector2(6.0, tube.size.y * 0.55), )
-	draw_rect(filled, Color(0.55, 0.35, 0.85, 0.3), true)
-	# Drop animation.
-	var drop_t := fmod(_time * 0.5, 1.0)
-	draw_circle(Vector2(base.x, base.y - height * 0.1 + drop_t * 26.0), 2.4, Color(0.7, 0.55, 0.95, 0.55))
+		var mark_y = pos.y - h/2 + (h/10) * i
+		draw_line(Vector2(pos.x - w/2, mark_y), Vector2(pos.x + w/2, mark_y), gw.color, max(1.0, scale * 0.2))
 
+	# Liquid
+	var liquid_h = h * gw.fill
+	var liquid_rect = Rect2(pos.x - w/2, pos.y + h/2 - liquid_h, w, liquid_h)
+	draw_rect(liquid_rect, gw.color, true)
 
-func _draw_condenser(base: Vector2, height: float) -> void:
-	var outer := Rect2(base.x - 13.0, base.y - height, 26.0, height * 0.8)
-	draw_rect(outer, COLOR_GLASS, true)
-	draw_rect(outer, COLOR_LINE, false, 1.2)
-	for i in range(5):
-		var y := outer.position.y + outer.size.y * float(i) / 5.0
-		draw_line(Vector2(outer.position.x + 5.0, y), Vector2(outer.end.x - 5.0, y), Color(0.4, 0.7, 0.8, 0.22), 2.0)
-	draw_line(Vector2(base.x, outer.position.y), Vector2(base.x, outer.end.y), Color(0.6, 0.85, 0.95, 0.3), 1.0)
-	# Cooling water flow.
-	var flow := fmod(_time * 0.4, 1.0)
-	draw_circle(Vector2(outer.position.x + 5.0, lerpf(outer.end.y, outer.position.y, flow)), 2.0, Color(0.4, 0.85, 1.0, 0.5))
+	# Bubbles
+	for bubble in gw.bubbles:
+		var bp = pos + Vector2(bubble.x * w, bubble.y * h)
+		draw_circle(bp, bubble.size * scale * bubble.alpha, Color(gw.color.r, gw.color.g, gw.color.b, bubble.alpha * 0.8))
+
+func _draw_test_tube(pos: Vector2, scale: float, gw: Dictionary) -> void:
+	var w = scale * 0.4
+	var h = scale * 1.5
+	var radius = w/2
+
+	# Tube body
+	var rect = Rect2(pos.x - radius, pos.y - h/2, w, h - radius)
+	draw_rect(rect, gw.color, false, max(1.0, scale * 0.4))
+
+	# Round bottom
+	draw_circle(pos, radius, gw.color, false, max(1.0, scale * 0.4))
+
+	# Liquid
+	var liquid_h = min(h * gw.fill, h - radius)
+	var liquid_rect = Rect2(pos.x - radius, pos.y + h/2 - liquid_h, w, liquid_h)
+	draw_rect(liquid_rect, gw.color, true)
+
+	# Round bottom liquid
+	if liquid_h > h - radius:
+		draw_circle(pos, radius, gw.color, true)
+
+	# Bubbles
+	for bubble in gw.bubbles:
+		var bp = pos + Vector2(bubble.x * w, bubble.y * h)
+		draw_circle(bp, bubble.size * scale * bubble.alpha, Color(gw.color.r, gw.color.g, gw.color.b, bubble.alpha * 0.8))
+
+func _draw_condenser(pos: Vector2, scale: float, gw: Dictionary) -> void:
+	var w = scale * 1.2
+	var h = scale * 1.0
+	var inner_w = w * 0.3
+	var inner_h = h * 0.6
+
+	# Outer jacket
+	var outer_rect = Rect2(pos - Vector2(w/2, h/2), Vector2(w, h))
+	draw_rect(outer_rect, gw.color, false, max(1.0, scale * 0.4))
+
+	# Inner tube
+	var inner_rect = Rect2(pos - Vector2(inner_w/2, inner_h/2), Vector2(inner_w, inner_h))
+	draw_rect(inner_rect, gw.color, false, max(1.0, scale * 0.4))
+
+	# Cooling liquid (outer)
+	var liquid_h = h * gw.fill
+	var liquid_rect = Rect2(pos.x - w/2, pos.y + h/2 - liquid_h, w, liquid_h)
+	draw_rect(liquid_rect, Color(0.2, 0.6, 1.0, 0.3), true)
+
+	# Condensation droplets
+	for i in range(int(gw.condensation * 8)):
+		var cx = pos.x + randf_range(-w/2, w/2)
+		var cy = pos.y + randf_range(-h/2, h/2)
+		draw_circle(Vector2(cx, cy), scale * 0.015, Color(1, 1, 1, gw.condensation * 0.4))
+
+func _draw_buret(pos: Vector2, scale: float, gw: Dictionary) -> void:
+	var w = scale * 0.35
+	var h = scale * 1.8
+	var rect = Rect2(pos - Vector2(w/2, h/2), Vector2(w, h))
+
+	draw_rect(rect, gw.color, false, max(1.0, scale * 0.3))
+
+	# Graduation marks
+	for i in range(20):
+		var mark_y = pos.y - h/2 + (h/20) * i
+		draw_line(Vector2(pos.x - w/2, mark_y), Vector2(pos.x + w/2, mark_y), gw.color, max(1.0, scale * 0.15))
+
+	# Stopcock at bottom
+	var stopcock_rect = Rect2(pos.x - w, pos.y + h/2 - scale * 0.1, w * 2, scale * 0.1)
+	draw_rect(stopcock_rect, Color(0.3, 0.3, 0.3), true)
+
+	# Liquid
+	var liquid_h = h * gw.fill
+	var liquid_rect = Rect2(pos.x - w/2, pos.y + h/2 - liquid_h, w, liquid_h)
+	draw_rect(liquid_rect, gw.color, true)
+
+	# Meniscus
+	var meniscus_y = pos.y + h/2 - h * gw.fill
+	draw_line(Vector2(pos.x - w/2, meniscus_y), Vector2(pos.x + w/2, meniscus_y), gw.color, max(1.0, scale * 0.3))
+
+	# Bubbles (rare in buret)
+	for bubble in gw.bubbles:
+		if randf() < 0.1:
+			var bp = pos + Vector2(bubble.x * w, bubble.y * h)
+			draw_circle(bp, bubble.size * scale * bubble.alpha, Color(gw.color.r, gw.color.g, gw.color.b, bubble.alpha * 0.5))

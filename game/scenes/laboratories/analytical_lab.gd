@@ -17,6 +17,7 @@ signal apparatus_spawned(apparatus_name: String, marker_name: String, node: Node
 # =============================================================================
 # CONSTANTS & CONFIGURATION
 # =============================================================================
+const LabCinematicsScript = preload("res://scripts/visual/lab_cinematics.gd")
 const LAB_NAME: String = "Analytical Chemistry Core Laboratory"
 const LAB_ARCHETYPE_ID: String = "analytical_lab_01"
 const DEFAULT_PLAYER_SPAWN: Vector3 = Vector3(0.0, 1.0, 2.5)
@@ -90,6 +91,9 @@ func _ready() -> void:
 	_spawn_or_position_player()
 	_setup_fume_hood_interaction()
 	_notify_quest_manager()
+	# Cinematic dressing: night window, practical ceiling light, dust in the
+	# beams and the small human objects that make a bench read as used.
+	LabCinematicsScript.dress(self)
 	laboratory_initialized.emit(LAB_NAME, lab_parameters)
 	print(">>> [AnalyticalLab] Laboratory initialization complete. Ready for experiment simulation.")
 
@@ -172,8 +176,10 @@ func _spawn_or_position_player() -> void:
 	if existing_player:
 		player_instance = existing_player
 		player_instance.global_position = spawn_pos
-		# Face workbench (-Z axis)
-		player_instance.rotation = Vector3(0.0, deg_to_rad(180.0), 0.0)
+		# Face the workbench (-Z). The earlier 180° turn pointed the camera at
+		# the wall behind the spawn and was the reason the lab looked empty.
+		player_instance.rotation = Vector3.ZERO
+		_activate_player_camera(player_instance)
 		player_spawned.emit(player_instance, spawn_pos)
 		return
 
@@ -189,7 +195,8 @@ func _spawn_or_position_player() -> void:
 				player_instance = player_resource.instantiate()
 				add_child(player_instance)
 				player_instance.global_position = spawn_pos
-				player_instance.rotation = Vector3(0.0, deg_to_rad(180.0), 0.0)
+				player_instance.rotation = Vector3.ZERO
+				_activate_player_camera(player_instance)
 				player_spawned.emit(player_instance, spawn_pos)
 				print(">>> [AnalyticalLab] Player successfully spawned from %s at: %s" % [player_scene_path, spawn_pos])
 				return
@@ -200,6 +207,13 @@ func _spawn_or_position_player() -> void:
 # =============================================================================
 # 3. FUME HOOD SASH INTERACTION (E-KEY KINEMATICS)
 # =============================================================================
+
+func _activate_player_camera(player: Node) -> void:
+	var camera := player.get_node_or_null("Head/Camera3D") as Camera3D
+	if camera != null:
+		camera.current = true
+		camera.fov = 72.0
+
 
 func _setup_fume_hood_interaction() -> void:
 	if not fume_hood_interaction_area:

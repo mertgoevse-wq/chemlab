@@ -1,0 +1,419 @@
+{
+  "version": "1.0.0",
+  "description": "Assassin's Creed-style equipment system for Athanor Ascension. Equipment slots, tiers, sets, crafting, visual appearance.",
+  "equipment_slots": [
+    { "id": "head", "name": "Head", "icon": "helmet", "description": "Helmets, goggles, respirators, hoods" },
+    { "id": "body", "name": "Body", "icon": "chest", "description": "Lab coats, hazmat suits, armor, vests" },
+    { "id": "hands", "name": "Hands", "icon": "gloves", "description": "Gloves, gauntlets, manipulators" },
+    { "id": "feet", "name": "Feet", "icon": "boots", "description": "Boots, shoes, radiation shielding" },
+    { "id": "neck", "name": "Neck", "icon": "amulet", "description": "Dosimeters, badges, pendants" },
+    { "id": "ring_left", "name": "Ring (Left)", "icon": "ring", "description": "Signet rings, sensor rings" },
+    { "id": "ring_right", "name": "Ring (Right)", "icon": "ring", "description": "Signet rings, sensor rings" },
+    { "id": "backpack", "name": "Backpack", "icon": "backpack", "description": "Reagent storage, tool kits, life support" },
+    { "id": "tool_belt_1", "name": "Tool Belt 1", "icon": "belt", "description": "Quick-access primary tool" },
+    { "id": "tool_belt_2", "name": "Tool Belt 2", "icon": "belt", "description": "Quick-access secondary tool" },
+    { "id": "tool_belt_3", "name": "Tool Belt 3", "icon": "belt", "description": "Quick-access tertiary tool" },
+    { "id": "tool_belt_4", "name": "Tool Belt 4", "icon": "belt", "description": "Quick-access quaternary tool" },
+    { "id": "quick_slot_1", "name": "Quick Slot 1", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_2", "name": "Quick Slot 2", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_3", "name": "Quick Slot 3", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_4", "name": "Quick Slot 4", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_5", "name": "Quick Slot 5", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_6", "name": "Quick Slot 6", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_7", "name": "Quick Slot 7", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" },
+    { "id": "quick_slot_8", "name": "Quick Slot 8", "icon": "flask", "description": "Consumable: antidote, reagent, injectable" }
+  ],
+  "equipment_tiers": [
+    { "id": "common", "name": "Common", "color": "#FFFFFF", "description": "Standard issue, no bonuses", "max_stats": 1 },
+    { "id": "uncommon", "name": "Uncommon", "color": "#1EFF00", "description": "Minor bonuses, 1-2 stats", "max_stats": 2 },
+    { "id": "rare", "name": "Rare", "color": "#0070DD", "description": "Good bonuses, 2-3 stats, set potential", "max_stats": 3 },
+    { "id": "epic", "name": "Epic", "color": "#A335EE", "description": "Strong bonuses, 3-4 stats, set bonuses", "max_stats": 4 },
+    { "id": "legendary", "name": "Legendary", "color": "#FF8000", "description": "Powerful bonuses, 4-5 stats, unique effects", "max_stats": 5 },
+    { "id": "mythic", "name": "Mythic", "color": "#E6CC80", "description": "Transcendent bonuses, 5 stats, reality-bending", "max_stats": 5 }
+  ],
+  "stat_types": [
+    { "id": "protection_chemical", "name": "Chemical Protection", "description": "Reduces chemical burn damage, inhalation", "unit": "%" },
+    { "id": "protection_thermal", "name": "Thermal Protection", "description": "Reduces heat/cold damage, fire resistance", "unit": "%" },
+    { "id": "protection_radiation", "name": "Radiation Protection", "description": "Reduces mSv dose, neutron/gamma shielding", "unit": "%" },
+    { "id": "protection_physical", "name": "Physical Protection", "description": "Reduces laceration, impact, blast damage", "unit": "%" },
+    { "id": "mobility", "name": "Mobility", "description": "Movement speed, interaction speed, stamina regen", "unit": "%" },
+    { "id": "utility", "name": "Utility", "description": "Reagent capacity, tool durability, scan range", "unit": "%" },
+    { "id": "precision", "name": "Precision", "description": "Measurement accuracy, pour control, aim assist", "unit": "%" },
+    { "id": "companion_bond", "name": "Companion Bond", "description": "Companion XP, loyalty, ability potency", "unit": "%" },
+    { "id": "ip_gain", "name": "Intelligence Point Gain", "description": "Bonus IP from all sources", "unit": "%" },
+    { "id": "xp_gain", "name": "Skill XP Gain", "description": "Bonus XP for specific/all skills", "unit": "%" },
+    { "id": "yield_bonus", "name": "Synthesis Yield", "description": "Increased product yield, less waste", "unit": "%" },
+    { "id": "purity_bonus", "name": "Product Purity", "description": "Higher purity, fewer impurities", "unit": "%" },
+    { "id": "speed_bonus", "name": "Operation Speed", "description": "Faster reactions, mixing, analysis", "unit": "%" },
+    { "id": "night_vision", "name": "Night Vision", "description": "See in dark, UV/IR vision modes", "unit": "bool" },
+    { "id": "hazard_sense", "name": "Hazard Sense", "description": "Detect leaks, radiation, contamination", "unit": "bool" },
+    { "id": "auto_neutralize", "name": "Auto-Neutralize", "description": "Auto-deploy spill neutralization", "unit": "bool" }
+  ],
+  "equipment_sets": [
+    {
+      "id": "student_lab_set",
+      "name": "Student Lab Set",
+      "tier": "common",
+      "pieces": ["student_goggles", "student_lab_coat", "nitrile_gloves", "closed_shoes"],
+      "bonuses": {
+        "2": { "stat": "protection_chemical", "value": 5 },
+        "4": { "stat": "mobility", "value": 10 }
+      }
+    },
+    {
+      "id": "researcher_set",
+      "name": "Researcher's Attire",
+      "tier": "uncommon",
+      "pieces": ["safety_goggles", "cotton_lab_coat", "neoprene_gloves", "lab_boots"],
+      "bonuses": {
+        "2": { "stat": "protection_chemical", "value": 10 },
+        "3": { "stat": "precision", "value": 5 },
+        "4": { "stat": "utility", "value": 10 }
+      }
+    },
+    {
+      "id": "hazmat_specialist_set",
+      "name": "Hazmat Specialist",
+      "tier": "rare",
+      "pieces": ["full_face_respirator", "tyvek_suit", "butyl_gloves", "chemical_boots"],
+      "bonuses": {
+        "2": { "stat": "protection_chemical", "value": 25 },
+        "3": { "stat": "protection_thermal", "value": 15 },
+        "4": { "stat": "auto_neutralize", "value": true }
+      }
+    },
+    {
+      "id": "radiation_worker_set",
+      "name": "Radiation Worker",
+      "tier": "rare",
+      "pieces": ["lead_goggles", "lead_apron", "lead_gloves", "dosimeter_badge"],
+      "bonuses": {
+        "2": { "stat": "protection_radiation", "value": 30 },
+        "3": { "stat": "hazard_sense", "value": true },
+        "4": { "stat": "protection_physical", "value": 10 }
+      }
+    },
+    {
+      "id": "synthesis_master_set",
+      "name": "Synthesis Master's Regalia",
+      "tier": "epic",
+      "pieces": ["scholar_goggles", "silk_lab_coat", "precision_gloves", "comfort_shoes"],
+      "bonuses": {
+        "2": { "stat": "yield_bonus", "value": 15 },
+        "3": { "stat": "purity_bonus", "value": 10 },
+        "4": { "stat": "speed_bonus", "value": 20 }
+      }
+    },
+    {
+      "id": "aetherkin_bonded_set",
+      "name": "Aetherkin-Bonded",
+      "tier": "legendary",
+      "pieces": ["cinderling_mask", "brinejack_vest", "glasswing_gloves", "lumen_boots"],
+      "bonuses": {
+        "2": { "stat": "companion_bond", "value": 50 },
+        "3": { "stat": "night_vision", "value": true },
+        "4": { "stat": "ip_gain", "value": 25 }
+      }
+    },
+    {
+      "id": "chrono_alchemist_set",
+      "name": "Chrono Alchemist",
+      "tier": "mythic",
+      "pieces": ["time_weaver_hood", "entropy_robe", "causality_gauntlets", "moment_boots"],
+      "bonuses": {
+        "2": { "stat": "speed_bonus", "value": 50 },
+        "3": { "stat": "yield_bonus", "value": 25 },
+        "4": { "stat": "xp_gain", "value": 50 }
+      }
+    }
+  ],
+  "equipment_items": [
+    {
+      "id": "student_goggles",
+      "name": "Student Safety Goggles",
+      "slot": "head",
+      "tier": "common",
+      "model": "res://assets/models/equipment/goggles_student.glb",
+      "icon": "res://assets/ui/equipment/goggles_student.png",
+      "stats": { "protection_chemical": 5, "protection_physical": 2 },
+      "description": "Basic impact protection. Scratches easily."
+    },
+    {
+      "id": "safety_goggles",
+      "name": "ANSI Z87.1 Safety Goggles",
+      "slot": "head",
+      "tier": "uncommon",
+      "model": "res://assets/models/equipment/goggles_ansi.glb",
+      "icon": "res://assets/ui/equipment/goggles_ansi.png",
+      "stats": { "protection_chemical": 10, "protection_physical": 8, "hazard_sense": true },
+      "description": "Anti-fog, indirect venting. Good splash protection."
+    },
+    {
+      "id": "full_face_respirator",
+      "name": "Full-Face Respirator (APF 50)",
+      "slot": "head",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/respirator_full.glb",
+      "icon": "res://assets/ui/equipment/respirator_full.png",
+      "stats": { "protection_chemical": 40, "protection_physical": 15, "protection_radiation": 10, "auto_neutralize": true },
+      "description": "Supplied-air compatible. Voice diaphragm. Radionuclide filter option."
+    },
+    {
+      "id": "lead_goggles",
+      "name": "Lead-Equivalent Radiation Goggles (0.75 mm Pb)",
+      "slot": "head",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/goggles_lead.glb",
+      "icon": "res://assets/ui/equipment/goggles_lead.png",
+      "stats": { "protection_radiation": 50, "protection_physical": 5, "hazard_sense": true },
+      "description": "Wraparound. For fluoroscopy, hot cell viewing."
+    },
+    {
+      "id": "scholar_goggles",
+      "name": "Scholar's Precision Goggles",
+      "slot": "head",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/goggles_scholar.glb",
+      "icon": "res://assets/ui/equipment/goggles_scholar.png",
+      "stats": { "precision": 25, "yield_bonus": 10, "purity_bonus": 5, "protection_chemical": 15 },
+      "description": "HUD overlay: real-time pH, temp, concentration. Auto-calibrates."
+    },
+    {
+      "id": "cinderling_mask",
+      "name": "Cinderling Mask",
+      "slot": "head",
+      "tier": "legendary",
+      "model": "res://assets/models/equipment/mask_cinderling.glb",
+      "icon": "res://assets/ui/equipment/mask_cinderling.png",
+      "stats": { "protection_thermal": 60, "companion_bond": 30, "night_vision": true, "ip_gain": 15 },
+      "description": "Living ember. Whispers flame temperatures. Bonded to Cinderling companion."
+    },
+    {
+      "id": "time_weaver_hood",
+      "name": "Time Weaver's Hood",
+      "slot": "head",
+      "tier": "mythic",
+      "model": "res://assets/models/equipment/hood_chrono.glb",
+      "icon": "res://assets/ui/equipment/hood_chrono.png",
+      "stats": { "speed_bonus": 50, "xp_gain": 50, "yield_bonus": 25, "precision": 30, "protection_radiation": 40 },
+      "description": "Woven from stabilized chronotons. Sees reaction futures. Master Alchemist only."
+    },
+    {
+      "id": "student_lab_coat",
+      "name": "Student Lab Coat (Cotton/Poly)",
+      "slot": "body",
+      "tier": "common",
+      "model": "res://assets/models/equipment/coat_student.glb",
+      "icon": "res://assets/ui/equipment/coat_student.png",
+      "stats": { "protection_chemical": 5, "mobility": 5 },
+      "description": "Knee-length. Two pockets. Burns if not removed quickly."
+    },
+    {
+      "id": "cotton_lab_coat",
+      "name": "100% Cotton Lab Coat",
+      "slot": "body",
+      "tier": "uncommon",
+      "model": "res://assets/models/equipment/coat_cotton.glb",
+      "icon": "res://assets/ui/equipment/coat_cotton.png",
+      "stats": { "protection_chemical": 15, "protection_thermal": 5, "utility": 5 },
+      "description": "Flame-resistant treatment. Snap front for quick removal."
+    },
+    {
+      "id": "tyvek_suit",
+      "name": "Tyvek 400 Hazmat Suit",
+      "slot": "body",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/suit_tyvek.glb",
+      "icon": "res://assets/ui/equipment/suit_tyvek.png",
+      "stats": { "protection_chemical": 45, "protection_physical": 20, "auto_neutralize": true },
+      "description": "Taped seams. Attached hood/boots. Disposable after contamination."
+    },
+    {
+      "id": "lead_apron",
+      "name": "Lead Apron (0.5 mm Pb Eq.)",
+      "slot": "body",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/apron_lead.glb",
+      "icon": "res://assets/ui/equipment/apron_lead.png",
+      "stats": { "protection_radiation": 60, "mobility": -20 },
+      "description": "Back pain risk. Essential for fluoroscopy, hot cells."
+    },
+    {
+      "id": "silk_lab_coat",
+      "name": "Synthesis Master's Silk Coat",
+      "slot": "body",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/coat_silk.glb",
+      "icon": "res://assets/ui/equipment/coat_silk.png",
+      "stats": { "yield_bonus": 20, "purity_bonus": 15, "speed_bonus": 15, "protection_chemical": 20 },
+      "description": "Self-cleaning nano-coating. Repels all solvents. Hidden interior pockets."
+    },
+    {
+      "id": "brinejack_vest",
+      "name": "Brinejack Vest",
+      "slot": "body",
+      "tier": "legendary",
+      "model": "res://assets/models/equipment/vest_brinejack.glb",
+      "icon": "res://assets/ui/equipment/vest_brinejack.png",
+      "stats": { "protection_chemical": 40, "companion_bond": 40, "ip_gain": 20, "utility": 25 },
+      "description": "Living desalination membrane. Sweat → potable water. Bonded to Brinejack."
+    },
+    {
+      "id": "entropy_robe",
+      "name": "Entropy Robe",
+      "slot": "body",
+      "tier": "mythic",
+      "model": "res://assets/models/equipment/robe_entropy.glb",
+      "icon": "res://assets/ui/equipment/robe_entropy.png",
+      "stats": { "speed_bonus": 50, "xp_gain": 50, "yield_bonus": 25, "protection_thermal": 40, "protection_radiation": 30 },
+      "description": "Probability-manipulating weave. Reactions favor desired pathway. Master only."
+    },
+    {
+      "id": "nitrile_gloves",
+      "name": "Nitrile Gloves (Box of 100)",
+      "slot": "hands",
+      "tier": "common",
+      "model": "res://assets/models/equipment/gloves_nitrile.glb",
+      "icon": "res://assets/ui/equipment/gloves_nitrile.png",
+      "stats": { "protection_chemical": 10, "precision": 5 },
+      "description": "Single-use. Good dexterity. Permeable to some solvents."
+    },
+    {
+      "id": "neoprene_gloves",
+      "name": "Neoprene Chemical Gloves",
+      "slot": "hands",
+      "tier": "uncommon",
+      "model": "res://assets/models/equipment/gloves_neoprene.glb",
+      "icon": "res://assets/ui/equipment/gloves_neoprene.png",
+      "stats": { "protection_chemical": 25, "protection_thermal": 10, "precision": 3 },
+      "description": "Reusable. Broad solvent resistance. Thicker than nitrile."
+    },
+    {
+      "id": "butyl_gloves",
+      "name": "Butyl Rubber Gloves (Hazmat)",
+      "slot": "hands",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/gloves_butyl.glb",
+      "icon": "res://assets/ui/equipment/gloves_butyl.png",
+      "stats": { "protection_chemical": 50, "protection_thermal": 15, "auto_neutralize": true },
+      "description": "Highest chemical resistance. For fuming acids, permeation >8 hrs."
+    },
+    {
+      "id": "lead_gloves",
+      "name": "Lead-Lined Hot Cell Gloves",
+      "slot": "hands",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/gloves_lead.glb",
+      "icon": "res://assets/ui/equipment/gloves_lead.png",
+      "stats": { "protection_radiation": 70, "mobility": -15 },
+      "description": "For manipulators. Heavy. Radiation attenuating."
+    },
+    {
+      "id": "precision_gloves",
+      "name": "Precision Synthesis Gloves",
+      "slot": "hands",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/gloves_precision.glb",
+      "icon": "res://assets/ui/equipment/gloves_precision.png",
+      "stats": { "precision": 30, "yield_bonus": 15, "purity_bonus": 10, "speed_bonus": 10 },
+      "description": "Force-feedback fingertips. Feel viscosity, crystal formation, meniscus."
+    },
+    {
+      "id": "glasswing_gloves",
+      "name": "Glasswing Gloves",
+      "slot": "hands",
+      "tier": "legendary",
+      "model": "res://assets/models/equipment/gloves_glasswing.glb",
+      "icon": "res://assets/ui/equipment/gloves_glasswing.png",
+      "stats": { "companion_bond": 35, "night_vision": true, "hazard_sense": true, "precision": 20 },
+      "description": "Transparent chitin. Microfracture detection. Bonded to Glasswing Moth."
+    },
+    {
+      "id": "causality_gauntlets",
+      "name": "Causality Gauntlets",
+      "slot": "hands",
+      "tier": "mythic",
+      "model": "res://assets/models/equipment/gauntlets_causality.glb",
+      "icon": "res://assets/ui/equipment/gauntlets_causality.png",
+      "stats": { "precision": 50, "yield_bonus": 30, "speed_bonus": 40, "purity_bonus": 20, "ip_gain": 25 },
+      "description": "Manipulate reaction coordinate directly. See transition states. Master only."
+    },
+    {
+      "id": "closed_shoes",
+      "name": "Closed-Toe Lab Shoes",
+      "slot": "feet",
+      "tier": "common",
+      "model": "res://assets/models/equipment/shoes_closed.glb",
+      "icon": "res://assets/ui/equipment/shoes_closed.png",
+      "stats": { "protection_physical": 5, "mobility": 10 },
+      "description": "Basic requirement. No sandals. Slip-resistant sole."
+    },
+    {
+      "id": "lab_boots",
+      "name": "Steel-Toe Lab Boots",
+      "slot": "feet",
+      "tier": "uncommon",
+      "model": "res://assets/models/equipment/boots_steel.glb",
+      "icon": "res://assets/ui/equipment/boots_steel.png",
+      "stats": { "protection_physical": 20, "protection_chemical": 10, "mobility": 5 },
+      "description": "Chemical-resistant leather. Steel toe. Static dissipative."
+    },
+    {
+      "id": "chemical_boots",
+      "name": "Chemical-Resistant Boots (Viton)",
+      "slot": "feet",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/boots_viton.glb",
+      "icon": "res://assets/ui/equipment/boots_viton.png",
+      "stats": { "protection_chemical": 40, "protection_thermal": 15, "auto_neutralize": true },
+      "description": "Seamless molded. Permeation resistance >24 hrs for most chemicals."
+    },
+    {
+      "id": "comfort_shoes",
+      "name": "Ergonomic Lab Shoes",
+      "slot": "feet",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/shoes_ergonomic.glb",
+      "icon": "res://assets/ui/equipment/shoes_ergonomic.png",
+      "stats": { "mobility": 30, "speed_bonus": 15, "protection_chemical": 15, "stamina_regen": 20 },
+      "description": "Active suspension. Reduces fatigue during 12-hr syntheses."
+    },
+    {
+      "id": "lumen_boots",
+      "name": "Lumen Eel Boots",
+      "slot": "feet",
+      "tier": "legendary",
+      "model": "res://assets/models/equipment/boots_lumen.glb",
+      "icon": "res://assets/ui/equipment/boots_lumen.png",
+      "stats": { "protection_radiation": 30, "night_vision": true, "companion_bond": 30, "hazard_sense": true, "ip_gain": 15 },
+      "description": "Bioluminescent pathfinding. Detect ROS trails. Bonded to Lumen Eel."
+    },
+    {
+      "id": "moment_boots",
+      "name": "Moment Boots",
+      "slot": "feet",
+      "tier": "mythic",
+      "model": "res://assets/models/equipment/boots_moment.glb",
+      "icon": "res://assets/ui/equipment/boots_moment.png",
+      "stats": { "speed_bonus": 60, "mobility": 40, "xp_gain": 40, "yield_bonus": 20, "night_vision": true },
+      "description": "Step between reaction coordinates. Instant repositioning. Master Alchemist only."
+    }
+  ],
+  "crafting": {
+    "description": "Upgrade equipment using lab materials and skill levels.",
+    "stations": [
+      { "id": "sewing_station", "name": "Sewing/Repair Station", "skills": ["apparatus_building"], "level_req": 20 },
+      { "id": "glassblowing_station", "name": "Glassblowing Bench", "skills": ["apparatus_building"], "level_req": 30 },
+      { "id": "electronics_station", "name": "Electronics Workbench", "skills": ["automation", "apparatus_building"], "level_req": 30 },
+      { "id": "chemistry_station", "name": "Chemistry Workbench", "skills": ["chemistry"], "level_req": 40 },
+      { "id": "enchanting_station", "name": "Aetherkin Bonding Altar", "skills": ["synthetic_biology", "genetics"], "level_req": 50 }
+    ],
+    "materials": [
+      { "id": "aramid_fiber", "name": "Aramid Fiber (Kevlar)", "source": "chemical_synthesis", "tier": "uncommon" },
+      { "id": "lead_wool", "name": "Lead Wool", "source": "radiochemistry", "tier": "rare" },
+      { "id": "aerogel", "name": "Silica Aerogel", "source": "materials_science", "tier": "epic" },
+      { "id": "aetherkin_essence", "name": "Aetherkin Essence", "source": "companion_bonding", "tier": "legendary" },
+      { "id": "chrono_filament", "name": "Chroniton Filament", "source": "nuclear_engineering", "tier": "mythic" }
+    ]
+  }
+}

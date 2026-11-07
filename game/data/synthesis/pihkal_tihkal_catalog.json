@@ -1,0 +1,238 @@
+{
+  "version": "1.0.0",
+  "description": "Complete PiHKAL & TiHKAL synthesis catalog for Athanor Ascension. 360+ compounds with full procedures, SwissTargetPrediction receptor binding, and simulator/story modes.",
+  "source": "PiHKAL: A Chemical Love Story & TiHKAL: The Continuation by Alexander & Ann Shulgin",
+  "legal_notice": "All procedures presented in fictional simulator context with GHS safety classification. No real-world synthesis instructions outside simulator.",
+  "simulator_mode": {
+    "description": "Full encyclopedia mode - all 360+ compounds available with complete procedures",
+    "features": [
+      "Retrosynthetic analysis (3-5 routes per compound)",
+      "Step-by-step procedures with exact stoichiometry",
+      "Temperature profiles with ramp rates and holds",
+      "Addition orders with hazard warnings",
+      "Workup procedures (quench, extraction, wash, dry)",
+      "Purification (recrystallization, distillation, chromatography)",
+      "Analytical verification (MP, TLC, NMR, MS, HPLC)",
+      "Safety: GHS, thermal runaway thresholds, fume hood requirements",
+      "Legal: Schedule classification, precursor watchlist status",
+      "Yield benchmarks: Literature vs achievable in simulator",
+      "Custom molecule designer with SwissTargetPrediction"
+    ]
+  },
+  "story_mode": {
+    "description": "Curated iconic compounds for narrative progression",
+    "iconic_compounds": [
+      "MDMA", "5-MeO-DMT", "DOB", "LSD", "Mescaline", "2C-B", "2C-E", "2C-I",
+      "2C-T-7", "2C-T-2", "DOM", "ALEPH", "MMDA", "MDA", "MMDA-2", "TMA",
+      "TMA-2", "GANESHA", "DMT", "5-MeO-DMT", "5-MeO-MIPT", "5-MeO-DIPT",
+      "5-MeO-DALT", "4-AcO-DMT", "4-HO-MET", "4-HO-MIPT", "4-HO-DIPT",
+      "MIPT", "DIPT", "DPT", "MET", "DET", "EPT", "DPT", "MPT",
+      "ALPHA-MT", "ALPHA-ET", "MPMI", "SNPE", "SEROTONIN", "PSILOCIN",
+      "PSILOCYBIN", "BAEOCYSTIN", "NORBAEOCYSTIN", "AERUGINASCIN"
+    ]
+  },
+  "categories": {
+    "phenethylamines": {
+      "pihkal": true,
+      "description": "Phenethylamines I Have Known And Loved",
+      "count": 179,
+      "subcategories": [
+        "Mescaline analogues",
+        "2C-series (2,5-dimethoxy)",
+        "DOx-series (4-substituted-2,5-dimethoxy)",
+        "TMA-series (trimethoxy)",
+        "Ganesha-series",
+        "BOx-series (beta-oxygen)",
+        "Beta-keto (cathinones)",
+        "Ring-substituted",
+        "Alpha-methyl",
+        "N-substituted"
+      ]
+    },
+    "tryptamines": {
+      "tihkal": true,
+      "description": "Tryptamines I Have Known And Loved",
+      "count": 179,
+      "subcategories": [
+        "Simple tryptamines (DMT, DET, DPT, etc.)",
+        "4-Substituted (Psilocin, Psilocybin, 4-AcO-DMT)",
+        "5-Substituted (5-MeO-DMT, 5-MeO-MIPT, etc.)",
+        "6-Substituted",
+        "7-Substituted",
+        "N,N-Disubstituted",
+        "Alpha-alkyl",
+        "Beta-keto",
+        "Cyclic (ergolines, ibogaine)",
+        "Complex polycyclic"
+      ]
+    }
+  },
+  "swiss_target_prediction": {
+    "description": "Receptor binding prediction via SwissTargetPrediction API (build-time only, cached in game)",
+    "endpoint": "http://www.swisstargetprediction.ch/api/",
+    "input_format": "SMILES or InChI",
+    "output_format": {
+      "targets": [
+        {
+          "target_name": "5-HT2A receptor",
+          "uniprot_id": "P28222",
+          "probability": 0.85,
+          "known_actives": 1247,
+          "ligand_efficiency": 0.42
+        },
+        {
+          "target_name": "5-HT2B receptor",
+          "uniprot_id": "P41595",
+          "probability": 0.72,
+          "known_actives": 892,
+          "ligand_efficiency": 0.38
+        },
+        {
+          "target_name": "5-HT2C receptor",
+          "uniprot_id": "P28335",
+          "probability": 0.68,
+          "known_actives": 756,
+          "ligand_efficiency": 0.35
+        }
+      ],
+      "pharmacophore_features": ["aromatic", "cationic", "hbd", "hba"],
+      "similarity_to_known": 0.89
+    },
+    "cache_strategy": "Build-time pre-computation for all 360+ compounds. Results stored in game/data/pharmacology/receptor_bindings.json",
+    "runtime_usage": "Player designs custom molecule → SMILES generated → cached prediction shown instantly → labeled as 'Simulated receptor affinity prediction'"
+  },
+  "compound_template": {
+    "required_fields": [
+      "compound_id",
+      "pihkal_number",
+      "tihkal_number",
+      "name",
+      "iupac_name",
+      "common_names",
+      "formula",
+      "molecular_weight",
+      "smiles",
+      "inchi",
+      "inchikey",
+      "cas_number",
+      "schedule_us",
+      "schedule_un",
+      "precursor_watchlist",
+      "ghs_classification",
+      "ld50_mg_kg",
+      "active_dose_mg",
+      "duration_hours",
+      "effects_summary",
+      "receptor_profile"
+    ],
+    "synthesis_routes": {
+      "min_routes": 3,
+      "max_routes": 5,
+      "each_route": {
+        "route_id": "string",
+        "name": "string (e.g., 'Classical Leuckart', 'Reductive Amination', 'Bucherer-Bergs')",
+        "overall_yield": "number (percent)",
+        "difficulty": "1-5",
+        "steps": [
+          {
+            "step_number": "integer",
+            "name": "string",
+            "type": "enum: reaction, workup, purification, analysis",
+            "reagents": [
+              {
+                "reagent_id": "string",
+                "equivalents": "number",
+                "moles": "number",
+                "concentration_m": "number",
+                "volume_ml": "number",
+                "addition_order": "integer",
+                "addition_rate": "string (e.g., 'dropwise over 30 min')",
+                "temperature_c": "number",
+                "hazards": ["string"]
+              }
+            ],
+            "conditions": {
+              "temperature_c": "number",
+              "temperature_ramp_c_min": "number",
+              "hold_time_min": "number",
+              "pressure_atm": "number",
+              "atmosphere": "enum: air, nitrogen, argon, vacuum",
+              "stirring_rpm": "number",
+              "vessel_type": "string",
+              "fume_hood_required": "boolean"
+            },
+            "workup": {
+              "quench_reagent": "string",
+              "quench_temperature_c": "number",
+              "extraction_solvent": "string",
+              "washes": ["string"],
+              "drying_agent": "string",
+              "filtration": "boolean"
+            },
+            "purification": {
+              "method": "enum: recrystallization, distillation, column_chromatography, flash_chromatography, prep_hplc, sublimation",
+              "solvent_system": "string",
+              "yield_percent": "number",
+              "purity_percent": "number"
+            },
+            "analysis": {
+              "mp_c": "number",
+              "tlc_rf": "number",
+              "nmr_solvent": "string",
+              "nmr_shifts": "string",
+              "ms_mz": "number",
+              "hplc_purity": "number"
+            },
+            "safety_warnings": ["string"],
+            "troubleshooting": [
+              {
+                "issue": "string",
+                "cause": "string",
+                "solution": "string"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "pharmacology": {
+      "receptor_bindings": "SwissTargetPrediction cached data",
+      "functional_activity": "Agonist/antagonist/inverse agonist at primary targets",
+      "selectivity_ratios": "vs off-targets (5-HT2B, hERG, etc.)",
+      "metabolism": "CYP isoforms, Phase II, active metabolites",
+      "toxicity_alerts": "Known neurotoxicity, cardiotoxicity, hepatotoxicity flags"
+    }
+  },
+  "custom_molecule_designer": {
+    "description": "Player designs custom molecules in Simulator Mode",
+    "workflow": [
+      "1. Draw structure (SMILES editor with RDKit validation)",
+      "2. Auto-calculate: MW, LogP, TPSA, Lipinski, synthetic accessibility",
+      "3. SwissTargetPrediction: receptor binding profile (cached)",
+      "4. Docking simulation: AutoDock Vina (simplified, build-time cached)",
+      "5. ADMET prediction: pkCSM/ADMETlab (cached)",
+      "6. Legal check: Schedule prediction, structural alerts",
+      "7. Synthesis planner: Retrosynthesis (ASKCOS/IBM RXN) - suggested routes",
+      "8. Save to personal library → test in virtual assay"
+    ],
+    "virtual_assay": {
+      "description": "Test custom molecule in simulated receptor binding assay",
+      "assays": [
+        "5-HT2A binding (Ki prediction)",
+        "5-HT2B binding (cardiotoxicity flag)",
+        "5-HT2C binding",
+        "hERG inhibition (cardiotoxicity)",
+        "DAT/SERT/NET uptake",
+        "CYP450 inhibition panel",
+        "Ames mutagenicity (Ames test simulation)"
+      ],
+      "output": "Simulated dose-response curves, IC50/Ki predictions, safety flags"
+    }
+  },
+  "data_files": {
+    "pihkal_complete": "game/data/synthesis/pihkal_complete.json",
+    "tihkal_complete": "game/data/synthesis/tihkal_complete.json",
+    "receptor_bindings": "game/data/pharmacology/receptor_bindings.json",
+    "custom_library": "game/data/synthesis/custom_molecules.json (player save)"
+  }
+}

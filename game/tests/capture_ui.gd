@@ -26,6 +26,12 @@ func _run() -> void:
 		var mode := str(args[2])
 		if mode.begins_with("stage") and node.has_method("_set_stage"):
 			node._set_stage(int(mode.substr(5)))
+		elif mode == "briefing":
+			# Re-fire quest_started so the transmission card animates in.
+			var qm = root.get_node_or_null("QuestManager")
+			if qm and qm.has_method("start_quest"):
+				qm.start_quest("quest_01_orientation")
+			await create_timer(0.9).timeout
 		elif mode == "submitted" and node.has_method("submit_batch"):
 			node._ppe = {"goggles": true, "gloves": true, "coat": true}
 			node._hood = true

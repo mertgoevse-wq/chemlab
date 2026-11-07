@@ -1,0 +1,19 @@
+{
+  "generator": "tools/generate_textures.py",
+  "model": "nano-banana-pro",
+  "model_id": "gemini-3-pro-image-preview",
+  "materials": {
+    "floor_epoxy": {
+      "prompt": "Seamless tileable texture, orthographic top-down, flat even lighting, no shadows, no perspective, no objects, no text or watermark. Dark slate-grey laboratory epoxy resin floor, satin sheen, fine aggregate speckle, very subtle cloudiness from wear, faint hairline seams on a 1 metre grid, 2k, photorealistic PBR albedo only.",
+      "status": "planned",
+      "albedo": null,
+      "normal": null
+    },
+    "steel_brushed": {
+      "prompt": "Seamless tileable texture, flat even lighting, no shadows, no perspective, no text or watermark. Brushed 304 stainless steel sheet, horizontal linear brush grain, neutral cool grey, micro-scratches, 2k, photorealistic PBR metal albedo only.",
+      "status": "planned",
+      "albedo": null,
+      "normal": null
+    }
+  }
+}

@@ -34,6 +34,16 @@ const POUR_THRESHOLD_ANGLE: float = 35.0
 const CARRY_LERP_SPEED: float = 18.0
 const SWIRL_ANGULAR_VELOCITY: float = 16.0 # radians / sec
 
+# Camera feel. Small amplitudes on purpose: the head should read as a person
+# standing at a bench, not as a shaky-cam. Breathing is always on; the footstep
+# bob only appears while walking.
+const HEAD_HEIGHT: float = 1.65
+const BASE_FOV: float = 72.0
+const SPRINT_FOV_BONUS: float = 4.0
+const BOB_HEIGHT: float = 0.011
+const BOB_SWAY: float = 0.007
+const BREATH_HEIGHT: float = 0.0024
+
 # =============================================================================
 # EXPORTED VARIABLES
 # =============================================================================
@@ -87,6 +97,11 @@ var current_pour_angle: float = 0.0
 var target_pour_angle: float = 0.0
 var swirl_timer: float = 0.0
 
+# Camera motion state
+var _bob_phase: float = 0.0
+var _breath_phase: float = 0.0
+var _was_sprinting: bool = false
+
 # Cached InputManager singleton
 var _cached_input_manager: Node = null
 
@@ -124,6 +139,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_ensure_references()
 	_process_locomotion(delta)
+	_process_camera_motion(delta)
 	_process_interaction_detection()
 	_process_carried_item(delta)
 	_update_hud_display()
@@ -228,6 +244,33 @@ func _process_locomotion(delta: float) -> void:
 # =============================================================================
 # RAYCAST & INTERACTION DETECTION
 # =============================================================================
+
+func _process_camera_motion(delta: float) -> void:
+	if head == null or camera == null:
+		return
+
+	var horizontal_speed := Vector2(velocity.x, velocity.z).length()
+	var moving := horizontal_speed > 0.2 and is_on_floor()
+	var sprinting := moving and horizontal_speed > walk_speed * 1.2
+
+	if moving:
+		_bob_phase += delta * (4.6 + horizontal_speed * 1.7)
+	_breath_phase += delta * 1.15
+
+	var amplitude := clampf(horizontal_speed / maxf(walk_speed, 0.01), 0.0, 1.5)
+	var bob_y := sin(_bob_phase * 2.0) * BOB_HEIGHT * amplitude
+	var bob_x := cos(_bob_phase) * BOB_SWAY * amplitude
+	var breath := sin(_breath_phase) * BREATH_HEIGHT
+
+	head.position.y = lerpf(head.position.y, HEAD_HEIGHT + bob_y + breath, clampf(delta * 9.0, 0.0, 1.0))
+	head.position.x = lerpf(head.position.x, bob_x, clampf(delta * 7.0, 0.0, 1.0))
+	head.rotation.z = lerpf(head.rotation.z, cos(_bob_phase) * 0.0035 * amplitude, clampf(delta * 6.0, 0.0, 1.0))
+
+	# A small FOV kick on sprint sells acceleration without changing sensitivity.
+	var target_fov := BASE_FOV + (SPRINT_FOV_BONUS if sprinting else 0.0)
+	camera.fov = lerpf(camera.fov, target_fov, clampf(delta * 3.5, 0.0, 1.0))
+	_was_sprinting = sprinting
+
 
 func _setup_interaction_ray() -> void:
 	if interaction_ray:

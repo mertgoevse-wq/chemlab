@@ -1,12 +1,5 @@
-; Engine configuration file.
-; It's best edited using the editor UI and not directly,
-; but it can also be edited by hand.
-;
-; Format:
-;   [section] ; section goes between []
-;   param=value ; assign values to parameters
-
-config_version=5
+# Athanor Ascension - Godot Project Settings (project.godot)
+# This file contains the project configuration for Godot 4.7
 
 [application]
 
@@ -23,6 +16,11 @@ QuestManager="*res://scripts/quests/quest_manager.gd"
 SaveManager="*res://scripts/save/save_manager.gd"
 SkillManager="*res://scripts/progression/skill_manager.gd"
 PlayerVitals="*res://scripts/core/player_vitals.gd"
+InventoryManager="*res://scripts/core/inventory_manager.gd"
+CompanionManager="*res://scripts/companions/companion_manager.gd"
+FactionSystem="*res://scripts/factions/faction_system.gd"
+CharacterCreator="*res://scripts/character/character_creator.gd"
+CinematicGrade="*res://ui/cinematic_grade.gd"
 
 [display]
 
@@ -120,3 +118,61 @@ pause_menu={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+lab_vision_spectral={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":49,"key_label":0,"unicode":49,"location":0,"echo":false,"script":null)
+]
+}
+lab_vision_contamination={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":50,"key_label":0,"unicode":50,"location":0,"echo":false,"script":null)
+]
+}
+lab_vision_reaction={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":51,"key_label":0,"unicode":51,"location":0,"echo":false,"script":null)
+]
+}
+radial_wheel={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":16,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+quick_slot_1={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":16,"key_label":0,"unicode":49,"location":0,"echo":false,"script":null)
+]
+}
+quick_slot_2={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":17,"key_label":0,"unicode":50,"location":0,"echo":false,"script":null)
+]
+}
+quick_slot_3={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":18,"key_label":0,"unicode":51,"location":0,"echo":false,"script":null)
+]
+}
+quick_slot_4={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":19,"key_label":0,"unicode":52,"location":0,"echo":false,"script":null)
+]
+}
+
+[physics]
+
+common/enable_pause_aware_picking=true
+3d/physics_engine="GodotPhysics"
+
+[gui]
+
+theme/custom_theme="res://ui/theme/theme.tres"
+
+[localization]
+
+locale/fallback="en"
+locale/test="en"
+
+[editor_settings]
+
+docks/property_editor/split_ratio=0.5

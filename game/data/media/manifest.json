@@ -1,69 +1,127 @@
 {
   "version": 1,
-  "note": "Build-time generated media only. The runtime never calls Google services. Files are optional; every slot has a procedural fallback so the game runs without them.",
-  "assets": [
-    {
-      "id": "brand_sigil",
-      "path": "res://assets/branding/sigil.png",
-      "type": "image",
-      "size": "1024x1024",
-      "prompt_ref": "ASSET_PROMPTS.md §1",
-      "fallback": "procedural sigil drawn in loading_screen.gd",
-      "provenance": "not generated in this environment"
+  "description": "ChemLab Asset Manifest - Maps generated assets to game paths",
+  "assets": [],
+  "categories": {
+    "environments": {
+      "description": "Laboratory environment backgrounds (16:9)",
+      "path_prefix": "game/assets/environments/",
+      "format": "png",
+      "max_dimension": 2048
     },
-    {
-      "id": "menu_background_loop",
-      "path": "res://assets/video/menu_background_loop.mp4",
-      "type": "video",
-      "size": "1920x1080",
-      "prompt_ref": "ASSET_PROMPTS.md §4",
-      "fallback": "apparatus_backdrop.gd procedural animation",
-      "provenance": "not generated in this environment"
+    "equipment": {
+      "description": "Equipment closeup icons (1:1)",
+      "path_prefix": "game/assets/equipment/",
+      "format": "png",
+      "max_dimension": 512
     },
-    {
-      "id": "intro_story_clip",
-      "path": "res://assets/video/intro_story.mp4",
-      "type": "video",
-      "size": "1920x1080",
-      "prompt_ref": "ASSET_PROMPTS.md §5",
-      "fallback": "loading screen -> main menu",
-      "provenance": "not generated in this environment"
+    "characters": {
+      "description": "Character portraits (3:4)",
+      "path_prefix": "game/assets/characters/",
+      "format": "png",
+      "max_dimension": 1024
     },
-    {
-      "id": "lab_analytical",
-      "path": "res://assets/art/labs/analytical.png",
-      "type": "image",
-      "size": "1920x1080",
-      "prompt_ref": "ASSET_PROMPTS.md §3",
-      "fallback": "3D analytical_lab scene",
-      "provenance": "not generated in this environment"
+    "video": {
+      "description": "Cinematic videos (loading, transitions, story)",
+      "path_prefix": "game/assets/video/",
+      "formats": ["webm", "mp4"],
+      "max_resolution": [1920, 1080]
     },
-    {
-      "id": "lab_accelerator",
-      "path": "res://assets/art/labs/accelerator.png",
-      "type": "image",
-      "size": "1920x1080",
-      "prompt_ref": "ASSET_PROMPTS.md §3",
-      "fallback": "accelerator_lab.gd schematic",
-      "provenance": "not generated in this environment"
+    "audio": {
+      "description": "Ambient music, reaction sounds, UI sounds",
+      "path_prefix": "game/assets/audio/",
+      "formats": ["ogg", "mp3", "wav"],
+      "sample_rate": 48000
     },
-    {
-      "id": "lab_fusor",
-      "path": "res://assets/art/labs/fusor.png",
-      "type": "image",
-      "size": "1920x1080",
-      "prompt_ref": "ASSET_PROMPTS.md §3",
-      "fallback": "fusor_lab.gd schematic",
-      "provenance": "not generated in this environment"
-    },
-    {
-      "id": "lab_genomics",
-      "path": "res://assets/art/labs/genomics.png",
-      "type": "image",
-      "size": "1920x1080",
-      "prompt_ref": "ASSET_PROMPTS.md §3",
-      "fallback": "genome_browser.gd UI",
-      "provenance": "not generated in this environment"
+    "models": {
+      "description": "3D models (GLB/GLTF)",
+      "path_prefix": "game/assets/models/",
+      "formats": ["glb", "gltf"]
     }
-  ]
+  },
+  "generation_pipeline": {
+    "nano_banana": {
+      "tool": "tools/asset_pipeline/nano_banana_generate.py",
+      "models": {
+        "nano-banana-pro": "gemini-3-pro-image-preview",
+        "nano-banana-2": "gemini-2.5-flash-image"
+      },
+      "modes": ["environments", "equipment", "characters"]
+    },
+    "veo": {
+      "tool": "tools/asset_pipeline/veo_generate.py",
+      "model": "veo-2",
+      "modes": ["loading", "transition", "story"]
+    },
+    "flow_music": {
+      "tool": "tools/asset_pipeline/flow_music_generate.py",
+      "models": ["suno", "udio"],
+      "modes": ["ambient", "reactions", "ui"]
+    }
+  },
+  "import_pipeline": {
+    "tool": "tools/asset_pipeline/import_assets.py",
+    "source_types": ["local", "manifest", "gdrive"],
+    "conversions": {
+      "image": {
+        "input": ["png", "jpg", "webp"],
+        "output": ["png", "webp"],
+        "thumbnails": ["128x128", "256x256", "512x512"]
+      },
+      "video": {
+        "input": ["mp4", "mov", "webm"],
+        "output": ["webm", "mp4"],
+        "codecs": ["vp9", "h264"]
+      },
+      "audio": {
+        "input": ["wav", "flac", "mp3"],
+        "output": ["ogg", "mp3", "wav"],
+        "sample_rate": 48000
+      },
+      "model": {
+        "input": ["glb", "gltf"],
+        "output": ["glb"]
+      }
+    }
+  },
+  "authentication": {
+    "tool": "tools/asset_pipeline/google_oauth.py",
+    "service_account_path": ".credentials/service_account.json",
+    "token_cache": ".credentials/token_cache.json",
+    "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/generative-language",
+      "https://www.googleapis.com/auth/aiplatform"
+    ],
+    "rate_limits": {
+      "gemini-2.5-flash-image": {"rpm": 60, "rpd": 1000},
+      "gemini-3-pro-image-preview": {"rpm": 30, "rpd": 500},
+      "veo-2": {"rpm": 10, "rpd": 100},
+      "flow-music": {"rpm": 20, "rpd": 200}
+    }
+  },
+  "godot_integration": {
+    "texture_settings": {
+      "max_dimension": 2048,
+      "compress_mode": "vram_compressed",
+      "mipmaps": true,
+      "filter": true,
+      "repeat": true
+    },
+    "video_settings": {
+      "max_resolution": [1920, 1080],
+      "preferred_codec": "vp9",
+      "fallback_codec": "h264"
+    },
+    "audio_settings": {
+      "sample_rate": 48000,
+      "preferred_format": "ogg",
+      "fallback_format": "mp3"
+    }
+  },
+  "prompt_references": {
+    "nano_banana": "docs/ASSET_PROMPTS.md",
+    "veo": "docs/ASSET_PROMPTS.md (section 4-5)",
+    "flow_music": "tools/asset_pipeline/flow_music_generate.py (embedded prompts)"
+  }
 }

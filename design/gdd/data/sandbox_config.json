@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Data-driven configuration parameters and planetary physics presets for ChemLab Free Simulation Sandbox Mode.",
+  "sandbox_engine": {
+    "unlocked_chemistry": true,
+    "bypass_quest_gates": true,
+    "infinite_reagent_stock": true,
+    "instant_apparatus_availability": true,
+    "allow_godmode": true,
+    "default_hazard_difficulty": "standard_student",
+    "supported_hazard_difficulties": [
+      {
+        "id": "creative_godmode",
+        "display_name": "Creative (Godmode)",
+        "allow_glass_breakage": false,
+        "allow_lethal_toxic_spills": false,
+        "safety_officer_interruptions": false
+      },
+      {
+        "id": "standard_student",
+        "display_name": "Standard Student",
+        "allow_glass_breakage": false,
+        "allow_lethal_toxic_spills": false,
+        "safety_officer_interruptions": true
+      },
+      {
+        "id": "hardcore_realistic",
+        "display_name": "Hardcore Realistic",
+        "allow_glass_breakage": true,
+        "allow_lethal_toxic_spills": true,
+        "safety_officer_interruptions": true
+      }
+    ]
+  },
+  "physics_limits": {
+    "gravity_g": {
+      "min": 0.0,
+      "max": 3.0,
+      "default": 1.0,
+      "unit": "Earth G (9.81 m/s^2)"
+    },
+    "ambient_pressure_atm": {
+      "min": 0.001,
+      "max": 50.0,
+      "default": 1.0,
+      "unit": "atmospheres (1.01325 bar)"
+    },
+    "ambient_temperature_c": {
+      "min": -200.0,
+      "max": 500.0,
+      "default": 22.0,
+      "unit": "degrees Celsius"
+    },
+    "time_warp": {
+      "min": 0.0,
+      "max": 100.0,
+      "default": 1.0,
+      "discrete_presets": [0.0, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0, 100.0]
+    }
+  },
+  "planetary_presets": {
+    "earth_standard": {
+      "id": "earth_standard",
+      "name": "Earth Baseline (Sea Level)",
+      "gravity_g": 1.0,
+      "ambient_pressure_atm": 1.0,
+      "ambient_temperature_c": 22.0,
+      "water_boiling_point_c": 100.0,
+      "pouring_velocity_multiplier": 1.0,
+      "description": "Standard laboratory environment on Earth."
+    },
+    "orbital_zero_g": {
+      "id": "orbital_zero_g",
+      "name": "Orbital Microgravity Station",
+      "gravity_g": 0.0,
+      "ambient_pressure_atm": 1.0,
+      "ambient_temperature_c": 21.0,
+      "water_boiling_point_c": 100.0,
+      "pouring_velocity_multiplier": 0.0,
+      "description": "Weightless pressurized module. Fluids float as spherical globules; surface tension dominates."
+    },
+    "martian_surface": {
+      "id": "martian_surface",
+      "name": "Martian Low-Pressure Habitat",
+      "gravity_g": 0.38,
+      "ambient_pressure_atm": 0.006,
+      "ambient_temperature_c": -63.0,
+      "water_boiling_point_c": 0.0,
+      "pouring_velocity_multiplier": 0.6164,
+      "description": "Thin carbon dioxide atmosphere. Water boils spontaneously at zero degrees Celsius."
+    },
+    "venusian_hyperbaric": {
+      "id": "venusian_hyperbaric",
+      "name": "Venusian Hyperbaric Enclosure",
+      "gravity_g": 0.91,
+      "ambient_pressure_atm": 92.0,
+      "ambient_temperature_c": 462.0,
+      "water_boiling_point_c": 304.5,
+      "pouring_velocity_multiplier": 0.9539,
+      "description": "Dense high-pressure atmosphere. Elevated boiling points; intense thermal convection."
+    },
+    "titan_cryogenic": {
+      "id": "titan_cryogenic",
+      "name": "Titan Cryogenic Surface Rig",
+      "gravity_g": 0.14,
+      "ambient_pressure_atm": 1.45,
+      "ambient_temperature_c": -179.0,
+      "water_boiling_point_c": 110.2,
+      "pouring_velocity_multiplier": 0.3742,
+      "description": "Frigid nitrogen-methane climate. Hydrocarbons are liquid; water freezes to rock-hard ice."
+    }
+  },
+  "experiment_book_export": {
+    "recipe_format_version": "1.0",
+    "export_extensions": [".json", ".chemlab_recipe"],
+    "embedded_snapshot_resolution": [1920, 1080],
+    "include_stoichiometry_validation": true,
+    "allow_community_sharing": true
+  }
+}

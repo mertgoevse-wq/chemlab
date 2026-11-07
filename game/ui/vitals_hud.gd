@@ -1,75 +1,214 @@
-# Athanor Ascension — Vitals HUD
-# Thin, readable overlay: health, injuries, cumulative chemical and radiation dose.
-# Deliberately sparse: the lab should stay the focus, the numbers just refuse to lie.
+# Athanor Ascension - Vitals HUD
+# Handles: Health, stamina, radiation, chemical exposure, injuries display
 
-extends Control
+extends CanvasLayer
 
-const BAR_WIDTH: float = 210.0
-const BAR_HEIGHT: float = 8.0
-const MARGIN: Vector2 = Vector2(22.0, 18.0)
+class_name VitalsHUD
 
-const COLOR_OK: Color = Color(0.36, 0.84, 0.66)
-const COLOR_WARN: Color = Color(1.0, 0.72, 0.28)
-const COLOR_CRIT: Color = Color(1.0, 0.36, 0.34)
-const COLOR_TRACK: Color = Color(0.08, 0.1, 0.14, 0.82)
-const COLOR_TEXT: Color = Color(0.82, 0.87, 0.92)
-const COLOR_DIM: Color = Color(0.55, 0.62, 0.7)
+@export var show_detailed: bool = true
+@export var compact_mode: bool = false
 
-var _pulse: float = 0.0
+var vitals: PlayerVitals
+var _hud_visible: bool = false
 
+# UI elements
+var _health_bar: ProgressBar
+var _stamina_bar: ProgressBar
+var _radiation_bar: ProgressBar
+var _chemical_bar: ProgressBar
+var _health_label: Label
+var _stamina_label: Label
+var _radiation_label: Label
+var _chemical_label: Label
+var _injury_container: VBoxContainer
+var _effects_container: HBoxContainer
 
-func _process(delta: float) -> void:
-	_pulse += delta
-	queue_redraw()
+func _ready() -> void:
+	_cache_nodes()
+	_connect_signals()
+	_update_all()
 
+func _cache_nodes() -> void:
+	_health_bar = %HealthBar
+	_stamina_bar = %StaminaBar
+	_radiation_bar = %RadiationBar
+	_chemical_bar = %ChemicalBar
+	_health_label = %HealthLabel
+	_stamina_label = %StaminaLabel
+	_radiation_label = %RadiationLabel
+	_chemical_label = %ChemicalLabel
+	_injury_container = %InjuryContainer
+	_effects_container = %EffectsContainer
 
-func _draw() -> void:
-	var vitals := get_node_or_null("/root/PlayerVitals")
-	var font := ThemeDB.fallback_font
-	if vitals == null:
+	vitals = get_node_or_null("/root/PlayerVitals")
+
+func _connect_signals() -> void:
+	if vitals:
+		vitals.health_changed.connect(_on_health_changed)
+		vitals.injury_added.connect(_on_injury_added)
+		vitals.injury_healed.connect(_on_injury_healed)
+		vitals.exposure_changed.connect(_on_exposure_changed)
+		vitals.radiation_changed.connect(_on_radiation_changed)
+		vitals.incapacitated.connect(_on_incapacitated)
+		vitals.stabilised.connect(_on_stabilised)
+
+func set_hud_visible(visible: bool) -> void:
+	_hud_visible = visible
+	visible = visible
+
+func _update_all() -> void:
+	if not vitals:
 		return
 
-	var hp: float = float(vitals.health)
-	var max_hp: float = 100.0
-	var ratio: float = clampf(hp / max_hp, 0.0, 1.0)
-	var hp_color := COLOR_OK
-	if ratio <= 0.25:
-		hp_color = COLOR_CRIT
-	elif ratio <= 0.55:
-		hp_color = COLOR_WARN
+	_on_health_changed(vitals.health, PlayerVitals.MAX_HEALTH)
+	_on_stamina_changed(vitals.stamina)
+	_on_radiation_changed(vitals.radiation_msv)
+	_on_exposure_changed("", 0.0)  # Will update all chemicals
 
-	draw_rect(Rect2(MARGIN, Vector2(BAR_WIDTH + 130.0, 22.0)), COLOR_TRACK, true)
-	draw_rect(Rect2(MARGIN + Vector2(0, 6), Vector2(BAR_WIDTH, BAR_HEIGHT)), Color(0.16, 0.19, 0.24, 0.9), true)
-	var filled := Rect2(MARGIN + Vector2(0, 6), Vector2(BAR_WIDTH * ratio, BAR_HEIGHT))
-	draw_rect(filled, hp_color, true)
-	draw_string(font, MARGIN + Vector2(BAR_WIDTH + 14.0, 15.0), "VITALS", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, COLOR_DIM)
-	draw_string(font, MARGIN + Vector2(BAR_WIDTH + 62.0, 16.0), "%d / %d" % [int(round(hp)), int(max_hp)],
-		HORIZONTAL_ALIGNMENT_LEFT, -1, 13, COLOR_TEXT)
-
-	var y := MARGIN.y + 30.0
 	for injury in vitals.injuries:
-		var severity := float(injury.get("severity", 1.0))
-		var color := COLOR_WARN.lerp(COLOR_CRIT, clampf(severity / 3.0, 0.0, 1.0))
-		draw_circle(Vector2(MARGIN.x + 5.0, y - 4.0), 3.0, color)
-		draw_string(font, Vector2(MARGIN.x + 16.0, y), "%s  %ds" % [str(injury.get("label", "Injury")), int(ceil(float(injury.get("remaining_s", 0.0))))],
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 12, color)
-		y += 16.0
+		_add_injury_ui(injury)
 
-	if float(vitals.radiation_msv) > 0.01:
-		var rad_color := COLOR_WARN if float(vitals.radiation_msv) < 20.0 else COLOR_CRIT
-		draw_string(font, Vector2(MARGIN.x, y), "Dose %.2f mSv  (ICRP annual 20 mSv)" % float(vitals.radiation_msv),
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 12, rad_color)
-		y += 16.0
+func _on_health_changed(current: float, maximum: float) -> void:
+	_health_bar.max_value = maximum
+	_health_bar.value = current
+	_health_label.text = "%d / %d" % [int(current), int(maximum)]
 
-	var exposure_total := 0.0
-	for value in vitals.chemical_exposure.values():
-		exposure_total += float(value)
-	if exposure_total > 0.0:
-		draw_string(font, Vector2(MARGIN.x, y), "Chemical load %.0f ppm·min" % exposure_total,
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 12, COLOR_DIM)
+	# Color coding
+	if current / maximum > 0.6:
+		_health_bar.set("theme_override_styles/progress/fill_color", Color(0.2, 0.8, 0.2))
+	elif current / maximum > 0.3:
+		_health_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.8, 0.0))
+	else:
+		_health_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.2, 0.2))
 
-	if vitals.is_incapacitated:
-		var alpha := 0.35 + 0.25 * sin(_pulse * 4.0)
-		draw_rect(Rect2(Vector2.ZERO, size), Color(0.4, 0.02, 0.02, alpha * 0.35), true)
-		draw_string(font, Vector2(size.x * 0.5 - 150.0, size.y * 0.5), "INCAPACITATED — stabilising",
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Color(1, 0.7, 0.68))
+func _on_stamina_changed(stamina: float) -> void:
+	_stamina_bar.value = stamina
+	_stamina_label.text = "%d%%" % int(stamina)
+
+func _on_radiation_changed(dose_msv: float) -> void:
+	var max_rad = PlayerVitals.RADIATION_HARD_LIMIT_MSV
+	_radiation_bar.max_value = max_rad
+	_radiation_bar.value = dose_msv
+	_radiation_label.text = "%.2f mSv" % dose_msv
+
+	# Color coding
+	if dose_msv > PlayerVitals.RADIATION_ANNUAL_LIMIT_MSV:
+		_radiation_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.0, 0.0))
+	elif dose_msv > 10.0:
+		_radiation_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.5, 0.0))
+	else:
+		_radiation_bar.set("theme_override_styles/progress/fill_color", Color(0.0, 0.5, 1.0))
+
+func _on_exposure_changed(chemical: String, ppm_minutes: float) -> void:
+	# Update chemical exposure display
+	var total_exposure = 0.0
+	for chem in vitals.chemical_exposure:
+		total_exposure += vitals.chemical_exposure[chem]
+
+	var max_exp = 5000.0  # Gameplay budget
+	_chemical_bar.max_value = max_exp
+	_chemical_bar.value = total_exposure
+	_chemical_label.text = "%.0f ppm·min" % total_exposure
+
+	# Color coding
+	if total_exposure > max_exp * 0.8:
+		_chemical_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.0, 0.0))
+	elif total_exposure > max_exp * 0.5:
+		_chemical_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.5, 0.0))
+	else:
+		_chemical_bar.set("theme_override_styles/progress/fill_color", Color(0.5, 0.0, 1.0))
+
+	# Update detailed chemical list if visible
+	if show_detailed:
+		_update_chemical_details()
+
+func _update_chemical_details() -> void:
+	# Would populate detailed chemical exposure list
+	pass
+
+func _on_injury_added(injury: Dictionary) -> void:
+	_add_injury_ui(injury)
+
+func _add_injury_ui(injury: Dictionary) -> void:
+	var injury_ui = HBoxContainer.new()
+	injury_ui.name = "Injury_%s" % injury.id
+
+	var icon = TextureRect.new()
+	icon.texture = _get_injury_icon(injury.type)
+	icon.set_custom_minimum_size(Vector2(24, 24))
+	injury_ui.add_child(icon)
+
+	var label = Label.new()
+	label.text = "%s (%.1fx)" % [injury.label, injury.severity]
+	label.add_theme_color_override("font_color", _get_injury_color(injury.type))
+	injury_ui.add_child(label)
+
+	var progress = ProgressBar.new()
+	progress.max_value = injury.remaining_s
+	progress.value = injury.remaining_s
+	progress.set_custom_minimum_size(Vector2(100, 16))
+	injury_ui.add_child(progress)
+
+	# Store reference for updates
+	injury_ui.set_meta("injury_id", injury.id)
+	injury_ui.set_meta("progress_bar", progress)
+
+	_injury_container.add_child(injury_ui)
+
+func _on_injury_healed(injury_id: String) -> void:
+	for child in _injury_container.get_children():
+		if child.get_meta("injury_id", "") == injury_id:
+			child.queue_free()
+			break
+
+func _on_incapacitated(reason: String) -> void:
+	# Show incapacitation overlay
+	var overlay = ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.8)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(overlay)
+
+	var label = Label.new()
+	label.text = "INCAPACITATED\n%s" % reason
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 48)
+	label.add_theme_color_override("font_color", Color(1, 0.2, 0.2))
+	overlay.add_child(label)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	# Auto-remove on stabilise
+	var timer = Timer.new()
+	timer.wait_time = 6.0
+	timer.one_shot = true
+	timer.timeout.connect(func(): overlay.queue_free())
+	overlay.add_child(timer)
+	timer.start()
+
+func _on_stabilised() -> void:
+	# Remove incapacitation overlay
+	for child in get_children():
+		if child is ColorRect:
+			child.queue_free()
+
+func _get_injury_icon(injury_type: String) -> Texture2D:
+	# Would return appropriate icon
+	return null
+
+func _get_injury_color(injury_type: String) -> Color:
+	match injury_type:
+		"chemical_burn": return Color(0.6, 0.2, 0.2)
+		"thermal_burn": return Color(1.0, 0.4, 0.0)
+		"laceration": return Color(1.0, 0.2, 0.2)
+		"inhalation": return Color(0.6, 0.6, 0.6)
+		"eye_splash": return Color(1.0, 0.0, 1.0)
+		"radiation": return Color(0.0, 1.0, 0.0)
+		_: return Color(1.0, 1.0, 1.0)
+
+func _process(delta: float) -> void:
+	# Update injury timers
+	for child in _injury_container.get_children():
+		if child.has_meta("progress_bar"):
+			var progress = child.get_meta("progress_bar")
+			var injury_id = child.get_meta("injury_id")
+			# Would update from vitals

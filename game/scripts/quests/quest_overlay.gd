@@ -34,12 +34,17 @@ class_name QuestOverlay
 # Styling colors
 const COLOR_COMPLETED = Color(0.2, 0.9, 0.4, 1.0)
 const COLOR_ACTIVE = Color(1.0, 1.0, 1.0, 1.0)
-const COLOR_PENDING = Color(0.6, 0.65, 0.7, 0.6)
+const COLOR_PENDING = Color(0.74, 0.79, 0.85, 0.88)
 const COLOR_HAZARD = Color(1.0, 0.2, 0.2, 1.0)
 const COLOR_CAUTION = Color(1.0, 0.75, 0.1, 1.0)
 const COLOR_OPTIMAL = Color(0.1, 0.85, 0.45, 1.0)
 
 var warning_timer: SceneTreeTimer = null
+var _briefing_card: PanelContainer = null
+var _briefing_speaker: Label = null
+var _briefing_body: RichTextLabel = null
+var _overlay_alpha: float = 1.0
+var _overlay_tween: Tween = null
 
 func _ready() -> void:
 	if warning_banner_panel:
@@ -50,8 +55,100 @@ func _ready() -> void:
 	if celebration_continue_btn:
 		celebration_continue_btn.pressed.connect(_on_continue_pressed)
 
+	_build_briefing_card()
 	_connect_to_quest_manager()
 	_refresh_hud_display()
+	# AC-style contextual fade: the quest card dims after 3s of no lean, so the
+	# 3D laboratory stays the focus and the overlay only reappears on lean.
+	modulate.a = 1.0
+	_set_overlay_alpha(1.0)
+
+
+func _set_overlay_alpha(value: float) -> void:
+	if _overlay_tween and _overlay_tween.is_valid():
+		_overlay_tween.kill()
+	_overlay_tween = null
+	_overlay_alpha = clampf(value, 0.0, 1.0)
+	_overlay_tween = create_tween()
+	_overlay_tween.tween_property(self, "modulate:a", _overlay_alpha, 0.3)
+
+
+func _on_lean_started() -> void:
+	_set_overlay_alpha(1.0)
+
+
+func _on_lean_ended() -> void:
+	# Fade the card out after a 3s grace period so a brief lean still reads.
+	if _overlay_tween and _overlay_tween.is_valid():
+		_overlay_tween.kill()
+	_overlay_tween = null
+	var grace := get_tree().create_timer(3.0)
+	grace.timeout.connect(func() -> void: _set_overlay_alpha(0.15))
+
+
+# The contracts carry authored briefings and story beats; without this the HUD
+# only ever shows checklist lines, which throws the writing away.
+func _build_briefing_card() -> void:
+	_briefing_card = PanelContainer.new()
+	_briefing_card.name = "BriefingCard"
+	# Bottom-centre: the objective card owns the top-right and the vitals bar
+	# owns the bottom-left, so the transmission gets its own lane.
+	_briefing_card.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_briefing_card.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_briefing_card.offset_left = -320.0
+	_briefing_card.offset_right = 320.0
+	_briefing_card.offset_bottom = -78.0
+	_briefing_card.offset_top = -78.0
+	_briefing_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_briefing_card.modulate.a = 0.0
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.016, 0.028, 0.042, 0.88)
+	style.border_width_left = 2
+	style.border_color = Color(0.20, 0.86, 0.92, 0.85)
+	style.corner_radius_bottom_right = 3
+	style.corner_radius_bottom_left = 3
+	style.content_margin_left = 22.0
+	style.content_margin_right = 22.0
+	style.content_margin_top = 14.0
+	style.content_margin_bottom = 16.0
+	_briefing_card.add_theme_stylebox_override("panel", style)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_briefing_card.add_child(column)
+
+	_briefing_speaker = Label.new()
+	_briefing_speaker.add_theme_font_size_override("font_size", 11)
+	_briefing_speaker.add_theme_color_override("font_color", Color(0.96, 0.72, 0.32))
+	column.add_child(_briefing_speaker)
+
+	_briefing_body = RichTextLabel.new()
+	_briefing_body.bbcode_enabled = true
+	_briefing_body.fit_content = true
+	_briefing_body.custom_minimum_size = Vector2(576, 0)
+	_briefing_body.add_theme_font_size_override("normal_font_size", 14)
+	_briefing_body.add_theme_color_override("default_color", Color(0.90, 0.94, 0.97))
+	_briefing_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_briefing_body)
+
+	add_child(_briefing_card)
+
+
+func _show_briefing(qdata: Dictionary) -> void:
+	var text := str(qdata.get("briefing", ""))
+	if _briefing_card == null or text.is_empty():
+		return
+	_briefing_speaker.text = "INCOMING TRANSMISSION  //  %s" % str(qdata.get("speaker", "FACILITY")).to_upper()
+	_briefing_body.text = text
+	_briefing_card.visible = true
+
+	var tween := create_tween()
+	tween.tween_property(_briefing_card, "modulate:a", 1.0, 0.45)
+	tween.tween_interval(11.0)
+	tween.tween_property(_briefing_card, "modulate:a", 0.0, 1.2)
+	tween.tween_callback(func() -> void: _briefing_card.visible = false)
 
 
 func _connect_to_quest_manager() -> void:
@@ -92,7 +189,9 @@ func _refresh_hud_display() -> void:
 	if quest_title_label:
 		quest_title_label.text = str(q.get("title", "Laboratory Quest"))
 	if quest_tier_label:
-		quest_tier_label.text = "Tier %d: %s" % [int(q.get("tier", 1)), str(q.get("category", "General"))]
+		# The header stays short; the long category name belongs in the card body,
+		# not in a one-line header that overflows the panel.
+		quest_tier_label.text = "TIER %d" % int(q.get("tier", 1))
 
 	_render_objectives_list(q.get("objectives", []))
 	_update_safety_meter(qm.current_safety_score)
@@ -105,6 +204,14 @@ func _render_objectives_list(objectives: Array) -> void:
 	# Clear existing objective row widgets
 	for child in objectives_container.get_children():
 		child.queue_free()
+	# AC-style visual pass: thick copper-amber tier label, narrow objective rows.
+	if quest_title_label:
+		quest_title_label.add_theme_font_sizes_override("font_size", 14)
+		quest_title_label.add_theme_colors_override("font_color", Color(0.92, 0.72, 0.32))
+	if quest_tier_label:
+		quest_tier_label.visible = false
+	if objectives_container:
+		objectives_container.add_theme_constants_override("separation", 4)
 
 	for i in range(objectives.size()):
 		var obj = objectives[i] as Dictionary
@@ -115,8 +222,8 @@ func _render_objectives_list(objectives: Array) -> void:
 func _create_objective_row(idx: int, obj: Dictionary) -> Control:
 	var hbox = HBoxContainer.new()
 	hbox.name = "ObjectiveRow_%d" % idx
-	hbox.custom_minimum_size = Vector2(0, 32)
 	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_theme_constant_override("separation", 8)
 
 	# 1. Checklist Tick Box / Checkmark
 	var check_label = Label.new()
@@ -140,10 +247,17 @@ func _create_objective_row(idx: int, obj: Dictionary) -> Control:
 	var vbox = VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	var title_lbl = Label.new()
+	# RichTextLabel with fit_content so a wrapped two- or three-line objective
+	# reports its real height. A fixed-height row swallows the line breaks and
+	# stacks the list on top of itself.
+	var title_lbl = RichTextLabel.new()
 	title_lbl.name = "TitleLabel"
+	title_lbl.bbcode_enabled = false
+	title_lbl.fit_content = true
+	title_lbl.scroll_active = false
 	title_lbl.text = str(obj.get("description", ""))
 	title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title_lbl.add_theme_font_size_override("normal_font_size", 12)
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	if is_done:
@@ -210,8 +324,9 @@ func _update_safety_meter(score: float) -> void:
 # EVENT LISTENERS
 # =============================================================================
 
-func _on_quest_started(_qid: String, _qdata: Dictionary) -> void:
+func _on_quest_started(_qid: String, qdata: Dictionary) -> void:
 	_refresh_hud_display()
+	_show_briefing(qdata)
 
 
 func _on_objective_progressed(_qid: String, _idx: int, _curr: float, _target: float, _done: bool) -> void:

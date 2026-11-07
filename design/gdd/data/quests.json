@@ -1,0 +1,458 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "description": "Comprehensive Quest Database for ChemLab: Synthesis, Clandestine, Forensics, and Sandbox Challenges.",
+  "quests": [
+    {
+      "quest_id": "q_synth_aspirin",
+      "act": 1,
+      "title": "Synthesis of Acetylsalicylic Acid (Aspirin)",
+      "narrative_briefing": {
+        "instructor": "Prof. Aris Thorne",
+        "briefing": "Synthesize pharmaceutical-grade aspirin via O-acylation of salicylic acid with acetic anhydride using acid catalysis. Monitor reflux temperature and purify via recrystallization.",
+        "location": "Academic Synthesis Bay 1"
+      },
+      "prerequisites": {
+        "completed_quests": [],
+        "min_safety_score": 70.0,
+        "required_skills": ["chemistry:5", "safety:5"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_weigh_salicylic_acid",
+          "description": "Weigh exactly 13.8 g of salicylic acid on the analytical balance",
+          "target_entity": "mass_salicylic_acid",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 13.8,
+          "tolerance": 0.1,
+          "hints": ["Tare the 125 mL Erlenmeyer flask before adding solid."]
+        },
+        {
+          "objective_id": "obj_reflux_temperature",
+          "description": "Maintain reaction bath between 70.0°C and 75.0°C for 15 minutes",
+          "target_entity": "bath_temperature_c",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 72.5,
+          "tolerance": 2.5,
+          "hints": ["Use a circulating water bath with PID control."]
+        },
+        {
+          "objective_id": "obj_product_purity",
+          "description": "Achieve isolated crystalline acetylsalicylic acid purity >= 95.0%",
+          "target_entity": "purity_percent",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 95.0,
+          "tolerance": 5.0,
+          "hints": ["Wash crystal cake with ice-cold distilled water on Büchner funnel."]
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "thermal_decomposition",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "reaction_temperature_c",
+          "operator": ">",
+          "threshold": 90.0,
+          "narrative_reprimand": "Reaction overheated! Salicylic acid decarboxylated into volatile phenol impurities."
+        },
+        {
+          "condition_id": "fume_hood_violation",
+          "severity": "WARNING",
+          "trigger_metric": "fume_hood_sash_open_unventilated",
+          "operator": "==",
+          "threshold": 1.0,
+          "narrative_reprimand": "Acetic anhydride vapors detected outside the ventilation zone. Pull down the sash!"
+        }
+      ],
+      "state_validation": {
+        "target_compound": "aspirin",
+        "min_yield_g": 12.0
+      },
+      "rewards": {
+        "skill_xp": {
+          "chemistry": 750,
+          "safety": 300,
+          "engineering": 200
+        },
+        "unlocked_nodes": ["aspirin_crystallization_mastery"],
+        "unlocked_apparatus": ["Büchner Funnel", "Aspirator Pump"],
+        "unlocked_reagents": ["acetic_anhydride"],
+        "academic_credential": "KHI-ACS Certificate in Organic Acylation",
+        "narrative_unlock": "Access granted to Organic Synthesis Wing Beta"
+      }
+    },
+    {
+      "quest_id": "q_synth_paracetamol",
+      "act": 1,
+      "title": "Total Synthesis of 4-Acetamidophenol (Paracetamol)",
+      "narrative_briefing": {
+        "instructor": "Dr. Elena Vance",
+        "briefing": "Acylate 4-aminophenol in aqueous suspension with acetic anhydride. Beware of aerobic oxidation forming quinone-imine tar byproducts.",
+        "location": "Medicinal Chemistry Bay"
+      },
+      "prerequisites": {
+        "completed_quests": ["q_synth_aspirin"],
+        "min_safety_score": 80.0,
+        "required_skills": ["chemistry:15", "safety:10"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_dissolve_aminophenol",
+          "description": "Suspend 10.9 g of 4-aminophenol in 30 mL warm distilled water",
+          "target_entity": "mass_aminophenol",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 10.9,
+          "tolerance": 0.2
+        },
+        {
+          "objective_id": "obj_maintain_inert_wash",
+          "description": "Chill reaction mixture below 10.0°C to initiate crystallization",
+          "target_entity": "slurry_temperature_c",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 8.0,
+          "tolerance": 2.0
+        },
+        {
+          "objective_id": "obj_paracetamol_yield",
+          "description": "Recover >= 8.5 g of pure paracetamol crystals with melting point 169-170°C",
+          "target_entity": "yield_grams",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 8.5,
+          "tolerance": 5.0
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "tar_oxidation",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "tar_impurity_index",
+          "operator": ">",
+          "threshold": 15.0,
+          "narrative_reprimand": "Prolonged exposure to atmospheric oxygen at elevated temperature produced deep purple benzoquinone imine tar!"
+        }
+      ],
+      "state_validation": {
+        "target_compound": "paracetamol",
+        "min_purity": 98.0
+      },
+      "rewards": {
+        "skill_xp": {
+          "chemistry": 1200,
+          "safety": 400
+        },
+        "unlocked_nodes": ["analgesic_synthesis_specialist"],
+        "unlocked_apparatus": ["Melting Point Apparatus"],
+        "unlocked_reagents": ["p_aminophenol"],
+        "academic_credential": "Good Manufacturing Practice (GMP) Level 1 Certification"
+      }
+    },
+    {
+      "quest_id": "q_synth_indigo",
+      "act": 2,
+      "title": "Baeyer-Drewson Synthesis of Indigo Dye",
+      "narrative_briefing": {
+        "instructor": "Prof. Aris Thorne",
+        "briefing": "Execute the classical alkaline aldol condensation of 2-nitrobenzaldehyde and acetone. Rapid precipitation of deep blue indigotin occurs within seconds of base addition.",
+        "location": "Dye & Chromophore Chemistry Suite"
+      },
+      "prerequisites": {
+        "completed_quests": ["q_synth_paracetamol"],
+        "min_safety_score": 80.0,
+        "required_skills": ["chemistry:25", "thermodynamics:20"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_alkaline_addition",
+          "description": "Add 1.0 M NaOH dropwise to achieve deep violet-blue transition at pH >= 11.0",
+          "target_entity": "ph",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 11.5,
+          "tolerance": 0.5
+        },
+        {
+          "objective_id": "obj_indigo_precipitation",
+          "description": "Precipitate indigotin solid with optical absorbance lambda_max = 600 nm",
+          "target_entity": "reaction_type",
+          "evaluation_mode": "CHEMICAL_REACTION",
+          "target_value": "indigo_condensation"
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "exotherm_boilover",
+          "severity": "WARNING",
+          "trigger_metric": "temperature_rate_c_s",
+          "operator": ">",
+          "threshold": 5.0,
+          "narrative_reprimand": "Caustic addition was too rapid! Strong local exotherm risked bubbling over."
+        }
+      ],
+      "state_validation": {
+        "target_compound": "indigo_dye"
+      },
+      "rewards": {
+        "skill_xp": {
+          "chemistry": 1500,
+          "thermodynamics": 600
+        },
+        "unlocked_nodes": ["chromophore_synthesis"],
+        "unlocked_apparatus": ["UV-Vis Spectrophotometer"],
+        "unlocked_reagents": ["o_nitrobenzaldehyde", "acetone"]
+      }
+    },
+    {
+      "quest_id": "q_cland_precursor_01",
+      "act": 2,
+      "title": "Badlands Improvisation: Benzaldehyde Scavenge",
+      "narrative_briefing": {
+        "instructor": "Nails Morau (Facility Fixer)",
+        "briefing": "We can't buy certified ACS reagents out here. Convert pool disinfectant and hardware store alcohol into clean benzaldehyde without burning down the shed.",
+        "location": "Rust Flat Garage, Badlands Sector 4"
+      },
+      "prerequisites": {
+        "completed_quests": ["q_synth_aspirin"],
+        "min_safety_score": 0.0,
+        "required_skills": ["chemistry:15", "engineering:15"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_improvised_cooling",
+          "description": "Maintain improvised ice-salt brine bath temperature below 5.0°C",
+          "target_entity": "brine_temperature_c",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 0.0,
+          "tolerance": 5.0
+        },
+        {
+          "objective_id": "obj_hypochlorite_dosing",
+          "description": "Meter calcium hypochlorite slurry to avoid runaway chlorine gas evolution (Cl2 < 10 ppm)",
+          "target_entity": "chlorine_gas_ppm",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 5.0,
+          "tolerance": 5.0
+        },
+        {
+          "objective_id": "obj_isolated_benzaldehyde",
+          "description": "Isolate >= 20.0 mL of benzaldehyde precursor (purity >= 88.0%)",
+          "target_entity": "isolated_volume_ml",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 20.0,
+          "tolerance": 5.0
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "chlorine_cloud_lockdown",
+          "severity": "CONTAINMENT_LOCKDOWN",
+          "trigger_metric": "chlorine_gas_ppm",
+          "operator": ">",
+          "threshold": 50.0,
+          "narrative_reprimand": "Toxic chlorine gas cloud overwhelmed the workshop! Respirators failed."
+        },
+        {
+          "condition_id": "jar_rupture",
+          "severity": "INSTANT_FAIL_EXPLOSION",
+          "trigger_metric": "vessel_internal_pressure_bar",
+          "operator": ">",
+          "threshold": 3.0,
+          "narrative_reprimand": "Improvised glass mason jar could not sustain vapor pressure and shattered violently!"
+        }
+      ],
+      "state_validation": {
+        "target_compound": "benzaldehyde"
+      },
+      "rewards": {
+        "skill_xp": {
+          "chemistry": 1000,
+          "engineering": 1200,
+          "forensics": 500
+        },
+        "unlocked_nodes": ["clandestine_precursor_diversion"],
+        "unlocked_apparatus": ["Portable Gas PID Detector"],
+        "unlocked_reagents": ["benzaldehyde", "toluene"],
+        "narrative_unlock": "Covert Syndicate Reputation +20.0"
+      }
+    },
+    {
+      "quest_id": "q_foren_scene_luminol",
+      "act": 1,
+      "title": "Forensic Serology: Chemiluminescent Blood Reconstruction",
+      "narrative_briefing": {
+        "instructor": "Dr. Elena Vance (Forensic Division)",
+        "briefing": "Inspect suspicious chemical residues in the lower basement corridor. Formulate alkaline luminol and document catalytic hemoglobin chemiluminescence.",
+        "location": "Lower Level Delta Maintenance Tunnel"
+      },
+      "prerequisites": {
+        "completed_quests": [],
+        "min_safety_score": 60.0,
+        "required_skills": ["forensics:5", "chemistry:5"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_darken_environment",
+          "description": "Extinguish overhead fluorescent lighting (ambient lux < 2.0)",
+          "target_entity": "ambient_lux",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 1.0,
+          "tolerance": 1.0
+        },
+        {
+          "objective_id": "obj_prepare_luminol_solution",
+          "description": "Dissolve luminol and sodium carbonate in alkaline peroxide buffer (pH 10.5 - 11.5)",
+          "target_entity": "ph",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 11.0,
+          "tolerance": 0.5
+        },
+        {
+          "objective_id": "obj_detect_blood_spatter",
+          "description": "Spray perimeter wall and capture 430 nm blue luminescence emission",
+          "target_entity": "reaction_type",
+          "evaluation_mode": "CHEMICAL_REACTION",
+          "target_value": "chemiluminescent_glow"
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "premature_light_on",
+          "severity": "WARNING",
+          "trigger_metric": "ambient_lux",
+          "operator": ">",
+          "threshold": 10.0,
+          "narrative_reprimand": "Light was turned on before luminescence exposure completed, spoiling the photographic record."
+        }
+      ],
+      "state_validation": {
+        "target_reaction": "chemiluminescence"
+      },
+      "rewards": {
+        "skill_xp": {
+          "forensics": 800,
+          "chemistry": 400
+        },
+        "unlocked_nodes": ["latent_blood_serology"],
+        "unlocked_apparatus": ["UV Crime Scene Flashlight", "Scale Reference Rulers (ABFO No. 2)"],
+        "unlocked_reagents": ["luminol", "ninhydrin_spray_aerosol"],
+        "academic_credential": "Forensic Trace Serology Certification"
+      }
+    },
+    {
+      "quest_id": "q_foren_tox_spe",
+      "act": 2,
+      "title": "Forensic Toxicology: Solid-Phase Extraction (SPE) Assay",
+      "narrative_briefing": {
+        "instructor": "Chief Toxicologist Renard",
+        "briefing": "Extract trace opioid alkaloids from an adulterated plasma specimen using a C18 solid-phase extraction column and verify via HPLC-DAD.",
+        "location": "State Forensic Laboratory Core"
+      },
+      "prerequisites": {
+        "completed_quests": ["q_foren_scene_luminol", "q_synth_aspirin"],
+        "min_safety_score": 85.0,
+        "required_skills": ["forensics:25", "chemistry:25"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_spe_conditioning",
+          "description": "Condition C18 cartridge with 3 mL HPLC-grade methanol followed by 3 mL deionized water",
+          "target_entity": "spe_cartridge_status",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": "conditioned"
+        },
+        {
+          "objective_id": "obj_spe_elution_flow",
+          "description": "Regulate vacuum manifold to maintain dropwise elution at 1.0 mL/min",
+          "target_entity": "elution_flow_rate_ml_min",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 1.0,
+          "tolerance": 0.2
+        },
+        {
+          "objective_id": "obj_analyte_recovery",
+          "description": "Achieve analyte extraction recovery rate >= 90.0%",
+          "target_entity": "recovery_rate_percent",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 90.0,
+          "tolerance": 5.0
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "cartridge_drying_bed",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "sorbent_bed_dry_during_sample_load",
+          "operator": "==",
+          "threshold": 1.0,
+          "narrative_reprimand": "The C18 sorbent bed was allowed to dry under excessive vacuum! Phase partition channels collapsed."
+        }
+      ],
+      "state_validation": {
+        "target_assay": "spe_c18_toxicology"
+      },
+      "rewards": {
+        "skill_xp": {
+          "forensics": 1500,
+          "chemistry": 1000
+        },
+        "unlocked_nodes": ["forensic_toxicology_expert"],
+        "unlocked_apparatus": ["Solid-Phase Extraction (SPE) Vacuum Manifold"],
+        "unlocked_reagents": ["spe_c18_cartridges", "methanol_hplc_grade"],
+        "academic_credential": "Certified Forensic Toxicological Analyst"
+      }
+    },
+    {
+      "quest_id": "q_sandbox_vacuum_boiling",
+      "act": 3,
+      "title": "Extreme Planetary Physics: Vacuum Distillation of Water",
+      "narrative_briefing": {
+        "instructor": "Orbital Mission Specialist Aris Thorne",
+        "briefing": "In sandbox planetary mode, simulate Martian surface pressure (6 mbar / 0.006 atm). Observe water boiling spontaneously at room temperature (20°C) via the Clausius-Clapeyron relation.",
+        "location": "Planetary Atmosphere Chamber / Orbital Module"
+      },
+      "prerequisites": {
+        "completed_quests": ["q_synth_aspirin"],
+        "min_safety_score": 0.0,
+        "required_skills": ["thermodynamics:30", "engineering:25"]
+      },
+      "objectives": [
+        {
+          "objective_id": "obj_set_martian_pressure",
+          "description": "Evacuate environmental chamber to 0.006 atm (6 mbar)",
+          "target_entity": "ambient_pressure_atm",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 0.006,
+          "tolerance": 0.002
+        },
+        {
+          "objective_id": "obj_observe_boiling_point",
+          "description": "Verify liquid water boiling point shifts to <= 22.0°C without external heating",
+          "target_entity": "boiling_point_water_c",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 20.0,
+          "tolerance": 3.0
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "rapid_depressurization_shock",
+          "severity": "WARNING",
+          "trigger_metric": "depressurization_rate_atm_s",
+          "operator": ">",
+          "threshold": 0.5,
+          "narrative_reprimand": "Depressurization was too rapid! Glassware subjected to excessive pressure transient."
+        }
+      ],
+      "state_validation": {
+        "target_physics": "clausius_clapeyron_scaling"
+      },
+      "rewards": {
+        "skill_xp": {
+          "thermodynamics": 1200,
+          "engineering": 1000
+        },
+        "unlocked_nodes": ["planetary_thermodynamics_mastery"],
+        "unlocked_apparatus": ["Planetary Chamber Climate Modulator"],
+        "narrative_unlock": "Martian and Orbital Zero-G Sandbox Presets Unlocked"
+      }
+    }
+  ]
+}

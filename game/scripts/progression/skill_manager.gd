@@ -1,273 +1,338 @@
-# Athanor Ascension — Skill Progression Manager
+# Athanor Ascension - Skill System (RuneScape Style)
 # Autoload: SkillManager
-#
-# Reads the authoritative GDD data (res://data/progression/skills.json) instead of
-# hardcoding tracks. Chemistry, Biology, Forensics and Engineering each carry six
-# milestones with apparatus, reagent and ability unlocks. XP uses the documented
-# RuneScape-style curve, built once at load.
+# Handles: XP curves, level ups, Intelligence Points, Talent Trees, Milestones
+
 extends Node
 
-signal xp_gained(skill_id: String, amount: int, total_xp: int, level: int, reason: String)
-signal level_up(skill_id: String, old_level: int, new_level: int)
-signal milestone_unlocked(skill_id: String, milestone: Dictionary)
+class_name SkillManager
 
-const DATA_PATH: String = "res://data/progression/skills.json"
-const SAVE_KEY: String = "skills"
-const TRACK_ORDER := ["chemistry", "biology", "forensics", "engineering"]
-const RANK_FLOORS := [1, 10, 20, 30, 40, 55, 70, 85, 95, 100]
+signal skill_xp_gained(skill_id: String, amount: int, new_total: int)
+signal skill_leveled_up(skill_id: String, new_level: int)
+signal intelligence_points_changed(amount: int, new_total: int)
+signal talent_unlocked(talent_id: String)
+signal milestone_reached(skill_id: String, milestone_level: int)
 
-var _tracks: Dictionary = {}
-var _rank_titles: Array = []
-var _thresholds: Array[int] = []
-var _max_level: int = 120
-var _xp: Dictionary = {}
-var _loaded: bool = false
+# Load skill data from JSON
+const SKILL_DATA = preload("res://data/progression/skills.json")
 
+# XP curve from RuneScape formula (precomputed for 120 levels)
+var xp_table: Array[int] = []
+
+# Current skill state
+var skills: Dictionary = {} # skill_id -> {level, xp, virtual_level}
+var intelligence_points: int = 0
+var unlocked_talents: Array[String] = []
+var reached_milestones: Dictionary = {} # skill_id -> Array[milestone_level]
 
 func _ready() -> void:
-	_load_tracks()
-	_load_progress()
+	_load_xp_table()
+	_initialize_skills()
+	_load_save_data()
 
+func _load_xp_table() -> void:
+	xp_table = SKILL_DATA.xp_formula.base_xp_per_level.duplicate()
+	# Extend to 120 if needed (formula continues)
+	while xp_table.size() < 121:
+		var level = xp_table.size()
+		var xp = 0
+		for i in range(1, level + 1):
+			xp += int(i + 300 * pow(2.0, i / 7.0))
+		xp_table.append(int(xp / 4))
 
-# =============================================================================
-# DATA LOADING
-# =============================================================================
+func _initialize_skills() -> void:
+	for skill_def in SKILL_DATA.skills:
+		var id = skill_def.id
+		skills[id] = {
+			"level": 1,
+			"xp": 0,
+			"virtual_level": 1,
+			"definition": skill_def
+		}
 
-func _load_tracks() -> void:
-	var file := FileAccess.open(DATA_PATH, FileAccess.READ)
-	if file == null:
-		push_error("SkillManager: cannot open %s" % DATA_PATH)
-		return
-	var parsed: Variant = JSON.parse_string(file.get_as_text())
-	file.close()
-	if typeof(parsed) != TYPE_DICTIONARY:
-		push_error("SkillManager: invalid skills.json")
-		return
-	var doc: Dictionary = parsed
-	var skills: Dictionary = doc.get("skills", {})
-	_rank_titles = doc.get("rank_titles", [])
-	var curve: Dictionary = doc.get("xp_curve", {})
-	_max_level = int(curve.get("max_level", 120))
-	_tracks.clear()
-	for skill_id in skills.keys():
-		var track: Dictionary = skills[skill_id]
-		var milestones: Array = track.get("milestones", [])
-		milestones.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-			return int(a.get("level", 1)) < int(b.get("level", 1)))
-		track["milestones"] = milestones
-		_tracks[str(skill_id)] = track
-		_xp[str(skill_id)] = int(_xp.get(str(skill_id), 0))
-	_build_curve()
-	_loaded = true
+func _load_save_data() -> void:
+	var save_manager = get_node_or_null("/root/SaveManager")
+	if save_manager and save_manager.has_method("get_skill_data"):
+		var data = save_manager.get_skill_data()
+		if data:
+			skills = data.skills
+			intelligence_points = data.intelligence_points
+			unlocked_talents = data.unlocked_talents
+			reached_milestones = data.reached_milestones
+			_emit_all_signals()
 
-
-func _build_curve() -> void:
-	# Classic 120-level curve: accumulate the unrounded level terms, divide by 4
-	# once, then floor. This reproduces the GDD sample table exactly (83 / 388 /
-	# 1154 / 101,333 / 13,034,431) rather than drifting a few XP per level.
-	_thresholds.clear()
-	_thresholds.append(0)
-	var raw: float = 0.0
-	for level in range(1, _max_level):
-		raw += floor(float(level) + 300.0 * pow(2.0, float(level) / 7.0))
-		_thresholds.append(int(floor(raw / 4.0)))
-
-
-func _load_progress() -> void:
-	var save_manager := get_node_or_null("/root/SaveManager")
-	if save_manager == null:
-		return
-	var data: Dictionary = save_manager.get("save_data")
-	var stored: Dictionary = data.get(SAVE_KEY, {})
-	var values: Dictionary = stored.get("xp", {})
-	for skill_id in values.keys():
-		if _tracks.has(str(skill_id)):
-			_xp[str(skill_id)] = maxi(0, int(values[skill_id]))
-
-
-func _persist() -> void:
-	if not is_inside_tree():
-		return
-	var save_manager := get_node_or_null("/root/SaveManager")
-	if save_manager == null:
-		return
-	var data: Dictionary = save_manager.get("save_data")
-	data[SAVE_KEY] = {"version": 1, "xp": _xp.duplicate()}
-	save_manager.save_game()
-
+func _emit_all_signals() -> void:
+	for skill_id in skills:
+		var skill = skills[skill_id]
+		skill_xp_gained.emit(skill_id, 0, skill.xp)
+		skill_leveled_up.emit(skill_id, skill.level)
+		for milestone in reached_milestones.get(skill_id, []):
+			milestone_reached.emit(skill_id, milestone)
+	intelligence_points_changed.emit(0, intelligence_points)
 
 # =============================================================================
-# CURVE & QUERIES
+# PUBLIC API
 # =============================================================================
 
-func xp_to_reach_level(level: int) -> int:
-	if _thresholds.is_empty():
-		return 0
-	var clamped := clampi(level, 1, _max_level)
-	return _thresholds[clamped - 1]
+func get_skill_level(skill_id: String) -> int:
+	if skills.has(skill_id):
+		return skills[skill_id].level
+	return 0
 
+func get_skill_xp(skill_id: String) -> int:
+	if skills.has(skill_id):
+		return skills[skill_id].xp
+	return 0
 
-func level_for_xp(xp: int) -> int:
-	if _thresholds.is_empty():
-		return 1
-	var lo: int = 0
-	var hi: int = _thresholds.size() - 1
-	while lo < hi:
-		var mid: int = int((lo + hi + 1) / 2)
-		if _thresholds[mid] <= xp:
-			lo = mid
-		else:
-			hi = mid - 1
-	return lo + 1
-
-
-func get_level(skill_id: String) -> int:
-	return level_for_xp(int(_xp.get(skill_id, 0)))
-
-
-func get_xp(skill_id: String) -> int:
-	return int(_xp.get(skill_id, 0))
-
-
-func get_tracks() -> Dictionary:
-	return _tracks
-
-
-func get_track(skill_id: String) -> Dictionary:
-	return _tracks.get(skill_id, {})
-
-
-func has_track(skill_id: String) -> bool:
-	return _tracks.has(skill_id)
-
-
-func get_max_level() -> int:
-	return _max_level
-
-
-func get_rank_title(level: int) -> String:
-	if _rank_titles.is_empty():
-		return "Trainee"
-	var index: int = 0
-	for i in range(RANK_FLOORS.size()):
-		if level >= int(RANK_FLOORS[i]):
-			index = i
-	return str(_rank_titles[clampi(index, 0, _rank_titles.size() - 1)])
-
-
-func get_progress(skill_id: String) -> float:
-	var xp := get_xp(skill_id)
-	var level := get_level(skill_id)
-	if level >= _max_level:
+func get_skill_progress(skill_id: String) -> float:
+	if not skills.has(skill_id):
+		return 0.0
+	var skill = skills[skill_id]
+	var current_level_xp = xp_table[skill.level - 1]
+	var next_level_xp = xp_table[skill.level] if skill.level < 120 else current_level_xp
+	if next_level_xp <= current_level_xp:
 		return 1.0
-	var current := xp_to_reach_level(level)
-	var next := xp_to_reach_level(level + 1)
-	if next <= current:
-		return 1.0
-	return clampf(float(xp - current) / float(next - current), 0.0, 1.0)
+	return float(skill.xp - current_level_xp) / float(next_level_xp - current_level_xp)
 
+func get_skill_virtual_level(skill_id: String) -> int:
+	if skills.has(skill_id):
+		return skills[skill_id].virtual_level
+	return 0
 
-func get_level_span(skill_id: String) -> Dictionary:
-	var level := get_level(skill_id)
-	var xp := get_xp(skill_id)
-	var floor_xp := xp_to_reach_level(level)
-	if level >= _max_level:
-		return {"into": xp - floor_xp, "span": 0, "level": level}
-	return {
-		"into": xp - floor_xp,
-		"span": xp_to_reach_level(level + 1) - floor_xp,
-		"level": level
-	}
+func get_intelligence_points() -> int:
+	return intelligence_points
 
+func has_talent(talent_id: String) -> bool:
+	return talent_id in unlocked_talents
 
-func get_milestones(skill_id: String) -> Array:
-	return get_track(skill_id).get("milestones", [])
+func has_milestone(skill_id: String, milestone_level: int) -> bool:
+	return milestone_level in reached_milestones.get(skill_id, [])
 
-
-func get_next_milestone(skill_id: String) -> Dictionary:
-	var level := get_level(skill_id)
-	for milestone in get_milestones(skill_id):
-		if int(milestone.get("level", 1)) > level:
-			return milestone
+func get_skill_definition(skill_id: String) -> Dictionary:
+	if skills.has(skill_id):
+		return skills[skill_id].definition
 	return {}
 
-
-func is_milestone_unlocked(skill_id: String, milestone: Dictionary) -> bool:
-	return get_level(skill_id) >= int(milestone.get("level", 1))
-
-
-# =============================================================================
-# AWARDS
-# =============================================================================
-
-func add_xp(skill_id: String, amount: int, reason: String = "") -> Dictionary:
-	var result := {
-		"ok": false,
-		"skill": skill_id,
-		"amount": 0,
-		"level_before": 1,
-		"level_after": 1,
-		"levels_gained": 0,
-		"milestones": []
-	}
-	if not _tracks.has(skill_id):
-		push_warning("SkillManager: unknown skill '%s'" % skill_id)
-		return result
-	var gain := maxi(0, amount)
-	if gain == 0:
-		result["level_before"] = get_level(skill_id)
-		result["level_after"] = result["level_before"]
-		result["ok"] = true
-		return result
-
-	var before := get_level(skill_id)
-	_xp[skill_id] = int(_xp.get(skill_id, 0)) + gain
-	var after := get_level(skill_id)
-
-	result["ok"] = true
-	result["amount"] = gain
-	result["level_before"] = before
-	result["level_after"] = after
-	result["levels_gained"] = maxi(0, after - before)
-
-	if after > before:
-		level_up.emit(skill_id, before, after)
-	for milestone in get_milestones(skill_id):
-		var milestone_level := int(milestone.get("level", 1))
-		if milestone_level > before and milestone_level <= after:
-			(result["milestones"] as Array).append(milestone)
-			milestone_unlocked.emit(skill_id, milestone)
-
-	xp_gained.emit(skill_id, gain, get_xp(skill_id), after, reason)
-	_persist()
+func get_all_skills() -> Array[Dictionary]:
+	var result = []
+	for skill_id in skills:
+		var skill = skills[skill_id]
+		var def = skill.definition
+		result.append({
+			"id": skill_id,
+			"name": def.name,
+			"category": def.category,
+			"icon": def.icon,
+			"level": skill.level,
+			"xp": skill.xp,
+			"progress": get_skill_progress(skill_id),
+			"virtual_level": skill.virtual_level
+		})
 	return result
 
+# =============================================================================
+# XP GAIN & LEVELING
+# =============================================================================
 
-func get_unlocked_apparatus(skill_id: String = "") -> Array[String]:
-	return _collect_unlocks(skill_id, "unlocked_apparatus")
+func grant_skill_xp(skill_id: String, amount: int, source: String = "") -> void:
+	if not skills.has(skill_id) or amount <= 0:
+		return
 
+	var skill = skills[skill_id]
+	if skill.level >= 120:
+		return # Max level
 
-func get_unlocked_reagents(skill_id: String = "") -> Array[String]:
-	return _collect_unlocks(skill_id, "unlocked_reagents")
+	skill.xp += amount
+	skill_xp_gained.emit(skill_id, amount, skill.xp)
 
+	# Check for level ups
+	while skill.level < 120 and skill.xp >= xp_table[skill.level]:
+		_level_up(skill_id)
 
-func get_unlocked_abilities(skill_id: String = "") -> Array[String]:
-	return _collect_unlocks(skill_id, "unlocked_abilities")
+	_save_skills()
 
+func _level_up(skill_id: String) -> void:
+	var skill = skills[skill_id]
+	skill.level += 1
+	skill_leveled_up.emit(skill_id, skill.level)
 
-func _collect_unlocks(skill_id: String, key: String) -> Array[String]:
-	var out: Array[String] = []
-	var level := get_level(skill_id)
-	var ids: Array = TRACK_ORDER if skill_id == "" else [skill_id]
-	for id_value in ids:
-		var track_id := str(id_value)
-		if not _tracks.has(track_id):
-			continue
-		for milestone in get_milestones(track_id):
-			if int(milestone.get("level", 1)) > level:
-				continue
-			for entry in milestone.get(key, []):
-				var text := str(entry)
-				if not out.has(text):
-					out.append(text)
-	return out
+	# Check milestones
+	var def = skill.definition
+	if def.has("milestones") and def.milestones.has(str(skill.level)):
+		_reach_milestone(skill_id, skill.level)
+
+	# Virtual levels beyond 120 (for XP tracking)
+	if skill.level >= 120:
+		skill.virtual_level += 1
+
+func _reach_milestone(skill_id: String, level: int) -> void:
+	if not reached_milestones.has(skill_id):
+		reached_milestones[skill_id] = []
+	reached_milestones[skill_id].append(level)
+	milestone_reached.emit(skill_id, level)
+
+	# Grant milestone rewards
+	var def = skills[skill_id].definition
+	var milestone = def.milestones[str(level)]
+	print("Milestone reached: %s level %d - %s" % [skill_id, level, milestone])
+
+	# Grant unlocks
+	if def.has("unlocks"):
+		_grant_unlocks(def.unlocks)
+
+func _grant_unlocks(unlocks: Dictionary) -> void:
+	var save_manager = get_node_or_null("/root/SaveManager")
+	if not save_manager or not save_manager.has_method("unlock_content"):
+		return
+
+	if unlocks.has("reagents"):
+		for reagent in unlocks.reagents:
+			save_manager.unlock_content("reagent", reagent)
+	if unlocks.has("equipment"):
+		for equip in unlocks.equipment:
+			save_manager.unlock_content("equipment", equip)
+	if unlocks.has("labs"):
+		for lab in unlocks.labs:
+			save_manager.unlock_content("lab", lab)
+	if unlocks.has("companions"):
+		for comp in unlocks.companions:
+			save_manager.unlock_content("companion", comp)
+
+# =============================================================================
+# INTELLIGENCE POINTS (META-CURRENCY)
+# =============================================================================
+
+func grant_intelligence_points(amount: int, source: String = "") -> void:
+	if amount <= 0:
+		return
+	intelligence_points += amount
+	intelligence_points_changed.emit(amount, intelligence_points)
+	print("Granted %d IP (%s). Total: %d" % [amount, source, intelligence_points])
+	_save_skills()
+
+func spend_intelligence_points(amount: int, talent_id: String = "") -> bool:
+	if intelligence_points < amount:
+		return false
+	intelligence_points -= amount
+	if talent_id != "":
+		unlocked_talents.append(talent_id)
+		talent_unlocked.emit(talent_id)
+	intelligence_points_changed.emit(-amount, intelligence_points)
+	_save_skills()
+	return true
+
+# =============================================================================
+# TALENT TREES
+# =============================================================================
+
+func unlock_talent(tree_id: String, tier_index: int) -> bool:
+	var talent_data = SKILL_DATA.intelligence_points.talent_trees[tree_id]
+	if not talent_data:
+		return false
+
+	if tier_index >= talent_data.tiers.size():
+		return false
+
+	var tier = talent_data.tiers[tier_index]
+
+	# Check prerequisites (previous tiers)
+	for i in range(tier_index):
+		var prereq_id = "%s_tier_%d" % [tree_id, i]
+		if not has_talent(prereq_id):
+			return false
+
+	var talent_id = "%s_tier_%d" % [tree_id, tier_index]
+	if has_talent(talent_id):
+		return true
+
+	if spend_intelligence_points(tier.cost, talent_id):
+		_apply_talent_effect(tree_id, tier_index, tier.effect)
+		return true
+	return false
+
+func _apply_talent_effect(tree_id: String, tier_index: int, effect: String) -> void:
+	# Apply talent effects to game systems
+	match tree_id:
+		"synthesis_mastery":
+			_apply_synthesis_talent(tier_index, effect)
+		"safety_expertise":
+			_apply_safety_talent(tier_index, effect)
+		"companion_bond":
+			_apply_companion_talent(tier_index, effect)
+		"exploration":
+			_apply_exploration_talent(tier_index, effect)
+		"social_influence":
+			_apply_social_talent(tier_index, effect)
+
+func _apply_synthesis_talent(tier: int, effect: String) -> void:
+	# Apply to chemistry simulations
+	var sim_bridge = get_node_or_null("/root/SimulationBridge")
+	if sim_bridge:
+		match tier:
+			0: sim_bridge.set_global_yield_modifier(1.05)
+			1: sim_bridge.unlock_protecting_groups()
+			2: sim_bridge.set_global_purity_bonus(1.10); sim_bridge.set_global_speed_bonus(0.90)
+			3: sim_bridge.enable_retrosynthesis_ai()
+			4: sim_bridge.enable_one_click_synthesis()
+
+func _apply_safety_talent(tier: int, effect: String) -> void:
+	var vitals = get_node_or_null("/root/PlayerVitals")
+	if vitals:
+		match tier:
+			0: vitals.set_injury_severity_modifier(0.8)
+			1: vitals.enable_auto_neutralization()
+			2: vitals.set_fume_hood_efficiency(1.25)
+			3: vitals.set_radiation_modifier(0.5)
+			4: vitals.enable_chrysalis_warden()
+
+func _apply_companion_talent(tier: int, effect: String) -> void:
+	var comp_manager = get_node_or_null("/root/CompanionManager")
+	if comp_manager:
+		match tier:
+			0: comp_manager.set_max_slots(4)
+			1: comp_manager.set_xp_multiplier(1.25)
+			2: comp_manager.unlock_mythic_evolution()
+			3: comp_manager.enable_telepathic_link()
+			4: comp_manager.unlock_ember_drake()
+
+func _apply_exploration_talent(tier: int, effect: String) -> void:
+	# Implement via world system
+	pass
+
+func _apply_social_talent(tier: int, effect: String) -> void:
+	var faction_sys = get_node_or_null("/root/FactionSystem")
+	if faction_sys:
+		match tier:
+			0: faction_sys.set_rep_multiplier(1.15)
+			1: faction_sys.unlock_faction_vendors()
+			2: faction_sys.enable_npc_relationships()
+			3: faction_sys.enable_mediation()
+			4: faction_sys.enable_faction_founding()
+
+# =============================================================================
+# SAVE/LOAD
+# =============================================================================
+
+func _save_skills() -> void:
+	var save_manager = get_node_or_null("/root/SaveManager")
+	if save_manager and save_manager.has_method("set_skill_data"):
+		save_manager.set_skill_data({
+			"skills": skills,
+			"intelligence_points": intelligence_points,
+			"unlocked_talents": unlocked_talents,
+			"reached_milestones": reached_milestones
+		})
+
+func to_dict() -> Dictionary:
+	return {
+		"skills": skills,
+		"intelligence_points": intelligence_points,
+		"unlocked_talents": unlocked_talents,
+		"reached_milestones": reached_milestones
+	}
+
+func from_dict(data: Dictionary) -> void:
+	skills = data.get("skills", skills)
+	intelligence_points = data.get("intelligence_points", 0)
+	unlocked_talents = data.get("unlocked_talents", [])
+	reached_milestones = data.get("reached_milestones", {})
+	_emit_all_signals()

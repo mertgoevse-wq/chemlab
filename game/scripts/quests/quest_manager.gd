@@ -1,493 +1,540 @@
-# ChemLab Quest Campaign & OSHA Safety Compliance Engine (Godot 4 Engine)
-# Autoload Singleton: QuestManager
-# Manages multi-step chemical questlines, objectives, safety scoring, and celebration fanfare.
+# Athanor Ascension - Quest Manager (Extended)
+# Autoload: QuestManager
+# Handles: 10 Acts, 3 backgrounds, faction missions, dynamic events, investigation mode
 
 extends Node
 
-# =============================================================================
-# ENUMS & CONSTANTS
-# =============================================================================
+class_name QuestManager
 
-enum QuestStatus {
-	LOCKED,
-	AVAILABLE,
-	IN_PROGRESS,
-	COMPLETED
-}
+signal quest_started(quest_id: String)
+signal quest_completed(quest_id: String)
+signal quest_failed(quest_id: String, reason: String)
+signal objective_updated(quest_id: String, objective_id: String, progress: float)
+signal investigation_mode_toggled(enabled: bool, modes: Array[String])
 
-enum SafetyGrade {
-	A_PLUS,      # 95 - 100% (OSHA Exemplary)
-	A_COMPLIANT, # 85 - 94%  (Standard Compliant)
-	B_CAUTION,   # 70 - 84%  (Minor Violations)
-	C_WARNING,   # 50 - 69%  (Serious Safety Violations)
-	F_SHUTDOWN   # < 50%     (Facility Evacuation & Stop-Work Order)
-}
+const CAMPAIGN_DATA = preload("res://data/quests/main_campaign.json")
+const QUEST_SCHEMA = preload("res://data/quests/quest_schema.json")
 
-const INITIAL_SAFETY_SCORE: float = 100.0
-
-# =============================================================================
-# SIGNALS
-# =============================================================================
-
-signal quest_started(quest_id: String, quest_data: Dictionary)
-signal objective_progressed(quest_id: String, objective_idx: int, current: float, target: float, is_done: bool)
-signal objective_completed(quest_id: String, objective_idx: int, objective_data: Dictionary)
-signal quest_completed(quest_id: String, quest_title: String, xp_reward: int, safety_score: float)
-signal safety_score_updated(new_score: float, delta: float, reason: String)
-signal safety_warning_triggered(severity: String, title: String, message: String, osha_code: String)
-signal fanfare_celebration_started(quest_title: String, xp: int, stars: int)
-
-# =============================================================================
-# STATE VARIABLES
-# =============================================================================
-
-var active_quest_id: String = "quest_01_orientation"
-var current_safety_score: float = INITIAL_SAFETY_SCORE
-var ppe_equipped: bool = false
-var balance_tared: bool = false
-var dispensed_hcl_volume: float = 0.0
-var indicator_drops_added: int = 0
-var current_flask_ph: float = 1.0 # 0.1 M HCl has pH ~ 1.0
-
-# Master Campaign Catalog
-var quests: Dictionary = {}
-
-# =============================================================================
-# LIFECYCLE
-# =============================================================================
+# Quest state
+var active_quest: String = ""
+var completed_quests: Array[String] = []
+var failed_quests: Array[String] = []
+var quest_progress: Dictionary = {}  # quest_id -> {objectives: {}, state: {}}
+var current_background: String = "academic"
+var investigation_mode_active: bool = false
+var investigation_vision_modes: Array[String] = []
 
 func _ready() -> void:
-	_initialize_quest_catalog()
-	_connect_to_input_manager()
-	# Start Quest 1 by default
-	start_quest("quest_01_orientation")
+	_load_save_data()
 
+func _load_save_data() -> void:
+	var save_manager = get_node_or_null("/root/SaveManager")
+	if save_manager and save_manager.has_method("get_quest_data"):
+		var data = save_manager.get_quest_data()
+		if data:
+			active_quest = data.active_quest
+			completed_quests = data.completed_quests
+			failed_quests = data.failed_quests
+			quest_progress = data.quest_progress
+			current_background = data.current_background
+			if active_quest != "":
+				_start_quest(active_quest)
 
-func _initialize_quest_catalog() -> void:
-	quests = {
-		"quest_01_orientation": {
-			"id": "quest_01_orientation",
-			"tier": 1,
-			"title": "Orientation & Safety Protocols",
-			"category": "Basic Laboratory Technique",
-			"description": "Familiarize yourself with laboratory personal protective equipment (PPE), balance taring, precise volumetric measurement, and acid-base titration to a persistent phenolphthalein endpoint.",
-			"xp_reward": 500,
-			"status": QuestStatus.AVAILABLE,
-			"unlocked_apparatus": ["Safety_Goggles", "Erlenmeyer_250ml", "Analytical_Balance", "Burette_50ml", "Pasteur_Pipette"],
-			"unlocked_reagents": ["HCl_0.1M", "NaOH_0.1M", "Phenolphthalein_Indicator", "Distilled_Water"],
-			"objectives": [
-				{
-					"id": "equip_ppe",
-					"title": "Equip Safety Goggles",
-					"description": "Tear open PPE station and equip safety goggles",
-					"current": 0.0,
-					"target": 1.0,
-					"unit": "goggles",
-					"is_completed": false,
-					"is_active": true,
-					"osha_ref": "OSHA 1910.133(a)(1)"
-				},
-				{
-					"id": "place_flask_tare",
-					"title": "Analytical Balance Tare",
-					"description": "Place 250 mL Erlenmeyer Flask on Analytical Balance and Tare",
-					"current": 0.0,
-					"target": 1.0,
-					"unit": "Tare",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "GLP Standard Protocol 4.2"
-				},
-				{
-					"id": "dispense_hcl",
-					"title": "Dispense Acid Reagent",
-					"description": "Dispense 25.0 mL of 0.1 M Hydrochloric Acid (HCl)",
-					"current": 0.0,
-					"target": 25.0,
-					"unit": "mL",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "OSHA 1910.1450 Chemical Hygiene"
-				},
-				{
-					"id": "add_indicator",
-					"title": "Add pH Indicator",
-					"description": "Add 3 drops of Phenolphthalein Indicator",
-					"current": 0.0,
-					"target": 3.0,
-					"unit": "drops",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "ASTM E200 Standard Practice"
-				},
-				{
-					"id": "titrate_naoh",
-					"title": "Titrate to Endpoint",
-					"description": "Titrate dropwise with 0.1 M NaOH until persistent pink endpoint (pH 8.2 - 9.0)",
-					"current": 1.0, # initial pH
-					"target": 8.5, # target midpoint pH
-					"unit": "pH",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "EPA Method 310.1"
-				}
-			]
-		},
-		"quest_02_iodine_clock": {
-			"id": "quest_02_iodine_clock",
-			"tier": 2,
-			"title": "Landolt Iodine Clock Kinetics",
-			"category": "Chemical Kinetics & Dynamics",
-			"description": "Measure reaction rates by executing the sudden transition to triiodide-starch complex.",
-			"xp_reward": 750,
-			"status": QuestStatus.LOCKED,
-			"unlocked_apparatus": ["Magnetic_Stirrer", "Graduated_Cylinder_100ml"],
-			"unlocked_reagents": ["Hydrogen_Peroxide", "Potassium_Iodide", "Soluble_Starch"],
-			"objectives": [
-				{
-					"id": "prepare_solutions",
-					"title": "Prepare Reactants",
-					"description": "Mix Potassium Iodide and Starch solution in Beaker A",
-					"current": 0.0,
-					"target": 1.0,
-					"unit": "steps",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "OSHA 1910.1200"
-				},
-				{
-					"id": "add_peroxide_clock",
-					"title": "Initiate Kinetics",
-					"description": "Pour Hydrogen Peroxide and activate stopwatch timer",
-					"current": 0.0,
-					"target": 1.0,
-					"unit": "steps",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "OSHA 1910.1450"
-				}
-			]
-		},
-		"quest_03_bz_oscillator": {
-			"id": "quest_03_bz_oscillator",
-			"tier": 3,
-			"title": "Belousov-Zhabotinsky Oscillation",
-			"category": "Non-Equilibrium Thermodynamics",
-			"description": "Induce periodic chemical wave pulses with malonic acid, bromate, and ferroin catalyst.",
-			"xp_reward": 1200,
-			"status": QuestStatus.LOCKED,
-			"unlocked_apparatus": ["Petri_Dish", "Spectrophotometer"],
-			"unlocked_reagents": ["Malonic_Acid", "Potassium_Bromate", "Ferroin_Catalyst"],
-			"objectives": [
-				{
-					"id": "heat_malonic_acid",
-					"title": "Thermal Conditioning",
-					"description": "Heat 50 mL Malonic Acid Solution to 45.0 °C on magnetic hotplate",
-					"current": 20.0,
-					"target": 45.0,
-					"unit": "°C",
-					"is_completed": false,
-					"is_active": false,
-					"osha_ref": "NFPA 45 Fire Protection"
-				}
-			]
-		}
+func set_background(background: String) -> void:
+	if background in ["academic", "hobbyist", "ex_pharma"]:
+		current_background = background
+
+# =============================================================================
+# QUEST LIFECYCLE
+# =============================================================================
+
+func start_quest(quest_id: String) -> bool:
+	if _is_quest_available(quest_id):
+		_start_quest(quest_id)
+		return true
+	return false
+
+func _is_quest_available(quest_id: String) -> bool:
+	if quest_id in completed_quests or quest_id in failed_quests:
+		return false
+	if active_quest != "" and active_quest != quest_id:
+		return false
+
+	var quest = _get_quest_definition(quest_id)
+	if not quest:
+		return false
+
+	# Check prerequisites
+	var prereqs = quest.prerequisites
+	if prereqs.has("completed_quests"):
+		for req in prereqs.completed_quests:
+			if req not in completed_quests:
+				return false
+
+	if prereqs.has("min_safety_score"):
+		var vitals = get_node_or_null("/root/PlayerVitals")
+		if vitals and vitals.get_safety_score() < prereqs.min_safety_score:
+			return false
+
+	if prereqs.has("required_skills"):
+		var skill_manager = get_node_or_null("/root/SkillManager")
+		if skill_manager:
+			for skill_id in prereqs.required_skills:
+				if skill_manager.get_skill_level(skill_id) < prereqs.required_skills[skill_id]:
+					return false
+
+	if prereqs.has("background_requirements"):
+		if not prereqs.background_requirements.get(current_background, false):
+			return false
+
+	if prereqs.has("faction_reputation"):
+		var faction_sys = get_node_or_null("/root/FactionSystem")
+		if faction_sys:
+			for faction_id in prereqs.faction_reputation:
+				if faction_sys.get_reputation(faction_id) < prereqs.faction_reputation[faction_id]:
+					return false
+
+	return true
+
+func _start_quest(quest_id: String) -> void:
+	active_quest = quest_id
+	quest_progress[quest_id] = {
+		"objectives": {},
+		"state": "active",
+		"started_at": Time.get_unix_time_from_system(),
+		"dynamic_events_triggered": []
 	}
 
+	# Initialize objective progress
+	var quest = _get_quest_definition(quest_id)
+	for obj in quest.objectives:
+		quest_progress[quest_id].objectives[obj.objective_id] = {
+			"progress": 0.0,
+			"completed": false,
+			"hidden": obj.hidden,
+			"optional": obj.optional
+		}
 
-func _connect_to_input_manager() -> void:
-	# Intercept InputManager events to automatically advance objectives
-	if Engine.has_singleton("InputManager"):
-		var im = Engine.get_singleton("InputManager")
-		if im.has_signal("balance_tare_requested"):
-			im.balance_tare_requested.connect(_on_input_tare_requested)
-		if im.has_signal("apparatus_poured"):
-			im.apparatus_poured.connect(_on_input_apparatus_poured)
-	else:
-		# Check autoload tree node
-		var root = get_tree().root if get_tree() else null
-		if root and root.has_node("InputManager"):
-			var im = root.get_node("InputManager")
-			im.balance_tare_requested.connect(_on_input_tare_requested)
-			im.apparatus_poured.connect(_on_input_apparatus_poured)
+	# Check for investigation mode
+	if quest.has("investigation_mode") and quest.investigation_mode.enabled:
+		_enable_investigation_mode(quest.investigation_mode)
 
-# =============================================================================
-# QUEST PROGRESSION API
-# =============================================================================
+	quest_started.emit(quest_id)
+	_save_quests()
 
-func start_quest(quest_id: String) -> void:
-	if not quests.has(quest_id):
-		push_error("QuestManager: Quest '%s' not found." % quest_id)
+	# Show narrative briefing
+	_show_quest_briefing(quest_id)
+
+func _show_quest_briefing(quest_id: String) -> void:
+	var quest = _get_quest_definition(quest_id)
+	var briefing = quest.narrative_briefing
+
+	# Get background-specific text
+	var intro_text = briefing.intro_text
+	if briefing.has("background_variants") and briefing.background_variants.has(current_background):
+		intro_text = briefing.background_variants[current_background]
+
+	# Emit to UI (would show in quest log)
+	print("QUEST STARTED: %s" % quest.title)
+	print(intro_text)
+
+	# Play audio log if exists
+	if briefing.audio_log_id:
+		_play_audio_log(briefing.audio_log_id)
+
+func complete_quest(quest_id: String) -> void:
+	if quest_id != active_quest:
 		return
 
-	active_quest_id = quest_id
-	var q = quests[quest_id] as Dictionary
-	q["status"] = QuestStatus.IN_PROGRESS
+	var quest = _get_quest_definition(quest_id)
 
-	# Reset states for Quest 1
-	if quest_id == "quest_01_orientation":
-		ppe_equipped = false
-		balance_tared = false
-		dispensed_hcl_volume = 0.0
-		indicator_drops_added = 0
-		current_flask_ph = 1.0
+	# Grant rewards
+	_grant_quest_rewards(quest)
 
-	# Mark first objective active
-	var objs = q["objectives"] as Array
-	for i in range(objs.size()):
-		objs[i]["is_active"] = (i == 0)
+	# Mark completed
+	completed_quests.append(quest_id)
+	quest_progress[quest_id].state = "completed"
+	active_quest = ""
 
-	quest_started.emit(quest_id, q)
+	# Disable investigation mode if active
+	if investigation_mode_active:
+		_disable_investigation_mode()
 
+	quest_completed.emit(quest_id)
+	_save_quests()
 
-func get_active_quest() -> Dictionary:
-	return quests.get(active_quest_id, {})
+	# Check for follow-up quests
+	_check_quest_chain(quest_id)
 
-
-func get_active_objective() -> Dictionary:
-	var q = get_active_quest()
-	if q.is_empty():
-		return {}
-	for obj in q.get("objectives", []):
-		if obj.get("is_active", false) and not obj.get("is_completed", false):
-			return obj
-	return {}
-
-
-func advance_objective(obj_id: String, amount: float = 1.0) -> void:
-	var q = get_active_quest()
-	if q.is_empty():
+func fail_quest(quest_id: String, reason: String) -> void:
+	if quest_id != active_quest:
 		return
 
-	var objs = q["objectives"] as Array
-	for i in range(objs.size()):
-		var obj = objs[i] as Dictionary
-		if obj["id"] == obj_id:
-			if obj["is_completed"]:
-				return
+	failed_quests.append(quest_id)
+	quest_progress[quest_id].state = "failed"
+	active_quest = ""
 
-			obj["current"] = minf(obj["current"] + amount, obj["target"])
-			var is_done = (obj["current"] >= obj["target"])
+	if investigation_mode_active:
+		_disable_investigation_mode()
 
-			objective_progressed.emit(active_quest_id, i, obj["current"], obj["target"], is_done)
+	quest_failed.emit(quest_id, reason)
+	_save_quests()
 
-			if is_done:
-				_complete_objective_internal(i)
+	# Show failure narrative
+	_show_quest_failure(quest_id, reason)
+
+func _show_quest_failure(quest_id: String, reason: String) -> void:
+	var quest = _get_quest_definition(quest_id)
+	var failure_text = "Quest failed: %s" % reason
+
+	# Background-specific reprimand
+	var failure_conditions = quest.failure_conditions
+	for cond in failure_conditions:
+		if cond.trigger_metric == reason or reason in cond.trigger_metric:
+			if cond.background_variants.has(current_background):
+				failure_text = cond.background_variants[current_background]
+			else:
+				failure_text = cond.narrative_reprimand
 			break
 
+	print("QUEST FAILED: %s" % failure_text)
 
-func complete_objective_by_id(obj_id: String) -> void:
-	var q = get_active_quest()
-	if q.is_empty():
+# =============================================================================
+# OBJECTIVE TRACKING
+# =============================================================================
+
+func update_objective(quest_id: String, objective_id: String, progress: float, completed: bool = false) -> void:
+	if not quest_progress.has(quest_id) or not quest_progress[quest_id].objectives.has(objective_id):
 		return
 
-	var objs = q["objectives"] as Array
-	for i in range(objs.size()):
-		var obj = objs[i] as Dictionary
-		if obj["id"] == obj_id and not obj["is_completed"]:
-			obj["current"] = obj["target"]
-			_complete_objective_internal(i)
-			break
+	var obj_progress = quest_progress[quest_id].objectives[objective_id]
+	obj_progress.progress = clamp(progress, 0.0, 1.0)
+	if completed or obj_progress.progress >= 1.0:
+		obj_progress.completed = true
+		obj_progress.progress = 1.0
 
+	objective_updated.emit(quest_id, objective_id, obj_progress.progress)
 
-func _complete_objective_internal(idx: int) -> void:
-	var q = get_active_quest()
-	var objs = q["objectives"] as Array
-	var obj = objs[idx] as Dictionary
+	# Check if all main objectives complete
+	_check_quest_completion(quest_id)
 
-	obj["is_completed"] = true
-	obj["is_active"] = false
-	objective_completed.emit(active_quest_id, idx, obj)
+	_save_quests()
 
-	# Unlock next objective in sequence
-	if idx + 1 < objs.size():
-		objs[idx + 1]["is_active"] = true
-		var next_obj = objs[idx + 1]
-		objective_progressed.emit(active_quest_id, idx + 1, next_obj["current"], next_obj["target"], false)
-	else:
-		# All objectives complete: Complete Quest
-		_complete_active_quest()
+func _check_quest_completion(quest_id: String) -> void:
+	var quest = _get_quest_definition(quest_id)
+	var progress = quest_progress[quest_id]
 
+	var all_main_complete = true
+	for obj in quest.objectives:
+		if not obj.optional:
+			if not progress.objectives.has(obj.objective_id) or not progress.objectives[obj.objective_id].completed:
+				all_main_complete = false
+				break
 
-func _complete_active_quest() -> void:
-	var q = get_active_quest()
-	q["status"] = QuestStatus.COMPLETED
-	var xp = int(q.get("xp_reward", 500))
-	var title = str(q.get("title", "Laboratory Quest"))
-
-	# Calculate stars based on OSHA safety compliance
-	var stars = 3
-	if current_safety_score < 75.0:
-		stars = 1
-	elif current_safety_score < 90.0:
-		stars = 2
-
-	# Emit completion fanfare
-	fanfare_celebration_started.emit(title, xp, stars)
-	quest_completed.emit(active_quest_id, title, xp, current_safety_score)
-
-	# Update SaveManager if present
-	_sync_with_save_manager(xp)
+	if all_main_complete:
+		complete_quest(quest_id)
 
 # =============================================================================
-# OSHA SAFETY COMPLIANCE & PENALTY ENGINE
+# DYNAMIC EVENTS
 # =============================================================================
 
-func trigger_safety_violation(penalty: float, title: String, message: String, osha_code: String) -> void:
-	current_safety_score = maxf(0.0, current_safety_score - penalty)
-	safety_score_updated.emit(current_safety_score, -penalty, message)
-	safety_warning_triggered.emit("WARNING" if penalty < 20.0 else "CRITICAL", title, message, osha_code)
-
-
-func get_safety_grade() -> SafetyGrade:
-	if current_safety_score >= 95.0:
-		return SafetyGrade.A_PLUS
-	elif current_safety_score >= 85.0:
-		return SafetyGrade.A_COMPLIANT
-	elif current_safety_score >= 70.0:
-		return SafetyGrade.B_CAUTION
-	elif current_safety_score >= 50.0:
-		return SafetyGrade.C_WARNING
-	return SafetyGrade.F_SHUTDOWN
-
-
-func get_safety_grade_string() -> String:
-	match get_safety_grade():
-		SafetyGrade.A_PLUS: return "Grade A+ (OSHA Exemplary Compliance)"
-		SafetyGrade.A_COMPLIANT: return "Grade A (OSHA Standard Compliant)"
-		SafetyGrade.B_CAUTION: return "Grade B (Minor Non-Conformance)"
-		SafetyGrade.C_WARNING: return "Grade C (Safety Notice Issued)"
-		_: return "Grade F (Facility Stop-Work Order)"
-
-# =============================================================================
-# SIMULATION ACTION HANDLERS (ORIENTED FOR QUEST 1)
-# =============================================================================
-
-func equip_safety_goggles() -> void:
-	if ppe_equipped:
+func _process(delta: float) -> void:
+	if active_quest == "":
 		return
-	ppe_equipped = true
-	advance_objective("equip_ppe", 1.0)
 
+	var quest = _get_quest_definition(active_quest)
+	if not quest.has("dynamic_events"):
+		return
 
-func place_flask_on_balance() -> void:
-	# Ready to tare
+	var progress = quest_progress[active_quest]
+
+	for event in quest.dynamic_events:
+		if event.event_id in progress.dynamic_events_triggered:
+			continue
+
+		# Check trigger condition
+		if _check_event_trigger(event, progress):
+			if randf() < event.trigger_chance:
+				_trigger_dynamic_event(active_quest, event)
+				progress.dynamic_events_triggered.append(event.event_id)
+
+func _check_event_trigger(event: Dictionary, progress: Dictionary) -> bool:
+	if not event.has("trigger_condition") or event.trigger_condition == "":
+		return true
+
+	# Parse condition (simplified)
+	# Could be: "temperature_c > 80", "has_item:antidote", etc.
+	return true
+
+func _trigger_dynamic_event(quest_id: String, event: Dictionary) -> void:
+	print("DYNAMIC EVENT: %s - %s" % [event.event_id, event.description])
+
+	# Apply consequences
+	if event.has("consequences"):
+		for key in event.consequences:
+			var value = event.consequences[key]
+			_apply_event_consequence(key, value)
+
+	# Could spawn enemies, modify objectives, etc.
+
+func _apply_event_consequence(key: String, value: Variant) -> void:
+	match key:
+		"spawn_enemies":
+			# Would spawn combat encounter
+			pass
+		"modify_objective":
+			# Modify objective target
+			pass
+		"damage_player":
+			var vitals = get_node_or_null("/root/PlayerVitals")
+			if vitals:
+				vitals.apply_damage(value, "dynamic_event")
+		"change_faction_rep":
+			var faction_sys = get_node_or_null("/root/FactionSystem")
+			if faction_sys:
+				for faction in value:
+					faction_sys.modify_reputation(faction, value[faction])
+
+# =============================================================================
+# INVESTIGATION MODE (Assassin's Creed Eagle Vision)
+# =============================================================================
+
+func _enable_investigation_mode(investigation_data: Dictionary) -> void:
+	investigation_mode_active = true
+	investigation_vision_modes = investigation_data.vision_modes
+
+	investigation_mode_toggled.emit(true, investigation_vision_modes)
+
+	# Show clues in world
+	if investigation_data.has("clues"):
+		for clue in investigation_data.clues:
+			_show_investigation_clue(clue)
+
+func _disable_investigation_mode() -> void:
+	investigation_mode_active = false
+	investigation_vision_modes = []
+	investigation_mode_toggled.emit(false, [])
+
+	# Hide clues
+	_hide_investigation_clues()
+
+func _show_investigation_clue(clue: Dictionary) -> void:
+	# Would create visual marker in world visible only in investigation mode
+	print("CLUE REVEALED (%s): %s" % [clue.vision_mode_required, clue.reveals])
+
+func _hide_investigation_clues() -> void:
+	# Hide all investigation markers
 	pass
 
+func get_investigation_mode() -> bool:
+	return investigation_mode_active
 
-func tare_analytical_balance() -> void:
-	# Requires PPE first or penalty
-	if not ppe_equipped:
-		trigger_safety_violation(
-			20.0,
-			"OSHA 1910.133 Violation",
-			"Chemical splash goggles must be equipped before operating analytical instruments!",
-			"29 CFR 1910.133(a)(1)"
-		)
-
-	balance_tared = true
-	advance_objective("place_flask_tare", 1.0)
-
-
-func dispense_hcl(volume_ml: float) -> void:
-	if not ppe_equipped:
-		trigger_safety_violation(
-			25.0,
-			"Corrosive Acid Hazard",
-			"Handling 0.1 M HCl without ANSI-rated eye protection violates OSHA chemical hygiene protocol!",
-			"29 CFR 1910.1450(e)"
-		)
-
-	if not balance_tared:
-		trigger_safety_violation(
-			5.0,
-			"Measurement Non-Conformance",
-			"Dispensing acid into untared flask creates unacceptable analytical error margin.",
-			"GLP 4.2"
-		)
-
-	dispensed_hcl_volume += volume_ml
-	advance_objective("dispense_hcl", volume_ml)
-
-
-func add_phenolphthalein_drops(drops: int = 1) -> void:
-	if dispensed_hcl_volume < 20.0:
-		trigger_safety_violation(
-			5.0,
-			"Procedural Deviation",
-			"Phenolphthalein indicator must be added to acidic aliquot, not dry glassware.",
-			"Standard Acid-Base Protocol"
-		)
-
-	indicator_drops_added += drops
-	advance_objective("add_indicator", float(drops))
-
-
-func titrate_naoh_drop(volume_added_ml: float, pour_rate: float) -> void:
-	if indicator_drops_added < 1:
-		trigger_safety_violation(
-			10.0,
-			"Blind Titration Hazard",
-			"Titrating without visual indicator risks runaway neutralization overshoot!",
-			"EPA 310.1"
-		)
-
-	# Over-pouring / dumping instead of dropwise titration penalty
-	if pour_rate > 0.65:
-		trigger_safety_violation(
-			15.0,
-			"Violent Stream Influx",
-			"Dropwise titration required near equivalence point. High flow rate caused splash hazard!",
-			"OSHA 1910.1450"
-		)
-
-	# Calculate chemical neutralization curve:
-	# V_acid = 25 mL, C_acid = 0.1 M -> 2.5 mmol H+
-	# As NaOH (0.1 M) enters, pH rises along sigmoidal curve:
-	# At equivalence point (25.0 mL NaOH), pH jumps rapidly from 4 to 10
-	# Phenolphthalein transitions at pH 8.2 - 9.0 (faint persistent pink)
-	current_flask_ph = clampf(current_flask_ph + (volume_added_ml * 0.35), 1.0, 12.0)
-
-	if current_flask_ph >= 8.2 and current_flask_ph <= 9.0:
-		# Perfect persistent pink endpoint reached!
-		complete_objective_by_id("titrate_naoh")
-	elif current_flask_ph > 10.5:
-		# Over-titrated into magenta overshoot
-		trigger_safety_violation(
-			10.0,
-			"Titration Overshoot",
-			"Excess base added! Color changed to deep magenta (pH > 10.5). Endpoint missed.",
-			"Analytical Deviation"
-		)
+func get_investigation_vision_modes() -> Array[String]:
+	return investigation_vision_modes.duplicate()
 
 # =============================================================================
-# INPUT MANAGER CALLBACKS
+# FACTION MISSIONS
 # =============================================================================
 
-func _on_input_tare_requested() -> void:
-	tare_analytical_balance()
+func start_faction_mission(faction_id: String, mission_id: String) -> bool:
+	var faction_sys = get_node_or_null("/root/FactionSystem")
+	if not faction_sys:
+		return false
 
+	# Check if mission exists and is available
+	var mission = _get_faction_mission(faction_id, mission_id)
+	if not mission:
+		return false
 
-func _on_input_apparatus_poured(rate: float) -> void:
-	if rate <= 0.0:
-		return
+	# Start as regular quest
+	return start_quest(mission.quest_id)
 
-	# If active objective is titrate_naoh, pour acts as titrant
-	var act_obj = get_active_objective()
-	if act_obj.get("id", "") == "titrate_naoh":
-		var delta_vol = rate * 0.08 # ml per tick
-		titrate_naoh_drop(delta_vol, rate)
-	elif act_obj.get("id", "") == "dispense_hcl":
-		var delta_acid = rate * 0.5 # ml per tick
-		dispense_hcl(delta_acid)
+func _get_faction_mission(faction_id: String, mission_id: String) -> Dictionary:
+	# Would load from faction missions database
+	return {}
 
 # =============================================================================
-# INTEGRATION WITH SAVE MANAGER
+# QUEST CHAINS & CONVERGENCE
 # =============================================================================
 
-func _sync_with_save_manager(xp_awarded: int) -> void:
-	var root = get_tree().root if get_tree() else null
-	if root and root.has_node("SaveManager"):
-		var sm = root.get_node("SaveManager")
-		if sm.has_method("record_quest_completion"):
-			sm.record_quest_completion(active_quest_id, xp_awarded, current_safety_score)
+func _check_quest_chain(completed_quest_id: String) -> void:
+	# Check if completing this quest unlocks others
+	var campaign = CAMPAIGN_DATA
+
+	for act in campaign.acts:
+		for quest in act.main_quests:
+			if quest.quest_id == completed_quest_id:
+				# Check for convergence points
+				if act.has("convergence"):
+					_trigger_convergence(act.convergence)
+				break
+
+		# Check faction missions
+		if act.has("faction_missions"):
+			for fm in act.faction_missions:
+				if _is_quest_available(fm.quest_id):
+					# Notify player of new faction mission
+					print("New faction mission available: %s" % fm.title)
+
+func _trigger_convergence(convergence_text: String) -> void:
+	print("CONVERGENCE: %s" % convergence_text)
+	# All three backgrounds meet here - narrative moment
+
+# =============================================================================
+# BACKGROUND-SPECIFIC NARRATIVE
+# =============================================================================
+
+func get_narrative_text(quest_id: String, text_key: String) -> String:
+	var quest = _get_quest_definition(quest_id)
+	if not quest:
+		return ""
+
+	var text_obj = quest.narrative_briefing
+	if text_obj.has(text_key):
+		var text = text_obj[text_key]
+		if text_obj.has("background_variants") and text_obj.background_variants.has(current_background):
+			return text_obj.background_variants[current_background]
+		return text
+
+	return ""
+
+func get_failure_text(quest_id: String, condition_id: String) -> String:
+	var quest = _get_quest_definition(quest_id)
+	if not quest or not quest.has("failure_conditions"):
+		return "Quest failed."
+
+	for cond in quest.failure_conditions:
+		if cond.condition_id == condition_id:
+			if cond.background_variants.has(current_background):
+				return cond.background_variants[current_background]
+			return cond.narrative_reprimand
+
+	return "Quest failed."
+
+# =============================================================================
+# HELPERS
+# =============================================================================
+
+func _get_quest_definition(quest_id: String) -> Dictionary:
+	# Search in campaign data
+	var campaign = CAMPAIGN_DATA
+
+	for act in campaign.acts:
+		for quest in act.main_quests:
+			if quest.quest_id == quest_id:
+				return quest
+
+	# Check faction missions
+	for act in campaign.acts:
+		if act.has("faction_missions"):
+			for fm in act.faction_missions:
+				if fm.quest_id == quest_id:
+					return fm
+
+	return {}
+
+func _grant_quest_rewards(quest: Dictionary) -> void:
+	var rewards = quest.rewards
+
+	if rewards.has("skill_xp"):
+		var skill_manager = get_node_or_null("/root/SkillManager")
+		if skill_manager:
+			for skill_id in rewards.skill_xp:
+				skill_manager.grant_skill_xp(skill_id, rewards.skill_xp[skill_id], "quest_reward")
+
+	if rewards.has("intelligence_points"):
+		var skill_manager = get_node_or_null("/root/SkillManager")
+		if skill_manager:
+			skill_manager.grant_intelligence_points(rewards.intelligence_points, "quest_reward")
+
+	if rewards.has("faction_reputation"):
+		var faction_sys = get_node_or_null("/root/FactionSystem")
+		if faction_sys:
+			for faction in rewards.faction_reputation:
+				faction_sys.modify_reputation(faction, rewards.faction_reputation[faction])
+
+	if rewards.has("items"):
+		var inv_manager = get_node_or_null("/root/InventoryManager")
+		if inv_manager:
+			for item in rewards.items:
+				inv_manager.add_item(item.item_id, item.quantity)
+
+	if rewards.has("equipment"):
+		var inv_manager = get_node_or_null("/root/InventoryManager")
+		if inv_manager:
+			for equip_id in rewards.equipment:
+				# Would equip automatically or add to inventory
+				inv_manager.add_item(equip_id, 1)
+
+	if rewards.has("companion_unlock"):
+		var comp_manager = get_node_or_null("/root/CompanionManager")
+		if comp_manager:
+			comp_manager.add_companion(rewards.companion_unlock)
+
+	if rewards.has("lab_access"):
+		var save_manager = get_node_or_null("/root/SaveManager")
+		if save_manager:
+			for lab in rewards.lab_access:
+				save_manager.unlock_content("lab", lab)
+
+	if rewards.has("background_specific"):
+		var bg_rewards = rewards.background_specific[current_background]
+		# Apply background-specific rewards
+		pass
+
+func _play_audio_log(audio_log_id: String) -> void:
+	# Would play audio log
+	print("Playing audio log: %s" % audio_log_id)
+
+func _save_quests() -> void:
+	var save_manager = get_node_or_null("/root/SaveManager")
+	if save_manager and save_manager.has_method("set_quest_data"):
+		save_manager.set_quest_data({
+			"active_quest": active_quest,
+			"completed_quests": completed_quests,
+			"failed_quests": failed_quests,
+			"quest_progress": quest_progress,
+			"current_background": current_background
+		})
+
+func get_active_quest() -> String:
+	return active_quest
+
+func get_quest_progress(quest_id: String) -> Dictionary:
+	return quest_progress.get(quest_id, {})
+
+func is_quest_completed(quest_id: String) -> bool:
+	return quest_id in completed_quests
+
+func is_quest_failed(quest_id: String) -> bool:
+	return quest_id in failed_quests
+
+func get_available_quests() -> Array[String]:
+	var available = []
+	var campaign = CAMPAIGN_DATA
+
+	for act in campaign.acts:
+		for quest in act.main_quests:
+			if _is_quest_available(quest.quest_id):
+				available.append(quest.quest_id)
+
+	return available
+
+func to_dict() -> Dictionary:
+	return {
+		"active_quest": active_quest,
+		"completed_quests": completed_quests,
+		"failed_quests": failed_quests,
+		"quest_progress": quest_progress,
+		"current_background": current_background
+	}
+
+func from_dict(data: Dictionary) -> void:
+	active_quest = data.get("active_quest", "")
+	completed_quests = data.get("completed_quests", [])
+	failed_quests = data.get("failed_quests", [])
+	quest_progress = data.get("quest_progress", {})
+	current_background = data.get("current_background", "academic")
+
+	if active_quest != "":
+		_start_quest(active_quest)

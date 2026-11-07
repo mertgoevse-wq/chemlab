@@ -22,9 +22,11 @@ uniform float fresnel_power : hint_range(0.5, 10.0, 0.1) = 4.0;
 
 // Fine-tuning parameters for photorealistic laboratory glassware
 uniform float refraction_strength : hint_range(0.0, 0.2, 0.001) = 0.035;
-uniform float dispersion : hint_range(0.0, 0.03, 0.0005) = 0.004;
+uniform float dispersion : hint_range(0.0, 0.015, 0.0005) = 0.003; // Clamped for AC subtlety
 uniform float rim_intensity : hint_range(0.0, 2.0, 0.05) = 0.85;
 uniform vec4 rim_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+// AC Visual Upgrade: copper-amber reflection tint per ac_visual_upgrade.md (#D97706 @ 8%)
+uniform vec4 ac_reflection_tint : source_color = vec4(0.851, 0.467, 0.047, 0.08);
 
 // Godot 4 Screen texture sampler
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear_mipmap;
@@ -75,8 +77,10 @@ void fragment() {
 	float edge_roughness_factor = 1.0 + roughness * 1.5;
 	vec3 edge_specular = mix(glass_color.rgb, rim_color.rgb, 0.8) * rim * edge_roughness_factor * rim_intensity;
 
-	// 7. PBR Output Assembly
-	ALBEDO = mix(tinted_refraction, edge_specular, fresnel * 0.9);
+	// 7. PBR Output Assembly with AC Visual Upgrade
+	// Apply copper-amber reflection tint (#D97706 @ 8%) to the refraction path for a warm laboratory glass aesthetic
+	var tinted_refraction_with_ac = mix(tinted_refraction, ac_reflection_tint.rgb, ac_reflection_tint.a);
+	ALBEDO = mix(tinted_refraction_with_ac, edge_specular, fresnel * 0.9);
 	ROUGHNESS = roughness;
 	METALLIC = 0.0;
 	SPECULAR = 0.5;

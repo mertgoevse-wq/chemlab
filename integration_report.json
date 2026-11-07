@@ -1,0 +1,886 @@
+{
+  "report_generated": "2026-11-07",
+  "project": "Athanor Ascension",
+  "target_directory": "C:/Users/Win11 Pro/Desktop/chemlab",
+  "repositories": [
+    {
+      "category": "1. Godot 4.3+ Lab/Chemistry Simulations",
+      "repos": [
+        {
+          "repo_name": "WagAd22/ABC-Laboratory",
+          "url": "https://github.com/WagAd22/ABC-Laboratory",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Prototypical simulation software for fluorescence/absorption of biomolecules",
+            "Built with Godot",
+            "Biomolecule property calculations"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Core simulation logic",
+            "Biomolecule data models",
+            "Fluorescence/absorption calculation algorithms"
+          ],
+          "notes": "Early prototype (3 stars). Good reference for biomolecule property calculations but may need significant adaptation for Athanor's chemistry system."
+        },
+        {
+          "repo_name": "SurajPatil06/Bacteria-Builder-Chemistry-of-Life",
+          "url": "https://github.com/SurajPatil06/Bacteria-Builder-Chemistry-of-Life",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Educational 3D simulation game in Godot",
+            "pH, temperature, and nutrient effects on bacterial growth",
+            "Chemistry of life visualization"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Environmental parameter simulation",
+            "Bacterial growth algorithms",
+            "3D visualization components"
+          ],
+          "notes": "Educational focus, good for environmental chemistry simulation reference."
+        },
+        {
+          "repo_name": "zholobov/alchemy-proto",
+          "url": "https://github.com/zholobov/alchemy-proto",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "2D alchemy simulation prototype",
+            "Emergent chemistry from property-based substance interactions",
+            "Godot 4.6"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Property-based substance interaction system",
+            "Emergent chemistry algorithms",
+            "Alchemy reaction logic"
+          ],
+          "notes": "Most relevant for Athanor - emergent chemistry from property-based interactions aligns well with synthesis protocol design."
+        },
+        {
+          "repo_name": "JammingDino/VSEPR",
+          "url": "https://github.com/JammingDino/VSEPR",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Interactive VSEPR model simulator",
+            "Molecular geometry visualization",
+            "Educational chemistry tool"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "VSEPR geometry calculations",
+            "Molecular visualization components",
+            "Interactive molecule builder"
+          ],
+          "notes": "Good for molecular geometry visualization in analytical instruments."
+        },
+        {
+          "repo_name": "researchase/resin-printing-workshop",
+          "url": "https://github.com/researchase/resin-printing-workshop",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Godot 4.7 teaching deck",
+            "Photopolymerisation chemistry simulation",
+            "MSLA printer simulation",
+            "Resin safety"
+          ],
+          "integration_difficulty": 4,
+          "files_to_use": [
+            "Photopolymerisation reaction simulation",
+            "3D printing process visualization"
+          ],
+          "notes": "Specialized for resin printing, limited direct applicability but good photochemistry reference."
+        }
+      ]
+    },
+    {
+      "category": "2. Procedural Glassware/Liquid Shaders",
+      "repos": [
+        {
+          "repo_name": "RAS-GIT/Godot-4-colored-glass-shader",
+          "url": "https://github.com/RAS-GIT/Godot-4-colored-glass-shader",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Colored glass shader for Godot 4",
+            "Procedural glass rendering"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Glass shader code",
+            "Color/refraction parameters"
+          ],
+          "notes": "Directly applicable for glassware rendering in lab equipment."
+        },
+        {
+          "repo_name": "1234igor/godot-liquid-glass",
+          "url": "https://github.com/1234igor/godot-liquid-glass",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Apple-style Liquid Glass as reusable Godot Control",
+            "Live refraction over scene",
+            "Pixel-compared against SwiftUI"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Liquid glass shader",
+            "Refraction system",
+            "Control node wrapper"
+          ],
+          "notes": "High quality liquid/glass effect, excellent for beakers, flasks, and liquid containers."
+        },
+        {
+          "repo_name": "Boulino/MagnifyingGlassLensEffectDemo",
+          "url": "https://github.com/Boulino/MagnifyingGlassLensEffectDemo",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Magnifying glass/lens distortion effect",
+            "Customizable shader for 2D nodes",
+            "Godot 4 compatible"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Lens distortion shader",
+            "Magnification parameters"
+          ],
+          "notes": "Useful for microscope/magnification effects in analytical instruments."
+        },
+        {
+          "repo_name": "Lord0Sanz/Godot-Glass-Break-Effect",
+          "url": "https://github.com/Lord0Sanz/Godot-Glass-Break-Effect",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Interactive glass crack shader",
+            "Realistic impact cracks with refraction",
+            "Blur and dynamic distortion"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Glass break shader",
+            "Crack propagation algorithm",
+            "Impact physics integration"
+          ],
+          "notes": "Good for safety simulation - glassware breakage effects."
+        },
+        {
+          "repo_name": "efirdc/GodotFluid",
+          "url": "https://github.com/efirdc/GodotFluid",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Fluid simulation in Godot",
+            "GLSL-based fluid dynamics",
+            "80 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Fluid simulation shaders",
+            "Navier-Stokes implementation",
+            "GPU fluid dynamics"
+          ],
+          "notes": "Core fluid simulation for liquid rendering in glassware."
+        },
+        {
+          "repo_name": "Chaosus/GodotFluidCPU",
+          "url": "https://github.com/Chaosus/GodotFluidCPU",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "2D fluid simulation GDExtension for Godot 4.x",
+            "C++ implementation",
+            "38 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "GDExtension fluid simulation",
+            "CPU-based Navier-Stokes",
+            "Godot 4.x integration patterns"
+          ],
+          "notes": "GDExtension approach good for performance-critical fluid sim."
+        },
+        {
+          "repo_name": "Maaack/2D-Fluid-Simulation",
+          "url": "https://github.com/Maaack/2D-Fluid-Simulation",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "2D Navier-Stokes fluid simulation",
+            "Godot 3.4.2 (may need porting to 4.x)",
+            "GDScript implementation"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Navier-Stokes equations in GDScript",
+            "2D fluid visualization"
+          ],
+          "notes": "GDScript implementation easier to integrate but older Godot version."
+        }
+      ]
+    },
+    {
+      "category": "3. Godot Inventory/UI Systems",
+      "repos": [
+        {
+          "repo_name": "peter-kish/gloot",
+          "url": "https://github.com/peter-kish/gloot",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Universal inventory system for Godot",
+            "992 stars - most popular",
+            "Generic, reusable design"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Core inventory logic",
+            "Item data structures",
+            "Inventory UI components"
+          ],
+          "notes": "Best starting point for Athanor's chemical inventory system."
+        },
+        {
+          "repo_name": "expressobits/inventory-system",
+          "url": "https://github.com/expressobits/inventory-system",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Modular inventory system for Godot 4",
+            "Multiplayer compatible",
+            "Separates logic from UI",
+            "Items as separate resources",
+            "740 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Modular inventory architecture",
+            "Resource-based item system",
+            "Multiplayer sync logic",
+            "UI/logic separation patterns"
+          ],
+          "notes": "Excellent for Athanor - modular, multiplayer-ready, resource-based items perfect for chemical compounds."
+        },
+        {
+          "repo_name": "alfredbaudisch/GodotDynamicInventorySystem",
+          "url": "https://github.com/alfredbaudisch/GodotDynamicInventorySystem",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Fully dynamic inventory system",
+            "UI with infinite scrolling",
+            "Item categories, equipment slots",
+            "Database of items",
+            "Zelda-inspired",
+            "666 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Dynamic UI with infinite scroll",
+            "Item categorization system",
+            "Equipment slot framework",
+            "Item database structure"
+          ],
+          "notes": "Great for complex chemical inventory with categories (reagents, products, equipment)."
+        },
+        {
+          "repo_name": "don-tnowe/godot-wyvernbox-inventory",
+          "url": "https://github.com/don-tnowe/godot-wyvernbox-inventory",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Action RPG-focused inventory",
+            "Godot 3 and 4 compatible",
+            "164 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "RPG inventory patterns",
+            "Cross-version compatibility"
+          ],
+          "notes": "RPG-focused, may need adaptation for lab inventory."
+        },
+        {
+          "repo_name": "Cabbage0211/grid-base-inventory-system",
+          "url": "https://github.com/Cabbage0211/grid-base-inventory-system",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Grid-based inventory system (GBIS)",
+            "77 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Grid-based layout logic",
+            "Slot management"
+          ],
+          "notes": "Good for spatial inventory (storage cabinets, reagent racks)."
+        }
+      ]
+    },
+    {
+      "category": "4. Godot Character Controllers",
+      "repos": [
+        {
+          "repo_name": "gdquest-demos/godot-3d-mannequin",
+          "url": "https://github.com/gdquest-demos/godot-3d-mannequin",
+          "license": "MIT (GDQuest typically uses MIT)",
+          "key_features": [
+            "Open source 3D character and character controller",
+            "1.2k stars",
+            "GDQuest - high quality Godot tutorials"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Character controller base",
+            "Movement physics",
+            "Animation state machine",
+            "Camera control"
+          ],
+          "notes": "Excellent foundation for lab player character. MIT license ideal."
+        },
+        {
+          "repo_name": "gdquest-demos/godot-4-3d-third-person-controller",
+          "url": "https://github.com/gdquest-demos/godot-4-3d-third-person-controller",
+          "license": "MIT (GDQuest typically uses MIT)",
+          "key_features": [
+            "Plug-and-play 3D Third-Person Shooter controller",
+            "Inspired by Ratchet and Clank",
+            "Godot 4 specific",
+            "1k stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Third-person controller",
+            "Camera system",
+            "Combat/interaction mechanics",
+            "Animation blending"
+          ],
+          "notes": "Best for third-person lab exploration. High quality, MIT license."
+        },
+        {
+          "repo_name": "Brackeys/brackeys-proto-controller",
+          "url": "https://github.com/Brackeys/brackeys-proto-controller",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Simple first-person Character Controller",
+            "Prototyping focused",
+            "448 stars"
+          ],
+          "integration_difficulty": 1,
+          "files_to_use": [
+            "FPS movement basics",
+            "Camera control",
+            "Simple interaction"
+          ],
+          "notes": "Good for quick prototyping, may need expansion for full game."
+        },
+        {
+          "repo_name": "expressobits/character-controller",
+          "url": "https://github.com/expressobits/character-controller",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Modular Character Controller for Godot 4",
+            "FPS version with headbob and camera movement",
+            "Walk, Crouch, Sprint, Swim and Fly modes",
+            "436 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Modular movement states",
+            "Headbob/camera effects",
+            "Multiple locomotion modes",
+            "Crouch/sprint mechanics"
+          ],
+          "notes": "Very feature-complete, modular design fits Athanor well."
+        },
+        {
+          "repo_name": "ratmarrow/GoldGdt",
+          "url": "https://github.com/ratmarrow/GoldGdt",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "GoldSrc character controller add-on",
+            "Classic FPS movement style",
+            "170 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "GoldSrc movement physics",
+            "Bunny hopping/air control"
+          ],
+          "notes": "Niche - classic FPS feel, probably not needed for lab sim."
+        }
+      ]
+    },
+    {
+      "category": "5. Godot NPC/Companion Systems",
+      "repos": [
+        {
+          "repo_name": "bitbrain/beehave",
+          "url": "https://github.com/bitbrain/beehave",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Behavior tree AI for Godot Engine",
+            "3.3k stars - most popular",
+            "🐝 branding"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Behavior tree core",
+            "AI node types (sequence, selector, decorator)",
+            "Blackboard system",
+            "Visual editor integration"
+          ],
+          "notes": "Best-in-class behavior tree for companion AI. High stars, active maintenance likely."
+        },
+        {
+          "repo_name": "kagenash1/godot-behavior-tree",
+          "url": "https://github.com/kagenash1/godot-behavior-tree",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Behavior Tree plugin for Godot",
+            "219 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Behavior tree implementation",
+            "Node types",
+            "Plugin structure"
+          ],
+          "notes": "Good alternative to beehave, plugin-based."
+        },
+        {
+          "repo_name": "Earewien/godot-yet-another-behavior-tree",
+          "url": "https://github.com/Earewien/godot-yet-another-behavior-tree",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Behavior Tree implementation for Godot",
+            "85 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Behavior tree core",
+            "Custom node types"
+          ],
+          "notes": "Simpler implementation, good for learning."
+        },
+        {
+          "repo_name": "chrisizeful/Operations",
+          "url": "https://github.com/chrisizeful/Operations",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Programmatic animation and behavior tree creation",
+            "34 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Programmatic behavior construction",
+            "Animation integration"
+          ],
+          "notes": "Unique approach - code-driven behavior trees."
+        },
+        {
+          "repo_name": "jhlothamer/behavior_tree_enemy_ai_demo",
+          "url": "https://github.com/jhlothamer/behavior_tree_enemy_ai_demo",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Enemy AI demo using behavior trees",
+            "24 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Enemy AI patterns",
+            "Behavior tree usage examples"
+          ],
+          "notes": "Demo project - good for reference implementation."
+        }
+      ]
+    },
+    {
+      "category": "6. Godot Save/Serialization",
+      "repos": [
+        {
+          "repo_name": "AdamKormos/SaveMadeEasy",
+          "url": "https://github.com/AdamKormos/SaveMadeEasy",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Easy to use Save/Load System for Godot 4",
+            "Inspired by Unity's PlayerPrefs",
+            "Supports nested variables, Resources",
+            "219 stars"
+          ],
+          "integration_difficulty": 1,
+          "files_to_use": [
+            "Save/load singleton",
+            "Nested variable serialization",
+            "Resource serialization",
+            "PlayerPrefs-style API"
+          ],
+          "notes": "Simplest integration - PlayerPrefs style API good for quick save system."
+        },
+        {
+          "repo_name": "EiTaNBaRiBoA/ForgeJSONGD",
+          "url": "https://github.com/EiTaNBaRiBoA/ForgeJSONGD",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "GDScript singleton for JSON serialization",
+            "Serialize any class to JSON and back",
+            "112 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "JSON serialization singleton",
+            "Class-to-JSON conversion",
+            "Deserialization logic"
+          ],
+          "notes": "Good for complex game state serialization (chemical compounds, lab state)."
+        },
+        {
+          "repo_name": "rdmtt/Godot-3.1-Advanced-Save-System",
+          "url": "https://github.com/rdmtt/Godot-3.1-Advanced-Save-System",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Advanced save-load system for Godot 3.1",
+            "69 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "Advanced save patterns",
+            "Version migration"
+          ],
+          "notes": "Godot 3.1 - needs porting to 4.x."
+        },
+        {
+          "repo_name": "MrRobinOfficial/Godot-Saveable",
+          "url": "https://github.com/MrRobinOfficial/Godot-Saveable",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Save system for Godot C#",
+            "Uses Newtonsoft.Json",
+            "Encrypted, compressed, regular saves",
+            "26 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "C# serialization patterns",
+            "Encryption/compression",
+            "Newtonsoft.Json integration"
+          ],
+          "notes": "C# only - only useful if Athanor uses C#."
+        }
+      ]
+    },
+    {
+      "category": "7. Godot Testing Frameworks",
+      "repos": [
+        {
+          "repo_name": "godot-gdunit-labs/gdUnit4",
+          "url": "https://github.com/godot-gdunit-labs/gdUnit4",
+          "license": "MIT (gdUnit typically MIT)",
+          "key_features": [
+            "Embedded unit testing framework for Godot 4",
+            "Supports GDScript and C#",
+            "Test-driven development",
+            "Embedded test inspector",
+            "Extensible",
+            "1.3k stars - most popular"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Test runner",
+            "Assertion library",
+            "Test inspector UI",
+            "GDScript and C# support",
+            "CI integration"
+          ],
+          "notes": "Best choice for Athanor - official Godot testing framework, MIT license, comprehensive features."
+        },
+        {
+          "repo_name": "MikeSchulze/gdUnit3",
+          "url": "https://github.com/MikeSchulze/gdUnit3",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Godot Unit Test Framework",
+            "GDScript and C# support",
+            "320 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Legacy test framework",
+            "GDScript/C# support"
+          ],
+          "notes": "Godot 3 era - gdUnit4 is the modern replacement."
+        },
+        {
+          "repo_name": "godot-gdunit-labs/gdUnit4Net",
+          "url": "https://github.com/godot-gdunit-labs/gdUnit4Net",
+          "license": "MIT (gdUnit typically MIT)",
+          "key_features": [
+            "Official C# implementation of GDUnit4",
+            "VS/Rider test adapter integration",
+            "197 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "C# test adapter",
+            "IDE integration",
+            "GDUnit4 C# bindings"
+          ],
+          "notes": "Only needed if Athanor uses C#."
+        },
+        {
+          "repo_name": "graydwarf/godot-ui-automation",
+          "url": "https://github.com/graydwarf/godot-ui-automation",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Visual UI Test Automation for Godot 4.x",
+            "Record, playback, validate UI interactions",
+            "22 stars"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "UI automation recorder",
+            "Playback system",
+            "Validation framework"
+          ],
+          "notes": "Good for UI regression testing in lab interface."
+        }
+      ]
+    },
+    {
+      "category": "8. Godot Build/Export Tools",
+      "repos": [
+        {
+          "repo_name": "abarichello/godot-ci",
+          "url": "https://github.com/abarichello/godot-ci",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Docker image to export Godot Engine games",
+            "Templates for GitLab CI and GitHub Actions",
+            "Deploy to GitLab Pages/GitHub Pages/Itch.io",
+            "1.2k stars - most popular"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Docker export images",
+            "GitHub Actions workflows",
+            "GitLab CI templates",
+            "Multi-platform export scripts"
+          ],
+          "notes": "Best for CI/CD pipeline - comprehensive, well-maintained."
+        },
+        {
+          "repo_name": "bend-n/godot-actions",
+          "url": "https://github.com/bend-n/godot-actions",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Tools for exporting Godot projects via GitHub Actions",
+            "38 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "GitHub Actions workflows",
+            "Export automation"
+          ],
+          "notes": "Simpler alternative, GitHub Actions focused."
+        },
+        {
+          "repo_name": "DemoxDev/godot-switch-template",
+          "url": "https://github.com/DemoxDev/godot-switch-template",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Godot 4.x export template for Nintendo Switch",
+            "2 stars - only result found"
+          ],
+          "integration_difficulty": 5,
+          "files_to_use": [
+            "Switch export template",
+            "Nintendo SDK integration patterns"
+          ],
+          "notes": "Only public Switch template found. Nintendo Switch export requires licensed Nintendo SDK - this is likely just a template structure. Actual Switch export requires Nintendo developer account."
+        }
+      ]
+    },
+    {
+      "category": "9. Chemistry Databases",
+      "repos": [
+        {
+          "repo_name": "mcs07/PubChemPy",
+          "url": "https://github.com/mcs07/PubChemPy",
+          "license": "MIT (common for PubChemPy)",
+          "key_features": [
+            "Python wrapper for PubChem PUG REST API",
+            "518 stars - most popular",
+            "Compound search, property retrieval",
+            "Structure search support"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "PubChem API client",
+            "Compound search methods",
+            "Property retrieval",
+            "Structure similarity search"
+          ],
+          "notes": "Primary choice for PubChem integration. MIT license, well-maintained."
+        },
+        {
+          "repo_name": "chembl/chembl_webresource_client",
+          "url": "https://github.com/chembl/chembl_webresource_client",
+          "license": "Apache-2.0 (ChEMBL typically Apache)",
+          "key_features": [
+            "Official Python client for ChEMBL API",
+            "453 stars",
+            "Bioactivity data, target info, compound data",
+            "Maintained by EMBL-EBI"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "ChEMBL API client",
+            "Target search",
+            "Bioactivity queries",
+            "Compound similarity search"
+          ],
+          "notes": "Official ChEMBL client - essential for target prediction and bioactivity data."
+        },
+        {
+          "repo_name": "kuelumbus/rdkit-pypi",
+          "url": "https://github.com/kuelumbus/rdkit-pypi",
+          "license": "BSD-3-Clause (RDKit license)",
+          "key_features": [
+            "RDKit Python wheels on PyPI",
+            "139 stars",
+            "Chemical informatics toolkit",
+            "Structure manipulation, fingerprinting, reactions"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "RDKit Python bindings",
+            "Molecular structure operations",
+            "Fingerprint generation",
+            "Reaction SMARTS"
+          ],
+          "notes": "RDKit is the standard for cheminformatics. Python-only but can be called via subprocess or Python embedding."
+        }
+      ]
+    },
+    {
+      "category": "10. SwissTargetPrediction API Clients",
+      "repos": [
+        {
+          "repo_name": "TCMzhoutong/Target-Prediction-Crawler",
+          "url": "https://github.com/TCMzhoutong/Target-Prediction-Crawler",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Crawler for target prediction websites including SwissTargetPrediction",
+            "24 stars",
+            "Automated target prediction"
+          ],
+          "integration_difficulty": 3,
+          "files_to_use": [
+            "SwissTargetPrediction scraping logic",
+            "Batch prediction submission",
+            "Result parsing"
+          ],
+          "notes": "Web scraping approach - may violate ToS. Prefer official API if available."
+        },
+        {
+          "repo_name": "YumeAyai/swiss_target_batch",
+          "url": "https://github.com/YumeAyai/swiss_target_batch",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Automated batch client for SwissTargetPrediction",
+            "Submit SMILES programmatically",
+            "Retrieve protein target predictions",
+            "5 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Batch SMILES submission",
+            "Prediction result retrieval",
+            "Protein target parsing"
+          ],
+          "notes": "Better structured for programmatic use than crawler."
+        },
+        {
+          "repo_name": "ZKYMYSELF/SwissTargetPrediction-in-batch",
+          "url": "https://github.com/ZKYMYSELF/SwissTargetPrediction-in-batch-SwissTargetPrediction-",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Batch prediction script for SwissTargetPrediction",
+            "Compound name + SMILES input",
+            "One-click batch prediction",
+            "4 stars"
+          ],
+          "integration_difficulty": 2,
+          "files_to_use": [
+            "Batch processing workflow",
+            "SMILES validation",
+            "Result formatting"
+          ],
+          "notes": "Chinese documentation - may need translation."
+        },
+        {
+          "repo_name": "Hz-777/network-pharmacology",
+          "url": "https://github.com/Hz-777/network-pharmacology",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "One-click network pharmacology analysis platform",
+            "TCMSP → PubChem → SwissTargetPrediction → STRING → Enrichment pipeline",
+            "4 stars"
+          ],
+          "integration_difficulty": 4,
+          "files_to_use": [
+            "Multi-database pipeline",
+            "Network analysis",
+            "Enrichment analysis"
+          ],
+          "notes": "Complete pipeline but TCM-focused. Good reference for multi-db integration."
+        }
+      ]
+    },
+    {
+      "category": "11. PiHKAL/TiHKAL Data",
+      "repos": [
+        {
+          "repo_name": "No repositories found",
+          "url": "",
+          "license": "N/A",
+          "key_features": [
+            "GitHub search returned 0 results for PiHKAL/TiHKAL"
+          ],
+          "integration_difficulty": 5,
+          "files_to_use": [],
+          "notes": "No public GitHub repos found for PiHKAL/TiHKAL data. These are copyrighted books by Alexander Shulgin. Data would need to be sourced from licensed databases or manually compiled from public domain sources. Consider using PubChem/ChEMBL for compound data instead."
+        }
+      ]
+    },
+    {
+      "category": "12. Godot 4.3+ Nintendo Switch Export",
+      "repos": [
+        {
+          "repo_name": "DemoxDev/godot-switch-template",
+          "url": "https://github.com/DemoxDev/godot-switch-template",
+          "license": "Unknown (check repo)",
+          "key_features": [
+            "Godot 4.x export template for Nintendo Switch",
+            "2 stars - only public result"
+          ],
+          "integration_difficulty": 5,
+          "files_to_use": [
+            "Switch export template structure",
+            "Nintendo SDK integration patterns"
+          ],
+          "notes": "CRITICAL: Nintendo Switch export requires licensed Nintendo SDK and developer account. This template only provides structure. Actual export requires: 1) Nintendo Developer Portal access, 2) Nintendo SDK (NDA), 3) Dev hardware. Godot's Switch support is via third-party (W4 Games) or custom port. Not feasible for open-source project without Nintendo partnership."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_repos_found": 64,
+    "categories_with_results": 11,
+    "categories_empty": 1,
+    "recommended_priority": [
+      "gdquest-demos/godot-4-3d-third-person-controller (character controller, MIT)",
+      "godot-gdunit-labs/gdUnit4 (testing, MIT)",
+      "peter-kish/gloot or expressobits/inventory-system (inventory)",
+      "bitbrain/beehave (AI behavior trees)",
+      "mcs07/PubChemPy (chemistry DB, MIT)",
+      "chembl/chembl_webresource_client (ChEMBL, Apache-2.0)",
+      "abarichello/godot-ci (CI/CD)",
+      "RAS-GIT/Godot-4-colored-glass-shader / 1234igor/godot-liquid-glass (shaders)",
+      "zholobov/alchemy-proto (emergent chemistry)",
+      "AdamKormos/SaveMadeEasy or EiTaNBaRiBoA/ForgeJSONGD (save system)"
+    ],
+    "license_notes": "Most repos don't display license in search results. Verify each repo's LICENSE file before integration. MIT/BSD/Apache-2.0 preferred for Athanor.",
+    "switch_export_note": "Nintendo Switch export not viable without Nintendo developer license and SDK. Consider Steam Deck (standard Linux) instead."
+  }
+}

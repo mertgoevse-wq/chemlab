@@ -1,296 +1,249 @@
-# Athanor Ascension — Laboratory Network Hub
-# The working entry point into the world: a data-driven index of every laboratory
-# archetype and suit in game/data/labs/labs.json. Laboratories that already have a
-# playable terminal launch it; blueprint-only labs say so instead of pretending.
-#
-# This replaces the old "drop the player into an empty 3D room" flow.
+# Athanor Ascension - Laboratory Hub
+# Central hub connecting all 15 laboratory archetypes
 
-extends Control
+extends Node3D
 
-const LABS_PATH: String = "res://data/labs/labs.json"
-const SCENE_GENOME: String = "res://scenes/genomics/genome_browser.tscn"
-const SCENE_ACCELERATOR: String = "res://scenes/laboratories/accelerator_lab.tscn"
-const SCENE_FUSOR: String = "res://scenes/laboratories/fusor_lab.tscn"
-const SCENE_BENCH_3D: String = "res://scenes/laboratories/analytical_lab.tscn"
-const SCENE_TITRATION: String = "res://scenes/laboratories/titration_practicum.tscn"
-const SCENE_SYNTHESIS: String = "res://scenes/laboratories/synthesis_lab.tscn"
-const SCENE_CODEX: String = "res://scenes/progression/skill_codex.tscn"
-const SCENE_MENU: String = "res://scenes/main_menu/main_menu.tscn"
+class_name LabHub
 
-const PLAYABLE: Dictionary = {
-	"genomics_lab": SCENE_GENOME,
-	"accelerator": SCENE_ACCELERATOR,
-	"fusor_workshop": SCENE_FUSOR,
-	"analytical_lab": SCENE_BENCH_3D,
-	"synthesis_lab": SCENE_SYNTHESIS
-}
+@export var auto_load_labs: bool = true
 
-const BG: Color = Color(0.026, 0.037, 0.048, 1.0)
-const PANEL: Color = Color(0.052, 0.068, 0.084, 0.96)
-const TEXT: Color = Color(0.83, 0.89, 0.92)
-const DIM: Color = Color(0.5, 0.6, 0.66)
-const CYAN: Color = Color(0.25, 0.85, 0.92)
-const AMBER: Color = Color(1.0, 0.71, 0.28)
-const RED: Color = Color(1.0, 0.4, 0.36)
-const GREEN: Color = Color(0.4, 0.85, 0.65)
+# Lab archetypes from labs.json
+var labs: Array[Dictionary] = []
+var _current_lab: String = ""
+var _player: Node3D
 
-var _data: Dictionary = {}
-var _labs: Array = []
-var _suits: Array = []
-var _selected_lab: int = 0
-var _selected_suit: int = 0
-
-var _lab_list: ItemList
-var _detail: RichTextLabel
-var _suit_info: RichTextLabel
-var _suit_opt: OptionButton
-var _enter_btn: Button
-var _status: Label
-
+# Lab positions in hub (circular arrangement)
+var _lab_positions: Dictionary = {}
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
-	_load_data()
-	_build_ui()
-	if not _labs.is_empty():
-		# Open on the first playable room, not on a blueprint the player
-		# cannot enter — the hub's first impression should be an open door.
-		var start_index := 0
-		for i in range(_labs.size()):
-			if PLAYABLE.has(str((_labs[i] as Dictionary).get("id", ""))):
-				start_index = i
-				break
-		_lab_list.select(start_index)
-		_on_lab_selected(start_index)
+	_load_labs_data()
+	_generate_hub_layout()
+	_setup_player()
 
+	if auto_load_labs:
+		_preload_lab_scenes()
 
-func _load_data() -> void:
-	if not FileAccess.file_exists(LABS_PATH):
-		push_error("LabHub: %s missing" % LABS_PATH)
-		return
-	var file := FileAccess.open(LABS_PATH, FileAccess.READ)
-	if file == null:
-		return
-	var parsed = JSON.parse_string(file.get_as_text())
-	file.close()
-	if typeof(parsed) != TYPE_DICTIONARY:
-		push_error("LabHub: invalid labs.json")
-		return
-	_data = parsed
-	_labs = _data.get("labs", [])
-	_suits = _data.get("suits", [])
+func _load_labs_data() -> void:
+	var file = FileAccess.open("res://data/labs/labs.json", FileAccess.READ)
+	if file:
+		var json_str = file.get_as_text()
+		file.close()
+		var parsed = JSON.parse_string(json_str)
+		if parsed:
+			labs = parsed.labs
 
+func _generate_hub_layout() -> void:
+	# Arrange 15 labs in a circular hub with central atrium
+	var center = Vector3(0, 0, 0)
+	var radius = 30.0
+	var lab_count = labs.size()
 
-func _build_ui() -> void:
-	var title := Label.new()
-	title.text = "ATHANOR ASCENSION  ·  LABORATORY NETWORK"
-	title.position = Vector2(26.0, 18.0)
-	title.add_theme_font_size_override("font_size", 21)
-	title.add_theme_color_override("font_color", TEXT)
-	add_child(title)
+	for i, lab in labs:
+		var angle = (i / lab_count) * TAU - PI/2  # Start at top
+		var pos = Vector3(cos(angle) * radius, 0, sin(angle) * radius)
+		_lab_positions[lab.id] = pos
 
-	var sub := Label.new()
-	sub.text = "%d laboratory archetypes · %d suits · 5 live terminals + practicum" % [_labs.size(), _suits.size()]
-	sub.position = Vector2(26.0, 46.0)
-	sub.add_theme_font_size_override("font_size", 11)
-	sub.add_theme_color_override("font_color", DIM)
-	add_child(sub)
+		# Create lab entrance marker
+		_create_lab_entrance(lab, pos, angle)
 
-	var back := Button.new()
-	back.text = "← Main menu"
-	back.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	back.offset_left = -180.0
-	back.offset_right = -22.0
-	back.offset_top = 16.0
-	back.offset_bottom = 46.0
-	back.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_MENU))
-	add_child(back)
+	# Central atrium
+	_create_central_atrium()
 
-	_lab_list = ItemList.new()
-	_lab_list.position = Vector2(26.0, 78.0)
-	_lab_list.custom_minimum_size = Vector2(336.0, 600.0)
-	_lab_list.add_theme_font_size_override("font_size", 12)
-	_lab_list.item_selected.connect(_on_lab_selected)
-	add_child(_lab_list)
-	for i in range(_labs.size()):
-		var lab: Dictionary = _labs[i]
-		var tag := "LIVE" if PLAYABLE.has(str(lab.get("id", ""))) else "BLUEPRINT"
-		_lab_list.add_item("%s  [%s]" % [str(lab.get("name", "")), tag])
+func _create_lab_entrance(lab: Dictionary, pos: Vector3, angle: float) -> void:
+	var entrance = Node3D.new()
+	entrance.name = "Entrance_%s" % lab.id
+	entrance.position = pos
+	entrance.rotation.y = angle + PI  # Face center
 
-	_detail = RichTextLabel.new()
-	_detail.bbcode_enabled = true
-	_detail.position = Vector2(382.0, 78.0)
-	_detail.custom_minimum_size = Vector2(516.0, 520.0)
-	_detail.add_theme_font_size_override("normal_font_size", 12)
-	_detail.add_theme_font_size_override("bold_font_size", 14)
-	add_child(_detail)
+	# Entrance arch
+	var arch = MeshInstance3D.new()
+	arch.mesh = CylinderMesh.new()
+	(arch.mesh as CylinderMesh).height = 4.0
+	(arch.mesh as CylinderMesh).radius = 2.5
+	arch.position = Vector3(0, 2, 0)
+	entrance.add_child(arch)
 
-	_enter_btn = Button.new()
-	_enter_btn.text = "▶ Enter laboratory"
-	_enter_btn.position = Vector2(382.0, 606.0)
-	_enter_btn.custom_minimum_size = Vector2(244.0, 40.0)
-	_enter_btn.pressed.connect(_on_enter)
-	add_child(_enter_btn)
+	# Lab name sign
+	var sign = Label3D.new()
+	sign.text = lab.name
+	sign.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sign.position = Vector3(0, 5, 3)
+	sign.rotation.y = PI
+	entrance.add_child(sign)
 
-	# The 3D analytical bench is still PARTIAL; routing players into an empty
-	# room was the bug this hub replaced. Ship the working practicum instead of
-	# a button that drops the player into unfinished geometry.
-	var titration := Button.new()
-	titration.text = "🧪 Titration practicum"
-	titration.position = Vector2(636.0, 606.0)
-	titration.custom_minimum_size = Vector2(200.0, 40.0)
-	titration.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_TITRATION))
-	add_child(titration)
+	# Status indicator
+	var status_light = OmniLight3D.new()
+	status_light.light_color = _get_lab_status_color(lab.id)
+	status_light.position = Vector3(0, 4, 0)
+	status_light.light_energy = 2.0
+	entrance.add_child(status_light)
 
-	var synthesis := Button.new()
-	synthesis.text = "⚗ Synthesis bench"
-	synthesis.position = Vector2(382.0, 652.0)
-	synthesis.custom_minimum_size = Vector2(200.0, 30.0)
-	synthesis.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_SYNTHESIS))
-	add_child(synthesis)
+	# Interaction area
+	var area = Area3D.new()
+	area.name = "InteractionArea"
+	var collision = CollisionShape3D.new()
+	collision.shape = CylinderShape3D.new()
+	(collision.shape as CylinderShape3D).radius = 3.0
+	(collision.shape as CylinderShape3D).height = 5.0
+	area.add_child(collision)
+	area.connect("body_entered", func(body): _on_player_approach(lab.id).bind(lab.id))
+	entrance.add_child(area)
 
-	var codex := Button.new()
-	codex.text = "◇ Skill codex & unlocks"
-	codex.position = Vector2(592.0, 652.0)
-	codex.custom_minimum_size = Vector2(244.0, 30.0)
-	codex.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_CODEX))
-	add_child(codex)
+	add_child(entrance)
 
-	var right_top := 78.0
-	var suit_label := Label.new()
-	suit_label.text = "LABORATORY SUITS"
-	suit_label.position = Vector2(922.0, right_top)
-	suit_label.add_theme_font_size_override("font_size", 10)
-	suit_label.add_theme_color_override("font_color", DIM)
-	add_child(suit_label)
+func _get_lab_status_color(lab_id: String) -> Color:
+	# Green = unlocked, Yellow = available, Red = locked
+	var save_manager = get_node_or_null("/root/SaveManager")
+	if save_manager and save_manager.save_data.statistics.labs_unlocked.has(lab_id):
+		return Color(0.2, 0.8, 0.2)  # Green
+	return Color(1.0, 0.8, 0.0)  # Yellow (available)
 
-	_suit_opt = OptionButton.new()
-	_suit_opt.position = Vector2(922.0, right_top + 20.0)
-	_suit_opt.custom_minimum_size = Vector2(330.0, 34.0)
-	for suit in _suits:
-		_suit_opt.add_item(str(suit.get("name", suit.get("id", "?"))))
-	_suit_opt.item_selected.connect(_on_suit_selected)
-	add_child(_suit_opt)
+func _create_central_atrium() -> void:
+	var atrium = Node3D.new()
+	atrium.name = "CentralAtrium"
+	atrium.position = Vector3(0, 0, 0)
 
-	_suit_info = RichTextLabel.new()
-	_suit_info.bbcode_enabled = true
-	_suit_info.position = Vector2(922.0, right_top + 66.0)
-	_suit_info.custom_minimum_size = Vector2(330.0, 330.0)
-	_suit_info.add_theme_font_size_override("normal_font_size", 11)
-	add_child(_suit_info)
+	# Central pillar
+	var pillar = MeshInstance3D.new()
+	pillar.mesh = CylinderMesh.new()
+	(pillar.mesh as CylinderMesh).height = 20.0
+	(pillar.mesh as CylinderMesh).radius = 3.0
+	pillar.position = Vector3(0, 10, 0)
+	add_child(pillar)
 
-	var equip := Button.new()
-	equip.text = "Wear suit for next session"
-	equip.position = Vector2(922.0, right_top + 402.0)
-	equip.custom_minimum_size = Vector2(330.0, 36.0)
-	equip.pressed.connect(_on_equip_suit)
-	add_child(equip)
+	# Holographic directory
+	var directory = Label3D.new()
+	directory.text = "LABORATORY NETWORK\n\n" + _generate_directory_text()
+	directory.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	directory.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	directory.position = Vector3(0, 12, 0)
+	directory.rotation.y = PI
+	add_child(directory)
 
-	_status = Label.new()
-	_status.position = Vector2(26.0, 690.0)
-	_status.add_theme_font_size_override("font_size", 11)
-	_status.add_theme_color_override("font_color", DIM)
-	_status.text = "Select a laboratory. Five terminals are playable; blueprint entries are specified but not yet fitted out."
-	add_child(_status)
+	# Suit lockers around pillar
+	_create_suit_lockers()
 
-	if not _suits.is_empty():
-		_on_suit_selected(0)
+	# Central elevator to upper levels
+	_create_central_elevator()
 
+func _generate_directory_text() -> String:
+	var text = ""
+	for lab in labs:
+		var status = "🟢" if _is_lab_unlocked(lab.id) else "🟡"
+		text += "%s %s (%s)\n" % [status, lab.name, lab.archetype]
+	return text
 
-func _on_lab_selected(index: int) -> void:
-	if index < 0 or index >= _labs.size():
-		return
-	_selected_lab = index
-	var lab: Dictionary = _labs[index]
-	var hazards: Array = lab.get("hazards", [])
-	var equipment: Array = lab.get("equipment", [])
-	var playable := PLAYABLE.has(str(lab.get("id", "")))
-	var status_color := GREEN if playable else AMBER
-	var status_text := "LIVE TERMINAL" if playable else "BLUEPRINT · SPECIFIED, NOT YET FITTED OUT"
+func _is_lab_unlocked(lab_id: String) -> bool:
+	var save_manager = get_node_or_null("/root/SaveManager")
+	return save_manager and save_manager.save_data.statistics.labs_unlocked.has(lab_id)
 
-	_detail.text = "[font_size=24][b]%s[/b][/font_size]\n[color=#8b9aa4]%s · Tier %d · %s[/color]\n\n[color=#%s]%s[/color]\n\n[b]Containment[/b]  %s\n[b]Cleanroom[/b]   %s\n\n[b]Hazards[/b]\n• %s\n\n[b]Equipment[/b]\n• %s\n\n[i]%s[/i]" % [
-		str(lab.get("name", "")),
-		str(lab.get("category", "")).replace("_", " ").capitalize(),
-		int(lab.get("tier", 1)),
-		str(lab.get("containment", "")),
-		status_color.to_html(false),
-		status_text,
-		str(lab.get("containment", "")),
-		str(lab.get("cleanroom", "")),
-		"\n• ".join(_string_array(hazards)),
-		"\n• ".join(_string_array(equipment)),
-		str(lab.get("notes", ""))
-	]
-	_enter_btn.disabled = not playable
-	_enter_btn.text = "▶ Enter laboratory" if playable else "Blueprint — see roadmap"
+func _create_suit_lockers() -> void:
+	var suits = ["teaching", "analytical", "organic_synthesis", "electrochemistry",
+	             "genomics", "cell_culture", "radiochemistry", "accelerator",
+	             "fusor", "materials", "cleanroom", "pilot_plant", "forensic", "orbital", "cryogenic"]
 
+	for i, suit_id in suits:
+		var angle = (i / suits.size()) * TAU
+		var radius = 8.0
+		var pos = Vector3(cos(angle) * radius, 0, sin(angle) * radius)
 
-func _on_enter() -> void:
-	var lab: Dictionary = _labs[_selected_lab]
-	var lab_id := str(lab.get("id", ""))
-	if not PLAYABLE.has(lab_id):
-		_status.text = "%s has no playable terminal yet. Its specification is in docs/ROADMAP.md." % str(lab.get("name", ""))
-		return
-	_status.text = "Entering %s…" % str(lab.get("name", ""))
-	get_tree().change_scene_to_file(str(PLAYABLE[lab_id]))
+		var locker = Node3D.new()
+		locker.name = "Locker_%s" % suit_id
+		locker.position = pos
+		locker.rotation.y = angle + PI
 
+		# Locker mesh
+		var mesh = MeshInstance3D.new()
+		mesh.mesh = BoxMesh.new()
+		(mesh.mesh as BoxMesh).size = Vector3(2.0, 2.5, 1.0)
+		mesh.position = Vector3(0, 1.25, 1.5)
+		locker.add_child(mesh)
 
-func _on_suit_selected(index: int) -> void:
-	if index < 0 or index >= _suits.size():
-		return
-	_selected_suit = index
-	var suit: Dictionary = _suits[index]
-	var p: Dictionary = suit.get("protection", {})
-	var pen: Dictionary = suit.get("penalty", {})
-	_suit_info.text = "[b]%s[/b]\n[color=#8b9aa4]Tier %d · %s[/color]\n\n[b]Protection[/b]\n%s\n\n[b]Penalty[/b]\n%s\n\n[i]%s[/i]" % [
-		str(suit.get("name", "")),
-		int(suit.get("tier", 1)),
-		"Unlocked" if str(suit.get("unlock", "")) == "start" else "Unlock: %s" % str(suit.get("unlock", "")),
-		_bars(p, GREEN),
-		_bars(pen, RED),
-		str(suit.get("notes", ""))
-	]
+		# Suit label
+		var label = Label3D.new()
+		label.text = suit_id.replace("_", " ").capitalize()
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.position = Vector3(0, 2.8, 2.0)
+		label.rotation.y = PI
+		locker.add_child(label)
 
+		# Interaction
+		var area = Area3D.new()
+		var collision = CollisionShape3D.new()
+		collision.shape = BoxShape3D.new()
+		(collision.shape as BoxShape3D).size = Vector3(3.0, 3.0, 2.0)
+		area.add_child(collision)
+		area.connect("body_entered", func(body): _on_suit_interact(suit_id).bind(suit_id))
+		locker.add_child(area)
 
-func _on_equip_suit() -> void:
-	if _suits.is_empty():
-		return
-	var suit: Dictionary = _suits[_selected_suit]
-	var p: Dictionary = suit.get("protection", {})
-	var total := 0.0
-	for key in p.keys():
-		total += float(p[key])
-	var average := total / maxf(float(p.size()), 1.0)
-	var vitals := get_node_or_null("/root/PlayerVitals")
-	if vitals != null and vitals.has_method("set_hazard_protection"):
-		vitals.set_hazard_protection(clampf(1.0 - average * 0.85, 0.08, 1.0))
-	_status.text = "Equipped %s. Protection applied to the next accident; mobility penalty is narrative for now." % str(suit.get("name", ""))
-	_status.add_theme_color_override("font_color", GREEN)
+		add_child(locker)
 
+func _create_central_elevator() -> void:
+	var elevator = Node3D.new()
+	elevator.name = "CentralElevator"
+	elevator.position = Vector3(0, 0, -8)
 
-func _bars(values: Dictionary, color: Color) -> String:
-	var lines: Array[String] = []
-	var keys := values.keys()
-	keys.sort()
-	for key in keys:
-		var value := clampf(float(values[key]), 0.0, 1.0)
-		var filled := int(round(value * 10.0))
-		lines.append("%s  %s%s  %d%%" % [str(key).capitalize(), "█".repeat(filled), "·".repeat(10 - filled), int(value * 100.0)])
-	return "\n".join(lines)
+	# Elevator shaft
+	var shaft = MeshInstance3D.new()
+	shaft.mesh = CylinderMesh.new()
+	(shaft.mesh as CylinderMesh).height = 50.0
+	(shaft.mesh as CylinderMesh).radius = 3.0
+	shaft.position = Vector3(0, 25, 0)
+	add_child(shaft)
 
+	# Elevator platform
+	var platform = MeshInstance3D.new()
+	platform.mesh = CylinderMesh.new()
+	(platform.mesh as CylinderMesh).height = 0.5
+	(platform.mesh as CylinderMesh).radius = 2.8
+	platform.position = Vector3(0, 1.0, 0)
+	platform.name = "ElevatorPlatform"
+	add_child(platform)
 
-func _string_array(values: Array) -> Array[String]:
-	var out: Array[String] = []
-	for value in values:
-		out.append(str(value))
-	return out
+	# Call button
+	var button = Area3D.new()
+	button.name = "ElevatorCall"
+	var collision = CollisionShape3D.new()
+	collision.shape = SphereShape3D.new()
+	(collision.shape as SphereShape3D).radius = 0.5
+	button.add_child(collision)
+	button.position = Vector3(0, 1.5, 3.5)
+	button.connect("body_entered", _on_elevator_called)
+	add_child(button)
 
+func _on_suit_interact(suit_id: String) -> void:
+	# Open suit selection UI
+	print("Suit interaction: %s" % suit_id)
+	var inv_manager = get_node_or_null("/root/InventoryManager")
+	if inv_manager:
+		inv_manager.open_radial_wheel("equipment")
 
-func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), BG, true)
-	draw_line(Vector2(0, 66), Vector2(size.x, 66), Color(0.16, 0.24, 0.28, 0.7), 1.0)
-	draw_rect(Rect2(12, 70, 358, 616), PANEL, true)
-	draw_rect(Rect2(370, 70, 540, 600), Color(0.045, 0.06, 0.074, 0.8), true)
-	draw_rect(Rect2(910, 70, 356, 600), PANEL, true)
-	# Subtle vertical accent.
-	draw_rect(Rect2(370, 70, 2, 600), Color(CYAN.r, CYAN.g, CYAN.b, 0.4), true)
+func _on_elevator_called(body: Node3D) -> void:
+	# Animate elevator to upper levels
+	print("Elevator called - access to upper levels (Genomics, Accelerator, Fusor, Orbital)")
+	# Would animate platform and change scene
+
+func _setup_player() -> void:
+	# Player spawns at hub entrance
+	_player = get_node_or_null("../Player")
+	if _player:
+		_player.position = Vector3(0, 1, -35)  # Hub entrance
+
+func _preload_lab_scenes() -> void:
+	# Preload all lab scenes for instant transition
+	for lab in labs:
+		if lab.has("scene_path"):
+			ResourceLoader.load_threaded_request(lab.scene_path)
+
+func _process(delta: float) -> void:
+	# Rotate directory
+	var directory = get_node_or_null("CentralAtrium/Label3D")
+	if directory:
+		directory.rotation.y = (directory.rotation.y + 0.1 * delta) % TAU
+
+	# Pulse suit locker lights
+	for child in get_children():
+		if child.name.begins_with("Locker_"):
+			var light = child.get_node_or_null("OmniLight3D")
+			if light:
+				light.light_energy = 1.0 + sin(Time.get_ticks_msec() / 500.0) * 0.3

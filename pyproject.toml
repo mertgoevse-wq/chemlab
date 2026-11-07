@@ -24,7 +24,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = [".", "src"]
+where = [".", "src", "chemlab_core", "simulation", "safety_simulation", "storage"]
 include = ["chemlab*", "chemlab_core*", "simulation*", "safety_simulation*", "storage*"]
 
 [tool.pytest.ini_options]

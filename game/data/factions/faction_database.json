@@ -1,0 +1,216 @@
+{
+  "version": "1.0.0",
+  "description": "Faction System for Athanor Ascension. 5 factions with reputation, vendors, quests, and dynamic world state.",
+  "factions": {
+    "khacs": {
+      "id": "khacs",
+      "name": "KHI-ACS Academic",
+      "description": "The Kavli-Helmholtz Institute for Advanced Chemical Synthesis. Tenure, grants, publications, open science.",
+      "icon": "res://assets/ui/factions/khacs.png",
+      "colors": { "primary": "#1E3A8A", "secondary": "#3B82F6", "accent": "#93C5FD" },
+      "ideology": "Knowledge belongs to humanity. Safety first. Peer review is sacred.",
+      "starting_reputation": 0,
+      "reputation_tiers": [
+        { "min": -100, "max": -50, "title": "Persona Non Grata", "description": "Banned from campus. Security escort required." },
+        { "min": -49, "max": -10, "title": "Under Scrutiny", "description": "Restricted access. Mandatory supervision." },
+        { "min": -9, "max": 9, "title": "Junior Fellow", "description": "Standard access. Basic lab privileges." },
+        { "min": 10, "max": 49, "title": "Research Associate", "description": "Extended hours. Grant eligibility. Seminar invites." },
+        { "min": 50, "max": 89, "title": "Principal Investigator", "description": "Own lab space. PhD students. Equipment budget." },
+        { "min": 90, "max": 100, "title": "Distinguished Professor", "description": "Tenure. Institute-wide influence. Committee seats." }
+      ],
+      "vendors": {
+        "academic_supply": {
+          "name": "Academic Supply Co.",
+          "items": ["reagent_grade_chemicals", "glassware_kits", "safety_equipment", "lab_notebooks", "reference_standards"],
+          "discount_at_tier": "Research Associate"
+        },
+        "journal_access": {
+          "name": "Journal Access Portal",
+          "items": ["paywall_bypass", "early_access_papers", "data_repositories", "supplementary_materials"],
+          "discount_at_tier": "Principal Investigator"
+        }
+      },
+      "quest_givers": ["dr_elena_vance", "prof_aris_thorne", "dr_marcus_lin"],
+      "exclusive_rewards": ["tenure_track", "named_lectureship", "institute_directorship"],
+      "opposing_factions": ["cartel"],
+      "allied_factions": ["biotech", "intelligence"]
+    },
+    "cartel": {
+      "id": "cartel",
+      "name": "Cartel Network",
+      "description": "Global clandestine chemistry network. Precursors, distribution, protection, power.",
+      "icon": "res://assets/ui/factions/cartel.png",
+      "colors": { "primary": "#7F1D1D", "secondary": "#DC2626", "accent": "#FCA5A5" },
+      "ideology": "Supply meets demand. Chemistry is commerce. Loyalty is currency.",
+      "starting_reputation": -20,
+      "reputation_tiers": [
+        { "min": -100, "max": -50, "title": "Marked for Removal", "description": "Kill on sight. All safehouses burned." },
+        { "min": -49, "max": -10, "title": "Suspected Narc", "description": "No direct contact. Dead drops only." },
+        { "min": -9, "max": 9, "title": "Independent Cook", "description": "Buy precursors at market rate. No protection." },
+        { "min": 10, "max": 49, "title": "Trusted Operator", "description": "Wholesale prices. Safehouse access. Muscle available." },
+        { "min": 50, "max": 89, "title": "Regional Lieutenant", "description": "Territory control. Precursor priority. Enforcer squad." },
+        { "min": 90, "max": 100, "title": "Cartel Kingpin", "description": "Supply chain control. Political immunity. Private army." }
+      ],
+      "vendors": {
+        "precursor_network": {
+          "name": "Precursor Network",
+          "items": ["controlled_precursors", "unlisted_reagents", "clandestine_equipment", "disposable_lab_gear", "encrypted_comms"],
+          "discount_at_tier": "Trusted Operator"
+        },
+        "distribution_channels": {
+          "name": "Distribution Channels",
+          "items": ["global_distribution", "money_laundering", "legal_protection", "witness_protection", "territory_expansion"],
+          "discount_at_tier": "Regional Lieutenant"
+        }
+      },
+      "quest_givers": ["cartel_contact", "precursor_broker", "distribution_manager"],
+      "exclusive_rewards": ["precursor_pipeline", "private_jet", "island_lab", "political_immunity"],
+      "opposing_factions": ["khacs", "intelligence"],
+      "allied_factions": []
+    },
+    "intelligence": {
+      "id": "intelligence",
+      "name": "Intelligence Directorate",
+      "description": "State intelligence agency. Clearances, forensic contracts, state secrets, chemical threat reduction.",
+      "icon": "res://assets/ui/factions/intelligence.png",
+      "colors": { "primary": "#111827", "secondary": "#374151", "accent": "#9CA3AF" },
+      "ideology": "Security through knowledge. Control through classification. Order through surveillance.",
+      "starting_reputation": -10,
+      "reputation_tiers": [
+        { "min": -100, "max": -50, "title": "Person of Interest", "description": "Surveillance 24/7. Assets frozen. Travel banned." },
+        { "min": -49, "max": -10, "title": "Uncleared Contractor", "description": "Menial tasks. No sensitive data. Polygraph weekly." },
+        { "min": -9, "max": 9, "title": "Cleared Analyst", "description": "Secret clearance. Forensic contracts. Lab access." },
+        { "min": 10, "max": 49, "title": "Senior Case Officer", "description": "Top Secret. Field operations. Asset handling." },
+        { "min": 50, "max": 89, "title": "Deputy Director", "description": "TS/SCI. Black budget. Drone strikes authorized." },
+        { "min": 90, "max": 100, "title": "Director", "description": "Full spectrum dominance. Presidential access." }
+      ],
+      "vendors": {
+        "classified_supply": {
+          "name": "Classified Supply",
+          "items": ["forensic_standards", "isotope_tracers", "surveillance_gear", "secure_comms", "breaching_equipment"],
+          "discount_at_tier": "Cleared Analyst"
+        },
+        "intelligence_market": {
+          "name": "Intelligence Market",
+          "items": ["foreign_lab_intel", "precursor_shipment_tracking", "clandestine_site_imagery", "threat_assessments", "blackmail_material"],
+          "discount_at_tier": "Senior Case Officer"
+        }
+      },
+      "quest_givers": ["case_officer", "forensic_director", "deputy_director"],
+      "exclusive_rewards": ["security_clearance_upgrade", "diplomatic_immunity", "black_budget_access", "satellite_tasking"],
+      "opposing_factions": ["cartel"],
+      "allied_factions": ["khacs"]
+    },
+    "biotech": {
+      "id": "biotech",
+      "name": "Biotech Consortium",
+      "description": "Pharma giants, VC-backed startups, CROs. IP licensing, clinical trials, scale-up, exit strategies.",
+      "icon": "res://assets/ui/factions/biotech.png",
+      "colors": { "primary": "#065F46", "secondary": "#10B981", "accent": "#6EE7B7" },
+      "ideology": "Innovation creates value. Patents protect investment. Patients wait for profit.",
+      "starting_reputation": 0,
+      "reputation_tiers": [
+        { "min": -100, "max": -50, "title": "Industry Pariah", "description": "Blacklisted. No CRO will touch you. Patents challenged." },
+        { "min": -49, "max": -10, "title": "Failed Entrepreneur", "description": "Burned bridges. Investors blocked. Data seized." },
+        { "min": -9, "max": 9, "title": "Research Scientist", "description": "Standard salary. IP assignment. Publication rights limited." },
+        { "min": 10, "max": 49, "title": "Principal Scientist", "description": "Team lead. Bonus structure. Conference circuit." },
+        { "min": 50, "max": 89, "title": "VP Research", "description": "Portfolio control. M&A influence. Board access." },
+        { "min": 90, "max": 100, "title": "CSO / Founder", "description": "Equity stake. IPO trajectory. Industry legend." }
+      ],
+      "vendors": {
+        "cro_services": {
+          "name": "CRO Services",
+          "items": ["tox_package", "pk_studies", "formulation_dev", "analytical_validation", "regulatory_filing"],
+          "discount_at_tier": "Principal Scientist"
+        },
+        "ip_marketplace": {
+          "name": "IP Marketplace",
+          "items": ["patent_licensing", "compound_libraries", "screening_data", "biomarker_panels", "patient_cohorts"],
+          "discount_at_tier": "VP Research"
+        }
+      },
+      "quest_givers": ["vp_research", "clinical_director", "business_dev"],
+      "exclusive_rewards": ["compound_library_access", "clinical_trial_slot", "fast_track_fda", "billion_dollar_exit"],
+      "opposing_factions": [],
+      "allied_factions": ["khacs", "intelligence"]
+    },
+    "aetherkin": {
+      "id": "aetherkin",
+      "name": "Aetherkin Clans",
+      "description": "Mythic alchemical beings. Transcendence through chemistry. The old ways, rediscovered.",
+      "icon": "res://assets/ui/factions/aetherkin.png",
+      "colors": { "primary": "#581C87", "secondary": "#A855F7", "accent": "#E9D5FF" },
+      "ideology": "Matter is memory. Chemistry is consciousness. The Athanor awakens.",
+      "starting_reputation": -50,
+      "reputation_tiers": [
+        { "min": -100, "max": -50, "title": "Uninitiated", "description": "Blind to the Great Work. Mundane perception only." },
+        { "min": -49, "max": -10, "title": "Seeker", "description": "First visions. Dreams of structures. Sensitivity to resonance." },
+        { "min": -9, "max": 9, "title": "Apprentice Alchemist", "description": "Companion bond. Minor transmutations. Dream guidance." },
+        { "min": 10, "max": 49, "title": "Adept", "description": "Multiple companions. Catalyst synthesis. Astral projection." },
+        { "min": 50, "max": 89, "title": "Magister", "description": "Mythic companion. Reality bending. Time perception." },
+        { "min": 90, "max": 100, "title": "Archmagus / Athanor Ascended", "description": "Chrysalis Warden bond. Causality manipulation. Immortality." }
+      ],
+      "vendors": {
+        "alchemical_exchange": {
+          "name": "Alchemical Exchange",
+          "items": ["philosopher_stone_fragments", "aetherkin_essence", "transmutation_catalysts", "memory_crystals", "dream_essence"],
+          "discount_at_tier": "Adept"
+        },
+        "mythic_bazaar": {
+          "name": "Mythic Bazaar",
+          "items": ["ember_drake_egg", "chrysalis_warden_contract", "reality_anchor", "time_crystal", "causality_needle"],
+          "discount_at_tier": "Magister"
+        }
+      },
+      "quest_givers": ["aetherkin_emissary", "ancient_alchemist", "athanor_echo"],
+      "exclusive_rewards": ["mythic_companion", "transcendence", "athanor_core_access", "immortality"],
+      "opposing_factions": [],
+      "allied_factions": []
+    }
+  },
+  "reputation_system": {
+    "decay_rate": 0.1, // Per in-game week
+    "action_multipliers": {
+      "quest_completion": 1.0,
+      "faction_mission": 1.5,
+      "betrayal": -3.0,
+      "trade": 0.1,
+      "companion_action": 0.5,
+      "publication": 2.0,
+      "discovery": 3.0
+    },
+    "cross_faction_effects": {
+      "khacs": { "cartel": -0.5, "intelligence": 0.2, "biotech": 0.3, "aetherkin": 0.1 },
+      "cartel": { "khacs": -0.5, "intelligence": -0.8, "biotech": -0.2, "aetherkin": -0.1 },
+      "intelligence": { "khacs": 0.2, "cartel": -0.8, "biotech": 0.1, "aetherkin": 0.1 },
+      "biotech": { "khacs": 0.3, "cartel": -0.2, "intelligence": 0.1, "aetherkin": 0.2 },
+      "aetherkin": { "khacs": 0.1, "cartel": -0.1, "intelligence": 0.1, "biotech": 0.2 }
+    }
+  },
+  "dynamic_world_state": {
+    "lab_control": {
+      "description": "Factions compete for control of laboratory facilities",
+      "labs": ["teaching", "analytical", "organic_synthesis", "electrochemistry", "genomics", "cell_culture", "radiochemistry", "accelerator", "fusor", "materials", "cleanroom", "pilot_plant", "forensic", "orbital", "cryogenic"],
+      "control_effects": {
+        "controlling_faction": "Discounted access, priority scheduling, exclusive equipment",
+        "contested": "Higher prices, random inspections, sabotage risk",
+        "enemy_controlled": "Access denied, surveillance, trap risk"
+      }
+    },
+    "market_prices": {
+      "description": "Precursor and reagent prices fluctuate by faction control",
+      "update_frequency": "daily",
+      "factors": ["faction_control", "global_events", "player_actions", "seasonal"]
+    },
+    "npc_attitudes": {
+      "description": "NPC dialogue and behavior change based on faction standing",
+      "thresholds": {
+        "hostile": -50,
+        "unfriendly": -10,
+        "neutral": 10,
+        "friendly": 50,
+        "reverent": 90
+      }
+    }
+  }
+}

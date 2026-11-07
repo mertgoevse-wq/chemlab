@@ -1,0 +1,184 @@
+{
+  "version": "1.0.0",
+  "description": "Character creation system for Athanor Ascension. 3 backgrounds, 5 specializations, appearance, starting gear.",
+  "backgrounds": [
+    {
+      "id": "academic",
+      "name": "Academic Prodigy",
+      "description": "Top of your class at ETH Zürich / MIT / Oxford. Theoretical knowledge is perfect. Hands-on experience? Minimal.",
+      "starting_location": "KHI-ACS Orientation Hall (Grand Atrium)",
+      "mentor": "Prof. Aris Thorne",
+      "starting_skills": {
+        "chemistry": 15,
+        "mathematics": 10,
+        "physics": 5,
+        "biochemistry": 5
+      },
+      "starting_equipment": [
+        "scholar_goggles",
+        "silk_lab_coat",
+        "precision_gloves",
+        "comfort_shoes",
+        "student_goggles"
+      ],
+      "starting_intelligence_points": 50,
+      "unique_ability": "Theoretical Insight: See reaction predictions before running them (20% accuracy bonus)",
+      "story_hook": "Your thesis on 'Non-Equilibrium Thermodynamics in Flow Systems' caught Thorne's attention. He pulled strings for your fellowship.",
+      "dialogue_style": "Precise, academic, references papers",
+      "npc_reactions": {
+        "dr_elena_vance": "Respects credentials, watches for arrogance",
+        "prof_aris_thorne": "Sees potential, challenges constantly",
+        "dr_marcus_lin": "Intellectual equal, competes for grants"
+      }
+    },
+    {
+      "id": "hobbyist",
+      "name": "Basement Chemist",
+      "description": "Learned from forums, YouTube, trial and error. No degree. Intuition beats theory. Scars tell stories.",
+      "starting_location": "KHI-ACS Loading Dock (Service Entrance)",
+      "mentor": "Dr. Elena Vance",
+      "starting_skills": {
+        "chemistry": 10,
+        "apparatus_building": 15,
+        "lab_safety": 5,
+        "forensics": 5
+      },
+      "starting_equipment": [
+        "safety_goggles",
+        "cotton_lab_coat",
+        "neoprene_gloves",
+        "lab_boots",
+        "butyl_gloves"
+      ],
+      "starting_intelligence_points": 75,
+      "unique_ability": "MacGyver Instinct: Improvise equipment from scrap (50% material cost reduction)",
+      "story_hook": "Your 'incident' with a homemade fluorination rig went viral on chem-forums. Vance tracked you down personally.",
+      "dialogue_style": "Direct, slang, practical, skeptical of authority",
+      "npc_reactions": {
+        "dr_elena_vance": "Sees raw talent, fears recklessness",
+        "prof_aris_thorne": "Dismissive at first, surprised by results",
+        "dr_marcus_lin": "Curious about unconventional methods"
+      }
+    },
+    {
+      "id": "ex_pharma",
+      "name": "Industry Veteran",
+      "description": "10 years at Roche / Pfizer / Novartis. Burned out on corporate politics. Knows GMP, regulations, scale-up. Wants science back.",
+      "starting_location": "KHI-ACS Industrial Pilot Plant (Wing Delta)",
+      "mentor": "Dr. Marcus Lin",
+      "starting_skills": {
+        "chemistry": 20,
+        "pharmacology": 10,
+        "toxicology": 10,
+        "automation": 10
+      },
+      "starting_equipment": [
+        "full_face_respirator",
+        "tyvek_suit",
+        "butyl_gloves",
+        "chemical_boots",
+        "lead_apron"
+      ],
+      "starting_intelligence_points": 100,
+      "unique_ability": "Process Mastery: Pilot plant recipes run 25% faster, 15% higher yield",
+      "story_hook": "Your team's Alzheimer's candidate failed Phase III. You walked out with the lab notebook. Lin offered sanctuary.",
+      "dialogue_style": "Professional, regulatory-aware, cynical but hopeful",
+      "npc_reactions": {
+        "dr_elena_vance": "Trusts compliance knowledge, questions motives",
+        "prof_aris_thorne": "Disdains industry mindset, respects scale-up skills",
+        "dr_marcus_lin": "Old colleague, knows your secrets"
+      }
+    }
+  ],
+  "specializations": [
+    {
+      "id": "synthetic_chemist",
+      "name": "Synthetic Chemist",
+      "description": "Total synthesis, methodology, natural products. The art of making molecules.",
+      "primary_skills": ["chemistry", "biochemistry", "materials_science"],
+      "bonus_skill_xp": { "chemistry": 1.25, "biochemistry": 1.1, "materials_science": 1.1 },
+      "unlocks_lab": "organic_synthesis",
+      "companion_affinity": ["calcine_hound", "glasswing_moth"]
+    },
+    {
+      "id": "analytical_chemist",
+      "name": "Analytical Chemist",
+      "description": "Separation, detection, quantification. The science of knowing what you made.",
+      "primary_skills": ["chemistry", "forensics", "environmental_science"],
+      "bonus_skill_xp": { "chemistry": 1.25, "forensics": 1.15, "environmental_science": 1.1 },
+      "unlocks_lab": "analytical_instrument",
+      "companion_affinity": ["instrumented_rat", "prism_finch"]
+    },
+    {
+      "id": "biochemist",
+      "name": "Biochemist",
+      "description": "Enzymes, receptors, pathways. The chemistry of life.",
+      "primary_skills": ["biochemistry", "pharmacology", "genetics"],
+      "bonus_skill_xp": { "biochemistry": 1.25, "pharmacology": 1.15, "genetics": 1.1 },
+      "unlocks_lab": "biochemistry",
+      "companion_affinity": ["auric_kite", "verdant_sloth"]
+    },
+    {
+      "id": "nuclear_chemist",
+      "name": "Nuclear Chemist",
+      "description": "Radioisotopes, actinides, hot cells. The chemistry of the nucleus.",
+      "primary_skills": ["radiochemistry", "nuclear_engineering", "physics"],
+      "bonus_skill_xp": { "radiochemistry": 1.25, "nuclear_engineering": 1.15, "physics": 1.1 },
+      "unlocks_lab": "radiochemistry_hot_cell",
+      "companion_affinity": ["xenon_owl", "ember_drake"]
+    },
+    {
+      "id": "geneticist",
+      "name": "Geneticist",
+      "description": "Genomes, CRISPR, synthetic biology. The code of life.",
+      "primary_skills": ["genetics", "synthetic_biology", "biology"],
+      "bonus_skill_xp": { "genetics": 1.25, "synthetic_biology": 1.15, "biology": 1.1 },
+      "unlocks_lab": "genomics",
+      "companion_affinity": ["tideglass_serpent", "archive_raven"]
+    }
+  ],
+  "appearance": {
+    "face": {
+      "presets": 20,
+      "custom_sliders": ["jaw", "cheeks", "eyes", "nose", "mouth", "ears", "forehead", "chin"],
+      "scars": ["acid_splash_left", "burn_right", "glass_cut_forehead", "frostbite_cheeks", "radiation_halo"],
+      "tattoos": ["periodic_table_sleeve", "molecular_structure_back", "chemical_hazard_symbols", "DNA_helix_arm", "Shulgin_quote_ribs"]
+    },
+    "hair": {
+      "styles": 15,
+      "colors": ["natural_blonde", "natural_brown", "natural_black", "natural_red", "white", "blue", "green", "purple", "pink", "rainbow"],
+      "facial_hair": ["clean", "stubble", "beard", "goatee", "mustache", "sideburns"]
+    },
+    "eyes": {
+      "colors": ["brown", "blue", "green", "hazel", "gray", "amber", "heterochromia", "glowing_amber", "glowing_blue"],
+      "details": ["normal", "tired", "alert", "radiation_cataract", "chemical_irritation"]
+    },
+    "body": {
+      "types": ["lean", "average", "athletic", "heavy", "tall", "short"],
+      "skin_tones": 12,
+      "markings": ["vitiligo", "freckles", "moles", "radiation_burns", "chemical_stains"]
+    },
+    "voice": {
+      "presets": ["academic_male", "academic_female", "gruff_male", "gruff_female", "calm_male", "calm_female", "energetic_male", "energetic_female"],
+      "pitch_range": [-12, 12],
+      "speed_range": [-50, 50]
+    }
+  },
+  "prologue_cinematic": {
+    "academic": {
+      "video": "veo_academic_prologue.mp4",
+      "description": "Thesis defense → Thorne's office → Fellowship offer → Helicopter to KHI-ACS",
+      "key_moments": ["Thesis defense", "Thorne's offer", "Arrival at Institute", "First steps in Atrium"]
+    },
+    "hobbyist": {
+      "video": "veo_hobbyist_prologue.mp4",
+      "description": "Basement lab → 'Incident' → Forum fame → Vance's recruitment → Service entrance arrival",
+      "key_moments": ["The incident", "Vance's message", "Train ride", "Loading dock arrival"]
+    },
+    "ex_pharma": {
+      "video": "veo_ex_pharma_prologue.mp4",
+      "description": "Phase III failure → Resignation → Lin's call → Pilot plant arrival",
+      "key_moments": ["Trial data", "Walking out", "Lin's voicemail", "Pilot plant gates"]
+    }
+  }
+}
