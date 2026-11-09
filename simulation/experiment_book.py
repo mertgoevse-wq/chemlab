@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 """
 ChemLab Experiment Book & Recipe Export — Free Simulation Mode
 Saves, loads, exports custom chemical reaction setups (JSON format)
@@ -7,11 +8,11 @@ and manages in-game laboratory snapshot photos with camera and visual state meta
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from simulation.consequence import ConsequenceType, VesselEnvironment
+
 
 
 @dataclass
