@@ -52,7 +52,7 @@ signal spectrum_updated(spectrum_data: Dictionary)
 @onready var bore_collision: Area3D = get_node_or_null("BoreCollision")
 @onready var sample_tube_slot: Marker3D = get_node_or_null("SampleTubeSlot")
 @onready var display_screen: MeshInstance3D = get_node_or_null("DisplayScreen")
-@onready var screen_material: StandardMaterial3D = get_node_or_null("DisplayScreen")
+@onready var screen_material: StandardMaterial3D = display_screen.material_override if display_screen else null
 @onready var console_unit: MeshInstance3D = get_node_or_null("ConsoleUnit")
 @onready var power_switch: MeshInstance3D = get_node_or_null("PowerSwitch")
 @onready var status_led: OmniLight3D = get_node_or_null("StatusLED")
@@ -254,7 +254,7 @@ func _extract_sample_metadata(sample_node: Node3D) -> Dictionary:
 
 
 func _generate_sample_id() -> String:
-	return "NMR_" + Time.get_unix_time_from_system().to_string() + "_" + randi_range(1000, 9999).to_string()
+	return "NMR_" + str(Time.get_unix_time_from_system()) + "_" + str(randi_range(1000, 9999))
 
 
 # =============================================================================

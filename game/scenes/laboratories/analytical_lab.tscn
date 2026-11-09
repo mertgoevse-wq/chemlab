@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/apparatus/erlenmeyer_flask.tscn" id="8_erlenmeyer"]
 [ext_resource type="PackedScene" path="res://scenes/apparatus/beaker.tscn" id="9_beaker"]
 [ext_resource type="PackedScene" path="res://scenes/apparatus/nmr_spectrometer.tscn" id="11_nmr"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/nmr_sample_tube.tscn" id="12_nmr_sample"]
 [ext_resource type="PackedScene" path="res://scenes/quests/quest_overlay.tscn" id="10_quest_overlay"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_FloorEpoxy"]
@@ -643,6 +644,9 @@ mesh = SubResource("Mesh_ReagentBottleAmber")
 [node name="Spawn_FumeHood_Apparatus" type="Marker3D" parent="SpawnPoints"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.92, -3.35)
 
+[node name="Spawn_NMRSampleTube" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 1.2, -1.0)
+
 [node name="ApparatusInstances" type="Node3D" parent="."]
 
 [node name="AnalyticalBalance" parent="ApparatusInstances" instance=ExtResource("4_balance")]
@@ -665,6 +669,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.9, 0.2)
 
 [node name="NMRSpectrometer" parent="ApparatusInstances" instance=ExtResource("11_nmr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -1.0)
+
+[node name="NMRSampleTube" parent="ApparatusInstances" instance=ExtResource("12_nmr_sample")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 1.2, -1.0)
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.0, 2.5)
