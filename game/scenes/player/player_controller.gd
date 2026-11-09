@@ -745,3 +745,54 @@ func _on_external_apparatus_released(_apparatus: Variant) -> void:
 func _on_external_tilt_updated(angle_deg: float) -> void:
 	if carried_item != null:
 		manual_tilt_angle = clampf(angle_deg, 0.0, max_pour_angle)
+
+
+# =============================================================================
+# NMR & APPARATUS INTERACTION HELPERS
+# =============================================================================
+
+func _update_interaction_prompt(apparatus_name: String, hint_text: String) -> void:
+	"""Show interaction prompt for specific apparatus."""
+	if prompt_panel and apparatus_label and action_hints_label:
+		apparatus_label.text = apparatus_name
+		action_hints_label.text = hint_text
+		prompt_panel.visible = true
+
+
+func _hide_interaction_prompt() -> void:
+	"""Hide interaction prompt panel."""
+	if prompt_panel:
+		prompt_panel.visible = false
+
+
+func _show_notification(message: String) -> void:
+	"""Show a temporary notification message."""
+	# For now, just print. In a full implementation, this would show a toast notification.
+	print("[Notification] %s" % message)
+	# TODO: Implement proper toast notification system
+
+
+func get_carried_item() -> Node:
+	"""Get currently carried item."""
+	return carried_item
+
+
+func get_hovered_apparatus() -> Node:
+	"""Get currently hovered apparatus."""
+	return hovered_apparatus
+
+
+# =============================================================================
+# NMR SPECIFIC HELPERS
+# =============================================================================
+
+func is_near_nmr() -> bool:
+	"""Check if player is near an NMR spectrometer."""
+	return hovered_apparatus != null and hovered_apparatus.is_in_group("nmr_spectrometer")
+
+
+func get_nearby_nmr() -> Node:
+	"""Get nearby NMR spectrometer if any."""
+	if hovered_apparatus and hovered_apparatus.is_in_group("nmr_spectrometer"):
+		return hovered_apparatus
+	return null

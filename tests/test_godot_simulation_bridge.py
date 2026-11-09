@@ -53,7 +53,7 @@ def test_reaction_evaluator_species_database_coverage():
     """Verify at least 25 common laboratory compounds are cataloged with NIST data."""
     content = REACTION_EVALUATOR_PATH.read_text(encoding="utf-8")
 
-    # Match species keys in SPECIES_DB
+    # Match species keys in SPECIES_DB (using _make_species factory function)
     species_keys = re.findall(r'"([A-Za-z0-9_]+)":\s*_make_species\(', content)
     assert len(species_keys) >= 25, f"Expected >= 25 compounds, found {len(species_keys)}"
 

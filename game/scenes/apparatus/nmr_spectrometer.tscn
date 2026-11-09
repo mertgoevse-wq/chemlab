@@ -1,6 +1,7 @@
 [gd_scene load_steps=50 format=3 uid="uid://chemlab_nmr_spectrometer_01"]
 
 [ext_resource type="Script" path="res://scenes/apparatus/nmr_spectrometer.gd" id="1_nmr_script"]
+[ext_resource type="Script" path="res://scenes/apparatus/nmr_sample_tube.gd" id="2_sample_tube_script"]
 [ext_resource type="StandardMaterial3D" id="Mat_NMR_Magnet"]
 albedo_color = Color(0.3, 0.3, 0.35, 1)
 metallic = 0.8
@@ -140,12 +141,15 @@ unit_size = 2.0
 max_distance = 8.0
 volume_db = -15.0
 
+[ext_resource type="PackedScene" id="3_nmr_ui_scene"]
+path = "res://scenes/ui/nmr_ui.tscn"
+
 [ext_resource type="OmniLight3D" id="Light_NMR_Status"]
 light_color = Color(0.0, 1.0, 0.0, 1)
 light_energy = 1.0
 omni_range = 2.0
 
-[node name="NMRSpectrometer" type="StaticBody3D" node_paths=PackedStringArray("MagnetHousing", "BoreCollision", "SampleTubeSlot", "DisplayScreen", "ConsoleUnit", "PowerSwitch", "StatusLED", "InsertionSensor", "MotorAudio", "ShimAudio", "InteractionTrigger")]
+[node name="NMRSpectrometer" type="StaticBody3D" groups=["apparatus", "interactive_apparatus", "interactable"] node_paths=PackedStringArray("MagnetHousing", "BoreCollision", "SampleTubeSlot", "DisplayScreen", "ConsoleUnit", "PowerSwitch", "StatusLED", "InsertionSensor", "MotorAudio", "ShimAudio", "InteractionTrigger")]
 script = ExtResource("1_nmr_script")
 magnet_housing = NodePath("MagnetHousing")
 bore_collision = NodePath("BoreCollision")
@@ -195,6 +199,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, -0.2, 0.5)
 light_color = Color(0, 1, 0, 1)
 light_energy = 1.0
 omni_range = 2.0
+
+[node name="NMRUI" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 0.55)
+instance = ExtResource("3_nmr_ui_scene")
 
 [node name="InsertionSensor" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.7)
@@ -280,11 +288,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 1.25)
 mesh = ExtResource("Mesh_NMR_Cryogen_Port")
 material_override = ExtResource("Mat_NMR_Magnet")
 
-[node name="SampleTube" type="RigidBody3D" parent="."]
+[node name="SampleTube" type="RigidBody3D" groups=["apparatus", "interactive_apparatus", "interactable", "sample_tube"] parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
 mass = 0.05
 linear_damp = 0.1
 angular_damp = 0.1
+script = ExtResource("2_sample_tube_script")
 
 [node name="TubeMesh" type="MeshInstance3D" parent="SampleTube"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

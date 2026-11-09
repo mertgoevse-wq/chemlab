@@ -5,26 +5,24 @@ Verifies stoichiometry, fluid mixing, pH indicator transitions, and oscillating 
 
 import pytest
 
-from chemlab.models import ChemicalReagent, GHSHazard, LiquidMixture
-from chemlab.simulation.reaction_solver import (
-    ReactionType,
-    mix_liquids,
-    step_simulation,
-)
-from chemlab.simulation.reagents import REAGENT_REGISTRY, get_reagent
+from src.chemlab.simulation.reagents import REAGENT_REGISTRY, get_reagent
+from src.chemlab.simulation.reagents import GHSHazard
+from src.chemlab.models import LiquidMixture, ReactionType
+from src.chemlab.simulation.reaction_solver import mix_liquids, step_simulation
 
 
 def test_reagent_registry_lookup():
     """Verify registry contains fundamental chemicals with valid GHS safety data."""
     hcl = get_reagent("hcl")
     assert hcl.formula == "HCl"
-    assert hcl.ph < 2.0
-    assert GHSHazard.CORROSIVE in hcl.ghs_hazards
+    assert hcl.ph is not None and hcl.ph < 2.0
+    # Check for corrosive hazard (GHS05 pictogram)
+    assert any(h.pictogram == "GHS05" for h in hcl.ghs_hazards)
 
     naoh = get_reagent("naoh")
     assert naoh.formula == "NaOH"
-    assert naoh.ph > 12.0
-    assert GHSHazard.CORROSIVE in naoh.ghs_hazards
+    assert naoh.ph is not None and naoh.ph > 12.0
+    assert any(h.pictogram == "GHS05" for h in naoh.ghs_hazards)
 
 
 def test_liquid_mixing_volume_and_temp():

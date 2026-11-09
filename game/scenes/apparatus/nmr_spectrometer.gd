@@ -162,29 +162,159 @@ func _on_interaction_body_entered(body: Node3D) -> void:
 
 
 func _on_interaction_body_exited(body: Node3D) -> void:
-	pass
+	if body.is_in_group("player") or body.get_class() == "PlayerController":
+		# Player left NMR interaction zone
+		pass
 
 
-func _on_bore_body_entered(body: Node3D) -> void:
-	# Sample tube or vessel entering the magnet bore
-	if body.is_in_group("sample_tube") or body.has_meta("sample_type"):
-		_insert_sample(body)
+# =============================================================================
+# PLAYER INTERACTION
+# =============================================================================
+
+func _on_interaction_body_entered(body: Node3D) -> void:
+	if body.is_in_group("player") or body.get_class() == "PlayerController":
+		# Player is near the NMR - show interaction hint via HUD
+		if body.has_method("_update_interaction_prompt"):
+			body._update_interaction_prompt("NMR Spectrometer", "[E] Interact with NMR Spectrometer")
 
 
-func _on_bore_body_exited(body: Node3D) -> void:
-	if body == current_sample:
-		_remove_sample()
+func _on_interaction_body_exited(body: Node3D) -> void:
+	if body.is_in_group("player") or body.get_class() == "PlayerController":
+		# Player left NMR interaction zone - clear HUD prompt
+		if body.has_method("_hide_interaction_prompt"):
+			body._hide_interaction_prompt()
 
 
-func _on_insertion_sensor_body_entered(body: Node3D) -> void:
-	# Fine-grained detection for sample insertion
-	if body.is_in_group("sample_tube") or body.has_meta("sample_type"):
-		_insert_sample(body)
+func interact(player: Node) -> void:
+	# Called when player presses E while looking at NMR
+	if not is_powered_on:
+		print("[NMRSpectrometer] Powered OFF - cannot interact")
+		return
+
+	# If carrying a sample tube, try to insert it
+	if player.has_method("get_carried_item") and player.get_carried_item():
+		var carried = player.get_carried_item()
+		if carried and carried.is_in_group("sample_tube"):
+			_try_insert_sample(player, carried)
+			return
+
+	# If not carrying sample, check if there's a sample in NMR to remove
+	if current_sample != null:
+		_try_remove_sample(player)
+		return
+
+	# No sample to insert/remove - toggle power or show status
+	toggle_power()
 
 
-func _on_insertion_sensor_body_exited(body: Node3D) -> void:
-	if body == current_sample:
-		_remove_sample()
+func _try_insert_sample(player: Node, sample_tube: Node) -> void:
+	if current_sample != null:
+		print("[NMRSpectrometer] Sample already present, cannot insert another")
+		# Show notification via HUD
+		if player.has_method("_show_notification"):
+			player._show_notification("NMR already has a sample. Remove it first.")
+		return
+
+	# Check if sample tube has valid sample data
+	if not sample_tube.has_method("get_sample_data"):
+		print("[NMRSpectrometer] Invalid sample tube - no sample data")
+		return
+
+	var sample_data = sample_tube.get_sample_data()
+
+	# Insert sample into NMR
+	_insert_sample_from_player(sample_tube, player)
+
+
+func _insert_sample_from_player(sample_tube: Node3D, player: Node) -> void:
+	# Detach from player
+	if sample_tube.get_parent() == player:
+		sample_tube.reparent(get_tree().root)
+
+	# Position in NMR bore
+	if sample_tube_slot:
+		sample_tube.global_position = sample_tube_slot.global_position
+		sample_tube.global_rotation = sample_tube_slot.global_rotation
+
+	# Freeze physics
+	if sample_tube is RigidBody3D:
+		var rb = sample_tube as RigidBody3D
+		rb.freeze = true
+		rb.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+		rb.linear_velocity = Vector3.ZERO
+		rb.angular_velocity = Vector3.ZERO
+
+	# Disable collision
+	if sample_tube is CollisionObject3D:
+		sample_tube.collision_layer = 0
+		sample_tube.collision_mask = 0
+
+	# Set as current sample
+	current_sample = sample_tube
+
+	# Extract metadata and add to queue
+	var sample_info = _extract_sample_metadata(sample_tube)
+	sample_info["insertion_time"] = Time.get_unix_time_from_system()
+	sample_info["sample_id"] = _generate_sample_id()
+	sample_queue.append(sample_info)
+
+	# Emit signal
+	sample_inserted.emit(sample_info)
+
+	# Update display
+	_update_display_state()
+
+	# Auto-start analysis if only sample
+	if sample_queue.size() == 1 and not is_analyzing:
+		_start_next_analysis()
+
+	print("[NMRSpectrometer] Sample inserted from player: ", sample_info["sample_id"])
+
+	# Notify quest manager
+	_notify_quest_manager("sample_inserted", sample_info)
+
+
+func _try_remove_sample(player: Node) -> void:
+	if current_sample == null:
+		return
+
+	# Restore physics
+	if current_sample is RigidBody3D:
+		var rb = current_sample as RigidBody3D
+		rb.freeze = false
+		rb.freeze_mode = RigidBody3D.FREEZE_MODE_NONE
+		rb.linear_velocity = Vector3.ZERO
+		rb.angular_velocity = Vector3.ZERO
+
+	# Restore collision
+	if current_sample is CollisionObject3D:
+		current_sample.collision_layer = 1
+		current_sample.collision_mask = 1
+
+	# Reparent to scene root
+	if current_sample.get_parent() != null:
+		current_sample.reparent(get_tree().root)
+
+	# Position in front of player
+	if player and player.has_node("Head"):
+		var head = player.get_node("Head")
+		current_sample.global_position = head.global_position + head.global_transform.basis.z * 0.5
+		current_sample.global_rotation = player.global_rotation
+
+	# Remove from queue
+	var sample_info = _extract_sample_metadata(current_sample)
+	for i in range(sample_queue.size()):
+		if sample_queue[i].get("sample_id") == sample_info.get("sample_id"):
+			sample_queue.remove_at(i)
+			break
+
+	sample_removed.emit(sample_info)
+	current_sample = null
+
+	# Update display
+	_update_display_state()
+
+	print("[NMRSpectrometer] Sample removed by player")
 
 
 # =============================================================================

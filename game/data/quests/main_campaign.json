@@ -1,0 +1,346 @@
+{
+  "version": "1.0.0",
+  "description": "Main story campaign for Athanor Ascension. 10 Acts, 3 starting backgrounds with converging storylines, faction missions, dynamic events.",
+  "campaign_arc": "The Athanor Anomaly",
+  "acts": [
+    {
+      "act_number": 1,
+      "title": "Induction",
+      "description": "Orientation at KHI-ACS. Safety certification. First steps in the Institute.",
+      "main_quests": [
+        {
+          "quest_id": "quest_001_welcome_khacs",
+          "title": "Welcome to KHI-ACS",
+          "background_variants": {
+            "academic": "Thorne personally escorts you through the Grand Atrium. Other fellows watch with envy.",
+            "hobbyist": "Vance meets you at the service entrance. 'Let's see what you actually know.'",
+            "ex_pharma": "Lin waits at the pilot plant gates. 'You're late. Shift started an hour ago.'"
+          },
+          "objectives": [
+            { "objective_id": "meet_mentor", "description": "Meet your assigned mentor", "evaluation_mode": "NPC_INTERACTION" },
+            { "objective_id": "safety_orientation", "description": "Complete safety orientation", "evaluation_mode": "SAFETY_COMPLIANCE" },
+            { "objective_id": "receive_credentials", "description": "Receive Institute credentials", "evaluation_mode": "INVENTORY_ITEM" }
+          ],
+          "rewards": { "skill_xp": { "lab_safety": 50 }, "intelligence_points": 25, "items": [{ "item_id": "institute_badge", "quantity": 1 }] }
+        },
+        {
+          "quest_id": "quest_002_first_steps",
+          "title": "First Steps in the Lab",
+          "objectives": [
+            { "objective_id": "navigate_hub", "description": "Navigate the Laboratory Hub", "evaluation_mode": "LOCATION_VISIT" },
+            { "objective_id": "choose_first_lab", "description": "Select your first laboratory assignment", "evaluation_mode": "NPC_INTERACTION" },
+            { "objective_id": "basic_pipetting", "description": "Complete pipetting tutorial", "evaluation_mode": "SKILL_CHECK" }
+          ],
+          "rewards": { "skill_xp": { "chemistry": 100 }, "intelligence_points": 10 }
+        }
+      ],
+      "faction_missions": [
+        {
+          "faction": "khacs",
+          "quest_id": "faction_001_library_access",
+          "title": "Library Access",
+          "description": "Gain access to the restricted archives"
+        }
+      ]
+    },
+    {
+      "act_number": 2,
+      "title": "First Synthesis",
+      "description": "Aspirin synthesis practicum. Titration certification. Learning that mistakes cost blood.",
+      "main_quests": [
+        {
+          "quest_id": "quest_010_aspirin_synthesis",
+          "title": "The Aspirin Protocol",
+          "instructor": "prof_aris_thorne",
+          "objectives": [
+            { "objective_id": "weigh_reagents", "description": "Weigh salicylic acid and acetic anhydride", "evaluation_mode": "METROLOGY_VALUE", "tolerance": 0.01 },
+            { "objective_id": "setup_reflux", "description": "Assemble reflux apparatus correctly", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "control_temperature", "description": "Maintain 65-75°C for 30 minutes", "evaluation_mode": "METROLOGY_VALUE", "tolerance": 2 },
+            { "objective_id": "quench_recrystallize", "description": "Quench, recrystallize, filter", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "assay_purity", "description": "Run melting point and TLC assay", "evaluation_mode": "SPECTRAL_MATCH" }
+          ],
+          "failure_conditions": [
+            { "condition_id": "overheat", "trigger_metric": "temperature_c", "operator": ">", "threshold": 85, "severity": "INSTANT_FAIL_EXPLOSION", "narrative_reprimand": "You tarred the product. Thorne is disappointed." }
+          ],
+          "state_validation": {
+            "required_products": [{ "species_id": "aspirin", "min_moles": 0.04, "min_purity": 80 }],
+            "engine_checks": { "vessel_temperature_max_c": 85, "reaction_conversion_min": 0.7 }
+          },
+          "rewards": { "skill_xp": { "chemistry": 500 }, "intelligence_points": 50, "items": [{ "item_id": "aspirin_batch", "quantity": 1 }] }
+        },
+        {
+          "quest_id": "quest_011_titration_practicum",
+          "title": "Titration Practicum",
+          "instructor": "dr_elena_vance",
+          "objectives": [
+            { "objective_id": "standardize_naoh", "description": "Standardize NaOH against KHP", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "titrate_unknown", "description": "Titrate unknown acid to phenolphthalein endpoint", "evaluation_mode": "METROLOGY_VALUE", "tolerance": 0.05 },
+            { "objective_id": "calculate_concentration", "description": "Calculate exact concentration", "evaluation_mode": "METROLOGY_VALUE", "tolerance": 0.01 }
+          ],
+          "rewards": { "skill_xp": { "chemistry": 300, "analytical_chemistry": 200 }, "intelligence_points": 30 }
+        },
+        {
+          "quest_id": "quest_012_first_nmr_analysis",
+          "title": "First NMR Analysis",
+          "instructor": "dr_elena_vance",
+          "description": "Learn to operate the 400 MHz NMR spectrometer. Prepare a sample, run a 1H NMR spectrum, and interpret the chemical shifts.",
+          "objectives": [
+            { "objective_id": "prepare_nmr_sample", "description": "Prepare an NMR sample tube with ethanol in CDCl3", "evaluation_mode": "SAMPLE_PREPARATION" },
+            { "objective_id": "load_sample", "description": "Insert the sample tube into the 400 MHz NMR spectrometer", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "run_1h_nmr", "description": "Run a 1H NMR spectrum with 16 scans", "evaluation_mode": "SPECTRAL_MATCH", "target_spectrum": "ethanol_cdcl3" },
+            { "objective_id": "interpret_spectrum", "description": "Identify the CH3 triplet (1.18 ppm), CH2 quartet (3.65 ppm), and OH singlet (2.60 ppm)", "evaluation_mode": "SPECTRAL_MATCH", "target_peaks": ["CH3_triplet_1.18", "CH2_quartet_3.65", "OH_singlet_2.60"] },
+            { "objective_id": "submit_report", "description": "Submit analysis report with chemical shift assignments", "evaluation_mode": "NPC_INTERACTION" }
+          ],
+          "rewards": { "skill_xp": { "analytical_chemistry": 500, "chemistry": 200 }, "intelligence_points": 50, "items": [{ "item_id": "nmr_certification", "quantity": 1 }] }
+        }
+      ]
+    },
+    {
+      "act_number": 3,
+      "title": "Genome Archive",
+      "description": "Mutation investigation. Dr. Voss's encrypted logs. The anomaly deepens.",
+      "main_quests": [
+        {
+          "quest_id": "quest_020_genome_orientation",
+          "title": "The Genome Archive",
+          "instructor": "dr_marcus_lin",
+          "objectives": [
+            { "objective_id": "navigate_karyotype", "description": "Navigate from chromosome to base pair", "evaluation_mode": "LOCATION_VISIT" },
+            { "objective_id": "identify_hotspot", "description": "Identify HbS mutation (p.Glu7Val)", "evaluation_mode": "SPECTRAL_MATCH" },
+            { "objective_id": "mutagen_exposure", "description": "Simulate EMS mutagenesis", "evaluation_mode": "CHEMICAL_REACTION" }
+          ]
+        },
+        {
+          "quest_id": "quest_021_voss_anomaly",
+          "title": "Project Athanor",
+          "description": "Decrypt Voss's fragmented notes. The self-sustaining chemical clockwork.",
+          "objectives": [
+            { "objective_id": "find_audio_log", "description": "Locate hidden audio log in Wing Gamma", "evaluation_mode": "LOCATION_VISIT", "hints": ["Check the analytical bench drawer", "Voss loved symmetry"] },
+            { "objective_id": "decrypt_notes", "description": "Decrypt Voss's bench notes", "evaluation_mode": "SKILL_CHECK" },
+            { "objective_id": "replicate_anomaly", "description": "Attempt to replicate the Athanor reaction", "evaluation_mode": "CHEMICAL_REACTION" }
+          ],
+          "investigation_mode": {
+            "enabled": true,
+            "vision_modes": ["spectral", "temporal"],
+            "clues": [
+              { "clue_id": "voss_formula", "location": "analytical_bench_drawer", "vision_mode_required": "spectral", "reveals": "Unknown catalytic cycle notation" },
+              { "clue_id": "thermal_signature", "location": "reaction_vessel", "vision_mode_required": "temporal", "reveals": "Oscillating temperature pattern - Briggs-Rauscher variant?" }
+            ]
+          }
+        }
+      ],
+      "convergence": "All three backgrounds meet at the Genome Archive. Shared discovery: Voss's anomaly is real."
+    },
+    {
+      "act_number": 4,
+      "title": "Accelerator Physics",
+      "description": "Relativistic beam physics. Cherenkov radiation. The anomaly emits particles.",
+      "main_quests": [
+        {
+          "quest_id": "quest_030_accelerator_certification",
+          "title": "Beamline Certification",
+          "objectives": [
+            { "objective_id": "calculate_lorentz", "description": "Calculate Lorentz factor for 10 MeV protons", "evaluation_mode": "SKILL_CHECK" },
+            { "objective_id": "align_magnets", "description": "Align quadrupole magnets", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "fire_beam", "description": "Fire first beam, detect Cherenkov", "evaluation_mode": "CHEMICAL_REACTION" }
+          ]
+        },
+        {
+          "quest_id": "quest_031_anomaly_beam",
+          "title": "The Anomaly Beam",
+          "description": "Strange particles detected. Not in standard model.",
+          "investigation_mode": {
+            "enabled": true,
+            "vision_modes": ["spectral", "contamination", "reaction"],
+            "clues": [
+              { "clue_id": "exotic_particles", "location": "target_chamber", "vision_mode_required": "spectral", "reveals": "Unknown particle tracks - possible dark sector?" },
+              { "clue_id": "radiation_burst", "location": "beam_dump", "vision_mode_required": "contamination", "reveals": "Neutron burst synchronized with Athanor oscillation" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "act_number": 5,
+      "title": "Fusor Build",
+      "description": "Build a Farnsworth-Hirsch fusor. Paschen curve. Neutron yield. Operator dose.",
+      "main_quests": [
+        {
+          "quest_id": "quest_040_fusor_checklist",
+          "title": "The Build Checklist",
+          "objectives": [
+            { "objective_id": "vacuum_chamber", "description": "Assemble vacuum chamber, verify seals", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "grid_assembly", "description": "Assemble inner grid, tungsten wire", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "deuterium_system", "description": "Connect deuterium supply, regulator", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "detector_setup", "description": "Install neutron detector, calibrate", "evaluation_mode": "EQUIPMENT_STATE" }
+          ]
+        },
+        {
+          "quest_id": "quest_041_first_plasma",
+          "title": "First Plasma",
+          "objectives": [
+            { "objective_id": "achieve_vacuum", "description": "Reach <10 mTorr base pressure", "evaluation_mode": "METROLOGY_VALUE" },
+            { "objective_id": "ignite_plasma", "description": "Ignite plasma at Paschen minimum", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "detect_neutrons", "description": "Confirm neutron production", "evaluation_mode": "SPECTRAL_MATCH" },
+            { "objective_id": "measure_dose", "description": "Calculate operator dose rate", "evaluation_mode": "SKILL_CHECK" }
+          ],
+          "failure_conditions": [
+            { "condition_id": "grid_melt", "trigger_metric": "grid_temperature_c", "operator": ">", "threshold": 1500, "severity": "INSTANT_FAIL_EXPLOSION", "narrative_reprimand": "Grid melted. Vacuum lost. Thorne: 'Tungsten doesn't forgive impatience.'" }
+          ]
+        }
+      ]
+    },
+    {
+      "act_number": 6,
+      "title": "The Disappearance",
+      "description": "Investigate Dr. Voss's disappearance. Clandestine lab infiltration. Cartel contact.",
+      "main_quests": [
+        {
+          "quest_id": "quest_050_investigation",
+          "title": "Cold Case",
+          "description": "Six months since Voss vanished. Official investigation closed. You reopen it.",
+          "objectives": [
+            { "objective_id": "access_personnel", "description": "Access Voss's personnel file", "evaluation_mode": "NPC_INTERACTION" },
+            { "objective_id": "interview_witnesses", "description": "Interview last people to see Voss", "evaluation_mode": "NPC_INTERACTION" },
+            { "objective_id": "analyze_lab_logs", "description": "Analyze Wing Gamma logs from disappearance night", "evaluation_mode": "SKILL_CHECK" }
+          ],
+          "background_variants": {
+            "academic": "Your thesis access grants restricted files. Thorne warns: 'Some doors stay closed.'",
+            "hobbyist": "Vance gives you her personal investigation notes. 'Officially, this never happened.'",
+            "ex_pharma": "Lin provides cartel intelligence. 'They're watching. So are we.'"
+          }
+        }
+      ],
+      "faction_missions": [
+        {
+          "faction": "cartel",
+          "quest_id": "faction_010_precursor_run",
+          "title": "Precursor Run",
+          "description": "Smuggle safrole across border. First cartel job."
+        },
+        {
+          "faction": "intelligence",
+          "quest_id": "faction_011_surveillance",
+          "title": "Surveillance",
+          "description": "Monitor suspected clandestine lab. Report only."
+        }
+      ]
+    },
+    {
+      "act_number": 7,
+      "title": "Clandestine Network",
+      "description": "Deeper into cartel operations. Synthesis under pressure. Loyalty tested.",
+      "main_quests": [
+        {
+          "quest_id": "quest_060_clandestine_lab",
+          "title": "The Hidden Lab",
+          "objectives": [
+            { "objective_id": "locate_lab", "description": "Find clandestine lab using tracer", "evaluation_mode": "LOCATION_VISIT" },
+            { "objective_id": "synthesize_under_pressure", "description": "Run MDMA synthesis with armed guards", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "escape_evidence", "description": "Extract product, leave no trace", "evaluation_mode": "SKILL_CHECK" }
+          ],
+          "dynamic_events": [
+            { "event_id": "raid", "trigger_chance": 0.15, "event_type": "accident", "description": "Police raid! Escape or negotiate." }
+          ]
+        }
+      ],
+      "convergence": "All backgrounds face the same choice: Cartel, Intelligence, or Independence?"
+    },
+    {
+      "act_number": 8,
+      "title": "Orbital Research",
+      "description": "Microgravity synthesis. Protein crystallization. Aetherkin in zero-G.",
+      "main_quests": [
+        {
+          "quest_id": "quest_070_orbital_transfer",
+          "title": "Launch to Apex Station",
+          "objectives": [
+            { "objective_id": "pre_payload", "description": "Prepare synthesis payload for microgravity", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "launch", "description": "Experience launch (cinematic)", "evaluation_mode": "LOCATION_VISIT" },
+            { "objective_id": "dock_apex", "description": "Dock at Orbital Research Station Apex", "evaluation_mode": "LOCATION_VISIT" }
+          ]
+        },
+        {
+          "quest_id": "quest_071_microgravity_synthesis",
+          "title": "Perfect Crystals",
+          "objectives": [
+            { "objective_id": "protein_crystallization", "description": "Grow protein crystals impossible on Earth", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "aetherkin_zero_g", "description": "Observe Aetherkin behavior in zero-G", "evaluation_mode": "COMPANION_ACTION" },
+            { "objective_id": "anomaly_orbital", "description": "Athanor anomaly detected in orbit", "evaluation_mode": "INVESTIGATION_MODE" }
+          ]
+        }
+      ]
+    },
+    {
+      "act_number": 9,
+      "title": "Nuclear Heart",
+      "description": "Ignis Reactor. PUREX reprocessing. The anomaly is radioactive.",
+      "main_quests": [
+        {
+          "quest_id": "quest_080_ignis_access",
+          "title": "Ignis Reactor Complex",
+          "objectives": [
+            { "objective_id": "radiation_clearance", "description": "Obtain radiation worker clearance", "evaluation_mode": "SKILL_CHECK" },
+            { "objective_id": "enter_containment", "description": "Enter reactor containment", "evaluation_mode": "LOCATION_VISIT" },
+            { "objective_id": "control_room", "description": "Access control room, review anomaly logs", "evaluation_mode": "INVESTIGATION_MODE" }
+          ]
+        },
+        {
+          "quest_id": "quest_081_purex_reprocessing",
+          "title": "The PUREX Cycle",
+          "objectives": [
+            { "objective_id": "shear_feed", "description": "Prepare shear feed solution", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "extract_uranium", "description": "Run U/Pu partitioning", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "isolate_anomaly", "description": "Isolate radioactive anomaly isotope", "evaluation_mode": "SPECTRAL_MATCH" }
+          ]
+        }
+      ]
+    },
+    {
+      "act_number": 10,
+      "title": "Master Alchemist",
+      "description": "Athanor Core. The choice: Publish, Weaponize, or Transcend. Legacy defined.",
+      "main_quests": [
+        {
+          "quest_id": "quest_090_athanor_core",
+          "title": "The Athanor Core",
+          "description": "The legendary research suite. Self-sustaining chemical clockwork. Voss's legacy.",
+          "objectives": [
+            { "objective_id": "activate_athanor", "description": "Activate the Athanor Core", "evaluation_mode": "CHEMICAL_REACTION" },
+            { "objective_id": "stabilize_cycle", "description": "Stabilize the oscillating reaction", "evaluation_mode": "SKILL_CHECK" },
+            { "objective_id": "make_choice", "description": "Choose the future of Athanor", "evaluation_mode": "NPC_INTERACTION" }
+          ],
+          "choices": [
+            {
+              "id": "publish",
+              "name": "Publish Everything",
+              "description": "Open science. Share Athanor with the world. Nobel Prize likely. Cartels and governments will weaponize it.",
+              "consequences": { "faction_rep": { "khacs": 50, "biotech": 30, "cartel": -50, "intelligence": -30 }, "ending": "Open Science" }
+            },
+            {
+              "id": "weaponize",
+              "name": "Weaponize / Control",
+              "description": "Sell to highest bidder. Control the technology. Power. Wealth. Responsibility.",
+              "consequences": { "faction_rep": { "cartel": 50, "intelligence": 30, "khacs": -50, "biotech": -30 }, "ending": "Shadow Controller" }
+            },
+            {
+              "id": "transcend",
+              "name": "Transcend / Ascend",
+              "description": "Merge with Athanor. Become the clockwork. Immortality through chemistry. The ultimate synthesis.",
+              "consequences": { "faction_rep": { "aetherkin": 100, "khacs": 20, "cartel": -20 }, "ending": "Athanor Ascended" }
+            }
+          ],
+          "rewards": { "skill_xp": { "all": 1000 }, "intelligence_points": 500, "equipment": ["chrono_alchemist_set"] }
+        }
+      ],
+      "convergence": "All three backgrounds, all faction choices, all companion bonds culminate here."
+    }
+  ],
+  "factions": {
+    "khacs": { "name": "KHI-ACS Academic", "description": "Tenure, grants, publications, open science" },
+    "cartel": { "name": "Cartel Network", "description": "Precursors, distribution, protection, power" },
+    "intelligence": { "name": "Intelligence Directorate", "description": "Clearances, forensic contracts, state secrets" },
+    "biotech": { "name": "Biotech Consortium", "description": "IP licensing, clinical trials, scale-up" },
+    "aetherkin": { "name": "Aetherkin Clans", "description": "Mythic companions, alchemical secrets, transcendence" }
+  }
+}
