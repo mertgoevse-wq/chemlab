@@ -19,12 +19,14 @@ def test_reagent_registry_lookup():
     hcl = get_reagent("hcl")
     assert hcl.formula == "HCl"
     assert hcl.ph < 2.0
-    assert "GHS05" in hcl.ghs_pictograms
+    # Check for GHS05 (Corrosive) pictogram in hazards
+    assert any(h.pictogram == "GHS05" for h in hcl.ghs_hazards)
 
     naoh = get_reagent("naoh")
     assert naoh.formula == "NaOH"
     assert naoh.ph > 12.0
-    assert "GHS05" in naoh.ghs_pictograms
+    # Check for GHS05 (Corrosive) pictogram in hazards
+    assert any(h.pictogram == "GHS05" for h in naoh.ghs_hazards)
 
 
 def test_liquid_mixing_volume_and_temp():

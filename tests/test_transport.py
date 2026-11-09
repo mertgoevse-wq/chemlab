@@ -3,6 +3,7 @@ Integration tests for IPC Network Transport using mock and live socket harnesses
 Verifies clean thread lifecycles, timeout handling, and typed protocol exchange.
 """
 
+import socket
 import time
 
 import pytest
@@ -22,6 +23,13 @@ from chemlab_core.models import (
 )
 from chemlab_core.transport.client import SocketIPCClient
 from chemlab_core.transport.server import ThreadedIPCServer
+
+
+def get_free_port() -> int:
+    """Find an ephemeral free port for testing."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return int(s.getsockname()[1])
 
 
 @pytest.mark.integration
@@ -80,9 +88,10 @@ def test_socket_ipc_timeout_handling() -> None:
         time.sleep(1.5)
         return IPCResponse(status=IPCStatus.SUCCESS)
 
+    free_port = get_free_port()
     timeout_config = IPCConfig(
         host="127.0.0.1",
-        port=59998,
+        port=free_port,
         command_timeout_seconds=0.3,
     )
 
