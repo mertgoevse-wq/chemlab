@@ -672,6 +672,156 @@ func query_rdkit_structure(smiles: String, compound_name: String = "") -> Dictio
 		"ghs_pictograms": sp.ghs_pictograms
 	}
 
+
+func request_nmr_analysis(request: Dictionary) -> Dictionary:
+	"""Request NMR spectrum analysis via IPC to Python AnalyticalEngine."""
+	if _engine_mode == EngineMode.IPC_CONNECTED and not _use_embedded_fallback:
+		var future = {"pending": true}
+		_send_ipc_request("NMR_ANALYSIS", request, func(resp):
+			future["pending"] = false
+			future["result"] = resp
+		)
+		var start = Time.get_ticks_msec()
+		while future["pending"] and Time.get_ticks_msec() - start < 10000:
+			_process_ipc_messages()
+			OS.delay_msec(1)
+		if not future["pending"] and future.has("result"):
+			return future["result"]
+
+	# Embedded fallback - simulate locally
+	return _simulate_nmr_locally(request)
+
+
+func _simulate_nmr_locally(request: Dictionary) -> Dictionary:
+	"""Local NMR simulation when IPC not available."""
+	var compound = request.get("compound_name", "Unknown")
+	var spectrum = _generate_local_nmr_spectrum(compound, request)
+	return {
+		"status": "SUCCESS",
+		"mode": "EMBEDDED_FALLBACK",
+		"sample_id": request.get("sample_id", "unknown"),
+		"spectrum": spectrum
+	}
+
+
+func _generate_local_nmr_spectrum(compound_name: String, request: Dictionary) -> Dictionary:
+	# Generate basic NMR spectrum data for fallback
+	var peaks = _get_local_chemical_shifts(compound_name)
+	var n_points = 8192
+	var x_min = request.get("spectral_width_ppm", 12.0) * -1.0
+	var x_max = request.get("spectral_width_ppm", 12.0)
+	var x_step = (x_max - x_min) / n_points
+
+	var x_data = []
+	var y_data = []
+
+	for i in range(n_points):
+		var ppm = x_min + i * x_step
+		var intensity = 0.0
+
+		for peak in peaks:
+			var center = peak["ppm"]
+			var width = peak["width"]
+			var height = peak["intensity"]
+			var delta = ppm - center
+			intensity += height * (width * width) / (delta * delta + width * width)
+
+		intensity += randf_range(-0.001, 0.001)
+		x_data.append(ppm)
+		y_data.append(max(0.0, intensity))
+
+	return {
+		"x_ppm": x_data,
+		"y_intensity": y_data,
+		"peaks": peaks,
+		"solvent": request.get("solvent", "CDCl3"),
+		"temperature_c": request.get("temperature_c", 25.0),
+		"magnetic_field_t": request.get("magnetic_field_t", 9.4),
+		"spectrometer_freq_mhz": 400.0,
+		"acquisition_params": {
+			"spectral_width_ppm": request.get("spectral_width_ppm", 12.0),
+			"number_of_scans": request.get("number_of_scans", 16),
+			"relaxation_delay_sec": request.get("relaxation_delay_sec", 1.0),
+		},
+		"shim_quality": 0.9,
+		"timestamp": Time.get_unix_time_from_system(),
+	}
+
+
+func _get_local_chemical_shifts(compound_name: String) -> Array[Dictionary]:
+	var shifts = {
+		"ethanol": [
+			{"ppm": 1.18, "multiplicity": "t", "J_hz": 7.0, "integration": 3, "assignment": "CH3", "width": 0.02, "intensity": 1.0},
+			{"ppm": 3.65, "multiplicity": "q", "J_hz": 7.0, "integration": 2, "assignment": "CH2", "width": 0.02, "intensity": 0.67},
+			{"ppm": 2.60, "multiplicity": "s", "J_hz": 0.0, "integration": 1, "assignment": "OH", "width": 0.03, "intensity": 0.33},
+		],
+		"acetone": [
+			{"ppm": 2.17, "multiplicity": "s", "J_hz": 0.0, "integration": 6, "assignment": "2x CH3", "width": 0.015, "intensity": 1.0},
+		],
+		"acetic_acid": [
+			{"ppm": 2.09, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "CH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 11.5, "multiplicity": "s", "J_hz": 0.0, "integration": 1, "assignment": "COOH", "width": 0.05, "intensity": 0.33},
+		],
+		"ethyl_acetate": [
+			{"ppm": 1.26, "multiplicity": "t", "J_hz": 7.1, "integration": 3, "assignment": "CH3CH2", "width": 0.02, "intensity": 1.0},
+			{"ppm": 2.04, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "COCH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 4.12, "multiplicity": "q", "J_hz": 7.1, "integration": 2, "assignment": "OCH2", "width": 0.02, "intensity": 0.67},
+		],
+		"benzene": [
+			{"ppm": 7.27, "multiplicity": "s", "J_hz": 0.0, "integration": 6, "assignment": "Ar-H", "width": 0.01, "intensity": 1.0},
+		],
+		"toluene": [
+			{"ppm": 2.34, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "CH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 7.18, "multiplicity": "m", "J_hz": 7.5, "integration": 5, "assignment": "Ar-H", "width": 0.02, "intensity": 0.83},
+		],
+		"aspirin": [
+			{"ppm": 2.31, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "OCOCH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 7.0, "multiplicity": "m", "J_hz": 8.0, "integration": 4, "assignment": "Ar-H", "width": 0.02, "intensity": 0.67},
+			{"ppm": 8.0, "multiplicity": "dd", "J_hz": 8.0, "integration": 1, "assignment": "Ar-H", "width": 0.02, "intensity": 0.17},
+		],
+		"paracetamol": [
+			{"ppm": 2.09, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "CH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 6.75, "multiplicity": "d", "J_hz": 8.5, "integration": 2, "assignment": "Ar-H", "width": 0.02, "intensity": 0.67},
+			{"ppm": 7.35, "multiplicity": "d", "J_hz": 8.5, "integration": 2, "assignment": "Ar-H", "width": 0.02, "intensity": 0.67},
+			{"ppm": 9.8, "multiplicity": "s", "J_hz": 0.0, "integration": 1, "assignment": "NH/OH", "width": 0.03, "intensity": 0.33},
+		],
+		"caffeine": [
+			{"ppm": 3.38, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "N-CH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 3.52, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "N-CH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 3.98, "multiplicity": "s", "J_hz": 0.0, "integration": 3, "assignment": "N-CH3", "width": 0.015, "intensity": 1.0},
+			{"ppm": 7.95, "multiplicity": "s", "J_hz": 0.0, "integration": 1, "assignment": "C-H", "width": 0.02, "intensity": 0.33},
+		],
+	}
+
+	var name_lower = compound_name.to_lower()
+	if shifts.has(name_lower):
+		return shifts[name_lower]
+
+	# Default generic peaks
+	return _generate_generic_peaks()
+
+
+func _generate_generic_peaks() -> Array[Dictionary]:
+	var peaks = []
+	var n_peaks = randi_range(3, 5)
+	for i in range(n_peaks):
+		var ppm = randf_range(0.5, 9.5)
+		var mult_types = ["s", "d", "t", "q", "m"]
+		var mult = mult_types[randi_range(0, mult_types.size() - 1)]
+		var J = 0.0
+		if mult != "s" and mult != "m":
+			J = randf_range(5.0, 12.0)
+		peaks.append({
+			"ppm": ppm,
+			"multiplicity": mult,
+			"J_hz": J,
+			"integration": randi_range(1, 3),
+			"assignment": "Unknown",
+			"width": randf_range(0.01, 0.03),
+			"intensity": randf_range(0.3, 1.0),
+		})
+	return peaks
+
 # =============================================================================
 # 8. Vessel Management
 # =============================================================================
