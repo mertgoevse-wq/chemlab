@@ -53,6 +53,7 @@ const NOMINAL_EXHAUST_CFM: float = 850.0 # ANSI/AIHA Z9.5 certified
 @export var spawn_reagent_naoh: Marker3D
 @export var spawn_reagent_phenolphthalein: Marker3D
 @export var spawn_fume_hood_apparatus: Marker3D
+@export var spawn_nmr_spectrometer: Marker3D
 
 # =============================================================================
 # RUNTIME STATE
@@ -122,6 +123,8 @@ func _resolve_node_references() -> void:
 		spawn_reagent_phenolphthalein = get_node_or_null("SpawnPoints/Spawn_Reagent_Phenolphthalein") as Marker3D
 	if not spawn_fume_hood_apparatus:
 		spawn_fume_hood_apparatus = get_node_or_null("SpawnPoints/Spawn_FumeHood_Apparatus") as Marker3D
+	if not spawn_nmr_spectrometer:
+		spawn_nmr_spectrometer = get_node_or_null("SpawnPoints/Spawn_NMR_Spectrometer") as Marker3D
 
 
 # =============================================================================

@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/apparatus/bunsen_burner.tscn" id="7_burner"]
 [ext_resource type="PackedScene" path="res://scenes/apparatus/erlenmeyer_flask.tscn" id="8_erlenmeyer"]
 [ext_resource type="PackedScene" path="res://scenes/apparatus/beaker.tscn" id="9_beaker"]
+[ext_resource type="PackedScene" path="res://scenes/apparatus/nmr_spectrometer.tscn" id="11_nmr"]
 [ext_resource type="PackedScene" path="res://scenes/quests/quest_overlay.tscn" id="10_quest_overlay"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_FloorEpoxy"]
@@ -661,6 +662,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.2)
 
 [node name="Beaker" parent="ApparatusInstances" instance=ExtResource("9_beaker")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.9, 0.2)
+
+[node name="NMRSpectrometer" parent="ApparatusInstances" instance=ExtResource("11_nmr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -1.0)
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.0, 2.5)
