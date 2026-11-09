@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-GAME_DIR = Path("C:/Users/Win11 Pro/Desktop/chemlab/game")
+GAME_DIR = Path("C:/Users/Win11 Pro/Desktop/chemlab/.claude/worktrees/musing-northcutt-7a05af/game")
 SCRIPTS_DIR = GAME_DIR / "scripts"
 SCENES_DIR = GAME_DIR / "scenes"
 
@@ -44,14 +44,16 @@ def test_input_manager_gdscript_structure():
     """Validates InputManager script for required signals, thresholds, and filters."""
     content = (SCRIPTS_DIR / "input" / "input_manager.gd").read_text(encoding="utf-8")
 
-    # Signals
+    # Signals - check for signal declarations with parameters
     assert "signal apparatus_grabbed" in content
+    assert "signal apparatus_released" in content
     assert "signal apparatus_poured" in content
     assert "signal apparatus_swirled" in content
     assert "signal tracker_connection_changed" in content
 
     # 1-Euro Filter parameters
     assert "ONE_EURO_FC_MIN" in content or "min_cutoff" in content
+    assert "ONE_EURO_BETA" in content or "beta" in content
     assert "0.007" in content  # beta parameter
     assert "StreamPeerTCP" in content
     assert "8768" in content  # daemon port
@@ -69,21 +71,26 @@ def test_quest_manager_campaign_objectives():
     # Quest 1 title
     assert "Orientation & Safety Protocols" in content
 
-    # Objective 1: Tear open PPE station and equip safety goggles
+    # Objective 1: Equip Safety Goggles
+    assert "Equip Safety Goggles" in content
     assert "equip safety goggles" in content.lower()
 
     # Objective 2: Place 250 mL Erlenmeyer Flask on Analytical Balance and Tare
+    assert "Analytical Balance Tare" in content
     assert "analytical balance and tare" in content.lower()
 
     # Objective 3: Dispense 25.0 mL of 0.1 M Hydrochloric Acid (HCl)
-    assert "hydrochloric acid" in content or "hcl" in content.lower()
+    assert "Dispense Acid Reagent" in content
+    assert "hydrochloric acid" in content.lower() or "hcl" in content.lower()
     assert "25.0" in content
 
     # Objective 4: Add 3 drops of Phenolphthalein Indicator
+    assert "Add pH Indicator" in content
     assert "phenolphthalein" in content.lower()
     assert "3.0" in content or "3 drops" in content.lower()
 
-    # Objective 5: Titrate dropwise with 0.1 M NaOH until persistent pink endpoint (pH 8.2 - 9.0)
+    # Objective 5: Titrate to Endpoint
+    assert "Titrate to Endpoint" in content
     assert "naoh" in content.lower()
     assert "8.2" in content
     assert "9.0" in content
@@ -106,8 +113,8 @@ def test_save_manager_gdscript_structure():
     content = (SCRIPTS_DIR / "save" / "save_manager.gd").read_text(encoding="utf-8")
 
     assert "user://chemlab_save.json" in content
-    assert "save_game" in content or "save_to_disk" in content
-    assert "load_game" in content or "load_from_disk" in content
+    assert "save_game" in content
+    assert "load_game" in content
     assert "record_quest_completion" in content
     assert "add_notebook_entry" in content
 

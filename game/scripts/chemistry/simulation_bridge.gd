@@ -169,10 +169,9 @@ func _attempt_tcp_connection() -> void:
 		_handle_ipc_connection_failed("Failed to establish TCP connection")
 
 func _attempt_named_pipe_connection() -> void:
-	var pipe = FileAccess.new()
-	var err = pipe.open(IPC_NAMED_PIPE_PATH, FileAccess.READ_WRITE)
-	if err != OK:
-		_handle_ipc_connection_failed("Named pipe open error: %s" % err)
+	var pipe = FileAccess.open(IPC_NAMED_PIPE_PATH, FileAccess.READ_WRITE)
+	if pipe == null:
+		_handle_ipc_connection_failed("Named pipe open error: pipe is null")
 		return
 	_pipe_file = pipe
 	_pipe_connected = true
@@ -233,6 +232,22 @@ func _process_named_pipe_messages() -> void:
 
 	while _pipe_file.file_open and not _pipe_file.eof_reached():
 		var line = _pipe_file.get_line().strip_edges()
+		if line == "":
+			continue
+		var parsed = JSON.parse_string(line)
+		if parsed == null:
+			continue
+		var req_id = parsed.get("request_id", "")
+		if _pending_requests.has(req_id):
+			var callback = _pending_requests[req_id]
+			_pending_requests.erase(req_id)
+			callback.call(parsed)
+
+func _parse_ipc_response(data: String) -> void:
+	"""Parse incoming JSON response from IPC server."""
+	var lines = data.split("\n")
+	for line in lines:
+		line = line.strip_edges()
 		if line == "":
 			continue
 		var parsed = JSON.parse_string(line)
