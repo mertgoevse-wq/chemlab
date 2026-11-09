@@ -89,7 +89,6 @@ func _ready() -> void:
 	set_meta("apparatus_name", "NMR Spectrometer (400 MHz)")
 
 	_setup_audio_players()
-	_setup_interaction_trigger()
 	_setup_bore_collision()
 	_update_display_state()
 	_update_status_led()
@@ -157,33 +156,19 @@ func _setup_insertion_sensor() -> void:
 
 func _on_interaction_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") or body.get_class() == "PlayerController":
-		# Player is near the NMR - could show interaction hint
-		pass
-
+		# Player is near the NMR - track proximity for interaction logic
+		# Let PlayerController's RayCast3D handle the actual interaction prompt
+		body._nmr_nearby = true
 
 func _on_interaction_body_exited(body: Node3D) -> void:
 	if body.is_in_group("player") or body.get_class() == "PlayerController":
 		# Player left NMR interaction zone
-		pass
+		body._nmr_nearby = false
 
 
 # =============================================================================
 # PLAYER INTERACTION
 # =============================================================================
-
-func _on_interaction_body_entered(body: Node3D) -> void:
-	if body.is_in_group("player") or body.get_class() == "PlayerController":
-		# Player is near the NMR - show interaction hint via HUD
-		if body.has_method("_update_interaction_prompt"):
-			body._update_interaction_prompt("NMR Spectrometer", "[E] Interact with NMR Spectrometer")
-
-
-func _on_interaction_body_exited(body: Node3D) -> void:
-	if body.is_in_group("player") or body.get_class() == "PlayerController":
-		# Player left NMR interaction zone - clear HUD prompt
-		if body.has_method("_hide_interaction_prompt"):
-			body._hide_interaction_prompt()
-
 
 func interact(player: Node) -> void:
 	# Called when player presses E while looking at NMR

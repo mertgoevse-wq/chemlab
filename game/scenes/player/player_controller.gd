@@ -71,6 +71,9 @@ const SWIRL_ANGULAR_VELOCITY: float = 16.0 # radians / sec
 var is_mouse_captured: bool = true
 var hovered_apparatus: Node = null
 
+# NMR proximity tracking (set by NMR spectrometer's InteractionTrigger)
+var _nmr_nearby: bool = false
+
 # Held Item State
 var carried_item: Node = null
 var carried_item_original_parent: Node = null
@@ -787,12 +790,15 @@ func get_hovered_apparatus() -> Node:
 # =============================================================================
 
 func is_near_nmr() -> bool:
-	"""Check if player is near an NMR spectrometer."""
-	return hovered_apparatus != null and hovered_apparatus.is_in_group("nmr_spectrometer")
+	"""Check if player is near an NMR spectrometer using the NMR's proximity flag."""
+	return _nmr_nearby == true
 
 
 func get_nearby_nmr() -> Node:
 	"""Get nearby NMR spectrometer if any."""
-	if hovered_apparatus and hovered_apparatus.is_in_group("nmr_spectrometer"):
-		return hovered_apparatus
+	# Find NMR via the proximity flag instead of raycast
+	var nmr_nodes = get_tree().get_nodes_in_group("nmr_spectrometer")
+	for nmr in nmr_nodes:
+		if nmr._nmr_nearby == true:
+			return nmr
 	return null

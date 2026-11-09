@@ -87,6 +87,9 @@ func save_game() -> bool:
 		save_completed.emit(false)
 		return false
 
+	# Include apparatus state in save data
+	save_data["apparatus"] = _collect_apparatus_state()
+
 	var json_string := JSON.stringify(save_data, "\t")
 	file.store_string(json_string)
 	file.close()
@@ -123,6 +126,8 @@ func load_game() -> bool:
 	var loaded_data = json.get_data()
 	if typeof(loaded_data) == TYPE_DICTIONARY:
 		_merge_save_data(loaded_data)
+		# Apply apparatus state after loading
+		_apply_apparatus_state(loaded_data)
 		load_completed.emit(true, save_data)
 		return true
 
@@ -216,5 +221,105 @@ func get_completed_quests() -> Array:
 	return save_data.quests.completed
 
 
-func get_notebook_entries() -> Array:
-	return save_data.lab_notebook
+# =============================================================================
+# APPARATUS STATE PERSISTENCE
+# =============================================================================
+
+func _collect_apparatus_state() -> Dictionary:
+	"""Collect state from all apparatus in the scene for save data."""
+	var apparatus_state = {}
+
+	# Collect NMR spectrometer state
+	var nmr_nodes = get_tree().get_nodes_in_group("nmr_spectrometer")
+	for nmr in nmr_nodes:
+		if nmr.has_method("get_save_data"):
+			apparatus_state["nmr_spectrometer"] = nmr.get_save_data()
+
+	# Collect sample tube states
+	var tube_nodes = get_tree().get_nodes_in_group("sample_tube")
+	var tubes_data = []
+	for tube in tube_nodes:
+		if tube.has_method("get_save_data"):
+			tubes_data.append(tube.get_save_data())
+	if tubes_data.size() > 0:
+		apparatus_state["sample_tubes"] = tubes_data
+
+	return apparatus_state
+
+
+func _apply_apparatus_state(data: Dictionary) -> void:
+	"""Apply saved apparatus state to the scene."""
+	if not data.has("apparatus"):
+		return
+
+	var apparatus_data = data["apparatus"]
+
+	# Restore NMR spectrometer state
+	if apparatus_data.has("nmr_spectrometer"):
+		var nmr_nodes = get_tree().get_nodes_in_group("nmr_spectrometer")
+		for nmr in nmr_nodes:
+			if nmr.has_method("load_save_data"):
+				nmr.load_save_data(apparatus_data["nmr_spectrometer"])
+
+	# Restore sample tubes
+	if apparatus_data.has("sample_tubes"):
+		var tubes_data = apparatus_data["sample_tubes"]
+		var existing_tubes = get_tree().get_nodes_in_group("sample_tube")
+
+		for tube_data in tubes_data:
+			var found = false
+			var tube_id = tube_data.get("sample_id", "")
+
+			# Try to find existing tube
+			for existing in existing_tubes:
+				if existing.has_method("get_save_data"):
+					var existing_data = existing.get_save_data()
+					if existing_data.get("sample_id", "") == tube_id:
+						if existing.has_method("load_save_data"):
+							existing.load_save_data(tube_data)
+						found = true
+						break
+
+			# If not found, create new tube
+			if not found:
+				_create_sample_tube_from_data(tube_data)
+
+
+func _create_sample_tube_from_data(tube_data: Dictionary) -> void:
+	"""Create a new sample tube from saved data."""
+	var tube_scene = load("res://scenes/apparatus/nmr_sample_tube.tscn")
+	if tube_scene:
+		var tube = tube_scene.instantiate()
+		tube.name = "NMRSampleTube_Restored_" + str(int(Time.get_unix_time_from_system()))
+		tube.global_position = tube_data.get("global_position", Vector3(0, 1, 0))
+		tube.global_rotation = tube_data.get("global_rotation", Basis.IDENTITY)
+		get_tree().root.add_child(tube)
+
+		# Apply saved data
+		if tube.has_method("load_save_data"):
+			tube.load_save_data(tube_data)
+		return
+
+	# Fallback: create basic RigidBody3D with sample data
+	var tube = RigidBody3D.new()
+	tube.name = "NMRSampleTube_Restored_" + str(int(Time.get_unix_time_from_system()))
+	tube.global_position = tube_data.get("global_position", Vector3(0, 1, 0))
+	tube.global_rotation = tube_data.get("global_rotation", Basis.IDENTITY)
+	get_tree().root.add_child(tube)
+
+	# Add get_sample_data method dynamically
+	var script = '''
+extends RigidBody3D
+class_name NMRSampleTube
+func get_sample_data() -> Dictionary:
+	return {
+		"sample_type": "nmr_sample",
+		"compound_name": "Ethanol",
+		"concentration_mM": 50.0,
+		"solvent": "CDCl3",
+		"volume_ml": 0.6,
+		"temperature_c": 25.0,
+	}
+'''
+	tube.script = script
+	get_tree().root.add_child(tube)
