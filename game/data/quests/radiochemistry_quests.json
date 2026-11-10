@@ -1,0 +1,97 @@
+{
+  "version": "1.0.0",
+  "description": "Radiochemistry quest — isotopes, shielding, inverse-square dose, radiation safety.",
+  "quests": [
+    {
+      "quest_id": "quest_radio_shielding",
+      "title": "Radiation Shielding",
+      "description": "Work with F-18 in the hot cell. Calculate dose rate via inverse-square law and lead shielding attenuation. Keep dose ALARA.",
+      "instructor_id": "dr_marcus_lin",
+      "laboratory": "radiochemistry_hot_cell",
+      "prerequisites": {
+        "completed_quests": [],
+        "min_safety_score": 80,
+        "required_skills": { "lab_safety": 15, "physics": 10 },
+        "background_requirements": {}
+      },
+      "objectives": [
+        {
+          "objective_id": "setup_isotope",
+          "description": "Prepare 100 MBq F-18 source in hot cell behind lead shield",
+          "target_entity": "hot_cell",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "isotope": "F-18", "activity_mbq": 100.0, "shield_cm": 5.0 },
+          "tolerance": null,
+          "hints": ["F-18: T½ = 1.83 h, 511 keV gamma", "Lead shield attenuates gamma radiation"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "measure_dose_rate",
+          "description": "Measure dose rate at 30 cm with 5 cm Pb shield",
+          "target_entity": "dose_calibrator",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 20.0,
+          "tolerance": 10.0,
+          "hints": ["Dose rate ∝ activity / r² × attenuation", "Use dosimeter behind shield at measurement distance"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "double_distance",
+          "description": "Double distance to 60 cm and confirm 1/4 dose rate",
+          "target_entity": "dosimeter",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 5.0,
+          "tolerance": 2.0,
+          "hints": ["Inverse-square law: doubling distance quarters dose rate"],
+          "optional": true,
+          "hidden": false
+        },
+        {
+          "objective_id": "cumulative_dose",
+          "description": "Calculate cumulative dose for 8 h work day",
+          "target_entity": "dosimeter",
+          "evaluation_mode": "SKILL_CHECK",
+          "target_value": { "below_limit": true },
+          "tolerance": null,
+          "hints": ["Cumulative dose = dose rate × time", "Worker annual limit: 20,000 mSv"],
+          "optional": false,
+          "hidden": false
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "shielding_breach",
+          "severity": "INSTANT_FAIL_EXPLOSION",
+          "trigger_metric": "shielding_breach",
+          "operator": "==",
+          "threshold": true,
+          "narrative_reprimand": "Shielding breach — dose rate increased 10×. Evacuate and reestablish shielding.",
+          "background_variants": {}
+        },
+        {
+          "condition_id": "dose_limit",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "cumulative_dose_mSv",
+          "operator": ">",
+          "threshold": 1.0,
+          "narrative_reprimand": "Cumulative dose approaching concern — minimize time, maximize distance.",
+          "background_variants": {}
+        }
+      ],
+      "state_validation": {
+        "engine_checks": {},
+        "required_products": [],
+        "unwanted_byproducts": []
+      },
+      "rewards": {
+        "skill_xp": { "lab_safety": 300, "physics": 200, "radiochemistry": 250 },
+        "intelligence_points": 40,
+        "items": [{ "item_id": "radiation_cert", "quantity": 1 }],
+        "lab_access": ["radiochemistry_hot_cell"]
+      },
+      "dynamic_events": []
+    }
+  ]
+}

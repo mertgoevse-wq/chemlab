@@ -1,0 +1,166 @@
+{
+  "version": "1.0.0",
+  "description": "Cell culture quest — aseptic technique, growth curves, contamination risk.",
+  "quests": [
+    {
+      "quest_id": "quest_cell_aseptic",
+      "title": "Aseptic Technique",
+      "description": "Establish a sterile mammalian cell culture. Demonstrate correct gowning, biosafety cabinet use, and contamination avoidance.",
+      "instructor_id": "dr_marcus_lin",
+      "laboratory": "cell_culture",
+      "prerequisites": {
+        "completed_quests": [],
+        "min_safety_score": 70,
+        "required_skills": { "lab_safety": 10, "biology": 5 },
+        "background_requirements": {}
+      },
+      "objectives": [
+        {
+          "objective_id": "gowning",
+          "description": "Don full cleanroom gowning (bunny suit, hood, booties, mask, double gloves)",
+          "target_entity": "gowning_station",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "gowning_complete": true },
+          "tolerance": null,
+          "hints": ["Gowning prevents human-borne particles and microbes"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "biosafety_cabinet",
+          "description": "Work inside Class II biosafety cabinet for all open manipulations",
+          "target_entity": "biosafety_cabinet",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "used_bsc": true },
+          "tolerance": null,
+          "hints": ["BSC provides HEPA-filtered airflow and personnel protection"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "inoculate",
+          "description": "Inoculate culture flask without contamination",
+          "target_entity": "culture_flask",
+          "evaluation_mode": "SKILL_CHECK",
+          "target_value": { "contamination_free": true },
+          "tolerance": null,
+          "hints": ["Flame pipette tips, work quickly, keep cap off only briefly"],
+          "optional": false,
+          "hidden": false
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "contamination",
+          "severity": "INSTANT_FAIL_EXPLOSION",
+          "trigger_metric": "contamination_detected",
+          "operator": "==",
+          "threshold": true,
+          "narrative_reprimand": "Culture contaminated — discard and restart. Aseptic breaks cost time and reagents.",
+          "background_variants": {}
+        },
+        {
+          "condition_id": "no_bsc",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "worked_outside_bsc",
+          "operator": "==",
+          "threshold": true,
+          "narrative_reprimand": "Working outside BSC risks contamination and personnel exposure.",
+          "background_variants": {}
+        }
+      ],
+      "state_validation": {
+        "engine_checks": {},
+        "required_products": [],
+        "unwanted_byproducts": []
+      },
+      "rewards": {
+        "skill_xp": { "lab_safety": 200, "biology": 200, "cell_culture": 150 },
+        "intelligence_points": 30,
+        "items": [{ "item_id": "aseptic_cert", "quantity": 1 }],
+        "lab_access": ["cell_culture"]
+      },
+      "dynamic_events": []
+    },
+    {
+      "quest_id": "quest_cell_growth",
+      "title": "Growth Curve",
+      "description": "Culture mammalian cells for 48 h and verify exponential growth: N = N₀·e^(µ·t). Determine specific growth rate µ.",
+      "instructor_id": "dr_marcus_lin",
+      "laboratory": "cell_culture",
+      "prerequisites": {
+        "completed_quests": ["quest_cell_aseptic"],
+        "min_safety_score": 70,
+        "required_skills": { "biology": 15, "cell_culture": 10 },
+        "background_requirements": {}
+      },
+      "objectives": [
+        {
+          "objective_id": "seed_culture",
+          "description": "Seed culture at known initial density N₀",
+          "target_entity": "culture_flask",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 100000.0,
+          "tolerance": 0.1,
+          "hints": ["Count cells with hemocytometer or cell counter", "N₀ = 1.0×10⁵ cells/mL typical"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "incubate",
+          "description": "Incubate 48 h at 37 °C, 5 % CO₂, pH 7.4",
+          "target_entity": "co2_incubator",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "temperature": 37.0, "co2": 5.0, "ph": 7.4 },
+          "tolerance": null,
+          "hints": ["Deviations from 37 °C / 5 % CO₂ / pH 7.4 reduce growth rate µ"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "determine_mu",
+          "description": "Measure final density and calculate µ = ln(N/N₀)/t",
+          "target_entity": "cell_counter",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 0.03,
+          "tolerance": 0.01,
+          "hints": ["µ = ln(N_final/N_initial) / t", "Expected µ ≈ 0.03 h⁻¹ at optimal conditions"],
+          "optional": false,
+          "hidden": false
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "contamination_lost",
+          "severity": "INSTANT_FAIL_EXPLOSION",
+          "trigger_metric": "culture_contaminated",
+          "operator": "==",
+          "threshold": true,
+          "narrative_reprimand": "Contaminated culture lost — all growth data invalid.",
+          "background_variants": {}
+        },
+        {
+          "condition_id": "conditions_off",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "conditions_deviated",
+          "operator": ">",
+          "threshold": 0.3,
+          "narrative_reprimand": "Conditions far from optimal — growth severely slowed.",
+          "background_variants": {}
+        }
+      ],
+      "state_validation": {
+        "engine_checks": {},
+        "required_products": [],
+        "unwanted_byproducts": []
+      },
+      "rewards": {
+        "skill_xp": { "biology": 300, "cell_culture": 250 },
+        "intelligence_points": 40,
+        "items": [{ "item_id": "growth_curve_cert", "quantity": 1 }],
+        "lab_access": []
+      },
+      "dynamic_events": []
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "version": "1.0.0",
+  "description": "Electrochemistry quest — Daniell cell, Nernst equation, Faraday electrolysis, corrosion.",
+  "quests": [
+    {
+      "quest_id": "quest_electro_daniell",
+      "title": "The Daniell Cell",
+      "description": "Build a Zn|Zn²⁺||Cu²⁺|Cu galvanic cell and verify the Nernst equation. Measure open-circuit voltage and confirm E°cell ≈ 1.103 V at unit activities.",
+      "instructor_id": "dr_elena_vance",
+      "laboratory": "electrochemistry",
+      "prerequisites": {
+        "completed_quests": [],
+        "min_safety_score": 60,
+        "required_skills": { "chemistry": 5, "physics": 5 },
+        "background_requirements": { "academic": true, "hobbyist": true, "ex_pharma": true }
+      },
+      "objectives": [
+        {
+          "objective_id": "setup_galvanic_cell",
+          "description": "Assemble Zn anode and Cu cathode with ZnSO4/CuSO4 electrolytes and salt bridge",
+          "target_entity": "electrochemical_cell",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "anode": "Zn", "cathode": "Cu", "salt_bridge": true },
+          "tolerance": null,
+          "hints": ["Zinc is the anode (oxidizes), copper is the cathode (reduces)", "Salt bridge completes the circuit without mixing electrolytes"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "measure_emf",
+          "description": "Measure open-circuit voltage with potentiostat",
+          "target_entity": "potentiostat",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 1.103,
+          "tolerance": 0.05,
+          "hints": ["Ecell = Ecathode − Eanode = 0.340 − (−0.763) = 1.103 V", "Verify with Nernst equation at unit activities"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "nernst_concentration",
+          "description": "Change [Cu2+] to 0.1 M and confirm Nernst shift",
+          "target_entity": "electrochemical_cell",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 1.044,
+          "tolerance": 0.03,
+          "hints": ["E = E° − (0.05916/2)·log(Q), Q = [Zn2+]/[Cu2+]", "Lower [Cu2+] lowers cell voltage"],
+          "optional": true,
+          "hidden": false
+        },
+        {
+          "objective_id": "load_characterization",
+          "description": "Measure I–V curve and find maximum power point",
+          "target_entity": "potentiostat",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "r_load_equals_r_internal": true },
+          "tolerance": null,
+          "hints": ["Maximum power transfer occurs when R_load = R_internal", "I = E_cell / (R_int + R_load)"],
+          "optional": true,
+          "hidden": false
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "wrong_polarity",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "reversed_leads",
+          "operator": "==",
+          "threshold": true,
+          "narrative_reprimand": "Reversed leads give negative voltage — check anode/cathode assignment.",
+          "background_variants": {}
+        },
+        {
+          "condition_id": "no_salt_bridge",
+          "severity": "INSTANT_FAIL_EXPLOSION",
+          "trigger_metric": "missing_salt_bridge",
+          "operator": "==",
+          "threshold": true,
+          "narrative_reprimand": "Without salt bridge, no current flows — circuit incomplete.",
+          "background_variants": {}
+        }
+      ],
+      "state_validation": {
+        "engine_checks": { "conversion_min": 0.0, "vessel_temperature_max_c": 60.0 },
+        "required_products": [],
+        "unwanted_byproducts": []
+      },
+      "rewards": {
+        "skill_xp": { "chemistry": 200, "physics": 100, "electrochemistry": 150 },
+        "intelligence_points": 30,
+        "items": [{ "item_id": "daniell_cell_cert", "quantity": 1 }],
+        "lab_access": ["electrochemistry"]
+      },
+      "dynamic_events": []
+    },
+    {
+      "quest_id": "quest_electro_electrolysis",
+      "title": "Faraday's Laws",
+      "description": "Perform copper electrolysis and verify Faraday's first law: m = M·I·t/(n·F). Calculate deposited mass from charge passed.",
+      "instructor_id": "dr_elena_vance",
+      "laboratory": "electrochemistry",
+      "prerequisites": {
+        "completed_quests": ["quest_electro_daniell"],
+        "min_safety_score": 60,
+        "required_skills": { "chemistry": 10 },
+        "background_requirements": {}
+      },
+      "objectives": [
+        {
+          "objective_id": "setup_electrolysis",
+          "description": "Set up CuSO4 electrolyte with Cu electrodes and constant current source",
+          "target_entity": "electrochemical_cell",
+          "evaluation_mode": "EQUIPMENT_STATE",
+          "target_value": { "electrolyte": "CuSO4", "electrodes": "Cu", "current_source": true },
+          "tolerance": null,
+          "hints": ["Copper plates onto cathode, dissolves from anode"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "run_electrolysis",
+          "description": "Pass 1 A for 1800 s and measure deposited copper mass",
+          "target_entity": "electrochemical_cell",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 0.593,
+          "tolerance": 0.03,
+          "hints": ["m = M·I·t/(n·F) = 63.546·1·1800/(2·96485) ≈ 0.593 g", "n = 2 for Cu²⁺ + 2e⁻ → Cu"],
+          "optional": false,
+          "hidden": false
+        },
+        {
+          "objective_id": "verify_faraday",
+          "description": "Compare measured mass to theoretical prediction",
+          "target_entity": "analytical_balance",
+          "evaluation_mode": "METROLOGY_VALUE",
+          "target_value": 0.593,
+          "tolerance": 0.05,
+          "hints": ["Agreement within 5% confirms Faraday's law"],
+          "optional": false,
+          "hidden": false
+        }
+      ],
+      "failure_conditions": [
+        {
+          "condition_id": "overcurrent",
+          "severity": "SCORE_PENALTY",
+          "trigger_metric": "current_exceeds_limit",
+          "operator": ">",
+          "threshold": 5.0,
+          "narrative_reprimand": "Excessive current causes overheating and poor deposit quality.",
+          "background_variants": {}
+        }
+      ],
+      "state_validation": {
+        "engine_checks": { "conversion_min": 0.8, "vessel_temperature_max_c": 50.0 },
+        "required_products": [{ "species_id": "cu_s", "min_moles": 0.009, "min_purity": 95 }],
+        "unwanted_byproducts": []
+      },
+      "rewards": {
+        "skill_xp": { "chemistry": 300, "electrochemistry": 200 },
+        "intelligence_points": 40,
+        "items": [{ "item_id": "faraday_cert", "quantity": 1 }]
+      },
+      "dynamic_events": []
+    }
+  ]
+}
