@@ -33,7 +33,7 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 from typing import Any
 
 logger = logging.getLogger("chemlab.media.google_bridge")

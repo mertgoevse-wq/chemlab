@@ -1,5 +1,45 @@
-engine.name: Godot
-engine.version: 4.7.2
-project.stage: Concept
-project.stage_override: null
-project.yaml_version: 1
+# ATHANOR Ascension — CCGS project configuration
+# See .claude/docs/effects-map.md for full schema.
+
+schema_version: 1
+
+framework:
+  version: 1.2.0
+  last_upgraded: 2026-11-07
+
+project:
+  name: "Athanor Ascension"
+  engine:
+    name: "godot"
+    version: "4.7"
+    renderer: "gl_compatibility"
+
+modes:
+  rigor: "minimal"
+  automation: "collaborative"
+
+# Path mapping for CCGS rules (Godot layout)
+# The CCGS hooks expect certain paths; map them to ATHANOR structure
+paths:
+  code_root: "game/scripts"
+  data_root: "game/data"
+  assets_root: "game/assets"
+  design_root: "design"
+  docs_root: "docs"
+  tests_root: "game/tests"
+  production_root: "production"
+  prototypes_root: "prototypes"
+
+# Godot-specific settings
+godot:
+  project_path: "game/project.godot"
+  scenes_path: "game/scenes"
+  autoloads_path: "game/scripts"
+  export_presets: "game/export_presets.cfg"
+
+# ATHANOR-specific domains
+athanor:
+  chemistry_core: "chemlab_core"
+  python_core: "src/chemlab"
+  simulation_bridge: "game/scripts/chemistry/simulation_bridge.gd"
+  reaction_evaluator: "game/scripts/chemistry/reaction_evaluator.gd"

@@ -6,7 +6,7 @@ and ANSI Z358.1 compliant Emergency Eyewash and Safety Deluge Shower drills.
 
 import math
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 from .ghs import CHEMICAL_DATABASE
 

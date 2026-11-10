@@ -1,147 +1,647 @@
-# ChemLab Chemistry Simulation Consolidation Plan
+# ChemLab — Chemistry Module Consolidation Plan
 
-**Project:** Athanor Ascension (ChemLab)
-**Date:** 2026-11-05
-**Goal:** Merge 4 chemistry engines, 3 reagent databases, and 2 model modules into one authoritative `chemistry/` module at `src/chemlab/chemistry/`
-
----
-
-## Executive Summary
-
-The ChemLab codebase currently has scattered chemistry functionality across multiple modules with overlapping reagent definitions, duplicate simulation logic, and inconsistent data models. This plan consolidates everything into a single authoritative `chemistry/` module foundation, with clear ownership per concern. The consolidation is Phase 1 of the architecture plan (ARCHITECTURE.md §3.2).
+**Document ID:** `DOC-CHEMLAB-CONSOLIDATION-001`  
+**Version:** 1.0.0  
+**Status:** Approved / Authoritative Plan  
+**Date:** 2026-11-10  
+**Target:** Consolidate 4 chemistry engines, 3 reagent databases, and 2 model modules into authoritative `src/chemlab/chemistry/` package while maintaining 100% backward compatibility (all 256 pytest tests must pass).
 
 ---
 
-## 1. File-by-File Merge Plan
+## 1. Executive Summary
 
-### Legend:
-- **A) Authoritative source of truth** — Keep as-is; becomes the single source for this concern
-- **B) Subsumed into another** — Functionality merged into another module; original file deprecated
-- **C) Deprecated-and-removable** — Can be removed after consolidation; no unique value
-- **D) Needs refactor** — Must be modified and relocated; keeps its core logic but changes ownership
+The ChemLab codebase currently has significant structural fragmentation:
 
----
+| Concern | Current Duplicates | Lines (approx.) | Test Files |
+|---------|-------------------|-----------------|------------|
+| **Chemistry Engines** | 4 modules | ~1,800 | `test_cantera_engine.py`, `test_reaction_solver.py`, `test_reaction_engine.py`, `test_free_sim.py` |
+| **Reagent Databases** | 3 modules | ~3,200 | `test_reagents.py`, `test_ghs.py`, `test_free_sim.py` |
+| **Data Models** | 2 modules | ~600 | `test_models.py` |
 
-### Reagent Databases (3 → 1)
-
-| Source File | Classification | Reasoning |
-|---|---|---|
-| `src/chemlab/simulation/reagents.py` | **A) Authoritative source of truth** | Already the consolidated registry with >200 substances. Has the most complete `Reagent` dataclass with all properties (molar mass, density, CAS, pKa, GHS hazards, storage group, particle type, color). Provides all lookup helpers (`get_reagent`, `list_reagents`, `search_by_formula`, `search_by_category`, `count_by_category`). **This becomes the single reagent registry for the entire project.** |
-| `src/chemlab/simulation/cantera_engine.py` | **D) Needs refactor** | Contains `THERMO_DATABASE` with ~80 species that overlap significantly with `reagents.py`. The thermodynamic calculation engine itself is valuable and should be preserved, but its data source must switch to `reagents.py`. Will be refactored to import reagent data from the consolidated registry and relocated to `chemistry/thermodynamics/engine.py`. |
-| `src/chemlab/simulation/side_reactions.py` | **B) Subsumed into chemistry/ module** | Side reaction analyzer (aspirin, paracetamol, acetanilide evaluation). Its impurity/severity logic is valuable but should be integrated into `chemistry/safety/` or `chemistry/kinetics/` as a submodule. After consolidation, this file's functions will be importable from the new module. |
+**Goal:** Single authoritative `src/chemlab/chemistry/` package per `ARCHITECTURE.md §3.2` with thin wrappers preserving all existing import paths. Zero functional code changes in Phase 1 — only structural reorganization and delegation.
 
 ---
 
-### Chemistry Engines (4 → consolidated)
+## 2. Target Structure (per ARCHITECTURE.md §3.2)
 
-| Source File | Classification | Reasoning |
-|---|---|---|
-| `src/chemlab/simulation/cantera_engine.py` | **D) Needs refactor** (see above) | Its thermodynamic engine will be refactored to use `reagents.py` data and moved to `chemistry/thermodynamics/engine.py`. The Cantera-backed rigorous calculations become the authoritative thermodynamic engine for the new module. |
-| `src/chemlab/simulation/rdkit_engine.py` | **B) Subsumed into chemistry/ module** | 3D conformer generation and molecular property calculation from SMILES. Core functionality (SMILES→3D, UFF minimization, property descriptors) is unique and should be preserved. Will be integrated into `chemistry/cheminformatics/rdkit_bridge.py` as the cheminformatics submodule. |
-| `src/chemlab/simulation/reaction_solver.py` | **B) Subsumed into chemistry/ module** | Core reaction state machine (`mix_liquids()`, `step_simulation()`, reaction classification). Essential simulation logic that must be in the chemistry core. Will be integrated into `chemistry/simulation/solver.py`, refactored to import reagent data from `reagents.py` instead of hardcoded reagent names/lookups. |
-| `src/chemlab/simulation/precursor_synthesis.py` | **B) Subsumed into chemistry/ module** | 5 precursor synthetic pathways (benzaldehyde, salicylic acid, nitroethane, 4-aminophenol, indole). Pathway data should be absorbed into the consolidated reagent catalog. After consolidation, precursor pathways will reference `reagents.py` for reagent definitions and be stored in `chemistry/catalog/`. |
-
----
-
-### Model Modules (2 sets → consolidated)
-
-| Source File | Classification | Reasoning |
-|---|---|---|
-| `src/chemlab/skills/skill_types.py` | **A) Authoritative source of truth** (skills model) | Defines the 5 skill disciplines (SAFETY, ANALYTICAL, THERMODYNAMICS, PREPARATIVE, COMPUTATIONAL) with all metadata: `SkillDefinition`, rank titles, apparatus/un reagent/ability unlocks per level. This is the single source for skill type definitions. |
-| `src/chemlab/skills/milestones.py` | **A) Authoritative source of truth** (skills model) | Defines all 60+ milestones across 5 disciplines, levels 1–120. `Milestone` dataclass and `MILESTONES` list are the single source for progression unlocks. |
-| `src/chemlab/skills/skill_manager.py` | **D) Needs refactor** | Runtime skill management state (XP, level, unlocked content). Core progression logic is valuable but must be refactored to reference the new `chemistry/` module for data rather than maintaining duplicate definitions. Will be relocated/updated to `skills/manager.py` with updated imports. |
-| `src/chemlab/synthesis/guided_wizard.py` | **B) Subsumed into chemistry/ module** | Guided synthesis session manager (`GuidanceTier`, `WizardStepState`, `MeasurementInput`, `STAGE_REFERENCE_QUANTITIES`, `GuidedSynthesisSession`). The tier-based guidance logic is UI-facing; after consolidation, this will reference `chemistry/catalog/` protocols rather than maintaining its own reference quantities. |
-| `src/chemlab/simulation/total_syntheses.py` | **B) Subsumed into chemistry/ module** | Total synthesis protocol registry (5 protocols: aspirin, paracetamol, caffeine, indigo, benzocaine). After consolidation, protocols will be stored in `chemistry/catalog/` with references to `reagents.py` for reagent definitions. The `SynthesisProtocol`, `SynthesisStage` dataclasses and `SynthesisRegistry` will be the authoritative protocol storage. |
-
----
-
-## 2. Recommended Execution Order
-
-### Phase 1: Foundation (Weeks 1–2)
-1. **Create `src/chemlab/chemistry/` package structure** with `__init__.py`, subpackages: `thermodynamics/`, `kinetics/`, `cheminformatics/`, `safety/`, `catalog/`
-2. **Consolidate reagent data**: `reagents.py` becomes the canonical registry. Add `REAGENT_REGISTRY` export from `chemistry/catalog/reagents.py` that re-exports from the existing file.
-3. **Migrate `cantera_engine.py` THERMO_DATABASE** to reference `reagents.py` entries. Create `chemistry/thermodynamics/engine.py` with refactored thermodynamics engine that imports reagent data from the consolidated registry.
-4. **Update all internal imports** to point to the new `chemistry/` module paths where applicable.
-
-### Phase 2: Engine Integration (Weeks 3–4)
-5. **Integrate `rdkit_engine.py`** into `chemistry/cheminformatics/rdkit_bridge.py`. Preserve `smiles_to_3d_molecule()` and property calculation logic. Update any references to use new module paths.
-6. **Integrate `reaction_solver.py`** into `chemistry/simulation/solver.py`. Refactor `mix_liquids()` and `step_simulation()` to import reagent data from `reagents.py` instead of hardcoded lookups. Update `LiquidMixture` references if needed.
-7. **Integrate `precursor_synthesis.py`** pathways into `chemistry/catalog/`. Convert `PrecursorPathway`/`ReactionStep` dataclasses to use `Reagent` from `reagents.py`. Update all reagent references to use the consolidated registry.
-
-### Phase 3: Model Module Consolidation (Weeks 5–6)
-8. **Consolidate `skills/` module**: `skill_types.py` and `milestones.py` remain as the authoritative skills model. Update `skill_manager.py` to import reagent/chemical data from `chemistry/` where needed (e.g., skill unlock reagents should reference `chemistry.catalog.reagents`).
-9. **Update `guided_wizard.py`**: Replace `STAGE_REFERENCE_QUANTITIES` with references to `chemistry/catalog/protocols`. Update tier tolerance logic to use data from the consolidated chemistry core.
-10. **Update `total_syntheses.py`**: Migrate the 5 synthesis protocols into `chemistry/catalog/`. Update `SynthesisProtocol`/`SynthesisStage` to reference reagent IDs from `reagents.py` instead of string names.
-
-### Phase 4: Cleanup and Verification (Weeks 7–8)
-11. **Run full test suite**: `pytest` must pass (256 tests green). Verify all imports resolve correctly.
-12. **Deprecate old files**: Mark consolidated files as deprecated with `PendingDeprecationWarning` or remove after 2-week verification period. Update `.gitignore` for any build artifacts.
-13. **Update all project imports**: Ensure every file that previously imported from the old scattered modules now imports from `chemistry/`.
-14. **Document the new module**: Update `ARCHITECTURE.md` §3.2 to reflect the consolidated structure.
+```
+src/chemlab/chemistry/
+├── __init__.py                 # Public API exports, version
+├── thermodynamics/
+│   ├── __init__.py
+│   ├── database.py             # NIST/CRC standard properties (ΔH°f, S°, Cp, MW, ρ)
+│   └── engine.py               # Hess enthalpy, entropy, Gibbs, van 't Hoff, titration
+├── kinetics/
+│   ├── __init__.py
+│   ├── arrhenius.py            # Arrhenius rate constants, temperature acceleration
+│   ├── solver.py               # Stiff ODE numerical integration & concentration profiles
+│   └── side_reactions.py       # Non-ideal side-products, addition-order hazards, tarring
+├── safety/
+│   ├── __init__.py
+│   ├── ghs.py                  # GHS hazard pictograms, H/P statements, exposure limits
+│   ├── fume_hood.py            # ANSI/AIHA Z9.5 face velocity & aerodynamic containment
+│   └── thermal_runaway.py      # Semenov thermal explosion, Antoine VP, stopper pop
+├── cheminformatics/
+│   ├── __init__.py
+│   └── rdkit_bridge.py         # SMILES to 3D conformer, UFF minimization, Lipinski
+└── catalog/
+    ├── __init__.py
+    └── reagents.py             # Consolidated registry of 200+ chemical reagents
+```
 
 ---
 
-## 3. Key Findings: Duplicate Functionality & Conflicts
+## 3. Module-to-Module Consolidation Mapping
 
-### Duplicate Reagent Definitions
-- `cantera_engine.py` `THERMO_DATABASE` (~80 species) overlaps heavily with `reagents.py` `REAGENT_REGISTRY` (>200 species). Identical entries: `water`, `HCl`, `NaOH`, `sulfuric_acid`, `acetic_acid`, `ethanol`, `methanol`, `acetone`, `benzene`, `toluene`, etc.
-- `reagents.py` is the consolidated superior version (more entries, complete `Reagent` dataclass with GHS hazards, storage groups, particle types, color signatures).
+### 3.1 Chemistry Engines — 4 → 3 Target Modules
 
-### Conflicting Reaction Classification
-- `reaction_solver.py` has its own reaction classification logic (acid-base, catalytic foam, oscillating color wave, precipitation, chemiluminescence) using hardcoded reagent name checks.
-- `cantera_engine.py` provides thermodynamic calculations but doesn't classify reaction types in the same way.
-- After consolidation, `reaction_solver.py` will import reagent data from `reagents.py` for classification decisions, ensuring consistency.
+| Source Module | Target Module | Functions/Classes Moved | Notes |
+|---------------|---------------|-------------------------|-------|
+| `chemlab_core/chemistry/reaction_engine.py` | `chemistry/kinetics/solver.py` | `BriggsRauscherOscillator`, `lerp_color`, `COLOR_CLEAR/AMBER/DEEP_BLUE` | Analytical oscillator → kinetics solver |
+| `src/chemlab/simulation/cantera_engine.py` | `chemistry/thermodynamics/engine.py` | `CanteraThermodynamicsEngine`, `ThermodynamicState`, `ReactionThermodynamicsResult`, `THERMO_DATABASE`, `THERMO_ENGINE` | **Authoritative thermodynamics** — NIST constants preserved verbatim |
+| `src/chemlab/simulation/cantera_engine.py` | `chemistry/thermodynamics/database.py` | `THERMO_DATABASE` (dict) | Split out for clarity |
+| `src/chemlab/simulation/reaction_solver.py` | `chemistry/kinetics/solver.py` | `mix_liquids()`, `step_simulation()`, `_classify_reaction_type()`, `MIXING_KW`, `NEUTRALIZATION_KW`, `OBSCILLATOR_KW`, `CATALYST_MULTIPLIER` | **Authoritative kinetics solver** — LiquidMixture state machine |
+| `src/chemlab/simulation/side_reactions.py` | `chemistry/kinetics/side_reactions.py` | `SideReactionAnalyzer`, `detect_addition_order_hazard()`, `analyze_aspirin_synthesis()`, `analyze_paracetamol_synthesis()`, `analyze_acetanilide_synthesis()` | Non-ideal impurity modeling |
+| `simulation/consequence.py` | `chemistry/kinetics/solver.py` | `ConsequenceEngine`, `ConsequenceResult`, `ConsequenceType`, `ReactionEffect`, `VesselEnvironment`, `OscillationCycle` | Free-sim consequence matrix → unified solver |
+| `simulation/free_sim_engine.py` | `chemistry/kinetics/solver.py` (facade only) | `FreeSimulationEngine`, `ActiveExperimentState` | Thin facade delegating to catalog + solver |
+| `simulation/time_controller.py` | `chemistry/kinetics/solver.py` (or keep separate) | `TimeController`, `TimeScale` | Utility, not chemistry-specific — evaluate in Phase 3 |
+| `simulation/experiment_book.py` | **NOT MOVED** — gameplay layer | `ExperimentBook`, `Recipe`, `ReagentAddition`, `SnapshotPhoto` | Belongs in `gameplay/` per ARCHITECTURE.md |
 
-### Skills/Model Module Overlap
-- `skill_types.py` defines reagent unlocks per skill level (e.g., level 10: `["hcl", "naoh"]`).
-- `milestones.py` defines similar reagent unlocks per milestone level.
-- After consolidation, skill/ milestone reagent unlocks should reference the authoritative `reagents.py` registry, ensuring a single source of truth for which reagents are available at each progression level.
+### 3.2 Reagent Databases — 3 → 1 Target Module
 
-### Synthesis Protocol Duplication
-- `total_syntheses.py` has 5 complete protocols (aspirin, paracetamol, caffeine, indigo, benzocaine).
-- `guided_wizard.py` has `STAGE_REFERENCE_QUANTITIES` for aspirin and paracetamol stages with expected reagent amounts.
-- After consolidation, `guided_wizard.py` will reference `total_syntheses.py` protocols (moved to `chemistry/catalog/`) for stage definitions, eliminating the duplicate reference data.
+| Source Module | Target Module | Data Moved | Entry Count |
+|---------------|---------------|------------|-------------|
+| `src/chemlab/simulation/reagents.py` | `chemistry/catalog/reagents.py` | `Reagent` dataclass, `ReagentCategory`, `ParticleType`, `SignalWord`, `StorageGroup`, `GHSHazard`, `_REAGENTS` dict, `REAGENT_REGISTRY`, `get_reagent()`, `list_reagents()`, `search_by_formula()`, `search_by_category()`, `count_by_category()` | ~200 (authoritative) |
+| `simulation/catalog.py` | `chemistry/catalog/reagents.py` | Merge unique entries: `ReagentCategory` enum values, `GHSPictogram` enum, `Reagent` dataclass fields (`melting_point_c`, `boiling_point_c`, `pka`, `solubility_g_per_100ml_water`, `common_uses`, `storage_note`, `hazard_statements`), `_REAGENTS` list (100+), `ReagentCatalog` class | ~100 unique entries not in src/chemlab |
+| `safety_simulation/ghs.py` | `chemistry/safety/ghs.py` + `chemistry/catalog/reagents.py` | `ChemicalProfile` → merge into `Reagent.ghs_hazards`; `CHEMICAL_DATABASE` (25) → merge unique; `check_chemical_compatibility()` → `chemistry/safety/ghs.py`; `get_chemical_sds()` → `chemistry/safety/ghs.py` | 25 profiles |
 
----
+**Merge Strategy for Reagent Catalog:**
+- **Authoritative base:** `src/chemlab/simulation/reagents.py` (already has 200+ entries with full GHS, CAS, particle types, colors)
+- **Add missing from `simulation/catalog.py`:** ~80 unique reagents (transition metal salts, indicators, oxidizers, organic solvents not in src/chemlab)
+- **Add missing from `safety_simulation/ghs.py`:** 3 unique profiles (chlorine, copper_sulfate duplicate check, silver_nitrate duplicate check)
+- **Unify GHS representation:** `GHSHazard` dataclass (from src/chemlab) replaces both `GHSPictogram` enum (simulation/catalog) and `GHSClass/GHSPictogram/SignalWord` enums (safety_simulation/ghs.py)
+- **Single `REAGENT_REGISTRY` dict** with case-insensitive lookup, aliases preserved
 
-## 4. Authority Assignment Summary
+### 3.3 Data Models — 2 → Split by Domain
 
-| Concern | Authoritative Module | Source Files |
-|---|---|---|
-| **Reagent database** | `chemistry.catalog.reagents` | `reagents.py` (A), `cantera_engine.py` (D), `side_reactions.py` (B) |
-| **Thermodynamics engine** | `chemistry.thermodynamics.engine` | `cantera_engine.py` (D, refactored) |
-| **Cheminformatics (3D/Properties)** | `chemistry.cheminformatics.rdkit_bridge` | `rdkit_engine.py` (B) |
-| **Reaction simulation** | `chemistry.simulation.solver` | `reaction_solver.py` (B) |
-| **Precursor pathways** | `chemistry.catalog.precursors` | `precursor_synthesis.py` (B) |
-| **Safety/side reactions** | `chemistry.safety.side_reactions` | `side_reactions.py` (B) |
-| **Skill types** | `skills.skill_types` | `skill_types.py` (A) |
-| **Milestones** | `skills.milestones` | `milestones.py` (A) |
-| **Skill runtime state** | `skills.manager` | `skill_manager.py` (D, refactored) |
-| **Synthesis protocols** | `chemistry.catalog.protocols` | `total_syntheses.py` (B), `guided_wizard.py` (B) |
-
----
-
-## 5. Migration Risks & Mitigations
-
-| Risk | Mitigation |
-|---|---|
-| **Broken imports across codebase** | Run `grep -r "from chemlab.simulation" --include="*.py" .` before/after; use IDE-wide rename/refactor; update all files in batch. |
-| **Lost thermodynamic data** | Cantera engine preserves calculation rigor; data migration from `THERMO_DATABASE` to `reagents.py` entries is straightforward (both use same formula-based lookup). |
-| **Skill progression breaks** | `skill_types.py` and `milestones.py` remain unchanged (A classification). Only `skill_manager.py` is refactored (D). Run full pytest suite. |
-| **Synthesis protocols fail** | `total_syntheses.py` protocols migrate to `chemistry/catalog/` with reagent ID references. Test each protocol (aspirin synthesis especially) after migration. |
-| **RDKit property changes** | `rdkit_engine.py` functionality preserved in new location. The `MolecularProperties` dataclass structure remains identical. |
+| Source Module | Target Location | Classes Moved |
+|---------------|-----------------|---------------|
+| `chemlab_core/models.py` | `chemistry/thermodynamics/engine.py` (reaction models) | `OscillatingPhase`, `ReactionState` |
+| `chemlab_core/models.py` | `src/chemlab/cv/models.py` (vision models) | `GestureType`, `Handedness`, `NormalizedLandmark`, `HandLandmarkFrame`, `GestureEvent` |
+| `chemlab_core/models.py` | `src/chemlab/simulation/ipc_bridge_server.py` (IPC models) | `IPCRequestType`, `IPCRequest`, `IPCStatus`, `IPCResponse` |
+| `chemlab_core/models.py` | `src/chemlab/desktop/main_window.py` or new `blender/` | `SceneCommandType`, `SceneCommand` |
+| `src/chemlab/models.py` | `chemistry/catalog/reagents.py` | `ChemicalReagent` → merged into `Reagent` |
+| `src/chemlab/models.py` | `chemistry/kinetics/solver.py` | `LiquidMixture`, `ReactionType`, `GHSHazard` |
+| `src/chemlab/models.py` | `src/chemlab/cv/models.py` | `HandLandmark`, `HandTrackingFrame`, `ApparatusState` |
 
 ---
 
-## 6. Success Criteria
+## 4. Wrapper Modules — Backward Compatibility Layer
 
-- [ ] `pytest` passes (256 tests green) after consolidation
-- [ ] All imports resolve to `chemistry/` module paths
-- [ ] No duplicate reagent definitions remain in the codebase (verify with `grep -r "THERMO_DATABASE\|Reagent(" src/chemlab/ --include="*.py" | grep -v "reagents.py" | wc -l` = 0)
-- [ ] Skill progression still unlocks correct reagents at each level
-- [ ] All 5 total synthesis protocols (aspirin, paracetamol, caffeine, indigo, benzocaine) remain fully functional
-- [ ] RDKit 3D conformer generation still works
-- [ ] Reaction simulation (mixing, step progress) still works correctly
-- [ ] Safety/side reaction evaluation still produces correct reports
+**CRITICAL RULE:** No old import path may break. Every legacy module becomes a thin wrapper that re-exports from the new authoritative location.
+
+### 4.1 `chemlab_core/chemistry/reaction_engine.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.kinetics.solver
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+# Re-export all public symbols from the new authoritative location
+from src.chemlab.chemistry.kinetics.solver import (
+    BriggsRauscherOscillator,
+    lerp_color,
+    COLOR_CLEAR,
+    COLOR_AMBER,
+    COLOR_DEEP_BLUE,
+)
+
+__all__ = [
+    "BriggsRauscherOscillator",
+    "lerp_color",
+    "COLOR_CLEAR",
+    "COLOR_AMBER",
+    "COLOR_DEEP_BLUE",
+]
+
+# Type-checking shim for mypy
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.chemlab.chemistry.kinetics.solver import (
+        BriggsRauscherOscillator as _BriggsRauscherOscillator,
+        lerp_color as _lerp_color,
+    )
+```
+
+### 4.2 `src/chemlab/simulation/cantera_engine.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.thermodynamics
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+from src.chemlab.chemistry.thermodynamics.database import THERMO_DATABASE
+from src.chemlab.chemistry.thermodynamics.engine import (
+    CanteraThermodynamicsEngine,
+    ThermodynamicState,
+    ReactionThermodynamicsResult,
+    THERMO_ENGINE,
+)
+
+__all__ = [
+    "CanteraThermodynamicsEngine",
+    "ThermodynamicState",
+    "ReactionThermodynamicsResult",
+    "THERMO_DATABASE",
+    "THERMO_ENGINE",
+    "R_GAS",
+]
+
+# Re-export module-level constant
+from src.chemlab.chemistry.thermodynamics.engine import R_GAS
+```
+
+### 4.3 `src/chemlab/simulation/reaction_solver.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.kinetics.solver
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+from src.chemlab.chemistry.kinetics.solver import (
+    mix_liquids,
+    step_simulation,
+    ReactionType,
+    MIXING_KW,
+    NEUTRALIZATION_KW,
+    OSCILLATOR_KW,
+    CATALYST_MULTIPLIER,
+)
+
+__all__ = [
+    "mix_liquids",
+    "step_simulation",
+    "ReactionType",
+    "MIXING_KW",
+    "NEUTRALIZATION_KW",
+    "OSCILLATOR_KW",
+    "CATALYST_MULTIPLIER",
+]
+```
+
+### 4.4 `src/chemlab/simulation/side_reactions.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.kinetics.side_reactions
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+from src.chemlab.chemistry.kinetics.side_reactions import (
+    SideReactionAnalyzer,
+    detect_addition_order_hazard,
+    analyze_aspirin_synthesis,
+    analyze_paracetamol_synthesis,
+    analyze_acetanilide_synthesis,
+)
+
+__all__ = [
+    "SideReactionAnalyzer",
+    "detect_addition_order_hazard",
+    "analyze_aspirin_synthesis",
+    "analyze_paracetamol_synthesis",
+    "analyze_acetanilide_synthesis",
+]
+```
+
+### 4.5 `simulation/catalog.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.catalog.reagents
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+from src.chemlab.chemistry.catalog.reagents import (
+    Reagent,
+    ReagentCategory,
+    GHSPictogram,  # Kept as alias for compatibility
+    ReagentCatalog,
+)
+
+__all__ = [
+    "Reagent",
+    "ReagentCategory",
+    "GHSPictogram",
+    "ReagentCatalog",
+]
+
+# Compatibility: GHSPictogram enum values must match old expectations
+# The new module provides StrEnum with same values
+```
+
+### 4.6 `simulation/consequence.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.kinetics.solver
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+from src.chemlab.chemistry.kinetics.solver import (
+    ConsequenceEngine,
+    ConsequenceResult,
+    ConsequenceType,
+    ReactionEffect,
+    VesselEnvironment,
+    OscillationCycle,
+)
+
+__all__ = [
+    "ConsequenceEngine",
+    "ConsequenceResult",
+    "ConsequenceType",
+    "ReactionEffect",
+    "VesselEnvironment",
+    "OscillationCycle",
+]
+```
+
+### 4.7 `simulation/free_sim_engine.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.kinetics.solver (facade)
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+from src.chemlab.chemistry.kinetics.solver import (
+    FreeSimulationEngine,
+    ActiveExperimentState,
+)
+
+__all__ = [
+    "FreeSimulationEngine",
+    "ActiveExperimentState",
+]
+```
+
+### 4.8 `safety_simulation/ghs.py` → Wrapper
+
+```python
+"""
+LEGACY WRAPPER — Delegates to src.chemlab.chemistry.safety.ghs AND catalog
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+# Safety functions
+from src.chemlab.chemistry.safety.ghs import (
+    check_chemical_compatibility,
+    get_chemical_sds,
+    IncompatibilityResult,
+    GHSClass,
+    GHSPictogram,
+    SignalWord,
+    StorageGroup,
+)
+
+# ChemicalProfile is now merged into catalog.Reagent — provide compatibility shim
+from src.chemlab.chemistry.catalog.reagents import Reagent as ChemicalProfile
+from src.chemlab.chemistry.catalog.reagents import REAGENT_REGISTRY as CHEMICAL_DATABASE
+
+__all__ = [
+    "check_chemical_compatibility",
+    "get_chemical_sds",
+    "IncompatibilityResult",
+    "ChemicalProfile",
+    "CHEMICAL_DATABASE",
+    "GHSClass",
+    "GHSPictogram",
+    "SignalWord",
+    "StorageGroup",
+]
+```
+
+### 4.9 `chemlab_core/models.py` → Split Wrappers
+
+**File stays but becomes minimal re-exports:**
+
+```python
+"""
+LEGACY WRAPPER — Split re-exports to domain-specific modules
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+# Reaction/oscillation models → thermodynamics
+from src.chemlab.chemistry.thermodynamics.engine import (
+    OscillatingPhase,
+    ReactionState,
+)
+
+# Vision models → cv
+from src.chemlab.cv.models import (
+    GestureType,
+    Handedness,
+    NormalizedLandmark,
+    HandLandmarkFrame,
+    GestureEvent,
+)
+
+# IPC models → simulation/ipc_bridge_server
+from src.chemlab.simulation.ipc_bridge_server import (
+    IPCRequestType,
+    IPCRequest,
+    IPCStatus,
+    IPCResponse,
+)
+
+# Blender scene commands → desktop or new blender module
+from src.chemlab.desktop.main_window import (
+    SceneCommandType,
+    SceneCommand,
+)
+
+__all__ = [
+    "OscillatingPhase",
+    "ReactionState",
+    "GestureType",
+    "Handedness",
+    "NormalizedLandmark",
+    "HandLandmarkFrame",
+    "GestureEvent",
+    "IPCRequestType",
+    "IPCRequest",
+    "IPCStatus",
+    "IPCResponse",
+    "SceneCommandType",
+    "SceneCommand",
+]
+```
+
+### 4.10 `src/chemlab/models.py` → Split Wrappers
+
+```python
+"""
+LEGACY WRAPPER — Split re-exports to domain-specific modules
+DO NOT ADD NEW CODE HERE. All new development goes to the authoritative module.
+"""
+from __future__ import annotations
+
+# Chemical models → catalog
+from src.chemlab.chemistry.catalog.reagents import (
+    Reagent as ChemicalReagent,
+    ReagentCategory,
+    GHSHazard,  # Re-export from catalog
+)
+
+# Kinetics models → kinetics/solver
+from src.chemlab.chemistry.kinetics.solver import (
+    LiquidMixture,
+    ReactionType,
+)
+
+# Vision/tracking models → cv
+from src.chemlab.cv.models import (
+    HandLandmark,
+    HandTrackingFrame,
+    ApparatusState,
+)
+
+__all__ = [
+    "ChemicalReagent",
+    "ReagentCategory",
+    "GHSHazard",
+    "LiquidMixture",
+    "ReactionType",
+    "HandLandmark",
+    "HandTrackingFrame",
+    "ApparatusState",
+]
+```
 
 ---
+
+## 5. Test Strategy — Zero Test Changes Required
+
+### 5.1 Core Principle
+
+**No test file is modified, deleted, or renamed.** All 256 existing tests must continue to pass without any changes to test code. This is achieved by:
+
+1. **Preserving all import paths** via wrapper modules (Section 4)
+2. **Preserving all public APIs** (classes, functions, constants, enums) with identical signatures
+3. **Preserving all module-level constants** (`THERMO_ENGINE`, `REAGENT_REGISTRY`, `CHEMICAL_DATABASE`, etc.)
+
+### 5.2 Test File Coverage Map
+
+| Test File | Tests | Imports From | Protected By Wrapper |
+|-----------|-------|--------------|---------------------|
+| `test_cantera_engine.py` | 8 | `chemlab.simulation.cantera_engine` | ✅ Wrapper 4.2 |
+| `test_reaction_solver.py` | 4 | `chemlab.models`, `chemlab.simulation.reaction_solver`, `chemlab.simulation.reagents` | ✅ Wrappers 4.3, 4.9, 4.10 |
+| `test_reagents.py` | 10 | `chemlab.simulation.reagents` | ✅ Catalog is authoritative |
+| `test_free_sim.py` | 20+ | `simulation.catalog`, `simulation.consequence`, `simulation.free_sim_engine`, `simulation.experiment_book`, `simulation.time_controller` | ✅ Wrappers 4.5, 4.6, 4.7 |
+| `test_reaction_engine.py` | 5+ | `chemlab_core.chemistry.reaction_engine` | ✅ Wrapper 4.1 |
+| `test_ghs.py` | 10+ | `safety_simulation.ghs` | ✅ Wrapper 4.8 |
+| `test_models.py` | 10+ | `chemlab_core.models`, `chemlab.models` | ✅ Wrappers 4.9, 4.10 |
+| `test_side_reactions.py` | 5+ | `chemlab.simulation.side_reactions` | ✅ Wrapper 4.4 |
+| `test_thermal_runaway.py` | 5+ | `safety_simulation.thermal_runaway` | ✅ (stays in safety/) |
+| `test_fume_hood.py` | 5+ | `safety_simulation.fume_hood` | ✅ (stays in safety/) |
+
+### 5.3 Validation Protocol
+
+```bash
+# Phase 1 validation (after each consolidation step):
+cd C:\Users\Win11 Pro\Desktop\chemlab
+.venv/Scripts/python.exe -m pytest tests/test_cantera_engine.py -v
+.venv/Scripts/python.exe -m pytest tests/test_reaction_solver.py -v
+.venv/Scripts/python.exe -m pytest tests/test_reagents.py -v
+.venv/Scripts/python.exe -m pytest tests/test_free_sim.py -v
+.venv/Scripts/python.exe -m pytest tests/test_reaction_engine.py -v
+.venv/Scripts/python.exe -m pytest tests/test_ghs.py -v
+.venv/Scripts/python.exe -m pytest tests/test_models.py -v
+.venv/Scripts/python.exe -m pytest tests/test_side_reactions.py -v
+
+# Full suite validation (must pass 256 tests):
+.venv/Scripts/python.exe -m pytest tests/ -v --tb=short
+```
+
+### 5.4 Type-Check Validation
+
+```bash
+.venv/Scripts/python.exe -m mypy src/chemlab --ignore-missing-imports --follow-imports=skip --no-site-packages
+```
+
+Must produce ≤13 errors (current baseline) — no new errors introduced.
+
+---
+
+## 6. Phased Implementation Order
+
+### Phase 1: Infrastructure & Thermodynamics (Week 1)
+
+**Deliverables:**
+- [ ] Create `src/chemlab/chemistry/` directory structure with `__init__.py` files
+- [ ] Create `thermodynamics/database.py` — move `THERMO_DATABASE` from `cantera_engine.py`
+- [ ] Create `thermodynamics/engine.py` — move `CanteraThermodynamicsEngine`, `ThermodynamicState`, `ReactionThermodynamicsResult`, `THERMO_ENGINE`, `R_GAS`
+- [ ] Create wrapper: `src/chemlab/simulation/cantera_engine.py` (Section 4.2)
+- [ ] Run `test_cantera_engine.py` — **must pass 8/8**
+
+**Risk:** Low — pure data/constants move, no logic changes.
+
+### Phase 2: Reagent Catalog Consolidation (Week 1-2)
+
+**Deliverables:**
+- [ ] Create `catalog/reagents.py` — merge three databases into single authoritative registry
+  - Base: `src/chemlab/simulation/reagents.py` (~200 entries)
+  - Add unique from `simulation/catalog.py` (~80 entries)
+  - Add unique from `safety_simulation/ghs.py` (~3 entries)
+  - Unify GHS to single `GHSHazard` dataclass
+- [ ] Create wrappers:
+  - `src/chemlab/simulation/reagents.py` → re-exports from catalog (already authoritative, minimal)
+  - `simulation/catalog.py` (Section 4.5)
+  - `safety_simulation/ghs.py` (Section 4.8)
+- [ ] Run `test_reagents.py`, `test_free_sim.py::TestReagentCatalog`, `test_ghs.py` — **all must pass**
+
+**Risk:** Medium — large data merge, must ensure no duplicate IDs, CAS numbers consistent.
+
+### Phase 3: Kinetics & Solver Consolidation (Week 2)
+
+**Deliverables:**
+- [ ] Create `kinetics/solver.py` — consolidate:
+  - `reaction_solver.py`: `mix_liquids`, `step_simulation`, `ReactionType`, constants
+  - `reaction_engine.py`: `BriggsRauscherOscillator`, color constants
+  - `consequence.py`: `ConsequenceEngine`, `ConsequenceResult`, enums, `VesselEnvironment`
+  - `free_sim_engine.py`: `FreeSimulationEngine`, `ActiveExperimentState` (facade)
+- [ ] Create `kinetics/side_reactions.py` — move `side_reactions.py` logic
+- [ ] Create `kinetics/arrhenius.py` — extract Arrhenius math from thermodynamics engine
+- [ ] Create wrappers (Sections 4.1, 4.3, 4.4, 4.6, 4.7)
+- [ ] Run `test_reaction_solver.py`, `test_reaction_engine.py`, `test_free_sim.py::TestConsequenceEngine`, `test_free_sim.py::TestFreeSimulationEngine`, `test_side_reactions.py` — **all must pass**
+
+**Risk:** Medium — logic consolidation, but well-tested.
+
+### Phase 4: Safety Module Consolidation (Week 2-3)
+
+**Deliverables:**
+- [ ] Create `safety/ghs.py` — `check_chemical_compatibility`, `get_chemical_sds`, enums
+- [ ] Move `safety_simulation/fume_hood.py` → `safety/fume_hood.py` (no changes)
+- [ ] Move `safety_simulation/thermal_runaway.py` → `safety/thermal_runaway.py` (no changes)
+- [ ] Move `safety_simulation/neutralization_drill.py` → `safety/neutralization_drill.py` (no changes)
+- [ ] Move `safety_simulation/safety_officer_engine.py` → `safety/safety_officer_engine.py` (no changes)
+- [ ] Create wrapper `safety_simulation/ghs.py` (Section 4.8)
+- [ ] Run `test_ghs.py`, `test_fume_hood.py`, `test_thermal_runaway.py`, `test_neutralization_drill.py`, `test_safety_officer_engine.py` — **all must pass**
+
+**Risk:** Low — mostly file moves, `ghs.py` already wrapped.
+
+### Phase 5: Model Split & Wrapper Completion (Week 3)
+
+**Deliverables:**
+- [ ] Move vision models from `chemlab_core/models.py` → `src/chemlab/cv/models.py`
+- [ ] Move IPC models from `chemlab_core/models.py` → `src/chemlab/simulation/ipc_bridge_server.py`
+- [ ] Move Blender models from `chemlab_core/models.py` → `src/chemlab/desktop/main_window.py` (or new `blender/`)
+- [ ] Update `chemlab_core/models.py` wrapper (Section 4.9)
+- [ ] Update `src/chemlab/models.py` wrapper (Section 4.10)
+- [ ] Run `test_models.py`, `test_vision.py`, `test_hand_tracker.py`, `test_holistic_tracker.py`, `test_ipc_bridge_server.py` — **all must pass**
+
+**Risk:** Medium — cross-cutting, but models are pure dataclasses.
+
+### Phase 6: Packaging & pyproject.toml Fix (Week 3)
+
+**Deliverables:**
+- [ ] Update `pyproject.toml` `[tool.setuptools.packages.find]` to properly include all packages:
+  ```toml
+  [tool.setuptools.packages.find]
+  where = ["src"]
+  include = ["chemlab*"]
+  ```
+  (The new structure puts everything under `src/chemlab/`)
+- [ ] Verify `pip install -e .` produces wheel with all modules
+- [ ] Run full test suite: **256 tests must pass**
+- [ ] Run mypy: **≤13 errors (baseline)**
+- [ ] Run ruff: **no new errors**
+
+**Risk:** Low — packaging only.
+
+---
+
+## 7. Rollback Plan
+
+### 7.1 Per-Phase Rollback Triggers
+
+| Phase | Rollback Trigger | Rollback Action |
+|-------|------------------|-----------------|
+| 1 | `test_cantera_engine.py` fails | `git restore src/chemlab/simulation/cantera_engine.py chemlab_core/chemistry/reaction_engine.py` |
+| 2 | Any reagent test fails | `git restore src/chemlab/simulation/reagents.py simulation/catalog.py safety_simulation/ghs.py` |
+| 3 | Any solver/consequence test fails | `git restore src/chemlab/simulation/reaction_solver.py chemlab_core/chemistry/reaction_engine.py simulation/consequence.py simulation/free_sim_engine.py src/chemlab/simulation/side_reactions.py` |
+| 4 | Any safety test fails | `git restore safety_simulation/` |
+| 5 | Any model/vision/IPC test fails | `git restore chemlab_core/models.py src/chemlab/models.py src/chemlab/cv/models.py src/chemlab/simulation/ipc_bridge_server.py` |
+| 6 | Packaging broken | `git restore pyproject.toml` |
+
+### 7.2 Full Rollback Procedure
+
+```bash
+# Nuclear option — restore entire repo to pre-consolidation state
+cd C:\Users\Win11 Pro\Desktop\chemlab
+git stash  # or git reset --hard HEAD~{n} where n = commits in this plan
+.venv/Scripts/python.exe -m pytest tests/ -v  # Verify 256 tests pass
+```
+
+### 7.3 Branch Strategy
+
+All work happens on `feature/chemistry-consolidation` branch. `main` remains pristine. Merge only after **all 256 tests pass + mypy baseline + ruff clean**.
+
+---
+
+## 8. Key Architectural Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| **Authoritative thermodynamics = `cantera_engine.py`** | Only module with real NIST/CRC constants, 8 passing tests, used by Godot IPC bridge |
+| **Authoritative kinetics = `reaction_solver.py`** | Only module with `LiquidMixture` state machine, `mix_liquids`/`step_simulation`, 4 passing tests |
+| **Authoritative catalog = `src/chemlab/simulation/reagents.py`** | Most complete (200+ entries), modern `Reagent` dataclass with particle types, CAS, full GHS |
+| **GHS unification = `GHSHazard` dataclass** | Single source replaces 3 enum systems; carries code, text, pictogram, signal word, category |
+| **Wrapper pattern (not deletion)** | Zero-breaking-changes guarantee; all 256 tests untouched; rollback is `git restore` |
+| **Models split by domain** | `chemlab_core/models.py` and `src/chemlab/models.py` are domain-mixed; split follows ARCHITECTURE.md boundaries |
+| **`experiment_book.py` stays in `simulation/`** | It's gameplay persistence, not chemistry — ARCHITECTURE.md puts it in `gameplay/` (future move) |
+| **`time_controller.py` stays in `simulation/`** | Utility class, not chemistry-specific; evaluate in future refactor |
+
+---
+
+## 9. Success Criteria
+
+| Criterion | Target | Measurement |
+|-----------|--------|-------------|
+| **Test pass rate** | 256/256 | `pytest tests/` |
+| **Type-check errors** | ≤13 (baseline) | `mypy src/chemlab` |
+| **Lint errors** | 0 new | `ruff check` |
+| **Import compatibility** | 100% | All legacy import paths work |
+| **Packaging** | Clean wheel | `pip install -e . && python -c "import chemlab.chemistry; print('OK')"` |
+| **No functional changes** | Verified | `git diff --stat` shows only moves + wrappers |
+
+---
+
+## 10. Appendix: Complete Wrapper Code Snippets
+
+All wrapper code snippets are provided in **Section 4** above. Each wrapper:
+
+1. Contains **only re-exports** — zero logic
+2. Preserves **exact `__all__`** from original module
+3. Includes **TYPE_CHECKING block** for mypy
+4. Has **header comment** marking as legacy wrapper
+5. Is **< 50 lines** — trivial to review and audit
+
+---
+
+**End of Consolidation Plan**
+
+*Next step: Begin Phase 1 implementation. Create directory structure and thermodynamics modules.*

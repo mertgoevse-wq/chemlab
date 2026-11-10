@@ -3,12 +3,20 @@ Domain Models and Data Contracts.
 Strict typing using Pydantic v2 and typing.Annotated with zero implicit Any.
 """
 
-from datetime import UTC, datetime
-from enum import StrEnum
+from datetime import datetime, timezone
+from enum import Enum
 from typing import Annotated, Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+class StrEnum(str, Enum):
+    """Backport of StrEnum for Python < 3.11"""
+    pass
+
+
+UTC = timezone.utc
 
 
 class GestureType(StrEnum):

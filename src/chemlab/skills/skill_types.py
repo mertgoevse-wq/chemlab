@@ -9,7 +9,7 @@ docs/STORY_AND_QUESTS.md §2, plus helper data for milestone unlocks.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class SkillType(StrEnum):

@@ -18,7 +18,7 @@ specialized analytical instruments, glassware, and hazard profiles:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class SafetyContainmentLevel(StrEnum):

@@ -18,7 +18,7 @@ import math
 import time
 import threading
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 from queue import Queue, Empty
 from typing import Optional
 

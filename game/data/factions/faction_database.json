@@ -169,7 +169,7 @@
     }
   },
   "reputation_system": {
-    "decay_rate": 0.1, // Per in-game week
+    "decay_rate": 0.1,
     "action_multipliers": {
       "quest_completion": 1.0,
       "faction_mission": 1.5,

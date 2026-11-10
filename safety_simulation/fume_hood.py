@@ -7,7 +7,7 @@ and 3D aerodynamic streamline draft fields for animation and real-time visualiza
 
 import math
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 from .ghs import CHEMICAL_DATABASE, ChemicalProfile
 

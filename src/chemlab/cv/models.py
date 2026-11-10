@@ -3,8 +3,7 @@ Computer Vision Models for ChemLab.
 Hand tracking, gesture recognition, and landmark data structures.
 """
 
-from datetime import UTC, datetime
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 from typing import Annotated
 from uuid import UUID, uuid4
 

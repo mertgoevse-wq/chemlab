@@ -7,7 +7,7 @@ addition order hazards (water into acid), and incomplete conversion when reactio
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class ImpuritySeverity(StrEnum):

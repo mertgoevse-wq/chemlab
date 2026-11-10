@@ -7,7 +7,7 @@ Tracks quest states, unlocks, apparatus permissions, and safety officer complian
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class PlayerRank(StrEnum):

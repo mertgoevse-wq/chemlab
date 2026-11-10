@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 from chemlab.sandbox.no_mans_sky_matrix import (
     HazardDifficulty,

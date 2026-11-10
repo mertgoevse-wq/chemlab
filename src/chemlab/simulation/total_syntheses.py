@@ -8,7 +8,7 @@ Includes stoichiometry, temperature control windows, quenching, and recrystalliz
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class TechniqueType(StrEnum):

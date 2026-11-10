@@ -8,7 +8,7 @@ and texture staging memory tiering to ensure stable 60 FPS viewport performance.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class GPUVendor(StrEnum):

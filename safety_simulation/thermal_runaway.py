@@ -8,7 +8,7 @@ and catastrophic BLEVE / glass shrapnel fragmentation events.
 
 import math
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 from .ghs import CHEMICAL_DATABASE, ChemicalProfile, GHSClass
 

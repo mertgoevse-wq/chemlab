@@ -13,7 +13,7 @@ import json
 from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass, field
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 from pathlib import Path
 from typing import Any
 
