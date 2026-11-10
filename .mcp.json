@@ -1,12 +1,62 @@
 {
-  "mcpServers": {
-    "blender-live": {
-      "command": "node",
-      "args": ["blender_mcp_server.mjs"],
-      "env": {
-        "BLENDER_HOST": "127.0.0.1",
-        "BLENDER_PORT": "9876"
-      }
-    }
-  }
+    "mcpServers":  {
+                       "blender-live":  {
+                                            "command":  "node",
+                                            "args":  [
+                                                         "blender_mcp_server.mjs"
+                                                     ],
+                                            "env":  {
+                                                        "BLENDER_HOST":  "127.0.0.1",
+                                                        "BLENDER_PORT":  "9876"
+                                                    }
+                                        },
+                       "godot":  {
+                                     "command":  "cmd",
+                                     "args":  [
+                                                  "/c",
+                                                  "npx",
+                                                  "-y",
+                                                  "@coding-solo/godot-mcp"
+                                              ]
+                                 },
+                       "filesystem":  {
+                                          "command":  "cmd",
+                                          "args":  [
+                                                       "/c",
+                                                       "npx",
+                                                       "-y",
+                                                       "@modelcontextprotocol/server-filesystem",
+                                                       "${CLAUDE_PROJECT_DIR:-.}"
+                                                   ]
+                                      },
+                       "git":  {
+                                   "command":  "uvx",
+                                   "args":  [
+                                                "mcp-server-git",
+                                                "--repository",
+                                                "${CLAUDE_PROJECT_DIR:-.}"
+                                            ]
+                               },
+                       "athanor-memory":  {
+                                              "command":  "cmd",
+                                              "args":  [
+                                                           "/c",
+                                                           "npx",
+                                                           "-y",
+                                                           "@modelcontextprotocol/server-memory"
+                                                       ],
+                                              "env":  {
+                                                          "MEMORY_FILE_PATH":  "${CLAUDE_PROJECT_DIR:-.}/.athanor/mcp/memory.jsonl"
+                                                      }
+                                          },
+                       "sequential-thinking":  {
+                                                   "command":  "cmd",
+                                                   "args":  [
+                                                                "/c",
+                                                                "npx",
+                                                                "-y",
+                                                                "@modelcontextprotocol/server-sequential-thinking"
+                                                            ]
+                                               }
+                   }
 }

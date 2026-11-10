@@ -7,7 +7,7 @@ Evaluates stoichiometric tolerances per difficulty tier and calculates yield deg
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 from chemlab.simulation.total_syntheses import SynthesisProtocol, SynthesisStage
 

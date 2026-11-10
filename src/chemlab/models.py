@@ -6,7 +6,7 @@ Strictly typed dataclasses and enums for chemical states, computer vision tracki
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
+from chemlab.compat import StrEnum, UTC
 
 
 class GHSHazard(StrEnum):

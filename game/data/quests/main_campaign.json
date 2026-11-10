@@ -78,6 +78,20 @@
             { "objective_id": "calculate_concentration", "description": "Calculate exact concentration", "evaluation_mode": "METROLOGY_VALUE", "tolerance": 0.01 }
           ],
           "rewards": { "skill_xp": { "chemistry": 300, "analytical_chemistry": 200 }, "intelligence_points": 30 }
+        },
+        {
+          "quest_id": "quest_012_first_nmr_analysis",
+          "title": "First NMR Analysis",
+          "instructor": "dr_elena_vance",
+          "description": "Learn to operate the 400 MHz NMR spectrometer. Prepare a sample, run a 1H NMR spectrum, and interpret the chemical shifts.",
+          "objectives": [
+            { "objective_id": "prepare_nmr_sample", "description": "Prepare an NMR sample tube with ethanol in CDCl3", "evaluation_mode": "SAMPLE_PREPARATION" },
+            { "objective_id": "load_sample", "description": "Insert the sample tube into the 400 MHz NMR spectrometer", "evaluation_mode": "EQUIPMENT_STATE" },
+            { "objective_id": "run_1h_nmr", "description": "Run a 1H NMR spectrum with 16 scans", "evaluation_mode": "SPECTRAL_MATCH", "target_spectrum": "ethanol_cdcl3" },
+            { "objective_id": "interpret_spectrum", "description": "Identify the CH3 triplet (1.18 ppm), CH2 quartet (3.65 ppm), and OH singlet (2.60 ppm)", "evaluation_mode": "SPECTRAL_MATCH", "target_peaks": ["CH3_triplet_1.18", "CH2_quartet_3.65", "OH_singlet_2.60"] },
+            { "objective_id": "submit_report", "description": "Submit analysis report with chemical shift assignments", "evaluation_mode": "NPC_INTERACTION" }
+          ],
+          "rewards": { "skill_xp": { "analytical_chemistry": 500, "chemistry": 200 }, "intelligence_points": 50, "items": [{ "item_id": "nmr_certification", "quantity": 1 }] }
         }
       ]
     },

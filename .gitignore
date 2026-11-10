@@ -41,3 +41,6 @@ cache/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Local Claude MCP memory and runtime files
+/.athanor/mcp/
