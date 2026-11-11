@@ -28,6 +28,13 @@ def test_synthesis_registry_contains_pharmaceuticals() -> None:
         "atropine",
         "triphenylmethanol_grignard",
         "anthracene_diels_alder",
+        "belladonna_alkaloid_extraction",
+        "scopolamine_datura_isolation",
+        "fischer_tetrahydrocarbazole",
+        "sandmeyer_chlorobenzene",
+        "cannizzaro_benzaldehyde",
+        "manske_harmala_extraction",
+        "quinine_cinchona_extraction",
     ]
     for exp in expected:
         assert exp in recipes, f"Missing expected recipe: {exp}"
@@ -105,3 +112,46 @@ def test_caffeine_extraction_sublimation_temperature() -> None:
     caffeine = registry.get_protocol("caffeine_extraction")
     assert caffeine.sublimation_point_c == pytest.approx(178.0, abs=2.0)
     assert any(s.technique == "sublimation" for s in caffeine.stages)
+
+
+def test_belladonna_and_datura_tropane_extractions() -> None:
+    registry = SynthesisRegistry()
+    bella = registry.get_protocol("belladonna_alkaloid_extraction")
+    assert bella.cas_number == "51-55-8"
+    assert "belladonna_powder" in bella.initial_reagents
+    assert len(bella.stages) == 2
+
+    datura = registry.get_protocol("scopolamine_datura_isolation")
+    assert datura.cas_number == "114-49-8"
+    assert "datura_leaves" in datura.initial_reagents
+    assert datura.molar_mass_g_mol == pytest.approx(438.31, rel=1e-3)
+
+
+def test_classical_vogel_transformations() -> None:
+    registry = SynthesisRegistry()
+    fischer = registry.get_protocol("fischer_tetrahydrocarbazole")
+    assert fischer.cas_number == "942-01-8"
+    assert "phenylhydrazine" in fischer.initial_reagents
+
+    sandmeyer = registry.get_protocol("sandmeyer_chlorobenzene")
+    assert sandmeyer.cas_number == "108-90-7"
+    assert "sodium_nitrite" in sandmeyer.initial_reagents
+    assert sandmeyer.stages[0].temperature_target_c <= 5.0
+
+    cannizzaro = registry.get_protocol("cannizzaro_benzaldehyde")
+    assert cannizzaro.cas_number == "100-51-6"
+    assert "benzaldehyde" in cannizzaro.initial_reagents
+
+
+def test_natural_product_alkaloid_fractionations() -> None:
+    registry = SynthesisRegistry()
+    manske = registry.get_protocol("manske_harmala_extraction")
+    assert manske.cas_number == "442-51-3"
+    assert "harmala_seeds" in manske.initial_reagents
+    assert manske.stages[1].temperature_target_c <= 10.0  # Cold salting-out
+
+    quinine = registry.get_protocol("quinine_cinchona_extraction")
+    assert quinine.cas_number == "6119-70-6"
+    assert "cinchona_bark" in quinine.initial_reagents
+    assert quinine.molar_mass_g_mol == pytest.approx(782.94, rel=1e-3)
+

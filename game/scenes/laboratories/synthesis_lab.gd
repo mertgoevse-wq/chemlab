@@ -54,6 +54,15 @@ var _category_opt: OptionButton
 var _protocol_opt: OptionButton
 var _protocol_list_cache: Array[Dictionary] = []
 
+var _sandbox_mode: bool = true
+var _sop_guide_active: bool = true
+var _sop_modal: PanelContainer
+var _sop_modal_text: RichTextLabel
+var _btn_sop_toggle: Button
+var _btn_auto_charge: Button
+var _btn_sop_modal: Button
+var _sandbox_badge: Label
+
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -191,13 +200,17 @@ func _update_briefing() -> void:
 	var proto_name: String = str(_protocol.get("name", "Acetylsalicylic acid"))
 	var desc: String = str(_protocol.get("description", "Aspirin synthesis via O-acylation."))
 	var cat: String = str(_protocol.get("category", "Industrial APIs"))
+	var lit_ref: String = str(_protocol.get("literature_reference", "Vogel / Standard Chemical Literature"))
 	var rA: Dictionary = _protocol.get("reagent_a", {})
 	var rB: Dictionary = _protocol.get("reagent_b", {})
 	var reflux_info: Dictionary = _protocol.get("reflux", {})
 	var anal_info: Dictionary = _protocol.get("analytical", {})
+	var workup_info: Dictionary = _protocol.get("workup", {})
 
 	var text := "[font_size=15][b]PROTOCOL SPECIFICATION[/b][/font_size]\n"
 	text += "[color=#85949f]%s · %s[/color]\n\n" % [cat, proto_name]
+	if not lit_ref.is_empty():
+		text += "[b]Literature Reference[/b]\n[color=#6ddbaa]%s[/color]\n\n" % lit_ref
 	text += "[b]Overview[/b]\n%s\n\n" % desc
 	text += "[b]Reagent A (Precursor)[/b]\n"
 	text += "• %s (MW %.2f g/mol, %s)\n" % [str(rA.get("name", "")), float(rA.get("mw", 0.0)), str(rA.get("unit", "g"))]
@@ -215,6 +228,32 @@ func _update_briefing() -> void:
 		float(reflux_info.get("optimal_min", 20.0))
 	]
 	text += "• Degradation threshold: > %.0f °C\n" % float(reflux_info.get("temp_degrade", 85.0))
+
+	if _sop_guide_active:
+		text += "\n[b][color=#ffb45c]STEP-BY-STEP SOP GUIDE[/color][/b]\n"
+		text += "1. Charge %.1f %s of %s + %.1f %s of %s + %d drops catalyst.\n" % [
+			float(rA.get("default", 10.0)), str(rA.get("unit", "g")), str(rA.get("name", "reagent")),
+			float(rB.get("default", 10.0)), str(rB.get("unit", "mL")), str(rB.get("name", "reagent")),
+			int(_protocol.get("catalyst", {}).get("default", 5))
+		]
+		text += "2. Set mantle to %.0f °C, run reflux for %.0f min with fume hood ON.\n" % [
+			float(reflux_info.get("default_temp", 70.0)), float(reflux_info.get("default_min", 20.0))
+		]
+		text += "3. Quench on %.0f °C ice bath with %.0f mL water; recrystallize from %.0f mL %s with seed crystal.\n" % [
+			float(workup_info.get("ice_c", 2.0)), float(workup_info.get("water_ml", 30.0)),
+			float(workup_info.get("ethanol_ml", 15.0)), str(workup_info.get("solvent", "solvent"))
+		]
+		text += "4. Dry product and verify MP (%.1f °C) & purity (≥ %.1f%%).\n" % [
+			float(anal_info.get("mp_pure", 0.0)), float(anal_info.get("purity_pass", 95.0))
+		]
+
+	var steps: Array = _protocol.get("steps", [])
+	if not steps.is_empty():
+		text += "\n[b]Literature Multi-Step Pathway[/b]\n"
+		for s in steps:
+			if s is Dictionary:
+				text += "• Step %s: %s\n" % [str(s.get("step_number", "")), str(s.get("name", ""))]
+
 	text += "\n[b]Safety gate[/b]\n"
 	text += "Fume hood on, sash low. Goggles, nitrile gloves and lab coat are required before the first reagent is opened.\n\n"
 	text += "[i]The assay does not reward luck. It reports what your conditions actually produced.[/i]"
@@ -228,8 +267,8 @@ func _update_briefing() -> void:
 func _build_ui() -> void:
 	_title_label = Label.new()
 	_title_label.text = "ORGANIC SYNTHESIS  ·  ACETYLSALICYLIC ACID"
-	_title_label.position = Vector2(22.0, 10.0)
-	_title_label.add_theme_font_size_override("font_size", 18)
+	_title_label.position = Vector2(22.0, 8.0)
+	_title_label.add_theme_font_size_override("font_size", 17)
 	_title_label.add_theme_color_override("font_color", TEXT)
 	add_child(_title_label)
 
@@ -240,10 +279,47 @@ func _build_ui() -> void:
 	_subtitle_label.add_theme_color_override("font_color", DIM)
 	add_child(_subtitle_label)
 
+	# Row 1 action controls
+	var top_actions := HBoxContainer.new()
+	top_actions.position = Vector2(440.0, 6.0)
+	top_actions.custom_minimum_size = Vector2(820.0, 28.0)
+	top_actions.add_theme_constant_override("separation", 10)
+	add_child(top_actions)
+
+	_sandbox_badge = Label.new()
+	_sandbox_badge.text = "🧪 SANDBOX MODE · ALL ROUTES & PRECURSORS UNLOCKED"
+	_sandbox_badge.add_theme_font_size_override("font_size", 10)
+	_sandbox_badge.add_theme_color_override("font_color", GREEN)
+	top_actions.add_child(_sandbox_badge)
+
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_actions.add_child(spacer)
+
+	_btn_sop_toggle = Button.new()
+	_btn_sop_toggle.text = "📘 SOP Guide: ON"
+	_btn_sop_toggle.custom_minimum_size = Vector2(125.0, 26.0)
+	_btn_sop_toggle.pressed.connect(_toggle_sop_guide)
+	top_actions.add_child(_btn_sop_toggle)
+
+	_btn_sop_modal = Button.new()
+	_btn_sop_modal.text = "🔬 Literature SOP"
+	_btn_sop_modal.custom_minimum_size = Vector2(130.0, 26.0)
+	_btn_sop_modal.pressed.connect(_show_sop_modal)
+	top_actions.add_child(_btn_sop_modal)
+
+	var back := Button.new()
+	back.text = "← Lab network"
+	back.custom_minimum_size = Vector2(115.0, 26.0)
+	back.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_HUB))
+	top_actions.add_child(back)
+
+	# Row 2 selector and auto-charge controls
 	var selector_box := HBoxContainer.new()
-	selector_box.position = Vector2(480.0, 14.0)
-	selector_box.custom_minimum_size = Vector2(560.0, 32.0)
+	selector_box.position = Vector2(440.0, 36.0)
+	selector_box.custom_minimum_size = Vector2(820.0, 28.0)
 	selector_box.add_theme_constant_override("separation", 8)
+	add_child(selector_box)
 
 	var cat_lbl := Label.new()
 	cat_lbl.text = "Category:"
@@ -252,7 +328,7 @@ func _build_ui() -> void:
 	selector_box.add_child(cat_lbl)
 
 	_category_opt = OptionButton.new()
-	_category_opt.custom_minimum_size = Vector2(170.0, 28.0)
+	_category_opt.custom_minimum_size = Vector2(165.0, 26.0)
 	_category_opt.item_selected.connect(_on_category_selected)
 	selector_box.add_child(_category_opt)
 
@@ -263,21 +339,19 @@ func _build_ui() -> void:
 	selector_box.add_child(proto_lbl)
 
 	_protocol_opt = OptionButton.new()
-	_protocol_opt.custom_minimum_size = Vector2(220.0, 28.0)
+	_protocol_opt.custom_minimum_size = Vector2(230.0, 26.0)
 	_protocol_opt.item_selected.connect(_on_protocol_selected)
 	selector_box.add_child(_protocol_opt)
 
-	add_child(selector_box)
+	var spacer2 := Control.new()
+	spacer2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	selector_box.add_child(spacer2)
 
-	var back := Button.new()
-	back.text = "← Laboratory network"
-	back.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	back.offset_left = -208.0
-	back.offset_right = -20.0
-	back.offset_top = 14.0
-	back.offset_bottom = 44.0
-	back.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_HUB))
-	add_child(back)
+	_btn_auto_charge = Button.new()
+	_btn_auto_charge.text = "⚡ Auto-Charge Optimal Aliquots"
+	_btn_auto_charge.custom_minimum_size = Vector2(215.0, 26.0)
+	_btn_auto_charge.pressed.connect(auto_charge_literature_aliquots)
+	selector_box.add_child(_btn_auto_charge)
 
 	_briefing = RichTextLabel.new()
 	_briefing.bbcode_enabled = true
@@ -332,6 +406,18 @@ func _add_intro(title: String, body: String) -> void:
 	label.custom_minimum_size = Vector2(500.0, 0.0)
 	label.add_theme_font_size_override("normal_font_size", 11)
 	label.text = "[b][color=#%s]%s[/color][/b]\n[color=#85949f]%s[/color]" % [CYAN.to_html(false), title, body]
+	_controls.add_child(label)
+
+
+func _add_sop_hint(hint: String) -> void:
+	if not _sop_guide_active:
+		return
+	var label := RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.fit_content = true
+	label.custom_minimum_size = Vector2(500.0, 0.0)
+	label.add_theme_font_size_override("normal_font_size", 10)
+	label.text = "[color=#6ddbaa]📖 [b]Literature SOP Guide[/b]:[/color] %s" % hint
 	_controls.add_child(label)
 
 
@@ -447,8 +533,12 @@ func _build_stage_one() -> void:
 	var rB_min: float = float(rB.get("min", 1.0))
 	var rB_max: float = float(rB.get("max", 50.0))
 	var cat_name: String = str(_protocol.get("catalyst", {}).get("name", "H₂SO₄ catalyst"))
+	var cat_opt: int = int(_protocol.get("catalyst", {}).get("default", 5))
 
 	_add_intro("STAGE 1 / 4 — WEIGH & CHARGE", "Tare the balance, weigh %s, then charge %s and catalyst into the dry flask." % [rA_name, rB_name])
+	_add_sop_hint("Charge [b]%.1f %s[/b] of %s + [b]%.1f %s[/b] of %s with [b]%d drops[/b] %s. Don complete PPE to unlock the flask." % [
+		float(rA.get("default", 10.0)), rA_unit, rA_name, float(rB.get("default", 10.0)), rB_unit, rB_name, cat_opt, cat_name
+	])
 	_add_slider(rA_name, rA_unit, rA_min, rA_max, 0.1, _mass_g, 1, func(v): _mass_g = v)
 	_add_slider(rB_name, rB_unit, rB_min, rB_max, 0.1, _anhydride_ml, 1, func(v): _anhydride_ml = v)
 	_add_slider(cat_name, "drops", 0.0, 10.0, 1.0, float(_catalyst_drops), 0, func(v): _catalyst_drops = int(v))
@@ -470,6 +560,9 @@ func _build_stage_two() -> void:
 	var opt_min: float = float(reflux_info.get("optimal_min", 20.0))
 
 	_add_intro("STAGE 2 / 4 — REFLUX", "Bring the mantle to %.0f–%.0f °C and hold reflux for %.0f minutes. The condenser must stay cold; vapour leaving the top is lost reagent." % [t_low, t_high, opt_min])
+	_add_sop_hint("Set mantle to [b]%.0f °C[/b] (optimal %.0f–%.0f °C) and run reflux for [b]%.0f min[/b]. Ensure fume hood is ON to capture vapors." % [
+		float(reflux_info.get("default_temp", 70.0)), t_low, t_high, opt_min
+	])
 	_add_slider("Mantle temperature", "°C", 30.0, 140.0, 1.0, _temp_c, 0, func(v): _temp_c = v)
 	_add_slider("Reflux time", "min", 2.0, maxf(60.0, opt_min * 2.0), 1.0, _reflux_min, 0, func(v): _reflux_min = v)
 	_add_check("Fume hood running / sash low", _hood, _on_hood)
@@ -492,7 +585,14 @@ func _build_stage_two() -> void:
 func _build_stage_three() -> void:
 	var workup_info: Dictionary = _protocol.get("workup", {})
 	var solv_name: String = str(workup_info.get("solvent", "ethanol"))
+	var ice_opt: float = float(workup_info.get("ice_c", 2.0))
+	var water_opt: float = float(workup_info.get("water_ml", 30.0))
+	var eth_opt: float = float(workup_info.get("ethanol_ml", 15.0))
+
 	_add_intro("STAGE 3 / 4 — QUENCH & CRYSTALLISE", "Pour the cooled mixture onto ice water to hydrolyse excess unreacted reagent. Filter, then recrystallise from %s and dry." % solv_name)
+	_add_sop_hint("Chill ice bath to [b]%.0f °C[/b], quench excess reagent with [b]%.0f mL[/b] water. Dissolve in [b]%.0f mL[/b] hot %s and add seed crystal." % [
+		ice_opt, water_opt, eth_opt, solv_name
+	])
 	_add_slider("Ice bath", "°C", -10.0, 25.0, 1.0, _ice_c, 0, func(v): _ice_c = v)
 	_add_slider("Quench water", "mL", 0.0, 80.0, 1.0, _water_ml, 0, func(v): _water_ml = v)
 	_add_slider("Recrystallisation " + solv_name, "mL", 0.0, 50.0, 1.0, _ethanol_ml, 0, func(v): _ethanol_ml = v)
@@ -501,7 +601,12 @@ func _build_stage_three() -> void:
 
 
 func _build_stage_four() -> void:
+	var anal_info: Dictionary = _protocol.get("analytical", {})
 	_add_intro("STAGE 4 / 4 — ANALYTICAL ASSAY", "TLC, melting point and gravimetric purity decide whether the batch meets the contract. Submit the dried product.")
+	_add_sop_hint("Literature assay targets: MP [b]%.1f °C[/b] · TLC Rf [b]%.2f[/b] · Purity ≥ [b]%.1f%%[/b] · Yield ≥ [b]%.1f g[/b]." % [
+		float(anal_info.get("mp_pure", 0.0)), float(anal_info.get("tlc_rf", 0.40)),
+		float(anal_info.get("purity_pass", 95.0)), float(anal_info.get("yield_pass_g", 10.0))
+	])
 	if not _submitted:
 		var submit := Button.new()
 		submit.text = "Submit batch to analytical"
@@ -679,6 +784,172 @@ func _on_new_batch() -> void:
 	_select_protocol(str(_protocol.get("id", "aspirin")))
 	_status.text = "New batch. PPE is retained; reagents reset to the protocol defaults."
 	_status.add_theme_color_override("font_color", DIM)
+
+
+# =============================================================================
+# SANDBOX MODE: LITERATURE PRECURSORS & STEP-BY-STEP SOP GUIDES
+# =============================================================================
+
+func auto_charge_literature_aliquots() -> void:
+	var rA: Dictionary = _protocol.get("reagent_a", {})
+	var rB: Dictionary = _protocol.get("reagent_b", {})
+	var reflux_info: Dictionary = _protocol.get("reflux", {})
+	var workup_info: Dictionary = _protocol.get("workup", {})
+
+	_mass_g = float(rA.get("default", 10.0))
+	_anhydride_ml = float(rB.get("default", 10.0))
+	_catalyst_drops = int(_protocol.get("catalyst", {}).get("default", 5))
+	_stir_rpm = float(reflux_info.get("stir_rpm", 450.0))
+	_temp_c = float(reflux_info.get("default_temp", 70.0))
+	_reflux_min = float(reflux_info.get("default_min", 20.0))
+	_hood = true
+	_ice_c = float(workup_info.get("ice_c", 2.0))
+	_water_ml = float(workup_info.get("water_ml", 30.0))
+	_ethanol_ml = float(workup_info.get("ethanol_ml", 15.0))
+	_seeded = true
+	_ppe = {"goggles": true, "gloves": true, "coat": true}
+
+	_set_stage(_stage)
+	if _status != null:
+		_status.text = "✓ Optimal literature aliquots charged for %s: 100%% stoichiometric precision." % str(_protocol.get("name", ""))
+		_status.add_theme_color_override("font_color", GREEN)
+
+
+func _toggle_sop_guide() -> void:
+	_sop_guide_active = not _sop_guide_active
+	if _btn_sop_toggle != null:
+		_btn_sop_toggle.text = "📘 SOP Guide: ON" if _sop_guide_active else "📘 SOP Guide: OFF"
+	_update_briefing()
+	_set_stage(_stage)
+
+
+func _show_sop_modal() -> void:
+	if _sop_modal == null:
+		_build_sop_modal()
+	_update_sop_modal_text()
+	_sop_modal.visible = true
+
+
+func _build_sop_modal() -> void:
+	_sop_modal = PanelContainer.new()
+	_sop_modal.name = "SOPModal"
+	_sop_modal.visible = false
+	_sop_modal.set_anchors_preset(Control.PRESET_CENTER)
+	_sop_modal.offset_left = -460.0
+	_sop_modal.offset_top = -280.0
+	_sop_modal.offset_right = 460.0
+	_sop_modal.offset_bottom = 280.0
+	add_child(_sop_modal)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_top", 16)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_bottom", 16)
+	_sop_modal.add_child(margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	margin.add_child(vbox)
+
+	var header_hbox := HBoxContainer.new()
+	vbox.add_child(header_hbox)
+
+	var title := Label.new()
+	title.text = "LITERATURE STANDARD OPERATING PROCEDURE (SOP)"
+	title.add_theme_font_size_override("font_size", 14)
+	title.add_theme_color_override("font_color", CYAN)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_hbox.add_child(title)
+
+	var close_btn := Button.new()
+	close_btn.text = "✕ Close"
+	close_btn.custom_minimum_size = Vector2(80, 28)
+	close_btn.pressed.connect(func(): _sop_modal.visible = false)
+	header_hbox.add_child(close_btn)
+
+	vbox.add_child(HSeparator.new())
+
+	_sop_modal_text = RichTextLabel.new()
+	_sop_modal_text.bbcode_enabled = true
+	_sop_modal_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_sop_modal_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_sop_modal_text.add_theme_font_size_override("normal_font_size", 11)
+	_sop_modal_text.add_theme_font_size_override("bold_font_size", 12)
+	_sop_modal_text.scroll_active = true
+	vbox.add_child(_sop_modal_text)
+
+
+func _update_sop_modal_text() -> void:
+	if _sop_modal_text == null:
+		return
+	var proto_name: String = str(_protocol.get("name", "Unknown Protocol"))
+	var chem_name: String = str(_protocol.get("chemical_name", proto_name))
+	var cat: String = str(_protocol.get("category", "Synthesis"))
+	var cas: String = str(_protocol.get("cas", "N/A"))
+	var formula: String = str(_protocol.get("formula", ""))
+	var mw: float = float(_protocol.get("mw", 0.0))
+	var lit_ref: String = str(_protocol.get("literature_reference", "Vogel's Practical Organic Chemistry"))
+	var desc: String = str(_protocol.get("description", ""))
+	var rA: Dictionary = _protocol.get("reagent_a", {})
+	var rB: Dictionary = _protocol.get("reagent_b", {})
+	var reflux_info: Dictionary = _protocol.get("reflux", {})
+	var workup_info: Dictionary = _protocol.get("workup", {})
+	var anal_info: Dictionary = _protocol.get("analytical", {})
+
+	var text := "[b][font_size=15]%s[/font_size][/b]\n" % proto_name.to_upper()
+	text += "[color=#85949f]IUPAC: %s  ·  Category: %s[/color]\n" % [chem_name, cat]
+	text += "[color=#ffb45c]Formula: %s  ·  MW: %.2f g/mol  ·  CAS: %s[/color]\n\n" % [formula, mw, cas]
+
+	text += "[b]Literature Reference[/b]\n[color=#6ddbaa]%s[/color]\n\n" % lit_ref
+	text += "[b]Reaction Description & Chemical Mechanism[/b]\n%s\n\n" % desc
+
+	text += "[b]Precursors & Reagents (Edukte)[/b]\n"
+	text += "• %s (MW %.2f g/mol): %.1f %s (limiting precursor)\n" % [
+		str(rA.get("name", "")), float(rA.get("mw", 0.0)), float(rA.get("default", 10.0)), str(rA.get("unit", "g"))
+	]
+	text += "• %s (MW %.2f g/mol): %.1f %s\n" % [
+		str(rB.get("name", "")), float(rB.get("mw", 0.0)), float(rB.get("default", 10.0)), str(rB.get("unit", "mL"))
+	]
+	text += "• Catalyst / Buffer: %s (%d drops)\n\n" % [
+		str(_protocol.get("catalyst", {}).get("name", "Catalyst")), int(_protocol.get("catalyst", {}).get("default", 5))
+	]
+
+	text += "[b]Thermal & Kinetic Parameters[/b]\n"
+	text += "• Optimal Reflux: %.0f–%.0f °C (Target %.0f °C) for %.0f min\n" % [
+		float(reflux_info.get("temp_optimal_low", 65.0)), float(reflux_info.get("temp_optimal_high", 75.0)),
+		float(reflux_info.get("default_temp", 70.0)), float(reflux_info.get("default_min", 20.0))
+	]
+	text += "• Thermal Degradation Limit: > %.0f °C\n\n" % float(reflux_info.get("temp_degrade", 85.0))
+
+	text += "[b]Workup, Hydrolysis & Recrystallization[/b]\n"
+	text += "• Quench: %.0f mL ice water at %.0f °C\n" % [
+		float(workup_info.get("water_ml", 30.0)), float(workup_info.get("ice_c", 2.0))
+	]
+	text += "• Recrystallization: %.0f mL boiling %s with seed crystal\n\n" % [
+		float(workup_info.get("ethanol_ml", 15.0)), str(workup_info.get("solvent", "solvent"))
+	]
+
+	text += "[b]Analytical Quality Gates[/b]\n"
+	text += "• Melting Point: %.1f °C (± %.1f °C)\n" % [
+		float(anal_info.get("mp_pure", 0.0)), float(anal_info.get("mp_tolerance", 2.5))
+	]
+	text += "• TLC Rf: %.2f\n" % float(anal_info.get("tlc_rf", 0.40))
+	text += "• Purity Contract: ≥ %.1f %%\n" % float(anal_info.get("purity_pass", 95.0))
+	text += "• Yield Contract: ≥ %.1f g\n" % float(anal_info.get("yield_pass_g", 10.0))
+
+	var steps: Array = _protocol.get("steps", [])
+	if not steps.is_empty():
+		text += "\n[b]Literature Multi-Step Synthetic Stages[/b]\n"
+		for s in steps:
+			if s is Dictionary:
+				text += "• [b]Step %s[/b]: %s\n" % [str(s.get("step_number", "")), str(s.get("name", ""))]
+				var s_reag: Array = s.get("reagents", [])
+				for r in s_reag:
+					if r is Dictionary:
+						text += "    - %s: %s %s\n" % [str(r.get("name", "")), str(r.get("amount", "")), str(r.get("unit", ""))]
+
+	_sop_modal_text.text = text
 
 
 # =============================================================================

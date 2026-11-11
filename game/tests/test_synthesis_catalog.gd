@@ -118,6 +118,57 @@ func _run() -> void:
 			float(t_res.get("yield_g", 0.0))
 		])
 
+	# 6. Verify Tropane Alkaloids & Vogel Classical Reactions
+	var tropane_proto: Dictionary = Catalog.get_protocol("robinson_tropinone")
+	if tropane_proto.is_empty() or str(tropane_proto.get("id", "")) != "robinson_tropinone":
+		failures.append("Robinson Tropinone protocol failed to load")
+	else:
+		var trop_res: Dictionary = Chem.evaluate({
+			"protocol": tropane_proto,
+			"reagent_a_mass": float(tropane_proto["reagent_a"]["default"]),
+			"reagent_b_amount": float(tropane_proto["reagent_b"]["default"]),
+			"catalyst_drops": 5,
+			"reflux_temp_c": float(tropane_proto["reflux"]["default_temp"]),
+			"reflux_min": float(tropane_proto["reflux"]["default_min"]),
+			"stir_rpm": 500.0,
+			"fume_hood": true,
+			"ice_bath_c": 2.0,
+			"quench_water_ml": 25.0,
+			"recryst_ethanol_ml": 15.0,
+			"seed_crystal": true,
+			"ppe": true
+		})
+		if not bool(trop_res.get("ok", false)):
+			failures.append("Tropinone evaluation failed: %s" % str(trop_res.get("error", "")))
+		print("Robinson Tropinone evaluation: purity=%.1f%% yield=%.2fg" % [
+			float(trop_res.get("purity", 0.0)),
+			float(trop_res.get("yield_g", 0.0))
+		])
+
+	var atropine_proto: Dictionary = Catalog.get_protocol("atropine_total_synthesis")
+	if atropine_proto.is_empty() or str(atropine_proto.get("id", "")) != "atropine_total_synthesis":
+		failures.append("Atropine Total Synthesis protocol failed to load")
+
+	var grignard_proto: Dictionary = Catalog.get_protocol("triphenylmethanol_grignard")
+	if grignard_proto.is_empty() or str(grignard_proto.get("id", "")) != "triphenylmethanol_grignard":
+		failures.append("Triphenylmethanol Grignard protocol failed to load")
+
+	var da_proto: Dictionary = Catalog.get_protocol("anthracene_diels_alder")
+	if da_proto.is_empty() or str(da_proto.get("id", "")) != "anthracene_diels_alder":
+		failures.append("Anthracene Diels-Alder protocol failed to load")
+
+	var bella_proto: Dictionary = Catalog.get_protocol("belladonna_alkaloid_extraction")
+	if bella_proto.is_empty() or str(bella_proto.get("id", "")) != "belladonna_alkaloid_extraction":
+		failures.append("Belladonna alkaloid extraction protocol failed to load")
+
+	var manske_proto: Dictionary = Catalog.get_protocol("manske_harmala_extraction")
+	if manske_proto.is_empty() or str(manske_proto.get("id", "")) != "manske_harmala_extraction":
+		failures.append("Manske harmala extraction protocol failed to load")
+
+	var quinine_proto: Dictionary = Catalog.get_protocol("quinine_cinchona_extraction")
+	if quinine_proto.is_empty() or str(quinine_proto.get("id", "")) != "quinine_cinchona_extraction":
+		failures.append("Quinine Cinchona extraction protocol failed to load")
+
 	if failures.is_empty():
 		print("PASS  synthesis catalog and multi-protocol evaluation")
 		quit(0)

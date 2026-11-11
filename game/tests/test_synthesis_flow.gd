@@ -85,8 +85,52 @@ func _run() -> void:
 	if after_second != after:
 		failures.append("second submit changed XP: %d -> %d" % [after, after_second])
 
+	# -------------------------------------------------------------------------
+	# Test Sandbox Mode & Literature SOP Flow (Robinson Tropinone)
+	# -------------------------------------------------------------------------
+	scene._on_new_batch()
+	scene._select_protocol("robinson_tropinone")
+	if str(scene._protocol.get("id", "")) != "robinson_tropinone":
+		failures.append("Failed to switch protocol to robinson_tropinone")
+
+	# Test SOP Guide Toggle
+	var initial_guide_state: bool = scene._sop_guide_active
+	scene._toggle_sop_guide()
+	if scene._sop_guide_active == initial_guide_state:
+		failures.append("SOP guide toggle failed to flip state")
+	scene._toggle_sop_guide()
+
+	# Test SOP Modal Inspection
+	scene._show_sop_modal()
+	if scene._sop_modal == null or not scene._sop_modal.visible:
+		failures.append("SOP modal failed to display")
+	if scene._sop_modal_text == null or scene._sop_modal_text.text.is_empty():
+		failures.append("SOP modal text is empty")
+	if not scene._sop_modal_text.text.contains("TROPINON"):
+		failures.append("SOP modal does not mention Tropinone")
+	scene._sop_modal.visible = false
+
+	# Test Auto-Charge Optimal Literature Aliquots
+	scene.auto_charge_literature_aliquots()
+	if scene._mass_g <= 0.0 or scene._anhydride_ml <= 0.0:
+		failures.append("Auto-charge failed to populate stoichiometric reagent amounts")
+	if not scene._hood or not scene._seeded:
+		failures.append("Auto-charge failed to set fume hood or seed crystal")
+
+	scene._reflux_done = true
+	var trop_res: Dictionary = scene.submit_batch()
+	await process_frame
+	if not bool(trop_res.get("ok", false)):
+		failures.append("Tropinone batch submission with auto-charged aliquots failed: %s" % str(trop_res.get("error", "")))
+	else:
+		print("Tropinone auto-charge submission: purity=%.1f%% yield=%.2fg stars=%d" % [
+			float(trop_res.get("purity", 0.0)),
+			float(trop_res.get("yield_g", 0.0)),
+			int(trop_res.get("stars", 0))
+		])
+
 	if failures.is_empty():
-		print("PASS  synthesis terminal flow awards XP exactly once")
+		print("PASS  synthesis terminal flow awards XP exactly once and supports sandbox SOP protocols")
 		quit(0)
 	else:
 		for failure in failures:

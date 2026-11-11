@@ -192,6 +192,9 @@ static func _convert_synthesis_to_protocol(s: Dictionary) -> Dictionary:
 		"mw": mw,
 		"formula": formula,
 		"description": desc,
+		"literature_reference": str(s.get("literature_reference", "Vogel's Practical Organic Chemistry 5th Ed.")),
+		"steps": steps,
+		"source": "Vogel & Natural Products",
 		"reaction_title": "%s → %s" % [rA_name, sname],
 		"reagent_a": {
 			"id": str(rA.get("reagent_id", "reagent_a")),
@@ -336,6 +339,10 @@ static func _convert_compound_to_protocol(c: Dictionary, category: String) -> Di
 		"mw": mw,
 		"formula": formula,
 		"description": desc,
+		"literature_reference": "%s #%s (%s)" % [category.split(" ")[0], str(c.get("number", "")), chem_name],
+		"steps": steps,
+		"routes": routes,
+		"source": category.split(" ")[0],
 		"reaction_title": "%s → %s" % [rA_name, cname],
 		"reagent_a": {
 			"id": str(rA.get("reagent_id", "reagent_a")),
@@ -413,6 +420,8 @@ static func _make_aspirin_protocol() -> Dictionary:
 		"cas": "50-78-2",
 		"mw": 180.16,
 		"formula": "C9H8O4",
+		"literature_reference": "Bayer AG (1897); Vogel's Practical Organic Chemistry 5th ed. p. 883",
+		"source": "Industrial APIs",
 		"description": "Salicylic acid + acetic anhydride → acetylsalicylic acid + acetic acid. One equivalent each; anhydride charged at 1.4–1.6 eq so acid is limiting.",
 		"reaction_title": "Salicylic acid + acetic anhydride → acetylsalicylic acid",
 		"reagent_a": {
@@ -490,6 +499,8 @@ static func _make_paracetamol_protocol() -> Dictionary:
 		"cas": "103-90-2",
 		"mw": 151.16,
 		"formula": "C8H9NO2",
+		"literature_reference": "Morse, H. N. (1878). Berichte; Vogel's Practical Organic Chemistry 5th ed. p. 917",
+		"source": "Industrial APIs",
 		"description": "4-Aminophenol + acetic anhydride → paracetamol + acetic acid. Nucleophilic acylation of primary aromatic amine over phenolic OH.",
 		"reaction_title": "4-Aminophenol + acetic anhydride → paracetamol",
 		"reagent_a": {
