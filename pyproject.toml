@@ -32,7 +32,7 @@ testpaths = ["tests"]
 pythonpath = [".", "src"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short --basetemp=.pytest_tmp"
 markers = [
     "unit: Unit tests with mock dependencies",
     "integration: Integration tests exercising decoupled pipelines",

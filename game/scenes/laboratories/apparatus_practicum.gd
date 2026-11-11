@@ -29,6 +29,33 @@ const BLUE: Color = Color(0.35, 0.65, 0.95)
 enum ApparatusType { ROTOVAP, SCHLENK, BALANCE, HPLC, SOXHLET, UVVIS, GLOVEBOX, CENTRIFUGE }
 var _current_type: ApparatusType = ApparatusType.ROTOVAP
 
+const APPARATUS_MODELS: Dictionary = {
+	ApparatusType.ROTOVAP: "res://assets/apparatus/SM_Rotovap.glb",
+	ApparatusType.SCHLENK: "res://assets/apparatus/SM_SchlenkLine.glb",
+	ApparatusType.BALANCE: "res://assets/apparatus/SM_AnalyticalBalance.glb",
+	ApparatusType.HPLC: "res://assets/apparatus/SM_HPLC_System.glb",
+	ApparatusType.SOXHLET: "res://assets/apparatus/SM_SoxhletExtractor.glb",
+	ApparatusType.UVVIS: "res://assets/apparatus/SM_UVVis_Spectrophotometer.glb",
+	ApparatusType.GLOVEBOX: "res://assets/apparatus/SM_Glovebox.glb",
+	ApparatusType.CENTRIFUGE: "res://assets/apparatus/SM_Centrifuge.glb",
+}
+
+const APPARATUS_SCALES: Dictionary = {
+	ApparatusType.ROTOVAP: Vector3(1.1, 1.1, 1.1),
+	ApparatusType.SCHLENK: Vector3(1.0, 1.0, 1.0),
+	ApparatusType.BALANCE: Vector3(1.4, 1.4, 1.4),
+	ApparatusType.HPLC: Vector3(0.85, 0.85, 0.85),
+	ApparatusType.SOXHLET: Vector3(1.0, 1.0, 1.0),
+	ApparatusType.UVVIS: Vector3(1.2, 1.2, 1.2),
+	ApparatusType.GLOVEBOX: Vector3(0.55, 0.55, 0.55),
+	ApparatusType.CENTRIFUGE: Vector3(1.4, 1.4, 1.4),
+}
+
+# 3D Viewport Nodes
+var _viewport_container: SubViewportContainer
+var _sub_viewport: SubViewport
+var _turntable: Node3D
+
 # Suite Controllers
 var _rotovap: Suite.RotovapController
 var _schlenk: Suite.SchlenkLineController
@@ -78,6 +105,8 @@ func _init_controllers() -> void:
 
 func _process(delta: float) -> void:
 	_sim_timer += delta
+	if _turntable != null:
+		_turntable.rotation.y += delta * 0.45
 	match _current_type:
 		ApparatusType.ROTOVAP:
 			_rotovap.update(delta)
@@ -182,7 +211,7 @@ func _build_ui() -> void:
 	_controls_vbox.add_theme_constant_override("separation", 8)
 	left_vbox.add_child(_controls_vbox)
 
-	# Center Viewport Area (Graph & Visual Gauge Rendering)
+	# Center Viewport Area (Graph & 3D Interactive Model Rendering)
 	var center_panel := Panel.new()
 	center_panel.position = Vector2(440, 84)
 	center_panel.size = Vector2(480, 610)
@@ -195,6 +224,43 @@ func _build_ui() -> void:
 	cp_style.border_color = Color(0.18, 0.28, 0.35, 0.8)
 	center_panel.add_theme_stylebox_override("panel", cp_style)
 	add_child(center_panel)
+
+	# 3D Viewport Setup for Apparatus Model Inspection
+	_viewport_container = SubViewportContainer.new()
+	_viewport_container.position = Vector2(4, 4)
+	_viewport_container.size = Vector2(472, 350)
+	_viewport_container.stretch = true
+	center_panel.add_child(_viewport_container)
+
+	_sub_viewport = SubViewport.new()
+	_sub_viewport.size = Vector2i(472, 350)
+	_sub_viewport.transparent_bg = true
+	_sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	_viewport_container.add_child(_sub_viewport)
+
+	var stage_3d := Node3D.new()
+	_sub_viewport.add_child(stage_3d)
+
+	var cam := Camera3D.new()
+	cam.position = Vector3(0, 0.40, 1.25)
+	cam.look_at_from_position(cam.position, Vector3(0, 0.28, 0))
+	cam.fov = 42.0
+	stage_3d.add_child(cam)
+
+	var key_light := DirectionalLight3D.new()
+	key_light.rotation = Vector3(-0.55, 0.65, 0)
+	key_light.light_color = Color(0.96, 0.98, 1.0)
+	key_light.light_energy = 1.25
+	stage_3d.add_child(key_light)
+
+	var fill_light := DirectionalLight3D.new()
+	fill_light.rotation = Vector3(0.4, -2.4, 0)
+	fill_light.light_color = Color(0.35, 0.55, 0.75)
+	fill_light.light_energy = 0.5
+	stage_3d.add_child(fill_light)
+
+	_turntable = Node3D.new()
+	stage_3d.add_child(_turntable)
 
 	# Right Column: Live Physics, Telemetry & Local AI Reaction Advisor
 	var right_panel := PanelContainer.new()
@@ -263,10 +329,28 @@ func _on_apparatus_selected(idx: int) -> void:
 
 func _switch_apparatus(type: ApparatusType) -> void:
 	_current_type = type
+	_update_3d_model()
 	_rebuild_controls()
 	_update_instructions()
 	_update_theory_panel()
 	_ai_advice_label.text = "[color=#758895]Awaiting AI inquiry...[/color]"
+
+func _update_3d_model() -> void:
+	if _turntable == null:
+		return
+	for c in _turntable.get_children():
+		c.queue_free()
+
+	if APPARATUS_MODELS.has(_current_type):
+		var path = str(APPARATUS_MODELS[_current_type])
+		if ResourceLoader.exists(path):
+			var packed = load(path) as PackedScene
+			if packed != null:
+				var inst = packed.instantiate()
+				if inst != null:
+					var s: Vector3 = APPARATUS_SCALES.get(_current_type, Vector3.ONE)
+					inst.scale = s
+					_turntable.add_child(inst)
 
 func _rebuild_controls() -> void:
 	for c in _controls_vbox.get_children():
@@ -577,15 +661,15 @@ func _get_apparatus_slug() -> String:
 		_: return "apparatus"
 
 func _draw() -> void:
-	var center_rect := Rect2(456, 100, 448, 578)
+	var telemetry_rect := Rect2(448, 436, 464, 250)
 
 	match _current_type:
 		ApparatusType.HPLC:
-			_draw_hplc_chromatogram(center_rect)
+			_draw_hplc_chromatogram(telemetry_rect)
 		ApparatusType.UVVIS:
-			_draw_uvvis_spectrum(center_rect)
+			_draw_uvvis_spectrum(telemetry_rect)
 		_:
-			_draw_analog_gauges(center_rect)
+			_draw_analog_gauges(telemetry_rect)
 
 func _draw_hplc_chromatogram(rect: Rect2) -> void:
 	draw_rect(rect, Color(0.018, 0.026, 0.035, 1.0))
@@ -597,7 +681,7 @@ func _draw_hplc_chromatogram(rect: Rect2) -> void:
 		draw_line(Vector2(x, rect.position.y), Vector2(x, rect.end.y), Color(0.12, 0.18, 0.22, 0.5), 1.0)
 
 	var points := PackedVector2Array()
-	var base_y = rect.end.y - 20.0
+	var base_y = rect.end.y - 24.0
 	for px in range(int(rect.size.x) - 40):
 		var t = float(px) / (rect.size.x - 40.0) * 120.0
 		var absorb = 0.015 + 0.005 * sin(t * 0.2)
@@ -605,18 +689,25 @@ func _draw_hplc_chromatogram(rect: Rect2) -> void:
 		absorb += 0.85 * exp(-pow(t - 45.0, 2) / 8.0)
 		absorb += 1.35 * exp(-pow(t - 88.0, 2) / 12.0)
 
-		var py = base_y - absorb * (rect.size.y * 0.35)
+		var py = base_y - absorb * (rect.size.y * 0.55)
 		points.append(Vector2(rect.position.x + 20.0 + px, py))
 
 	if points.size() > 1:
 		draw_polyline(points, CYAN, 2.0)
 
-	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 20, rect.position.y + 30), "HPLC DIODE ARRAY TRACE (λ = 254 nm)", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, CYAN)
-	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 20, rect.end.y - 6), "Time (seconds) →  [0s to 120s gradient elution]", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, DIM)
+	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 16, rect.position.y + 24), "HPLC DIODE ARRAY TRACE (λ = 254 nm)", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, CYAN)
+	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 16, rect.end.y - 8), "Time (seconds) →  [0s to 120s gradient elution]", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, DIM)
 
 func _draw_uvvis_spectrum(rect: Rect2) -> void:
 	draw_rect(rect, Color(0.018, 0.026, 0.035, 1.0))
-	var base_y = rect.end.y - 20.0
+	for y_step in range(6):
+		var y = rect.position.y + y_step * (rect.size.y / 5.0)
+		draw_line(Vector2(rect.position.x, y), Vector2(rect.end.x, y), Color(0.12, 0.18, 0.22, 0.5), 1.0)
+	for x_step in range(6):
+		var x = rect.position.x + x_step * (rect.size.x / 5.0)
+		draw_line(Vector2(x, rect.position.y), Vector2(x, rect.end.y), Color(0.12, 0.18, 0.22, 0.5), 1.0)
+
+	var base_y = rect.end.y - 24.0
 	var points := PackedVector2Array()
 
 	for px in range(int(rect.size.x) - 40):
@@ -624,36 +715,37 @@ func _draw_uvvis_spectrum(rect: Rect2) -> void:
 		var a = 0.02
 		a += 0.95 * exp(-pow(wl - 355.0, 2) / 450.0)
 		a += 0.65 * exp(-pow(wl - 300.0, 2) / 300.0)
-		var py = base_y - a * (rect.size.y * 0.45)
+		var py = base_y - a * (rect.size.y * 0.60)
 		points.append(Vector2(rect.position.x + 20.0 + px, py))
 
 	if points.size() > 1:
 		draw_polyline(points, GREEN, 2.0)
 
-	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 20, rect.position.y + 30), "UV-VIS ABSORPTION SPECTRUM: LUMINOL", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, GREEN)
-	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 20, rect.end.y - 6), "Wavelength λ (nm) →  [200 nm to 800 nm]", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, DIM)
+	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 16, rect.position.y + 24), "UV-VIS ABSORPTION SPECTRUM: LUMINOL", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, GREEN)
+	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 16, rect.end.y - 8), "Wavelength λ (nm) →  [200 nm to 800 nm]", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, DIM)
 
 func _draw_analog_gauges(rect: Rect2) -> void:
 	draw_rect(rect, Color(0.018, 0.026, 0.035, 1.0))
+	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x + 16, rect.position.y + 24), "ACTIVE APPARATUS METROLOGY & PRESSURE TELEMETRY", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, CYAN)
 
-	var center1 := Vector2(rect.position.x + rect.size.x * 0.5, rect.position.y + 160)
-	draw_circle(center1, 100, Color(0.04, 0.06, 0.08, 1.0))
-	draw_arc(center1, 100, 0, TAU, 64, Color(0.2, 0.3, 0.4, 0.8), 2.0)
+	# Left Gauge: Primary Metrology Dial
+	var center1 := Vector2(rect.position.x + rect.size.x * 0.28, rect.position.y + 130)
+	draw_circle(center1, 56, Color(0.04, 0.06, 0.08, 1.0))
+	draw_arc(center1, 56, 0, TAU, 48, Color(0.2, 0.3, 0.4, 0.8), 2.0)
 
 	var angle1 = -PI * 0.75 + (sin(_sim_timer * 1.5) * 0.5 + 0.5) * PI * 1.5
-	var needle_end1 = center1 + Vector2(cos(angle1), sin(angle1)) * 80.0
-	draw_line(center1, needle_end1, AMBER, 3.0)
-	draw_circle(center1, 8, AMBER)
+	var needle_end1 = center1 + Vector2(cos(angle1), sin(angle1)) * 46.0
+	draw_line(center1, needle_end1, AMBER, 2.5)
+	draw_circle(center1, 6, AMBER)
+	draw_string(ThemeDB.fallback_font, Vector2(center1.x - 70, center1.y + 76), "PRIMARY SENSOR", HORIZONTAL_ALIGNMENT_CENTER, 140, 10, DIM)
 
-	draw_string(ThemeDB.fallback_font, Vector2(center1.x - 70, center1.y + 125), "PRIMARY METROLOGY DIAL", HORIZONTAL_ALIGNMENT_CENTER, 140, 11, DIM)
-
-	var center2 := Vector2(rect.position.x + rect.size.x * 0.5, rect.position.y + 420)
-	draw_circle(center2, 90, Color(0.04, 0.06, 0.08, 1.0))
-	draw_arc(center2, 90, 0, TAU, 64, Color(0.2, 0.3, 0.4, 0.8), 2.0)
+	# Right Gauge: Flow & Rotation Gauge
+	var center2 := Vector2(rect.position.x + rect.size.x * 0.72, rect.position.y + 130)
+	draw_circle(center2, 56, Color(0.04, 0.06, 0.08, 1.0))
+	draw_arc(center2, 56, 0, TAU, 48, Color(0.2, 0.3, 0.4, 0.8), 2.0)
 
 	var angle2 = -PI * 0.75 + (cos(_sim_timer * 2.1) * 0.5 + 0.5) * PI * 1.5
-	var needle_end2 = center2 + Vector2(cos(angle2), sin(angle2)) * 70.0
-	draw_line(center2, needle_end2, CYAN, 3.0)
-	draw_circle(center2, 8, CYAN)
-
-	draw_string(ThemeDB.fallback_font, Vector2(center2.x - 70, center2.y + 115), "FLOW & ROTATION GAUGE", HORIZONTAL_ALIGNMENT_CENTER, 140, 11, DIM)
+	var needle_end2 = center2 + Vector2(cos(angle2), sin(angle2)) * 46.0
+	draw_line(center2, needle_end2, CYAN, 2.5)
+	draw_circle(center2, 6, CYAN)
+	draw_string(ThemeDB.fallback_font, Vector2(center2.x - 70, center2.y + 76), "FLOW / ROTATION", HORIZONTAL_ALIGNMENT_CENTER, 140, 10, DIM)
