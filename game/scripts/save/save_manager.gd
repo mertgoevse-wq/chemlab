@@ -196,7 +196,8 @@ func _collect_save_data() -> Dictionary:
 		"companions": comp_manager.to_dict() if comp_manager else {},
 		"factions": faction_sys.to_dict() if faction_sys else {},
 		"location": _get_current_location(),
-		"playtime": save_data.get("playtime", 0.0) + (Time.get_unix_time_from_system() - _get_session_start())
+		"playtime": save_data.get("playtime", 0.0) + (Time.get_unix_time_from_system() - _get_session_start()),
+		"apparatus": _collect_apparatus_state()
 	}
 
 func _apply_save_data(slot_data: Dictionary) -> void:
@@ -229,6 +230,9 @@ func _apply_save_data(slot_data: Dictionary) -> void:
 
 	if faction_sys and slot_data.has("factions"):
 		faction_sys.from_dict(slot_data.factions)
+
+	if slot_data.has("apparatus"):
+		_apply_apparatus_state(slot_data)
 
 	# Restore location would be handled by scene system
 
@@ -407,6 +411,78 @@ func set_prologue_video(video_path: String) -> void:
 
 func get_prologue_video() -> String:
 	return get_setting("gameplay", "prologue_video", "")
+
+# =============================================================================
+# APPARATUS STATE PERSISTENCE
+# =============================================================================
+
+func _collect_apparatus_state() -> Dictionary:
+	"""Collect state from all apparatus in the scene for save data."""
+	var apparatus_state = {}
+
+	if is_inside_tree():
+		var nmr_nodes = get_tree().get_nodes_in_group("nmr_spectrometer")
+		for nmr in nmr_nodes:
+			if nmr.has_method("get_save_data"):
+				apparatus_state["nmr_spectrometer"] = nmr.get_save_data()
+
+		var tube_nodes = get_tree().get_nodes_in_group("sample_tube")
+		var tubes_data = []
+		for tube in tube_nodes:
+			if tube.has_method("get_save_data"):
+				tubes_data.append(tube.get_save_data())
+		if tubes_data.size() > 0:
+			apparatus_state["sample_tubes"] = tubes_data
+
+	return apparatus_state
+
+
+func _apply_apparatus_state(data: Dictionary) -> void:
+	"""Apply saved apparatus state to the scene."""
+	if not data.has("apparatus") or not is_inside_tree():
+		return
+
+	var apparatus_data = data["apparatus"]
+
+	if apparatus_data.has("nmr_spectrometer"):
+		var nmr_nodes = get_tree().get_nodes_in_group("nmr_spectrometer")
+		for nmr in nmr_nodes:
+			if nmr.has_method("load_save_data"):
+				nmr.load_save_data(apparatus_data["nmr_spectrometer"])
+
+	if apparatus_data.has("sample_tubes"):
+		var tubes_data = apparatus_data["sample_tubes"]
+		var existing_tubes = get_tree().get_nodes_in_group("sample_tube")
+
+		for tube_data in tubes_data:
+			var found = false
+			var tube_id = tube_data.get("sample_id", "")
+
+			for existing in existing_tubes:
+				if existing.has_method("get_save_data"):
+					var existing_data = existing.get_save_data()
+					if existing_data.get("sample_id", "") == tube_id:
+						if existing.has_method("load_save_data"):
+							existing.load_save_data(tube_data)
+						found = true
+						break
+
+			if not found:
+				_create_sample_tube_from_data(tube_data)
+
+
+func _create_sample_tube_from_data(tube_data: Dictionary) -> void:
+	"""Create a new sample tube from saved data."""
+	var tube_scene = load("res://scenes/apparatus/nmr_sample_tube.tscn")
+	if tube_scene and is_inside_tree():
+		var tube = tube_scene.instantiate()
+		tube.name = "NMRSampleTube_Restored_" + str(int(Time.get_unix_time_from_system()))
+		tube.global_position = tube_data.get("global_position", Vector3(0, 1, 0))
+		tube.global_rotation = tube_data.get("global_rotation", Vector3.ZERO)
+		get_tree().root.add_child(tube)
+
+		if tube.has_method("load_save_data"):
+			tube.load_save_data(tube_data)
 
 # =============================================================================
 # CHARACTER DATA

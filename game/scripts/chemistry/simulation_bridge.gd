@@ -707,7 +707,7 @@ func _simulate_nmr_locally(request: Dictionary) -> Dictionary:
 func _generate_local_nmr_spectrum(compound_name: String, request: Dictionary) -> Dictionary:
 	# Generate basic NMR spectrum data for fallback
 	var peaks = _get_local_chemical_shifts(compound_name)
-	var n_points = 8192
+	var n_points = 2048
 	var x_min = request.get("spectral_width_ppm", 12.0) * -1.0
 	var x_max = request.get("spectral_width_ppm", 12.0)
 	var x_step = (x_max - x_min) / n_points
@@ -748,7 +748,7 @@ func _generate_local_nmr_spectrum(compound_name: String, request: Dictionary) ->
 	}
 
 
-func _get_local_chemical_shifts(compound_name: String) -> Array[Dictionary]:
+func _get_local_chemical_shifts(compound_name: String) -> Array:
 	var shifts = {
 		"ethanol": [
 			{"ppm": 1.18, "multiplicity": "t", "J_hz": 7.0, "integration": 3, "assignment": "CH3", "width": 0.02, "intensity": 1.0},
@@ -801,7 +801,7 @@ func _get_local_chemical_shifts(compound_name: String) -> Array[Dictionary]:
 	return _generate_generic_peaks()
 
 
-func _generate_generic_peaks() -> Array[Dictionary]:
+func _generate_generic_peaks() -> Array:
 	var peaks = []
 	var n_peaks = randi_range(3, 5)
 	for i in range(n_peaks):

@@ -29,8 +29,9 @@ func _load_labs_data() -> void:
 		var json_str = file.get_as_text()
 		file.close()
 		var parsed = JSON.parse_string(json_str)
-		if parsed:
-			labs = parsed.labs
+		if parsed and parsed is Dictionary and parsed.has("labs"):
+			labs.clear()
+			labs.assign(parsed.labs)
 
 func _generate_hub_layout() -> void:
 	# Arrange 15 labs in a circular hub with central atrium
@@ -58,9 +59,11 @@ func _create_lab_entrance(lab: Dictionary, pos: Vector3, angle: float) -> void:
 
 	# Entrance arch
 	var arch = MeshInstance3D.new()
-	arch.mesh = CylinderMesh.new()
-	(arch.mesh as CylinderMesh).height = 4.0
-	(arch.mesh as CylinderMesh).radius = 2.5
+	var arch_mesh = CylinderMesh.new()
+	arch_mesh.height = 4.0
+	arch_mesh.top_radius = 2.5
+	arch_mesh.bottom_radius = 2.5
+	arch.mesh = arch_mesh
 	arch.position = Vector3(0, 2, 0)
 	entrance.add_child(arch)
 
@@ -106,9 +109,11 @@ func _create_central_atrium() -> void:
 
 	# Central pillar
 	var pillar = MeshInstance3D.new()
-	pillar.mesh = CylinderMesh.new()
-	(pillar.mesh as CylinderMesh).height = 20.0
-	(pillar.mesh as CylinderMesh).radius = 3.0
+	var pillar_mesh = CylinderMesh.new()
+	pillar_mesh.height = 20.0
+	pillar_mesh.top_radius = 3.0
+	pillar_mesh.bottom_radius = 3.0
+	pillar.mesh = pillar_mesh
 	pillar.position = Vector3(0, 10, 0)
 	add_child(pillar)
 
@@ -187,17 +192,21 @@ func _create_central_elevator() -> void:
 
 	# Elevator shaft
 	var shaft = MeshInstance3D.new()
-	shaft.mesh = CylinderMesh.new()
-	(shaft.mesh as CylinderMesh).height = 50.0
-	(shaft.mesh as CylinderMesh).radius = 3.0
+	var shaft_mesh = CylinderMesh.new()
+	shaft_mesh.height = 50.0
+	shaft_mesh.top_radius = 3.0
+	shaft_mesh.bottom_radius = 3.0
+	shaft.mesh = shaft_mesh
 	shaft.position = Vector3(0, 25, 0)
 	add_child(shaft)
 
 	# Elevator platform
 	var platform = MeshInstance3D.new()
-	platform.mesh = CylinderMesh.new()
-	(platform.mesh as CylinderMesh).height = 0.5
-	(platform.mesh as CylinderMesh).radius = 2.8
+	var platform_mesh = CylinderMesh.new()
+	platform_mesh.height = 0.5
+	platform_mesh.top_radius = 2.8
+	platform_mesh.bottom_radius = 2.8
+	platform.mesh = platform_mesh
 	platform.position = Vector3(0, 1.0, 0)
 	platform.name = "ElevatorPlatform"
 	add_child(platform)

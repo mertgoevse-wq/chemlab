@@ -70,7 +70,7 @@ func _build_ui() -> void:
 	add_child(title)
 
 	var sub := Label.new()
-	sub.text = "Four tracks · six milestones each · every unlock is read from data/progression/skills.json"
+	sub.text = "%d Disciplines · Complete exponential progression (Lv. 1–120) · Unlocks read from skills.json" % _track_ids.size()
 	sub.position = Vector2(26, 44)
 	sub.add_theme_font_size_override("font_size", 11)
 	sub.add_theme_color_override("font_color", DIM)

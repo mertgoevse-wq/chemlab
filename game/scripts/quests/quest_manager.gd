@@ -731,6 +731,42 @@ func _on_input_apparatus_poured(rate: float) -> void:
 		var delta_acid = rate * 0.5
 		dispense_hcl(delta_acid)
 
+
+# =============================================================================
+# APPARATUS EVENT INTEGRATION
+# =============================================================================
+
+func on_apparatus_event(apparatus_type: String, event_type: String, data: Dictionary) -> void:
+	"""Handle events from apparatus like NMR spectrometer."""
+	if apparatus_type == "nmr_spectrometer":
+		_handle_nmr_event(event_type, data)
+
+
+func _handle_nmr_event(event_type: String, data: Dictionary) -> void:
+	"""Handle NMR spectrometer events for quest progression."""
+	var quest_id = "quest_012_first_nmr_analysis"
+
+	# Only process if this quest is active
+	if active_quest_id != quest_id:
+		return
+
+	var q = get_active_quest()
+	if q.is_empty():
+		return
+
+	match event_type:
+		"sample_inserted":
+			# Complete "load_sample" objective
+			complete_objective_by_id("load_sample")
+
+		"nmr_analysis_complete":
+			# Complete "run_1h_nmr" and "interpret_spectrum" objectives
+			complete_objective_by_id("run_1h_nmr")
+			complete_objective_by_id("interpret_spectrum")
+
+		"sample_removed":
+			pass
+
 # =============================================================================
 # BACKGROUND & INVESTIGATION MODE
 # =============================================================================

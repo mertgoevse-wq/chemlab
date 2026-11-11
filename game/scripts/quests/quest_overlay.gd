@@ -210,12 +210,12 @@ func _render_objectives_list(objectives: Array) -> void:
 		child.queue_free()
 	# AC-style visual pass: thick copper-amber tier label, narrow objective rows.
 	if quest_title_label:
-		quest_title_label.add_theme_font_sizes_override("font_size", 14)
-		quest_title_label.add_theme_colors_override("font_color", Color(0.92, 0.72, 0.32))
+		quest_title_label.add_theme_font_size_override("font_size", 14)
+		quest_title_label.add_theme_color_override("font_color", Color(0.92, 0.72, 0.32))
 	if quest_tier_label:
 		quest_tier_label.visible = false
 	if objectives_container:
-		objectives_container.add_theme_constants_override("separation", 4)
+		objectives_container.add_theme_constant_override("separation", 4)
 
 	for i in range(objectives.size()):
 		var obj = objectives[i] as Dictionary

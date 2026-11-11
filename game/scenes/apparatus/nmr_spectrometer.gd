@@ -52,7 +52,7 @@ signal spectrum_updated(spectrum_data: Dictionary)
 @onready var bore_collision: Area3D = get_node_or_null("BoreCollision")
 @onready var sample_tube_slot: Marker3D = get_node_or_null("SampleTubeSlot")
 @onready var display_screen: MeshInstance3D = get_node_or_null("DisplayScreen")
-@onready var screen_material: StandardMaterial3D = display_screen.material_override if display_screen else null
+@onready var screen_material: StandardMaterial3D = (display_screen.material_override as StandardMaterial3D) if display_screen else null
 @onready var console_unit: MeshInstance3D = get_node_or_null("ConsoleUnit")
 @onready var power_switch: MeshInstance3D = get_node_or_null("PowerSwitch")
 @onready var status_led: OmniLight3D = get_node_or_null("StatusLED")
@@ -89,7 +89,6 @@ func _ready() -> void:
 	set_meta("apparatus_name", "NMR Spectrometer (400 MHz)")
 
 	_setup_audio_players()
-	_setup_interaction_trigger()
 	_setup_bore_collision()
 	_update_display_state()
 	_update_status_led()
@@ -157,17 +156,18 @@ func _setup_insertion_sensor() -> void:
 
 func _on_interaction_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") or body.get_class() == "PlayerController":
-		# Player is near the NMR - could show interaction hint
-		pass
-
+		# Player is near the NMR - track proximity for interaction logic
+		# Let PlayerController's RayCast3D handle the actual interaction prompt
+		body._nmr_nearby = true
 
 func _on_interaction_body_exited(body: Node3D) -> void:
-	pass
+	if body.is_in_group("player") or body.get_class() == "PlayerController":
+		# Player left NMR interaction zone
+		body._nmr_nearby = false
 
 
 func _on_bore_body_entered(body: Node3D) -> void:
-	# Sample tube or vessel entering the magnet bore
-	if body.is_in_group("sample_tube") or body.has_meta("sample_type"):
+	if body.is_in_group("sample_tube") and current_sample == null:
 		_insert_sample(body)
 
 
@@ -177,14 +177,162 @@ func _on_bore_body_exited(body: Node3D) -> void:
 
 
 func _on_insertion_sensor_body_entered(body: Node3D) -> void:
-	# Fine-grained detection for sample insertion
-	if body.is_in_group("sample_tube") or body.has_meta("sample_type"):
+	if body.is_in_group("sample_tube") and current_sample == null:
 		_insert_sample(body)
 
 
 func _on_insertion_sensor_body_exited(body: Node3D) -> void:
 	if body == current_sample:
 		_remove_sample()
+
+
+func _on_sample_inserted(sample_tube: Node) -> void:
+	if sample_tube is Node3D and current_sample == null:
+		_insert_sample(sample_tube)
+
+
+func _on_sample_removed(sample_tube: Node) -> void:
+	if sample_tube == current_sample:
+		_remove_sample()
+
+
+# =============================================================================
+# PLAYER INTERACTION
+# =============================================================================
+
+func interact(player: Node) -> void:
+	# Called when player presses E while looking at NMR
+	if not is_powered_on:
+		toggle_power()
+		return
+
+	# If carrying a sample tube, try to insert it
+	if player.has_method("get_carried_item") and player.get_carried_item():
+		var carried = player.get_carried_item()
+		if carried and carried.is_in_group("sample_tube"):
+			_try_insert_sample(player, carried)
+			return
+
+	# If sample is present:
+	if current_sample != null:
+		if not is_analyzing:
+			if current_spectrum_data.is_empty():
+				_start_next_analysis()
+			else:
+				_try_remove_sample(player)
+		return
+
+	# No sample present - toggle power
+	toggle_power()
+
+
+func _try_insert_sample(player: Node, sample_tube: Node) -> void:
+	if current_sample != null:
+		print("[NMRSpectrometer] Sample already present, cannot insert another")
+		# Show notification via HUD
+		if player.has_method("_show_notification"):
+			player._show_notification("NMR already has a sample. Remove it first.")
+		return
+
+	# Check if sample tube has valid sample data
+	if not sample_tube.has_method("get_sample_data"):
+		print("[NMRSpectrometer] Invalid sample tube - no sample data")
+		return
+
+	var sample_data = sample_tube.get_sample_data()
+
+	# Insert sample into NMR
+	_insert_sample_from_player(sample_tube, player)
+
+
+func _insert_sample_from_player(sample_tube: Node3D, player: Node) -> void:
+	# Detach from player
+	if sample_tube.get_parent() == player:
+		sample_tube.reparent(get_tree().root)
+
+	# Position in NMR bore
+	if sample_tube_slot:
+		sample_tube.global_position = sample_tube_slot.global_position
+		sample_tube.global_rotation = sample_tube_slot.global_rotation
+
+	# Freeze physics
+	if sample_tube is RigidBody3D:
+		var rb = sample_tube as RigidBody3D
+		rb.freeze = true
+		rb.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
+		rb.linear_velocity = Vector3.ZERO
+		rb.angular_velocity = Vector3.ZERO
+
+	# Disable collision
+	if sample_tube is CollisionObject3D:
+		sample_tube.collision_layer = 0
+		sample_tube.collision_mask = 0
+
+	# Set as current sample
+	current_sample = sample_tube
+
+	# Extract metadata and add to queue
+	var sample_info = _extract_sample_metadata(sample_tube)
+	sample_info["insertion_time"] = Time.get_unix_time_from_system()
+	sample_info["sample_id"] = _generate_sample_id()
+	sample_queue.append(sample_info)
+
+	# Emit signal
+	sample_inserted.emit(sample_info)
+
+	# Update display
+	_update_display_state()
+
+	# Auto-start analysis if only sample
+	if sample_queue.size() == 1 and not is_analyzing:
+		_start_next_analysis()
+
+	print("[NMRSpectrometer] Sample inserted from player: ", sample_info["sample_id"])
+
+	# Notify quest manager
+	_notify_quest_manager("sample_inserted", sample_info)
+
+
+func _try_remove_sample(player: Node) -> void:
+	if current_sample == null:
+		return
+
+	# Restore physics
+	if current_sample is RigidBody3D:
+		var rb = current_sample as RigidBody3D
+		rb.freeze = false
+		rb.linear_velocity = Vector3.ZERO
+		rb.angular_velocity = Vector3.ZERO
+
+	# Restore collision
+	if current_sample is CollisionObject3D:
+		current_sample.collision_layer = 1
+		current_sample.collision_mask = 1
+
+	# Reparent to scene root
+	if current_sample.get_parent() != null:
+		current_sample.reparent(get_tree().root)
+
+	# Position in front of player
+	if player and player.has_node("Head"):
+		var head = player.get_node("Head")
+		current_sample.global_position = head.global_position + head.global_transform.basis.z * 0.5
+		current_sample.global_rotation = player.global_rotation
+
+	# Remove from queue
+	var sample_info = _extract_sample_metadata(current_sample)
+	for i in range(sample_queue.size()):
+		if sample_queue[i].get("sample_id") == sample_info.get("sample_id"):
+			sample_queue.remove_at(i)
+			break
+
+	sample_removed.emit(sample_info)
+	current_sample = null
+
+	# Update display
+	_update_display_state()
+
+	print("[NMRSpectrometer] Sample removed by player")
 
 
 # =============================================================================
@@ -241,6 +389,13 @@ func _remove_sample() -> void:
 
 
 func _extract_sample_metadata(sample_node: Node3D) -> Dictionary:
+	if sample_node.has_method("get_sample_data"):
+		var data = sample_node.get_sample_data()
+		data["name"] = sample_node.name
+		if not data.has("temperature_c"):
+			data["temperature_c"] = sample_temperature_c
+		return data
+
 	var metadata = {
 		"name": sample_node.name,
 		"sample_type": sample_node.get_meta("sample_type", "unknown"),
@@ -369,7 +524,7 @@ func _generate_simulated_spectrum(compound_name: String, sample_info: Dictionary
 	var solvent = sample_info.get("solvent", "CDCl3")
 
 	# Generate spectrum data points
-	var n_points = 16384
+	var n_points = 2048
 	var x_min = spectrum_x_min_ppm
 	var x_max = spectrum_x_max_ppm
 	var x_step = (x_max - x_min) / n_points
@@ -385,7 +540,7 @@ func _generate_simulated_spectrum(compound_name: String, sample_info: Dictionary
 		for peak in peaks:
 			var center = peak["ppm"]
 			var width = peak["width"] / shim_quality  # Broader with poor shim
-			var height = peak["intensity"] * (concentration / 50.0)
+			var height = float(peak.get("intensity", peak.get("integration", 1.0))) * (concentration / 50.0)
 
 			# Lorentzian lineshape
 			var delta = ppm - center
@@ -427,7 +582,7 @@ func _generate_simulated_spectrum(compound_name: String, sample_info: Dictionary
 	}
 
 
-func _get_chemical_shifts_for_compound(compound_name: String) -> Array[Dictionary]:
+func _get_chemical_shifts_for_compound(compound_name: String) -> Array:
 	# Known chemical shifts for common compounds (ppm, multiplicity, J_coupling, integration)
 	var shifts = {
 		"ethanol": [
@@ -490,7 +645,7 @@ func _get_chemical_shifts_for_compound(compound_name: String) -> Array[Dictionar
 	return _generate_generic_peaks()
 
 
-func _generate_generic_peaks() -> Array[Dictionary]:
+func _generate_generic_peaks() -> Array:
 	# Generate 3-5 random peaks in typical organic region
 	var peaks = []
 	var n_peaks = randi_range(3, 5)
@@ -609,18 +764,6 @@ func on_dropped(player: Node) -> void:
 	pass
 
 
-func interact(player: Node) -> void:
-	# Toggle power or open sample door
-	if is_powered_on:
-		# If sample present, start analysis
-		if current_sample != null and not is_analyzing:
-			_start_next_analysis()
-		elif current_sample == null:
-			print("[NMRSpectrometer] No sample inserted. Insert a sample tube first.")
-	else:
-		toggle_power()
-
-
 func toggle_power() -> void:
 	is_powered_on = !is_powered_on
 	power_toggled.emit(is_powered_on)
@@ -672,6 +815,7 @@ func _on_analysis_complete_for_quest(sample_id: String, spectrum: Dictionary) ->
 func get_save_data() -> Dictionary:
 	return {
 		"is_powered_on": is_powered_on,
+		"has_sample": current_sample != null,
 		"magnetic_field_strength_t": magnetic_field_strength_t,
 		"sample_temperature_c": sample_temperature_c,
 		"spectral_width_ppm": spectral_width_ppm,

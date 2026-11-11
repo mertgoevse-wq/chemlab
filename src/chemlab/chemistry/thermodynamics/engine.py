@@ -1,19 +1,20 @@
 """
-ChemLab Thermodynamics Engine — authoritative NIST/CRC-based calculation core.
+ChemLab Thermodynamics Engine — standard-state calculation core.
 
 Migrated from:
   * src/chemlab/simulation/cantera_engine.py (CanteraThermodynamicsEngine)
   * chemlab_core/chemistry/reaction_engine.py (ThermodynamicState, THERMO_DATABASE)
 
-Provides rigorous, non-invented thermodynamic properties:
+Provides standard-state calculations from catalog inputs:
   * Reaction Enthalpy (ΔH°_rxn), Entropy (ΔS°_rxn), Gibbs Free Energy (ΔG°_rxn)
-  * Equilibrium Constant K_eq(T) via van 't Hoff relation
+  * Equilibrium Constant K_eq(T) from ΔG°
   * Arrhenius kinetics: k(T) = A · exp(-E_a / (R · T))
   * Titration curves via Henderson-Hasselbalch
   * Adiabatic temperature rise estimates
 
-All standard thermodynamic values are authentic NIST Chemistry WebBook / CRC Handbook
-constants. No synthetic numbers are generated.
+Reference coverage varies by species. Fundamental compounds use published data
+where available; estimated catalog values remain estimates and calculations do
+not promote them to experimentally measured constants.
 """
 
 from __future__ import annotations
@@ -152,6 +153,28 @@ THERMO_DATABASE: dict[str, ThermodynamicState] = {
 }
 
 
+def _populate_pihkal_tihkal_species() -> None:
+    try:
+        from chemlab.chemistry.literature_catalogs import PIHKAL_TIHKAL_SPECIES
+
+        for sid, sp in PIHKAL_TIHKAL_SPECIES.items():
+            if sid not in THERMO_DATABASE:
+                THERMO_DATABASE[sid] = ThermodynamicState(
+                    formula=sp.formula,
+                    name=sp.name,
+                    delta_h_f_kj_mol=sp.delta_h_f_kj_mol,
+                    s_standard_j_mol_k=sp.s_standard_j_mol_k,
+                    cp_j_mol_k=sp.cp_j_mol_k,
+                    molecular_weight_g_mol=sp.molecular_weight_g_mol,
+                    density_g_cm3=sp.density_g_cm3,
+                )
+    except ImportError:
+        pass
+
+
+_populate_pihkal_tihkal_species()
+
+
 class CanteraThermodynamicsEngine:
     """Rigorous chemical thermodynamics and Arrhenius kinetics calculator."""
 
@@ -171,7 +194,7 @@ class CanteraThermodynamicsEngine:
         pre_exponential_factor_a: float = 1.0e11,
     ) -> ReactionThermodynamicsResult:
         """
-        Calculates exact thermodynamic parameters:
+        Calculates thermodynamic parameters from the configured species data:
           ΔH°_rxn = Σ (ν_prod * ΔH°_f,prod) - Σ (ν_react * ΔH°_f,react)
           ΔS°_rxn = Σ (ν_prod * S°_prod) - Σ (ν_react * S°_react)
           ΔG°(T) = ΔH°_rxn - T * ΔS°_rxn
@@ -181,26 +204,18 @@ class CanteraThermodynamicsEngine:
         temp_k = temperature_c + 273.15
 
         h_reactants = sum(
-            coeff * self.db[s].delta_h_f_kj_mol
-            for s, coeff in reactants.items()
-            if s in self.db
+            coeff * self.db[s].delta_h_f_kj_mol for s, coeff in reactants.items() if s in self.db
         )
         h_products = sum(
-            coeff * self.db[s].delta_h_f_kj_mol
-            for s, coeff in products.items()
-            if s in self.db
+            coeff * self.db[s].delta_h_f_kj_mol for s, coeff in products.items() if s in self.db
         )
         delta_h_kj = h_products - h_reactants
 
         s_reactants = sum(
-            coeff * self.db[s].s_standard_j_mol_k
-            for s, coeff in reactants.items()
-            if s in self.db
+            coeff * self.db[s].s_standard_j_mol_k for s, coeff in reactants.items() if s in self.db
         )
         s_products = sum(
-            coeff * self.db[s].s_standard_j_mol_k
-            for s, coeff in products.items()
-            if s in self.db
+            coeff * self.db[s].s_standard_j_mol_k for s, coeff in products.items() if s in self.db
         )
         delta_s_j = s_products - s_reactants
 
@@ -236,12 +251,8 @@ class CanteraThermodynamicsEngine:
                 "Reaktion ist unter Normalbedingungen nicht spontan (ΔG° > 0) — Energiezufuhr oder Katalysator nötig."
             )
 
-        react_str = " + ".join(
-            f"{int(c) if c == int(c) else c} {s}" for s, c in reactants.items()
-        )
-        prod_str = " + ".join(
-            f"{int(c) if c == int(c) else c} {s}" for s, c in products.items()
-        )
+        react_str = " + ".join(f"{int(c) if c == int(c) else c} {s}" for s, c in reactants.items())
+        prod_str = " + ".join(f"{int(c) if c == int(c) else c} {s}" for s, c in products.items())
         equation = f"{react_str} -> {prod_str}"
 
         return ReactionThermodynamicsResult(

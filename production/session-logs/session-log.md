@@ -310,3 +310,20 @@ production/session-logs/session-log.md
 tools/vendor/natprd
 ---
 
+## Session End: 20261111_150403
+### Commits
+6aea78c feat(player): wire InputManager gesture signals into player controller
+3858406 feat(core): implement 3 game modes, PiHKAL/TiHKAL catalog, and webcam gesture IPC
+### Uncommitted Changes
+chemlab.blend
+game/scenes/laboratories/lab_hub.gd
+game/scenes/progression/skill_codex.gd
+game/shaders/glass_shader.gdshader
+game/shaders/liquid_shader.gdshader
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+src/chemlab/chemistry/kinetics/oscillator.py
+src/chemlab/chemistry/thermodynamics/database.py
+src/chemlab/chemistry/thermodynamics/engine.py
+---
+

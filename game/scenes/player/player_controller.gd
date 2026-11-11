@@ -80,6 +80,7 @@ const BREATH_HEIGHT: float = 0.0024
 # =============================================================================
 var is_mouse_captured: bool = true
 var hovered_apparatus: Node = null
+var _nmr_nearby: bool = false
 
 # Held Item State
 var carried_item: Node = null
@@ -837,3 +838,21 @@ func _on_external_gesture_detected(gesture: String, _data: Dictionary) -> void:
 		"IDLE", "RELEASE":
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 				is_swirling = false
+
+
+# =============================================================================
+# NMR INTERACTION HELPERS
+# =============================================================================
+
+func is_near_nmr() -> bool:
+	"""Check if player is near an NMR spectrometer using the proximity flag."""
+	return _nmr_nearby == true
+
+
+func get_nearby_nmr() -> Node:
+	"""Get nearby NMR spectrometer if any."""
+	var nmr_nodes = get_tree().get_nodes_in_group("nmr_spectrometer")
+	for nmr in nmr_nodes:
+		if nmr.get("_nmr_nearby") == true or _nmr_nearby:
+			return nmr
+	return null

@@ -101,3 +101,108 @@ class BriggsRauscherOscillator:
             temperature_celsius=22.5 + 0.3 * math.sin(cycle_progress * 2.0 * math.pi),
             period_seconds=self._period,
         )
+
+
+class OregonatorModel:
+    """Field-Noyes-Koros (Oregonator) 3-variable ODE model for the Belousov-Zhabotinsky reaction.
+
+    Variables:
+      x = [HBrO2] (dimensionless activator intermediate)
+      y = [Br-]    (dimensionless inhibitor ion)
+      z = [Ce(IV)] (dimensionless oxidized metal catalyst / ferroin indicator)
+
+    Differential system:
+      dx/dt = (q*y - x*y + x*(1 - x)) / epsilon
+      dy/dt = (-q*y - x*y + f*z) / epsilon_prime
+      dz/dt = x - z
+
+    Generates limit-cycle periodic color transitions:
+      Ferroin [Fe(phen)3]2+ (red) <-> Ferriin [Fe(phen)3]3+ (blue).
+    """
+
+    COLOR_FERROIN_RED: Final[tuple[float, float, float, float]] = (0.85, 0.12, 0.12, 0.95)
+    COLOR_FERRIIN_BLUE: Final[tuple[float, float, float, float]] = (0.10, 0.35, 0.90, 0.95)
+    MAX_INTERNAL_TIMESTEP: Final[float] = 5.0e-4
+
+    def __init__(
+        self,
+        q: float = 8.0e-4,
+        f: float = 1.0,
+        eps: float = 4.0e-2,
+        eps_prime: float = 2.0e-4,
+    ) -> None:
+        self.q = q
+        self.f = f
+        self.eps = eps
+        self.eps_prime = eps_prime
+
+    def derivatives(
+        self,
+        x: float,
+        y: float,
+        z: float,
+    ) -> tuple[float, float, float]:
+        """Compute instantaneous derivatives dx/dt, dy/dt, dz/dt."""
+        dx = (self.q * y - x * y + x * (1.0 - x)) / self.eps
+        dy = (-self.q * y - x * y + self.f * z) / self.eps_prime
+        dz = x - z
+        return dx, dy, dz
+
+    def step_rk4(
+        self,
+        state: tuple[float, float, float],
+        dt: float,
+    ) -> tuple[float, float, float]:
+        """Advance by ``dt`` with stable RK4 substeps for this stiff ODE system."""
+        if dt < 0.0:
+            raise ValueError("dt cannot be negative")
+        if dt == 0.0:
+            return state
+
+        substep_count = max(1, math.ceil(dt / self.MAX_INTERNAL_TIMESTEP))
+        substep_dt = dt / substep_count
+        next_state = state
+        for _ in range(substep_count):
+            next_state = self._step_rk4_once(next_state, substep_dt)
+        return next_state
+
+    def _step_rk4_once(
+        self,
+        state: tuple[float, float, float],
+        dt: float,
+    ) -> tuple[float, float, float]:
+        """Apply one RK4 step no larger than ``MAX_INTERNAL_TIMESTEP``."""
+        x, y, z = state
+        k1_x, k1_y, k1_z = self.derivatives(x, y, z)
+
+        k2_x, k2_y, k2_z = self.derivatives(
+            x + 0.5 * dt * k1_x,
+            y + 0.5 * dt * k1_y,
+            z + 0.5 * dt * k1_z,
+        )
+
+        k3_x, k3_y, k3_z = self.derivatives(
+            x + 0.5 * dt * k2_x,
+            y + 0.5 * dt * k2_y,
+            z + 0.5 * dt * k2_z,
+        )
+
+        k4_x, k4_y, k4_z = self.derivatives(
+            x + dt * k3_x,
+            y + dt * k3_y,
+            z + dt * k3_z,
+        )
+
+        nx = x + (dt / 6.0) * (k1_x + 2.0 * k2_x + 2.0 * k3_x + k4_x)
+        ny = y + (dt / 6.0) * (k1_y + 2.0 * k2_y + 2.0 * k3_y + k4_y)
+        nz = z + (dt / 6.0) * (k1_z + 2.0 * k2_z + 2.0 * k3_z + k4_z)
+
+        # Roundoff may produce tiny negatives near the invariant boundary.
+        return max(0.0, nx), max(0.0, ny), max(0.0, nz)
+
+    def get_color(self, state: tuple[float, float, float]) -> tuple[float, float, float, float]:
+        """Map catalyst oxidation state z to ferroin indicator color (red <-> blue)."""
+        _, _, z = state
+        # The default parameter set keeps z near 0.004-0.32 after transients.
+        t = max(0.0, min(1.0, (z - 0.004) / 0.316))
+        return lerp_color(self.COLOR_FERROIN_RED, self.COLOR_FERRIIN_BLUE, t)
