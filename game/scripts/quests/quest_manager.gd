@@ -41,6 +41,10 @@ signal safety_score_updated(new_score: float, delta: float, reason: String)
 signal safety_warning_triggered(severity: String, title: String, message: String, osha_code: String)
 signal fanfare_celebration_started(quest_title: String, xp: int, stars: int)
 signal investigation_mode_toggled(enabled: bool, modes: Array[String])
+signal protagonist_switched(protagonist_id: String, profile: Dictionary)
+signal destiny_swapped(char_a: String, char_b: String, swap_reason: String)
+signal fate_resonance_updated(source: String, target: String, new_val: float)
+signal nexus_convergence_reached()
 
 # =============================================================================
 # STATE VARIABLES
@@ -60,7 +64,12 @@ var current_background: String = "academic"
 var investigation_mode_active: bool = false
 var investigation_vision_modes: Array[String] = []
 
-# Master Campaign Catalog (6 authored core contracts for Act I-IV)
+const FateResonanceManagerScript = preload("res://scripts/quests/fate_resonance_manager.gd")
+
+# Tri-Protagonist Campaign & Fate Resonance Engine
+var fate_resonance_manager: RefCounted = null
+
+# Master Campaign Catalog (10 authored core contracts for Acts I-X)
 var quests: Dictionary = {}
 
 # Backward compatibility alias
@@ -73,6 +82,10 @@ var active_quest: String:
 # =============================================================================
 # LIFECYCLE
 # =============================================================================
+
+func _init() -> void:
+	fate_resonance_manager = FateResonanceManagerScript.new()
+
 
 func _ready() -> void:
 	_initialize_quest_catalog()
@@ -366,7 +379,7 @@ func _initialize_quest_catalog() -> void:
 			"description": "Field analysis of industrial runoff across three watershed sampling stations with portable spectrometry.",
 			"xp_reward": 3000,
 			"status": QuestStatus.LOCKED,
-			"next_quest_id": "",
+			"next_quest_id": "quest_07_pilot_plant_scaleup",
 			"unlocked_apparatus": ["Field_Sampling_Kit", "Portable_Spectrometer", "Chain_Of_Custody_Seals"],
 			"unlocked_reagents": ["Calibration_Standard_A", "Preservative_Nitric_Acid"],
 			"objectives": [
@@ -402,6 +415,206 @@ func _initialize_quest_catalog() -> void:
 					"is_completed": false,
 					"is_active": false,
 					"osha_ref": "Federal Evidence Rule 901"
+				}
+			]
+		},
+		"quest_07_pilot_plant_scaleup": {
+			"id": "quest_07_pilot_plant_scaleup",
+			"tier": 7,
+			"title": "Pilot Plant Scale-Up (Act VII)",
+			"category": "Industrial Process Engineering",
+			"speaker": "Kaelen Voss",
+			"protagonist": "voss",
+			"briefing": "We are translating bench glassware kinetics into a 50-liter continuous flow reactor. Establish the cooling jacket coolant circulation at 4.2 L/min, tune the feed pump flow to maintain 12-minute residence time, and verify the rupture disc pressure threshold remains below 4.5 bar.",
+			"description": "Scale up bench kinetics into industrial continuous-flow reactor with thermal jacket control.",
+			"xp_reward": 4000,
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "quest_08_aether_resonance",
+			"unlocked_apparatus": ["Continuous_Flow_Reactor", "Chiller_Circulator", "Pressure_Relief_Valve"],
+			"unlocked_reagents": ["Bulk_Precursor_Feed", "Coolant_Glycol", "Pressurized_Argon"],
+			"objectives": [
+				{
+					"id": "calibrate_cooling_jacket",
+					"title": "Coolant Loop Thermal Stabilization",
+					"description": "Engage chiller circulator and stabilize reactor jacket at 15.0 °C",
+					"current": 25.0,
+					"target": 15.0,
+					"unit": "°C",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "OSHA 1910.119 Process Safety Management"
+				},
+				{
+					"id": "regulate_feed_flow",
+					"title": "Continuous Flow Metering",
+					"description": "Adjust dual peristaltic metering pumps to 2.5 L/min continuous rate",
+					"current": 0.0,
+					"target": 2.5,
+					"unit": "L/min",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "ISA-88 Batch Control Standard"
+				},
+				{
+					"id": "inspect_burst_disc",
+					"title": "Overpressure Relief Verification",
+					"description": "Verify burst disc and pressure safety relief sensor below 4.5 bar",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "checks",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "ASME Boiler & Pressure Vessel Code Sec VIII"
+				}
+			]
+		},
+		"quest_08_aether_resonance": {
+			"id": "quest_08_aether_resonance",
+			"tier": 8,
+			"title": "The Aether Resonance (Act VIII)",
+			"category": "Symbiotic Bio-Catalysis",
+			"speaker": "Vesper Finch",
+			"protagonist": "finch",
+			"briefing": "The chemical anomaly cannot be stabilized with conventional tertiary amine bases. Summon your Aetherkin companion to absorb the oscillating thermal wave, and monitor the 400 MHz NMR spectrum as the chiral intermediate enantiomeric excess locks at >99%.",
+			"description": "Channel companion bio-catalysis to absorb thermal exotherms and achieve stereoselective purity.",
+			"xp_reward": 5500,
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "quest_09_destiny_inversion",
+			"unlocked_apparatus": ["Aetherkin_Symbiosis_Chamber", "NMR_Sample_Tube", "Schlenk_Line"],
+			"unlocked_reagents": ["Anomalous_Catalyst_Precursor", "Chiral_Reagent_Mix"],
+			"objectives": [
+				{
+					"id": "summon_companion_reactor",
+					"title": "Summon Laboratory Companion",
+					"description": "Summon Aetherkin companion to the reaction staging bench",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "summons",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "BSL-3 Containment Protocol"
+				},
+				{
+					"id": "stabilize_thermal_exotherm",
+					"title": "Symbiotic Exotherm Suppression",
+					"description": "Command companion to sniff vapor leaks and buffer thermal surge",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "stabilizations",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Thermal Hazard Control 5.1"
+				},
+				{
+					"id": "verify_nmr_purity",
+					"title": "400 MHz 1H NMR Purity Confirmation",
+					"description": "Acquire 1H NMR spectrum confirming enantiomeric excess >99%",
+					"current": 0.0,
+					"target": 99.0,
+					"unit": "% ee",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "USP 621 Chromatography Standard"
+				}
+			]
+		},
+		"quest_09_destiny_inversion": {
+			"id": "quest_09_destiny_inversion",
+			"tier": 9,
+			"title": "The Convergence Inversion (Act IX)",
+			"category": "Tri-Protagonist Destiny Swapping",
+			"speaker": "The Nexus Catalyst",
+			"protagonist": "nexus",
+			"briefing": "The paths of Dr. Aris Thorne, Vesper Finch, and Kaelen Voss have converged in the Central Lab Hub. The choices you make now will invert their futures: will the Academic seek underground truth? Will the Alchemist chair the Department? Will the Whistleblower rebuild the corporate architecture?",
+			"description": "Swap the narrative perspectives and destinies of the three protagonists in the Nexus Core.",
+			"xp_reward": 7500,
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "quest_10_athanor_ascension",
+			"unlocked_apparatus": ["Nexus_Central_Terminal", "Fate_Resonance_Coupler"],
+			"unlocked_reagents": ["Nexus_Supercritical_Fluid"],
+			"objectives": [
+				{
+					"id": "synchronize_resonance",
+					"title": "Cross-Character Resonance Threshold",
+					"description": "Achieve cumulative tri-protagonist resonance of 150 points",
+					"current": 0.0,
+					"target": 150.0,
+					"unit": "points",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Temporal Nexus Containment Protocol"
+				},
+				{
+					"id": "execute_destiny_swap",
+					"title": "Invert Protagonist Destinies",
+					"description": "Select cross-character perspective exchange and swap active destinies",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "swaps",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Convergence Matrix Resolution"
+				},
+				{
+					"id": "recalibrate_central_hub",
+					"title": "Re-calibrate Central Hub Lab Systems",
+					"description": "Lock synchronized multi-disciplinary containment parameters",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "calibrations",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Facility Wide Interlock"
+				}
+			]
+		},
+		"quest_10_athanor_ascension": {
+			"id": "quest_10_athanor_ascension",
+			"tier": 10,
+			"title": "Athanor Ascension: The Grand Work (Act X)",
+			"category": "Unified Master Synthesis",
+			"speaker": "Athanor Core",
+			"protagonist": "ascended",
+			"briefing": "The ultimate synthesis of Athanor Ascension. Engage all three disciplines—Empirical Analytics, Alchemical Intuition, and Industrial Containment. Ignite the Grand Athanor and transcend classical stoichiometry.",
+			"description": "Execute the unified master synthesis, achieving total mastery over matter, energy, and life.",
+			"xp_reward": 10000,
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Grand_Athanor_Crucible", "Plasma_Toroid_Containment", "Philosopher_Extractor"],
+			"unlocked_reagents": ["Transmuted_Matter_Prime", "Aetheric_Quintessence"],
+			"objectives": [
+				{
+					"id": "ignite_athanor_crucible",
+					"title": "Ignite Grand Athanor Crucible",
+					"description": "Ramp plasma crucible to 1,200 °C under inertial magnetic confinement",
+					"current": 20.0,
+					"target": 1200.0,
+					"unit": "°C",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Fusion Energy Safety Protocol"
+				},
+				{
+					"id": "channel_companion_quintessence",
+					"title": "Channel Symbiotic Quintessence",
+					"description": "Harmonize companion elemental bond with plasma toroidal field",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "infusions",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Aetheric Safety Interlock"
+				},
+				{
+					"id": "crystal_extraction",
+					"title": "Extract Transcendent Athanor Crystal",
+					"description": "Vacuum-quench and harvest the final synthesized Philosopher's Catalyst",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "crystals",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Athanor Master Seal 001"
 				}
 			]
 		}
@@ -815,13 +1028,71 @@ func _sync_with_save_manager(xp_awarded: int) -> void:
 				sm.record_quest_completion(active_quest_id, xp_awarded, current_safety_score)
 
 
+# =============================================================================
+# TRI-PROTAGONIST NARRATIVE & FATE RESONANCE API
+# =============================================================================
+
+func switch_protagonist(protagonist_id: String) -> bool:
+	"""Switch active perspective among the 3 protagonists (Thorne, Finch, Voss)."""
+	if fate_resonance_manager == null:
+		fate_resonance_manager = FateResonanceManagerScript.new()
+
+	if not fate_resonance_manager.set_active_protagonist(protagonist_id):
+		return false
+
+	var profile = fate_resonance_manager.get_character_profile(protagonist_id)
+	current_background = profile.get("origin", "academic")
+	protagonist_switched.emit(protagonist_id, profile)
+	return true
+
+
+func get_current_protagonist() -> String:
+	if fate_resonance_manager:
+		return fate_resonance_manager.get_active_protagonist()
+	return "thorne"
+
+
+func record_fate_resonance(source: String, target: String, amount: float, reason: String = "") -> void:
+	"""Record cross-character resonance based on laboratory decisions."""
+	if fate_resonance_manager:
+		fate_resonance_manager.record_resonance_action(source, target, amount, reason)
+		var new_val = fate_resonance_manager.get_resonance(source, target)
+		fate_resonance_updated.emit(source, target, new_val)
+		if fate_resonance_manager.nexus_convergence_achieved:
+			nexus_convergence_reached.emit()
+
+
+func swap_protagonist_destinies(char_a: String, char_b: String, reason: String) -> bool:
+	"""Swap the narrative futures/destinies between two protagonists (Convergence Inversion)."""
+	if fate_resonance_manager == null:
+		return false
+	var ok = fate_resonance_manager.swap_destinies(char_a, char_b, reason)
+	if ok:
+		destiny_swapped.emit(char_a, char_b, reason)
+	return ok
+
+
+func get_fate_summary() -> Dictionary:
+	if fate_resonance_manager == null:
+		return {}
+	return {
+		"active_protagonist": fate_resonance_manager.get_active_protagonist(),
+		"fates": fate_resonance_manager.protagonist_fates.duplicate(true),
+		"resonance_matrix": fate_resonance_manager.resonance_matrix.duplicate(true),
+		"nexus_achieved": fate_resonance_manager.nexus_convergence_achieved,
+		"swap_active": fate_resonance_manager.destiny_swap_active,
+		"timeline_events": fate_resonance_manager.shared_timeline_events.duplicate()
+	}
+
+
 func to_dict() -> Dictionary:
 	return {
 		"active_quest_id": active_quest_id,
 		"current_safety_score": current_safety_score,
 		"completed_quests": completed_quests,
 		"failed_quests": failed_quests,
-		"current_background": current_background
+		"current_background": current_background,
+		"fate_resonance": fate_resonance_manager.to_dict() if fate_resonance_manager else {}
 	}
 
 
@@ -831,3 +1102,5 @@ func from_dict(data: Dictionary) -> void:
 	completed_quests.assign(data.get("completed_quests", []))
 	failed_quests.assign(data.get("failed_quests", []))
 	current_background = data.get("current_background", "academic")
+	if data.has("fate_resonance") and fate_resonance_manager:
+		fate_resonance_manager.from_dict(data["fate_resonance"])

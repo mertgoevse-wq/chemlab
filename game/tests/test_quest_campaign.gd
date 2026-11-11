@@ -20,13 +20,15 @@ func _run() -> void:
 	var qm = QuestManagerScript.new()
 	qm._initialize_quest_catalog()
 
-	_check("catalog has six contracts", qm.quests.size() == 6)
-	for quest_id in ["quest_04_contaminated_batch", "quest_05_quiet_synthesis", "quest_06_riverbank_contract"]:
+	_check("catalog has ten contracts across 10 Acts", qm.quests.size() == 10)
+	for quest_id in ["quest_04_contaminated_batch", "quest_05_quiet_synthesis", "quest_06_riverbank_contract", "quest_07_pilot_plant_scaleup", "quest_08_aether_resonance", "quest_09_destiny_inversion", "quest_10_athanor_ascension"]:
 		_check("%s present with briefing" % quest_id,
 			qm.quests.has(quest_id) and not str(qm.quests[quest_id].get("briefing", "")).is_empty())
 	_check("act II is narrative-gated", qm.quests["quest_05_quiet_synthesis"].has("moral_fork"))
-	_check("every contract names its successor or ends the arc",
-		qm.quests["quest_06_riverbank_contract"].get("next_quest_id", "") == "")
+	_check("quest 6 links to Act 7 scale-up",
+		qm.quests["quest_06_riverbank_contract"].get("next_quest_id", "") == "quest_07_pilot_plant_scaleup")
+	_check("Act X names its successor or ends the arc",
+		qm.quests["quest_10_athanor_ascension"].get("next_quest_id", "") == "")
 
 	# Walk contract 1 to completion through its public objective surface and
 	# confirm the campaign opens the next contract instead of dead-ending.

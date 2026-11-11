@@ -11,12 +11,18 @@ signal companion_bond_changed(companion_id: String, bond_level: float)
 signal companion_xp_gained(companion_id: String, amount: int)
 signal companion_ability_triggered(companion_id: String, ability_id: String)
 signal active_companions_changed()
+signal companion_summoned(companion_id: String, entity_node: Node)
+signal companion_dismissed(companion_id: String)
+signal companion_sniff_result(companion_id: String, apparatus: Node, diagnostic: Dictionary)
+signal companion_scavenge_result(companion_id: String, zone: Node, loot: Array)
+signal skill_synergy_applied(companion_id: String, synergy_info: Dictionary)
 
 const SPECIES_DATA = preload("res://data/companions/species_database.json")
 
 # Companion runtime data
 var companions: Dictionary = {}  # companion_id -> CompanionInstance
 var active_companions: Array[String] = []  # Max 2 walking, 3 total (5 at Lv 50)
+var spawned_entities: Dictionary = {}  # companion_id -> CompanionEntity (3D in-lab instance)
 var max_active_walking: int = 2
 var max_total_companions: int = 3
 var next_companion_id: int = 1
@@ -515,30 +521,305 @@ func _get_food_definition(food_id: String) -> Dictionary:
 	# Would load from food database
 	return {}
 
+# =============================================================================
+# 3D PHYSICAL COMPANION SUMMONING & LABORATORY COMMANDS
+# =============================================================================
+
+func summon_companion(companion_id: String, parent_node: Node3D = null, spawn_pos: Vector3 = Vector3.ZERO) -> CharacterBody3D:
+	"""Summon an active companion into the 3D physical laboratory environment."""
+	if not companions.has(companion_id):
+		push_warning("CompanionManager: cannot summon unknown companion '%s'" % companion_id)
+		return null
+
+	var comp: CompanionInstance = companions[companion_id]
+
+	# Ensure marked active
+	if not comp.active:
+		set_companion_active(companion_id, true)
+
+	# If already spawned, return existing entity
+	if spawned_entities.has(companion_id) and is_instance_valid(spawned_entities[companion_id]):
+		return spawned_entities[companion_id]
+
+	# Instantiate CompanionEntity
+	var entity_script = load("res://scenes/companions/companion_entity.gd")
+	var entity = entity_script.new() as CharacterBody3D
+	entity.name = "Companion_%s" % companion_id
+	entity.companion_instance_id = companion_id
+	entity.species_id = comp.species_id
+	entity.companion_name = comp.name
+
+	# Determine parent scene tree location
+	var target_parent = parent_node
+	if target_parent == null:
+		var tree = get_tree()
+		if tree and tree.current_scene:
+			target_parent = tree.current_scene
+
+	if target_parent:
+		target_parent.add_child(entity)
+		# Position near player or designated spawn
+		var player_node = target_parent.get_node_or_null("Player")
+		if player_node and player_node is Node3D:
+			entity.set_target_player(player_node)
+			if spawn_pos == Vector3.ZERO:
+				entity.global_position = player_node.global_position + Vector3(1.2, 0.2, 1.0)
+			else:
+				entity.global_position = spawn_pos
+		elif spawn_pos != Vector3.ZERO:
+			entity.global_position = spawn_pos
+
+	# Connect entity signals
+	entity.sniff_completed.connect(func(apparatus: Node, diagnostic: Dictionary):
+		_on_companion_sniff_completed(companion_id, apparatus, diagnostic)
+	)
+	entity.scavenge_completed.connect(func(zone: Node, loot: Array):
+		_on_companion_scavenge_completed(companion_id, zone, loot)
+	)
+
+	spawned_entities[companion_id] = entity
+	companion_summoned.emit(companion_id, entity)
+
+	# Automatically link symbiotic skill synergy to player
+	wire_skill_synergy(companion_id)
+
+	return entity
+
+
+func dismiss_companion(companion_id: String) -> bool:
+	"""Dismiss companion from 3D lab physical presence back to resting status."""
+	if not spawned_entities.has(companion_id):
+		return false
+
+	var entity = spawned_entities[companion_id]
+	if is_instance_valid(entity):
+		entity.queue_free()
+
+	spawned_entities.erase(companion_id)
+	companion_dismissed.emit(companion_id)
+	return true
+
+
+func command_sniff(companion_id: String, target_apparatus: Node) -> bool:
+	"""Command summoned companion to sniff apparatus for chemical composition & vapor leaks."""
+	if not spawned_entities.has(companion_id) or not is_instance_valid(spawned_entities[companion_id]):
+		if companions.has(companion_id):
+			summon_companion(companion_id)
+		else:
+			return false
+
+	var entity = spawned_entities[companion_id]
+	if entity.has_method("command_sniff"):
+		entity.command_sniff(target_apparatus)
+		return true
+	return false
+
+
+func command_scavenge(companion_id: String, target_zone: Node) -> bool:
+	"""Command summoned companion to dart into hazardous containment and scavenge dropped reagents."""
+	if not spawned_entities.has(companion_id) or not is_instance_valid(spawned_entities[companion_id]):
+		if companions.has(companion_id):
+			summon_companion(companion_id)
+		else:
+			return false
+
+	var entity = spawned_entities[companion_id]
+	if entity.has_method("command_scavenge"):
+		entity.command_scavenge(target_zone)
+		return true
+	return false
+
+
+func _get_autoload_node(node_name: String) -> Node:
+	if is_inside_tree() and get_tree() and get_tree().root:
+		return get_tree().root.get_node_or_null(node_name)
+	elif Engine.has_singleton(node_name):
+		return Engine.get_singleton(node_name)
+	return null
+
+
+func _on_companion_sniff_completed(companion_id: String, apparatus: Node, diagnostic: Dictionary) -> void:
+	var skill_mgr = _get_autoload_node("SkillManager")
+	if skill_mgr and skill_mgr.has_method("add_xp"):
+		skill_mgr.add_xp("forensics", 35, "Companion chemical diagnostic")
+		skill_mgr.add_xp("lab_safety", 25, "Companion vapor leak verification")
+
+	grant_companion_xp(companion_id, 40)
+	modify_bond(companion_id, 0.03)
+	companion_sniff_result.emit(companion_id, apparatus, diagnostic)
+
+
+func _on_companion_scavenge_completed(companion_id: String, zone: Node, loot: Array) -> void:
+	var skill_mgr = _get_autoload_node("SkillManager")
+	if skill_mgr and skill_mgr.has_method("add_xp"):
+		skill_mgr.add_xp("containment", 50, "Hazard zone scavenging")
+		skill_mgr.add_xp("lab_safety", 30, "Zero-exposure sample retrieval")
+
+	var inv = _get_autoload_node("InventoryManager")
+	if inv and inv.has_method("add_item"):
+		for item in loot:
+			inv.add_item(item.get("item_id", "sample_vial"), item.get("quantity", 1))
+
+	grant_companion_xp(companion_id, 60)
+	modify_bond(companion_id, 0.05)
+	companion_scavenge_result.emit(companion_id, zone, loot)
+
+
+# =============================================================================
+# SYMBIOTIC SKILL WIRING & MULTIPLIERS
+# =============================================================================
+
+func wire_skill_synergy(companion_id: String) -> Dictionary:
+	"""Connect companion elemental traits directly to SkillManager multipliers and bonuses."""
+	if not companions.has(companion_id):
+		return {}
+
+	var comp: CompanionInstance = companions[companion_id]
+	var species_id = comp.species_id
+	var skill_mgr = _get_autoload_node("SkillManager")
+
+	var synergy = {
+		"companion_id": companion_id,
+		"species_id": species_id,
+		"boosted_skills": {},
+		"synergy_label": ""
+	}
+
+	match species_id:
+		"cinderling":
+			synergy["boosted_skills"] = {
+				"chemistry": 1.25,
+				"thermodynamics": 1.30
+			}
+			synergy["synergy_label"] = "Thermal Homeostasis: +25% Chemistry XP & Exotherm Suppression"
+		"wall_gecko":
+			synergy["boosted_skills"] = {
+				"lab_safety": 1.35,
+				"containment": 1.30
+			}
+			synergy["synergy_label"] = "Aerosol Adhesion: +35% Lab Safety XP & Particulate Filtering"
+		"lab_rat", "instrumented_rat":
+			synergy["boosted_skills"] = {
+				"toxicology": 1.30,
+				"forensics": 1.25
+			}
+			synergy["synergy_label"] = "Neural Biomarker Sniffing: +30% Toxicology & Purity Detection"
+		"brinejack":
+			synergy["boosted_skills"] = {
+				"physics": 1.20,
+				"materials_science": 1.25
+			}
+			synergy["synergy_label"] = "Crystalline Resonance: +25% Materials Science XP & Salinity Balance"
+		_:
+			synergy["boosted_skills"] = {
+				"chemistry": 1.10
+			}
+			synergy["synergy_label"] = "Aetheric Resonance: +10% Chemistry XP"
+
+	if skill_mgr and skill_mgr.has_method("set_xp_multiplier"):
+		for skill_track in synergy["boosted_skills"].keys():
+			var mult = float(synergy["boosted_skills"][skill_track])
+			skill_mgr.set_xp_multiplier(skill_track, mult)
+
+	skill_synergy_applied.emit(companion_id, synergy)
+	return synergy
+
+
+func sync_all_skill_synergies() -> void:
+	for comp_id in active_companions:
+		wire_skill_synergy(comp_id)
+
+
+# =============================================================================
+# SERIALIZATION & PERSISTENCE
+# =============================================================================
+
+func _serialize_companion_instance(comp: CompanionInstance) -> Dictionary:
+	return {
+		"companion_id": comp.companion_id,
+		"species_id": comp.species_id,
+		"name": comp.name,
+		"level": comp.level,
+		"xp": comp.xp,
+		"bond": comp.bond,
+		"evolution_stage": comp.evolution_stage,
+		"loyalty": comp.loyalty,
+		"hunger": comp.hunger,
+		"energy": comp.energy,
+		"active": comp.active,
+		"position": [comp.position.x, comp.position.y, comp.position.z],
+		"known_abilities": comp.known_abilities.duplicate(),
+		"stats": comp.stats.duplicate(true)
+	}
+
+
+func _deserialize_companion_instance(data: Dictionary) -> CompanionInstance:
+	var comp = CompanionInstance.new()
+	comp.companion_id = data.get("companion_id", "")
+	comp.species_id = data.get("species_id", "")
+	comp.name = data.get("name", "")
+	comp.level = int(data.get("level", 1))
+	comp.xp = int(data.get("xp", 0))
+	comp.bond = float(data.get("bond", 0.1))
+	comp.evolution_stage = int(data.get("evolution_stage", 0))
+	comp.loyalty = float(data.get("loyalty", 0.5))
+	comp.hunger = float(data.get("hunger", 0.0))
+	comp.energy = float(data.get("energy", 1.0))
+	comp.active = bool(data.get("active", false))
+	var pos = data.get("position", [0, 0, 0])
+	if pos is Array and pos.size() >= 3:
+		comp.position = Vector3(float(pos[0]), float(pos[1]), float(pos[2]))
+	var abilities = data.get("known_abilities", [])
+	if abilities is Array:
+		for a in abilities:
+			comp.known_abilities.append(str(a))
+	comp.stats = data.get("stats", {}).duplicate(true)
+	return comp
+
+
 func _save_companions() -> void:
-	var save_manager = get_node_or_null("/root/SaveManager")
+	var save_manager = _get_autoload_node("SaveManager")
 	if save_manager and save_manager.has_method("set_companion_data"):
-		save_manager.set_companion_data({
-			"companions": companions,
-			"active_companions": active_companions,
-			"max_active_walking": max_active_walking,
-			"max_total_companions": max_total_companions,
-			"next_companion_id": next_companion_id
-		})
+		save_manager.set_companion_data(to_dict())
+
 
 func to_dict() -> Dictionary:
+	var comps_serialized = {}
+	for cid in companions.keys():
+		var c = companions[cid]
+		if c is CompanionInstance:
+			comps_serialized[cid] = _serialize_companion_instance(c)
+		elif c is Dictionary:
+			comps_serialized[cid] = c
+
 	return {
-		"companions": companions,
-		"active_companions": active_companions,
+		"companions": comps_serialized,
+		"active_companions": active_companions.duplicate(),
 		"max_active_walking": max_active_walking,
 		"max_total_companions": max_total_companions,
 		"next_companion_id": next_companion_id
 	}
 
+
 func from_dict(data: Dictionary) -> void:
-	companions = data.get("companions", companions)
-	active_companions = data.get("active_companions", active_companions)
+	companions.clear()
+	var raw_comps = data.get("companions", {})
+	if raw_comps is Dictionary:
+		for cid in raw_comps.keys():
+			var val = raw_comps[cid]
+			if val is Dictionary:
+				companions[cid] = _deserialize_companion_instance(val)
+			elif val is CompanionInstance:
+				companions[cid] = val
+
+	active_companions.clear()
+	var raw_active = data.get("active_companions", [])
+	if raw_active is Array:
+		for a in raw_active:
+			active_companions.append(str(a))
+
 	max_active_walking = data.get("max_active_walking", 2)
 	max_total_companions = data.get("max_total_companions", 3)
 	next_companion_id = data.get("next_companion_id", 1)
 	_emit_active_changed()
+	sync_all_skill_synergies()
