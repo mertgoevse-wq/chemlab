@@ -75,19 +75,19 @@ func _build_ui() -> void:
 	cont_btn.pressed.connect(func(): _test_contamination())
 	cont.add_child(cont_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 308)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -111,8 +111,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _panel_cursor(parent))
 	cb.size = Vector2(220, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -126,10 +126,10 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _panel_cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _panel_cursor(parent: Control) -> float:
@@ -141,9 +141,9 @@ func _refresh_all() -> void:
 	var temp_factor = 1.0 - abs(_temperature_c - 37.0) / 15.0
 	var co2_factor = 1.0 - abs(_co2_percent - 5.0) / 5.0
 	var ph_factor = 1.0 - abs(_ph - 7.4) / 1.0
-	temp_factor = clamp(temp_factor, 0.0, 1.0)
-	co2_factor = clamp(co2_factor, 0.0, 1.0)
-	ph_factor = clamp(ph_factor, 0.0, 1.0)
+	temp_factor = clampf(temp_factor, 0.0, 1.0)
+	co2_factor = clampf(co2_factor, 0.0, 1.0)
+	ph_factor = clampf(ph_factor, 0.0, 1.0)
 	var mu = mu_opt * temp_factor * co2_factor * ph_factor
 	if not _co2_incubator or not _biosafety_cabinet:
 		mu *= 0.3  # poor conditions
@@ -151,26 +151,26 @@ func _refresh_all() -> void:
 	var t = 48.0
 	var n_final = _cell_density_ml * exp(mu * t)
 
-	var txt = []
-	txt.push("[center][b]Culture after 48 h[/b][/center]")
-	txt.push("")
-	txt.push("µ = %0.4f /h (optimum %0.4f)" % [mu, mu_opt])
-	txt.push("Temperature factor: %0.2f" % temp_factor)
-	txt.push("CO₂ factor: %0.2f" % co2_factor)
-	txt.push("pH factor: %0.2f" % ph_factor)
-	txt.push("")
-	txt.push("N₀ = %0.1e cells/mL" % _cell_density_ml)
-	txt.push("N(48h) = %0.1e cells/mL" % n_final)
-	txt.push("")
-	txt.push("Conditions: %s" % [(_aseptic and _biosafety_cabinet and _co2_incubator) and "aseptic" or "COMPROMISED"])
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Culture after 48 h[/b][/center]")
+	txt.append("")
+	txt.append("µ = %0.4f /h (optimum %0.4f)" % [mu, mu_opt])
+	txt.append("Temperature factor: %0.2f" % temp_factor)
+	txt.append("CO₂ factor: %0.2f" % co2_factor)
+	txt.append("pH factor: %0.2f" % ph_factor)
+	txt.append("")
+	txt.append("N₀ = %0.1e cells/mL" % _cell_density_ml)
+	txt.append("N(48h) = %0.1e cells/mL" % n_final)
+	txt.append("")
+	txt.append("Conditions: %s" % [(_aseptic and _biosafety_cabinet and _co2_incubator) and "aseptic" or "COMPROMISED"])
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] Mammalian cells need 37 °C, 5 % CO₂, pH 7.4.")
-	why.push("Deviations slow growth; contamination can overgrow the culture.")
-	why.push("Always work in a biosafety cabinet with aseptic technique.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] Mammalian cells need 37 °C, 5 % CO₂, pH 7.4.")
+	why.append("Deviations slow growth; contamination can overgrow the culture.")
+	why.append("Always work in a biosafety cabinet with aseptic technique.")
+	_why_panel.text = "\n".join(why)
 
 	if not _aseptic or not _biosafety_cabinet:
 		_log.append_text("[color=red]✗[/color] Aseptic break — culture at risk of contamination\n")
@@ -193,35 +193,23 @@ func _test_contamination() -> void:
 		risk += 0.4
 	if _contamination:
 		risk += 0.5
-	risk = clamp(risk, 0.0, 1.0)
+	risk = clampf(risk, 0.0, 1.0)
 
-	var txt = []
-	txt.push("[center][b]Contamination test[/b][/center]")
-	txt.push("")
-	txt.push("Contamination risk: %0.0f%%" % (risk * 100.0))
-	txt.push("Aseptic: %s" % (_aseptic and "yes" or "no"))
-	txt.push("BSC: %s" % (_biosafety_cabinet and "yes" or "no"))
-	txt.push("Mycoplasma: %s" % (_mycoplasma and "yes" or "no"))
-	txt.push("")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Contamination test[/b][/center]")
+	txt.append("")
+	txt.append("Contamination risk: %0.0f%%" % (risk * 100.0))
+	txt.append("Aseptic: %s" % (_aseptic and "yes" or "no"))
+	txt.append("BSC: %s" % (_biosafety_cabinet and "yes" or "no"))
+	txt.append("Mycoplasma: %s" % (_mycoplasma and "yes" or "no"))
+	txt.append("")
 	if risk > 0.5:
-		txt.push("RESULT: Contamination detected — culture lost.")
+		txt.append("RESULT: Contamination detected — culture lost.")
 	elif risk > 0.2:
-		txt.push("RESULT: Warning — low-level contamination possible.")
+		txt.append("RESULT: Warning — low-level contamination possible.")
 	else:
-		txt.push("RESULT: Culture clean.")
+		txt.append("RESULT: Culture clean.")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 	_why_panel.text = "[b]Why:[/b] Contamination risk rises with aseptic breaks, missing BSC, and mycoplasma."
 	_log.append_text("[color=%s]→[/color] Contamination test: risk %0.0f%%\n" % [(risk > 0.5 and "red" or (risk > 0.2 and "yellow" or "green")), risk * 100.0])
-
-func clamp(v: float, lo: float, hi: float) -> float:
-	return max(lo, min(hi, v))
-
-func exp(x: float) -> float:
-	# simple series for e^x
-	var result = 1.0
-	var term = 1.0
-	for i in range(1, 20):
-		term *= x / i
-		result += term
-	return result

@@ -234,17 +234,13 @@ func _on_save_completed(_success: bool) -> void:
 func _spawn_hud() -> void:
 	if _hud != null:
 		return
-	_hud = CanvasLayer.new()
-	_hud.name = "VitalsHUD"
-	_hud.layer = 20
-	var control := Control.new()
-	control.set_script(_hud_script)
-	control.set_anchors_preset(Control.PRESET_FULL_RECT)
-	control.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_hud.add_child(control)
-	add_child(_hud)
-	# Vitals belong to laboratory gameplay, not to the menu or loading screen.
-	_hud.visible = false
+	_hud = _hud_script.new() as CanvasLayer
+	if _hud != null:
+		_hud.name = "VitalsHUD"
+		_hud.layer = 20
+		add_child(_hud)
+		# Vitals belong to laboratory gameplay, not to the menu or loading screen.
+		_hud.visible = false
 
 
 func set_hud_visible(is_visible: bool) -> void:

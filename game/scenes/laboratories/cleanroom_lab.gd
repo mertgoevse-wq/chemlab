@@ -72,19 +72,19 @@ func _build_ui() -> void:
 	env_btn.pressed.connect(func(): _measure_environment())
 	env.add_child(env_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 348)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -117,7 +117,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Callable) -> void:
@@ -125,8 +125,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _cursor(parent))
 	cb.size = Vector2(220, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -140,14 +140,17 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _cursor(parent: Control) -> float:
 	return (parent.get_child_count() - 1) * 40
+
+func _refresh_all() -> void:
+	_run_process()
 
 func _run_process() -> void:
 	# Yield model: defects scale with particles, humidity deviation, missing gowning
@@ -156,7 +159,7 @@ func _run_process() -> void:
 		"5": 0.1,
 		"7": 1.0,
 		"8": 10.0,
-	}[str(_iso_class)] or 1.0
+	}.get(str(_iso_class), 1.0)
 	var particle_defects = _particle_count / 1000.0 * iso_factor
 	var humidity_dev = abs(_humidity_rh - 45.0) / 15.0
 	var temp_dev = abs(_temp_c - 21.0) / 5.0
@@ -166,61 +169,50 @@ func _run_process() -> void:
 	_defect_density = defect_density  # defects/cm²
 	# Yield: Poisson, die area ~ 1 cm², yield = exp(-defects * area)
 	var yield_pct = exp(-defect_density * 1.0) * 100.0
-	_yield_pct = clamp(yield_pct, 0.0, 100.0)
+	_yield_pct = clampf(yield_pct, 0.0, 100.0)
 
-	var txt = []
-	txt.push("[center][b]Process step: %s[/b][/center]" % _process)
-	txt.push("")
-	txt.push("ISO class: %d" % _iso_class)
-	txt.push("Gowning: %s" % (_gowning_complete and "complete" or "INCOMPLETE"))
-	txt.push("Humidity: %0.1f%% RH (target 45%%)" % _humidity_rh)
-	txt.push("Temperature: %0.1f °C (target 21°C)" % _temp_c)
-	txt.push("Dose: %0.1f mJ/cm²" % _dose_mj_cm2)
-	txt.push("")
-	txt.push("Defect density: %0.2f defects/cm²" % _defect_density)
-	txt.push("Yield: %0.1f%%" % _yield_pct)
-	txt.push("")
-	txt.push("Yield = exp(−defects × area), Poisson model")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Process step: %s[/b][/center]" % _process)
+	txt.append("")
+	txt.append("ISO class: %d" % _iso_class)
+	txt.append("Gowning: %s" % (_gowning_complete and "complete" or "INCOMPLETE"))
+	txt.append("Humidity: %0.1f%% RH (target 45%%)" % _humidity_rh)
+	txt.append("Temperature: %0.1f °C (target 21°C)" % _temp_c)
+	txt.append("Dose: %0.1f mJ/cm²" % _dose_mj_cm2)
+	txt.append("")
+	txt.append("Defect density: %0.2f defects/cm²" % _defect_density)
+	txt.append("Yield: %0.1f%%" % _yield_pct)
+	txt.append("")
+	txt.append("Yield = exp(−defects × area), Poisson model")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] Particles on the wafer → defects → lower yield.")
-	why.push("Humidity/temperature off-spec → resist issues, condensation.")
-	why.push("Incomplete gowning → human-borne particles.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] Particles on the wafer → defects → lower yield.")
+	why.append("Humidity/temperature off-spec → resist issues, condensation.")
+	why.append("Incomplete gowning → human-borne particles.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green" if _yield_pct > 90 else ( "amber" if _yield_pct > 70 else "red")
 	_log.append_text("[color=%s]→[/color] Process: %s, defects %0.2f/cm², yield %0.1f%%\n" % [level, _process, _defect_density, _yield_pct])
 
 func _measure_environment() -> void:
-	var txt = []
-	txt.push("[center][b]Environment measurement[/b][/center]")
-	txt.push("")
-	txt.push("Particles ≥0.5 µm: %0.0f per m³" % _particle_count)
-	txt.push("ISO class %d limit: %s" % [_iso_class, _iso_limit(_iso_class)])
-	txt.push("Humidity: %0.1f%% RH" % _humidity_rh)
-	txt.push("Temperature: %0.1f °C" % _temp_c)
-	txt.push("")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Environment measurement[/b][/center]")
+	txt.append("")
+	txt.append("Particles ≥0.5 µm: %0.0f per m³" % _particle_count)
+	txt.append("ISO class %d limit: %s" % [_iso_class, _iso_limit(_iso_class)])
+	txt.append("Humidity: %0.1f%% RH" % _humidity_rh)
+	txt.append("Temperature: %0.1f °C" % _temp_c)
+	txt.append("")
 	if _particle_count > _iso_limit(_iso_class):
-		txt.push("RESULT: Out of specification — cleanroom not at class.")
+		txt.append("RESULT: Out of specification — cleanroom not at class.")
 	else:
-		txt.push("RESULT: Within ISO class limits.")
+		txt.append("RESULT: Within ISO class limits.")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 	_log.append_text("[color=%s]→[/color] Environment: %0.0f particles/m³, ISO %d\n" % [( _particle_count > _iso_limit(_iso_class) and "red" or "green"), _particle_count, _iso_class])
 
 func _iso_limit(cls: int) -> float:
 	var limits = {"1": 10.0, "5": 3520.0, "7": 352000.0, "8": 3520000.0}
-	return limits[str(cls)] or 3520.0
-
-func clamp(v: float, lo: float, hi: float) -> float:
-	return max(lo, min(hi, v))
-
-func exp(x: float) -> float:
-	var result = 1.0
-	var term = 1.0
-	for i in range(1, 25):
-		term *= x / i
-		result += term
-	return result
+	return limits.get(str(cls), 3520.0)

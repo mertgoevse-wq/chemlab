@@ -75,19 +75,19 @@ func _build_ui() -> void:
 	calc_btn.pressed.connect(func(): _calc_dose())
 	add_child(calc_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 68)
 	_log.size = Vector2(560, 300)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -120,7 +120,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Callable) -> void:
@@ -128,8 +128,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _cursor(parent))
 	cb.size = Vector2(200, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -143,14 +143,17 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _cursor(parent: Control) -> float:
 	return (parent.get_child_count() - 1) * 40
+
+func _refresh_all() -> void:
+	_calc_dose()
 
 func _calc_dose() -> void:
 	var iso = ISOTOPES[_isotope]
@@ -173,27 +176,27 @@ func _calc_dose() -> void:
 	_dose_rate_usv_h = dose_rate * 1000.0  # to µSv/h
 	_cumulative_dose_usv = cum * 1000.0
 
-	var txt = []
-	txt.push("[center][b]Dose assessment[/b][/center]")
-	txt.push("")
-	txt.push("Isotope: %s (T½ = %0.2f h)" % [_isotope, half_life])
-	txt.push("Activity now: %0.1f MBq (decayed for %0.1f h)" % [activity_now, _elapsed_h])
-	txt.push("Distance: %0.1f m" % r_m)
-	txt.push("Lead shield: %0.1f cm (attenuation %0.0f%%)" % [_shield_cm, (1.0 - attenuation) * 100])
-	txt.push("")
-	txt.push("Dose rate: %0.1f µSv/h" % (_dose_rate_usv_h))
-	txt.push("Cumulative (8 h day): %0.1f µSv" % _cumulative_dose_usv)
-	txt.push("")
-	txt.push("Annual limit (worker): 20,000 µSv")
-	txt.push("Public limit: 1,000 µSv/year")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Dose assessment[/b][/center]")
+	txt.append("")
+	txt.append("Isotope: %s (T½ = %0.2f h)" % [_isotope, half_life])
+	txt.append("Activity now: %0.1f MBq (decayed for %0.1f h)" % [activity_now, _elapsed_h])
+	txt.append("Distance: %0.1f m" % r_m)
+	txt.append("Lead shield: %0.1f cm (attenuation %0.0f%%)" % [_shield_cm, (1.0 - attenuation) * 100])
+	txt.append("")
+	txt.append("Dose rate: %0.1f µSv/h" % (_dose_rate_usv_h))
+	txt.append("Cumulative (8 h day): %0.1f µSv" % _cumulative_dose_usv)
+	txt.append("")
+	txt.append("Annual limit (worker): 20,000 µSv")
+	txt.append("Public limit: 1,000 µSv/year")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] Dose falls with 1/r² and shield attenuation (exponential in Pb).")
-	why.push("Contamination and shielding breaches multiply dose.")
-	why.push("Keep time short, distance large, shielding thick — ALARA.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] Dose falls with 1/r² and shield attenuation (exponential in Pb).")
+	why.append("Contamination and shielding breaches multiply dose.")
+	why.append("Keep time short, distance large, shielding thick — ALARA.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green"
 	if _dose_rate_usv_h > 100:
@@ -201,15 +204,3 @@ func _calc_dose() -> void:
 	elif _dose_rate_usv_h > 20:
 		level = "amber"
 	_log.append_text("[color=%s]→[/color] Dose: %0.1f µSv/h at %0.1f m, %0.1f cm Pb\n" % [level, _dose_rate_usv_h, r_m, _shield_cm])
-
-func _pitting_risk() -> bool:
-	# placeholder for compatibility with UI pattern
-	return false
-
-func exp(x: float) -> float:
-	var result = 1.0
-	var term = 1.0
-	for i in range(1, 25):
-		term *= x / i
-		result += term
-	return result

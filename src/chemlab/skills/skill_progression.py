@@ -1,11 +1,11 @@
 """
-Runescape-style XP-to-level progression curve.
+Exponential XP-to-level progression curve.
 
-Formula (Runescape classic):
+Formula:
     XP for level N = floor(sum_{i=1}^{N-1} floor(i + 300 * 2^(i/7) / 4))
 
 This gives ~83 million XP at level 99 and ~13 million at level 85,
-matching the classic Runescape progression feel for a skill-based game.
+providing a satisfying progression feel for a skill-based RPG.
 Levels are capped at 120 for ChemLab (100 for the main campaign, 120 max
 with prestige/post-game content).
 """
@@ -27,7 +27,7 @@ def _build_xp_table() -> list[int]:
     """XP required to reach each level (index = level, value = total XP).
 
     table[1] = 0 (you start at level 1 with 0 XP); table[N] for N >= 2 is the
-    cumulative sum of _xp_difference(i) for i in 1..N-1, matching the Runescape
+    cumulative sum of _xp_difference(i) for i in 1..N-1, using the canonical
     formula XP for level N = sum_{i=1}^{N-1} floor(i + 300*2^(i/7)/4).
     """
     table: list[int] = [0] * (MAX_LEVEL + 1)

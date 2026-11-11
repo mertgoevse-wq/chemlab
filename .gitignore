@@ -44,3 +44,6 @@ Desktop.ini
 
 # Local Claude MCP memory and runtime files
 /.athanor/mcp/
+.superpowers/
+Claude-Code-Game-Studios/
+HANDOFF.md

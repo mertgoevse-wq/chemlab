@@ -116,19 +116,19 @@ func _build_ui() -> void:
 	corr.add_child(corr_btn)
 
 	# ---- Log/readout ----
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 388)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -161,7 +161,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _panel_cursor(parent: Control) -> float:
@@ -179,10 +179,10 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _panel_cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _refresh_all() -> void:
@@ -193,28 +193,28 @@ func _refresh_all() -> void:
 	var i = e_cell / (_internal_r_ohm + _load_ohm)
 	var p = i * i * _load_ohm
 
-	var txt = []
-	txt.push("[center][b]Galvanic cell: %s → %s[/b][/center]" % [_anode_material, _cathode_material])
-	txt.push("")
-	txt.push("E°cell = %0.3f V" % (E_STD[_cathode_material] - E_STD[_anode_material]))
-	txt.push("E_anode (Nernst) = %0.3f V" % e_anode)
-	txt.push("E_cathode (Nernst) = %0.3f V" % e_cathode)
-	txt.push("E_cell = %0.3f V" % e_cell)
-	txt.push("I = %0.4f A  (R_int = %0.2f Ω, R_load = %0.2f Ω)" % [i, _internal_r_ohm, _load_ohm])
-	txt.push("P = %0.3f W" % p)
-	txt.push("")
-	txt.push("Nernst: E = E° − (RT/nF)·ln(Q), n = 2, T = %0.1f °C" % _temperature_c)
-	txt.push("Zn2+ + 2e− → Zn   E° = −0.763 V")
-	txt.push("Cu2+ + 2e− → Cu   E° = +0.340 V")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Galvanic cell: %s → %s[/b][/center]" % [_anode_material, _cathode_material])
+	txt.append("")
+	txt.append("E°cell = %0.3f V" % (E_STD.get(_cathode_material, 0.0) - E_STD.get(_anode_material, 0.0)))
+	txt.append("E_anode (Nernst) = %0.3f V" % e_anode)
+	txt.append("E_cathode (Nernst) = %0.3f V" % e_cathode)
+	txt.append("E_cell = %0.3f V" % e_cell)
+	txt.append("I = %0.4f A  (R_int = %0.2f Ω, R_load = %0.2f Ω)" % [i, _internal_r_ohm, _load_ohm])
+	txt.append("P = %0.3f W" % p)
+	txt.append("")
+	txt.append("Nernst: E = E° − (RT/nF)·ln(Q), n = 2, T = %0.1f °C" % _temperature_c)
+	txt.append("Zn2+ + 2e− → Zn   E° = −0.763 V")
+	txt.append("Cu2+ + 2e− → Cu   E° = +0.340 V")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
 	# Why panel
-	var why = []
-	why.push("[b]Why:[/b] The cell voltage falls as concentrations diverge from standard (Q ≠ 1).")
-	why.push("Higher load resistance → lower current, higher voltage; max power at R_load = R_int.")
-	why.push("If E_cell < 0, the spontaneous direction is reversed (electrolytic).")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] The cell voltage falls as concentrations diverge from standard (Q ≠ 1).")
+	why.append("Higher load resistance → lower current, higher voltage; max power at R_load = R_int.")
+	why.append("If E_cell < 0, the spontaneous direction is reversed (electrolytic).")
+	_why_panel.text = "\n".join(why)
 
 	if e_cell > 1.5:
 		_log.append_text("[color=green]✓[/color] Strong galvanic cell: %0.3f V, %0.2f A\n" % [e_cell, i])
@@ -225,7 +225,7 @@ func _refresh_all() -> void:
 
 func _nernst(metal: String, conc: float, temp_k: float) -> float:
 	# M2+ + 2e- -> M, n = 2, E = E° - (RT/2F)*ln(1/[M2+])
-	var e0 = E_STD.has(metal) and E_STD[metal] or 0.0
+	var e0 = E_STD.get(metal, 0.0)
 	if conc <= 0:
 		conc = 0.001
 	var q = 1.0 / conc
@@ -236,28 +236,30 @@ func _run_electrolysis() -> void:
 	# Faraday: m = M*I*t/(n*F), n_e = I*t/F
 	var n_e = _electrolysis_current_a * _electrolysis_time_s / F
 	var target = _electrolysis_target
-	var molar_mass = {
+	var molar_mass_dict = {
 		"Cu2+": 63.546,
 		"H2O": 18.015,
 		"NaCl": 58.44,
-	}[target] or 63.546
-	var n_electrons = {"Cu2+": 2, "H2O": 2, "NaCl": 1}[target] or 2
+	}
+	var molar_mass: float = molar_mass_dict.get(target, 63.546)
+	var n_electrons_dict = {"Cu2+": 2, "H2O": 2, "NaCl": 1}
+	var n_electrons: float = float(n_electrons_dict.get(target, 2))
 	var mass_g = molar_mass * n_e / n_electrons
 	var extent = n_e / n_electrons
 
-	var txt = []
-	txt.push("[center][b]Electrolysis result[/b][/center]")
-	txt.push("")
-	txt.push("Target: %s" % target)
-	txt.push("Current: %0.3f A for %0.1f s" % [_electrolysis_current_a, _electrolysis_time_s])
-	txt.push("n(e−) = %0.4f mol" % n_e)
-	txt.push("Extent ξ = %0.4f mol" % extent)
-	txt.push("Mass deposited: %0.3f g" % mass_g)
-	txt.push("")
-	txt.push("Faraday: m = M·I·t/(n·F)")
-	txt.push("Cu2+ + 2e− → Cu(s)   (n = 2)")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Electrolysis result[/b][/center]")
+	txt.append("")
+	txt.append("Target: %s" % target)
+	txt.append("Current: %0.3f A for %0.1f s" % [_electrolysis_current_a, _electrolysis_time_s])
+	txt.append("n(e−) = %0.4f mol" % n_e)
+	txt.append("Extent ξ = %0.4f mol" % extent)
+	txt.append("Mass deposited: %0.3f g" % mass_g)
+	txt.append("")
+	txt.append("Faraday: m = M·I·t/(n·F)")
+	txt.append("Cu2+ + 2e− → Cu(s)   (n = 2)")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 	_log.append_text("[color=cyan]→[/color] Electrolysis: %0.3f g %s deposited at %0.3f A, %0.1f s\n" % [mass_g, target, _electrolysis_current_a, _electrolysis_time_s])
 
 func _analyze_corrosion() -> void:
@@ -267,11 +269,12 @@ func _analyze_corrosion() -> void:
 	var f_lo = _net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_lo)
 	var f_hi = _net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_hi)
 	if f_lo * f_hi > 0:
-		e_lo, e_hi = -3.0, 3.0
+		e_lo = -3.0
+		e_hi = 3.0
 		f_lo = _net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_lo)
 		f_hi = _net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_hi)
 	var e_corr = (e_lo + e_hi) / 2.0
-	for _ in range(80):
+	for step in range(80):
 		var e_mid = (e_lo + e_hi) / 2.0
 		var f_mid = _net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_mid)
 		if abs(f_mid) < 1e-15:
@@ -285,18 +288,18 @@ func _analyze_corrosion() -> void:
 	var i_corr = abs(_net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_corr)) * 1e6  # µA/cm²
 	var cr = (i_corr * 65.38 * 3.27e-3) / (2.0 * 7.14)  # mm/y for Fe
 
-	var txt = []
-	txt.push("[center][b]Corrosion analysis: %s in %s[/b][/center]" % [_corrosion_metal, _corrosion_env])
-	txt.push("")
-	txt.push("E_corr = %0.3f V vs SHE" % e_corr)
-	txt.push("i_corr = %0.3f µA/cm²" % i_corr)
-	txt.push("Corrosion rate = %0.3f mm/y" % cr)
-	txt.push("Chloride: %0.3f mol/L" % _corrosion_chloride_m)
-	txt.push("")
-	txt.push("CR (mm/y) = i_corr·M·K/(n·ρ), K = 3.27×10⁻³")
-	txt.push("Pitting risk: %s" % (_pitting_risk() and "YES" or "no"))
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Corrosion analysis: %s in %s[/b][/center]" % [_corrosion_metal, _corrosion_env])
+	txt.append("")
+	txt.append("E_corr = %0.3f V vs SHE" % e_corr)
+	txt.append("i_corr = %0.3f µA/cm²" % i_corr)
+	txt.append("Corrosion rate = %0.3f mm/y" % cr)
+	txt.append("Chloride: %0.3f mol/L" % _corrosion_chloride_m)
+	txt.append("")
+	txt.append("CR (mm/y) = i_corr·M·K/(n·ρ), K = 3.27×10⁻³")
+	txt.append("Pitting risk: %s" % (_pitting_risk() and "YES" or "no"))
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 	_why_panel.text = "[b]Why:[/b] Mixed potential where anodic dissolution = cathodic reduction. Higher [Cl⁻] → lower pitting potential → higher risk."
 	_log.append_text("[color=%s]→[/color] Corrosion: %s, E_corr = %0.3f V, CR = %0.3f mm/y\n" % [(_pitting_risk() and "red" or "green"), _corrosion_metal, e_corr, cr])
 
@@ -325,7 +328,7 @@ func _pitting_risk() -> bool:
 		return false
 	var e_lo2 = e_lo
 	var e_hi2 = e_hi
-	for _ in range(60):
+	for step in range(60):
 		var e_mid = (e_lo2 + e_hi2) / 2.0
 		var f_mid = _net_curr(_corrosion_metal, _corrosion_env, _corrosion_chloride_m, e_mid)
 		if f_lo * f_mid <= 0:

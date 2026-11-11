@@ -1,0 +1,470 @@
+{
+  "version": "1.0.0",
+  "book": "PiHKAL",
+  "title": "Phenethylamines I Have Known And Loved — Complete Synthesis Library",
+  "authors": "Alexander T. Shulgin & Ann Shulgin",
+  "compounds": [
+    {
+      "compound_id": "mescaline",
+      "number": 96,
+      "name": "Mescaline",
+      "chemical_name": "3,4,5-Trimethoxyphenethylamine",
+      "formula": "C11H17NO3",
+      "molecular_weight": 211.26,
+      "cas_number": "54-04-1",
+      "smiles": "COC1=CC(=CC(=C1OC)OC)CCN",
+      "salt_form": "hydrochloride",
+      "salt_mw": 247.72,
+      "mp_c": 184.0,
+      "tlc_rf": 0.32,
+      "class": "phenethylamine",
+      "subclass": "trimethoxy",
+      "description": "The archetypal naturally occurring phenethylamine alkaloid, found in Lophophora williamsii (Peyote) and Echinopsis pachanoi (San Pedro).",
+      "routes": [
+        {
+          "route_id": "henry_lah",
+          "name": "Condensation of 3,4,5-trimethoxybenzaldehyde with nitromethane followed by LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Henry Condensation to beta-nitrostyrene",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "3_4_5_trimethoxybenzaldehyde", "name": "3,4,5-Trimethoxybenzaldehyde", "amount": 19.6, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitromethane", "name": "Nitromethane", "amount": 12.0, "unit": "mL", "equivalents": 2.2},
+                {"reagent_id": "ammonium_acetate", "name": "Ammonium acetate catalyst", "amount": 3.0, "unit": "g", "equivalents": 0.39}
+              ],
+              "conditions": {
+                "temperature_c": 105.0,
+                "duration_min": 60.0,
+                "solvent": "glacial_acetic_acid",
+                "atmosphere": "air",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Pour into crushed ice water with vigorous stirring",
+                "isolation": "Suction filtration of yellow crystalline nitrostyrene",
+                "recrystallization": "Boiling ethanol"
+              },
+              "expected_yield_pct": 84.0
+            },
+            {
+              "step_number": 2,
+              "name": "Lithium Aluminium Hydride Reduction",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "3_4_5_trimethoxynitrostyrene", "name": "1-(3,4,5-Trimethoxyphenyl)-2-nitroethene", "amount": 12.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride (LAH)", "amount": 4.5, "unit": "g", "equivalents": 2.37},
+                {"reagent_id": "anhydrous_thf", "name": "Anhydrous THF", "amount": 150.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 180.0,
+                "reflux": true,
+                "atmosphere": "inert_argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser workup: 4.5 mL H2O, 4.5 mL 15% NaOH, 13.5 mL H2O dropwise at 0 C",
+                "isolation": "Filter granular white aluminate salts, evaporate THF under vacuum",
+                "salt_formation": "Dissolve freebase in isopropanol, neutralize with concentrated HCl to pH 5.5",
+                "recrystallization": "Isopropanol / diethyl ether"
+              },
+              "expected_yield_pct": 78.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "2c_b",
+      "number": 20,
+      "name": "2C-B",
+      "chemical_name": "4-Bromo-2,5-dimethoxyphenethylamine",
+      "formula": "C10H14BrNO2",
+      "molecular_weight": 260.13,
+      "cas_number": "66142-81-2",
+      "smiles": "COC1=CC(=C(C=C1CCN)Br)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 296.59,
+      "mp_c": 237.0,
+      "tlc_rf": 0.40,
+      "class": "phenethylamine",
+      "subclass": "2c_series",
+      "description": "Core 2C-series compound synthesized via electrophilic aromatic bromination of 2C-H.",
+      "routes": [
+        {
+          "route_id": "bromination_of_2ch",
+          "name": "Regioselective para-bromination of 2,5-dimethoxyphenethylamine (2C-H)",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Electrophilic Bromination in Glacial Acetic Acid",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "2c_h_freebase", "name": "2C-H freebase (2,5-dimethoxyphenethylamine)", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "elemental_bromine", "name": "Elemental bromine (Br2)", "amount": 8.8, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "glacial_acetic_acid", "name": "Glacial acetic acid", "amount": 40.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 22.0,
+                "duration_min": 45.0,
+                "addition_rate": "Dropwise over 20 min with vigorous stirring",
+                "atmosphere": "air",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Precipitates directly as hydrobromide salt; wash with chilled acetic acid and ether",
+                "conversion_to_hcl": "Basify with 25% NaOH, extract freebase with DCM, gas with dry HCl",
+                "recrystallization": "Acetonitrile or isopropanol"
+              },
+              "expected_yield_pct": 82.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "2c_e",
+      "number": 24,
+      "name": "2C-E",
+      "chemical_name": "4-Ethyl-2,5-dimethoxyphenethylamine",
+      "formula": "C12H19NO2",
+      "molecular_weight": 209.28,
+      "cas_number": "71539-34-9",
+      "smiles": "CCC1=CC(=C(C=C1OC)CCN)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 245.75,
+      "mp_c": 247.0,
+      "tlc_rf": 0.42,
+      "class": "phenethylamine",
+      "subclass": "2c_series",
+      "description": "Potent 4-ethyl substituted 2C analogue synthesized from 1,4-dimethoxybenzene via Friedel-Crafts acylation, Clemmensen reduction, formylation, Henry reaction, and LAH reduction.",
+      "routes": [
+        {
+          "route_id": "henry_lah_from_aldehyde",
+          "name": "Henry condensation of 2,5-dimethoxy-4-ethylbenzaldehyde and reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Henry Reaction with Nitromethane",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "2_5_dimethoxy_4_ethylbenzaldehyde", "name": "2,5-Dimethoxy-4-ethylbenzaldehyde", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitromethane", "name": "Nitromethane", "amount": 6.5, "unit": "mL", "equivalents": 2.3},
+                {"reagent_id": "ammonium_acetate", "name": "Ammonium acetate", "amount": 1.8, "unit": "g", "equivalents": 0.45}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 75.0,
+                "solvent": "acetic_acid",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Ice water precipitation, suction filter orange crystals",
+                "recrystallization": "IPA"
+              },
+              "expected_yield_pct": 81.0
+            },
+            {
+              "step_number": 2,
+              "name": "LiAlH4 Reduction to Primary Amine",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "nitrostyrene_intermediate", "name": "2,5-Dimethoxy-4-ethyl-beta-nitrostyrene", "amount": 8.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "LiAlH4 in dry ether", "amount": 3.2, "unit": "g", "equivalents": 2.5}
+              ],
+              "conditions": {
+                "temperature_c": 35.0,
+                "duration_min": 240.0,
+                "atmosphere": "nitrogen",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser quench at 0 C",
+                "salt_formation": "Dry HCl gas into anhydrous ether solution",
+                "recrystallization": "Boiling acetonitrile"
+              },
+              "expected_yield_pct": 74.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "2c_i",
+      "number": 33,
+      "name": "2C-I",
+      "chemical_name": "4-Iodo-2,5-dimethoxyphenethylamine",
+      "formula": "C10H14INO2",
+      "molecular_weight": 307.13,
+      "cas_number": "69587-11-7",
+      "smiles": "COC1=CC(=C(C=C1CCN)I)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 343.59,
+      "mp_c": 246.5,
+      "tlc_rf": 0.41,
+      "class": "phenethylamine",
+      "subclass": "2c_series",
+      "description": "4-Iodo substituted 2C analogue synthesized by iodination of 2C-H with iodine monochloride (ICl).",
+      "routes": [
+        {
+          "route_id": "icl_iodination",
+          "name": "Iodination of 2C-H with Iodine Monochloride",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Iodination in Glacial Acetic Acid",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "2c_h_freebase", "name": "2C-H freebase", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "iodine_monochloride", "name": "Iodine monochloride (ICl)", "amount": 9.8, "unit": "g", "equivalents": 1.1},
+                {"reagent_id": "glacial_acetic_acid", "name": "Glacial acetic acid", "amount": 50.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 30.0,
+                "duration_min": 60.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Quench excess ICl with aqueous sodium bisulfite (NaHSO3) until yellow",
+                "basification": "Basify with 30% NaOH to pH 12, extract freebase with DCM",
+                "salt_formation": "HCl in anhydrous isopropanol",
+                "recrystallization": "Acetonitrile / diethyl ether"
+              },
+              "expected_yield_pct": 79.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "dom",
+      "number": 68,
+      "name": "DOM (STP)",
+      "chemical_name": "2,5-Dimethoxy-4-methylamphetamine",
+      "formula": "C12H19NO2",
+      "molecular_weight": 209.28,
+      "cas_number": "15588-95-1",
+      "smiles": "CC1=CC(=C(C=C1OC)CC(C)N)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 245.75,
+      "mp_c": 190.0,
+      "tlc_rf": 0.38,
+      "class": "phenethylamine",
+      "subclass": "dox_series",
+      "description": "Prototypical 4-methyl substituted DOx amphetamine derivative, historically designated STP.",
+      "routes": [
+        {
+          "route_id": "henry_nitroethane_lah",
+          "name": "Condensation of 2,5-dimethoxy-4-methylbenzaldehyde with nitroethane followed by LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Nitroalkene Condensation",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "2_5_dimethoxy_4_methylbenzaldehyde", "name": "2,5-Dimethoxy-4-methylbenzaldehyde", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 8.0, "unit": "mL", "equivalents": 2.0},
+                {"reagent_id": "ammonium_acetate", "name": "Ammonium acetate catalyst", "amount": 2.0, "unit": "g", "equivalents": 0.47}
+              ],
+              "conditions": {
+                "temperature_c": 105.0,
+                "duration_min": 90.0,
+                "solvent": "glacial_acetic_acid",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Ice water pour, collect heavy orange crystals of nitrostyrene",
+                "recrystallization": "Boiling ethanol"
+              },
+              "expected_yield_pct": 86.0
+            },
+            {
+              "step_number": 2,
+              "name": "LAH Reduction to Alpha-Methyl Phenethylamine",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "dom_nitropropene", "name": "1-(2,5-Dimethoxy-4-methylphenyl)-2-nitropropene", "amount": 8.5, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 3.6, "unit": "g", "equivalents": 2.64}
+              ],
+              "conditions": {
+                "temperature_c": 65.0,
+                "duration_min": 210.0,
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser workup",
+                "salt_formation": "Anhydrous HCl in ether",
+                "recrystallization": "IPA / ether"
+              },
+              "expected_yield_pct": 76.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "dob",
+      "number": 62,
+      "name": "DOB",
+      "chemical_name": "4-Bromo-2,5-dimethoxyamphetamine",
+      "formula": "C11H16BrNO2",
+      "molecular_weight": 274.15,
+      "cas_number": "64638-07-9",
+      "smiles": "CC(CC1=CC(=C(C=C1OC)Br)OC)N",
+      "salt_form": "hydrochloride",
+      "salt_mw": 310.61,
+      "mp_c": 202.0,
+      "tlc_rf": 0.39,
+      "class": "phenethylamine",
+      "subclass": "dox_series",
+      "description": "High-potency 4-bromo DOx derivative synthesized via bromination of 2,5-dimethoxyamphetamine.",
+      "routes": [
+        {
+          "route_id": "bromination_of_25_dma",
+          "name": "Bromination of 2,5-DMA hydrochloride with bromine in glacial acetic acid",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Regiospecific Bromination",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "2_5_dma_hcl", "name": "2,5-Dimethoxyamphetamine HCl", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "elemental_bromine", "name": "Bromine (Br2)", "amount": 7.2, "unit": "g", "equivalents": 1.04},
+                {"reagent_id": "glacial_acetic_acid", "name": "Glacial acetic acid", "amount": 50.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 25.0,
+                "duration_min": 60.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Product precipitates as HBr salt; convert to freebase with NaOH and form HCl salt",
+                "recrystallization": "Isopropanol / ether"
+              },
+              "expected_yield_pct": 85.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "mdma",
+      "number": 109,
+      "name": "MDMA",
+      "chemical_name": "3,4-Methylenedioxymethamphetamine",
+      "formula": "C11H15NO2",
+      "molecular_weight": 193.24,
+      "cas_number": "42542-10-9",
+      "smiles": "CC(CC1=CC2=C(C=C1)OCO2)NC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 229.70,
+      "mp_c": 150.0,
+      "tlc_rf": 0.35,
+      "class": "phenethylamine",
+      "subclass": "methylenedioxy",
+      "description": "Iconic entactogen synthesized from MDP2P via reductive amination with methylamine.",
+      "routes": [
+        {
+          "route_id": "reductive_amination_nabh4",
+          "name": "Reductive amination of MDP2P with methylamine and NaBH4 or Al/Hg",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Imine Formation and Hydride Reduction",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "mdp2p", "name": "3,4-Methylenedioxyphenyl-2-propanone (MDP2P)", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "methylamine_hcl", "name": "Methylamine hydrochloride", "amount": 7.5, "unit": "g", "equivalents": 2.0},
+                {"reagent_id": "sodium_cyanoborohydride", "name": "Sodium cyanoborohydride (or NaBH4)", "amount": 4.2, "unit": "g", "equivalents": 1.2},
+                {"reagent_id": "methanol", "name": "Anhydrous methanol", "amount": 80.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 20.0,
+                "duration_min": 360.0,
+                "ph_control": "Maintain pH 6.0-6.5 with methanolic HCl",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Acidify to pH 1 with HCl, evaporate methanol, wash aqueous phase with ether",
+                "basification": "Basify aqueous phase with 30% NaOH to pH 12, extract freebase with DCM",
+                "salt_formation": "Dry over MgSO4, gas with anhydrous HCl",
+                "recrystallization": "Isopropanol / acetone"
+              },
+              "expected_yield_pct": 79.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "mda",
+      "number": 100,
+      "name": "MDA",
+      "chemical_name": "3,4-Methylenedioxyamphetamine",
+      "formula": "C10H13NO2",
+      "molecular_weight": 179.22,
+      "cas_number": "4764-17-4",
+      "smiles": "CC(CC1=CC2=C(C=C1)OCO2)N",
+      "salt_form": "hydrochloride",
+      "salt_mw": 215.68,
+      "mp_c": 187.0,
+      "tlc_rf": 0.34,
+      "class": "phenethylamine",
+      "subclass": "methylenedioxy",
+      "description": "Primary amine entactogen precursor to MDMA, prepared via piperonal Henry reaction and LAH reduction.",
+      "routes": [
+        {
+          "route_id": "henry_piperonal_lah",
+          "name": "Henry condensation of piperonal with nitroethane followed by reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Piperonal Condensation to 1-(3,4-methylenedioxyphenyl)-2-nitropropene",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "piperonal", "name": "Piperonal (heliotropin)", "amount": 15.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 11.5, "unit": "mL", "equivalents": 1.6},
+                {"reagent_id": "cyclohexylamine", "name": "Cyclohexylamine catalyst", "amount": 2.0, "unit": "mL", "equivalents": 0.17}
+              ],
+              "conditions": {
+                "temperature_c": 95.0,
+                "duration_min": 120.0,
+                "solvent": "acetic_acid",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Ice water pour, collect bright yellow crystalline nitropropene",
+                "recrystallization": "Boiling ethanol"
+              },
+              "expected_yield_pct": 83.0
+            },
+            {
+              "step_number": 2,
+              "name": "LAH Reduction to MDA Freebase",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "mda_nitropropene", "name": "1-(3,4-Methylenedioxyphenyl)-2-nitropropene", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "LiAlH4", "amount": 4.5, "unit": "g", "equivalents": 2.45}
+              ],
+              "conditions": {
+                "temperature_c": 65.0,
+                "duration_min": 180.0,
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser quench",
+                "salt_formation": "HCl gas into dry ether",
+                "recrystallization": "Isopropanol"
+              },
+              "expected_yield_pct": 77.0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

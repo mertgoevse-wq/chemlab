@@ -71,19 +71,19 @@ func _build_ui() -> void:
 	vac_btn.pressed.connect(func(): _evaluate_safety())
 	vac.add_child(vac_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 368)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -116,7 +116,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Callable) -> void:
@@ -124,8 +124,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _cursor(parent))
 	cb.size = Vector2(220, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -139,14 +139,17 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _cursor(parent: Control) -> float:
 	return (parent.get_child_count() - 1) * 40
+
+func _refresh_all() -> void:
+	_calc_hold_time()
 
 func _calc_hold_time() -> void:
 	# Hold time = liquid inventory / boil-off rate. Boil-off depends on cooling power & temp.
@@ -155,53 +158,53 @@ func _calc_hold_time() -> void:
 	var hold_s = inventory_j / boil_off_w
 	var hold_h = hold_s / 3600.0
 
-	var txt = []
-	txt.push("[center][b]Cryogenic system[/b][/center]")
-	txt.push("")
-	txt.push("System: %s" % _system)
-	txt.push("Base temperature: %0.1f mK" % _base_temp_mk)
-	txt.push("Liquid helium: %0.1f L" % _liquid_helium_l)
-	txt.push("Cooling power: %0.1f µW at base temp" % (_cooling_power_w * 1e6))
-	txt.push("")
-	txt.push("Estimated boil-off: %0.2f W" % boil_off_w)
-	txt.push("Hold time: %0.1f h (%0.1f days)" % [hold_h, hold_h / 24.0])
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Cryogenic system[/b][/center]")
+	txt.append("")
+	txt.append("System: %s" % _system)
+	txt.append("Base temperature: %0.1f mK" % _base_temp_mk)
+	txt.append("Liquid helium: %0.1f L" % _liquid_helium_l)
+	txt.append("Cooling power: %0.1f µW at base temp" % (_cooling_power_w * 1e6))
+	txt.append("")
+	txt.append("Estimated boil-off: %0.2f W" % boil_off_w)
+	txt.append("Hold time: %0.1f h (%0.1f days)" % [hold_h, hold_h / 24.0])
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] Hold time = inventory / boil-off rate. Lower base temp → higher boil-off.")
-	why.push("Liquid helium boil-off cools the cold head; dilution fridge needs continuous He-3/He-4 circulation.")
-	why.push("UHV (≤1e-6 mbar) needed for surface science, quantum devices.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] Hold time = inventory / boil-off rate. Lower base temp → higher boil-off.")
+	why.append("Liquid helium boil-off cools the cold head; dilution fridge needs continuous He-3/He-4 circulation.")
+	why.append("UHV (≤1e-6 mbar) needed for surface science, quantum devices.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green" if hold_h > 24 else ( "amber" if hold_h > 4 else "red")
 	_log.append_text("[color=%s]→[/color] Cryo: %s, base %0.1f mK, hold %0.1f h\n" % [level, _system, _base_temp_mk, hold_h])
 
 func _evaluate_safety() -> void:
-	var txt = []
-	txt.push("[center][b]Cryogenic safety[/b][/center]")
-	txt.push("")
-	txt.push("Pressure: %0.2e mbar" % _pressure_mbar)
-	txt.push("Quench risk: %s" % (_quench_risk and "ELEVATED" or "nominal"))
-	txt.push("Oxygen monitor: %s" % (_oxygen_monitor and "active" or "OFF"))
-	txt.push("Asphyxiation risk: %s" % (_asphyxiation_risk and "yes" or "no"))
-	txt.push("")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Cryogenic safety[/b][/center]")
+	txt.append("")
+	txt.append("Pressure: %0.2e mbar" % _pressure_mbar)
+	txt.append("Quench risk: %s" % (_quench_risk and "ELEVATED" or "nominal"))
+	txt.append("Oxygen monitor: %s" % (_oxygen_monitor and "active" or "OFF"))
+	txt.append("Asphyxiation risk: %s" % (_asphyxiation_risk and "yes" or "no"))
+	txt.append("")
 	if _quench_risk:
-		txt.push("CRITICAL: Quench — rapid He boil-off, pressure rise, possible asphyxiation.")
+		txt.append("CRITICAL: Quench — rapid He boil-off, pressure rise, possible asphyxiation.")
 	if _pressure_mbar > 1e-3:
-		txt.push("WARNING: Not UHV — surface contamination likely.")
+		txt.append("WARNING: Not UHV — surface contamination likely.")
 	if not _oxygen_monitor:
-		txt.push("WARNING: No O2 monitor — He boil-off can displace oxygen.")
+		txt.append("WARNING: No O2 monitor — He boil-off can displace oxygen.")
 	if _asphyxiation_risk:
-		txt.push("CRITICAL: Asphyxiation — evacuate, ventilate.")
+		txt.append("CRITICAL: Asphyxiation — evacuate, ventilate.")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] He boil-off displaces oxygen → asphyxiation in confined spaces.")
-	why.push("Quench: superconducting magnet loses superconductivity, massive He release.")
-	why.push("UHV: required to avoid surface contamination and mean free path issues.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] He boil-off displaces oxygen → asphyxiation in confined spaces.")
+	why.append("Quench: superconducting magnet loses superconductivity, massive He release.")
+	why.append("UHV: required to avoid surface contamination and mean free path issues.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green"
 	if _quench_risk or _asphyxiation_risk:

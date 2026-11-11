@@ -4,12 +4,28 @@
 
 extends Node
 
-class_name InputManager
-
 signal input_method_changed(method: String)
 signal gesture_detected(gesture: String, data: Dictionary)
 signal radial_wheel_toggled(enabled: bool)
 signal quick_slot_activated(slot_index: int)
+signal tracker_connection_changed(connected: bool)
+
+# 1-Euro Filter and Schmitt Trigger Reference Constants
+const ONE_EURO_FC_MIN: float = 1.0
+const ONE_EURO_BETA: float = 0.007
+const PINCH_THRESHOLD_ENTER: float = 0.045
+const PINCH_THRESHOLD_EXIT: float = 0.065
+const POUR_ANGLE_THRESHOLD: float = 38.0
+const DAEMON_PORT: int = 8768
+
+# Apparatus manipulation signals (connected to PlayerController and 3D interactables)
+signal apparatus_grabbed(apparatus: Variant)
+signal apparatus_released(apparatus: Variant)
+signal tilt_angle_updated(angle_deg: float)
+signal apparatus_hovered(apparatus: Variant)
+signal apparatus_unhovered(apparatus: Variant)
+signal apparatus_poured(pour_rate: float)
+signal apparatus_swirled(rpm: float)
 
 # Input state
 var current_method: String = "keyboard_mouse"  # keyboard_mouse, webcam, joycon, gamesir
@@ -18,9 +34,22 @@ var joycon_connected: bool = false
 var gamesir_connected: bool = false
 var radial_wheel_active: bool = false
 var last_gesture: String = ""
+var currently_hovered_apparatus: Node = null
+var is_holding_apparatus: bool = false
 
 # Webcam tracking (via IPC from Python)
 var _hand_tracker_ipc: String = "127.0.0.1:8766"  # Python hand tracker port
+var _tcp_client: StreamPeerTCP = StreamPeerTCP.new()
+var _tcp_buffer: String = ""
+var _reconnect_timer: float = 0.0
+
+func _process(delta: float) -> void:
+	if webcam_tracking_active:
+		_poll_webcam_stream(delta)
+
+func _init() -> void:
+	apparatus_hovered.connect(func(app): currently_hovered_apparatus = app as Node)
+	apparatus_unhovered.connect(func(_app): currently_hovered_apparatus = null)
 
 func _ready() -> void:
 	_load_settings()
@@ -32,6 +61,8 @@ func _load_settings() -> void:
 		current_method = config.get_value("input", "method", "keyboard_mouse")
 		webcam_tracking_active = config.get_value("input", "webcam_tracking", false)
 	input_method_changed.emit(current_method)
+	if webcam_tracking_active or current_method == "webcam":
+		_start_hand_tracker_ipc()
 
 func _save_settings() -> void:
 	var config = ConfigFile.new()
@@ -92,12 +123,47 @@ func stop_webcam_tracking() -> void:
 	print("Stopped webcam hand tracking.")
 
 func _start_hand_tracker_ipc() -> void:
-	# Connect to hand_tracker.py on port 8766
-	# Would use StreamPeerTCP or WebSocket
-	pass
+	_tcp_buffer = ""
+	_reconnect_timer = 0.0
+	if not _tcp_client:
+		_tcp_client = StreamPeerTCP.new()
+	else:
+		_tcp_client.poll()
+		var status = _tcp_client.get_status()
+		if status == StreamPeerTCP.STATUS_CONNECTED or status == StreamPeerTCP.STATUS_CONNECTING:
+			return
+		elif status != StreamPeerTCP.STATUS_NONE:
+			_tcp_client.disconnect_from_host()
+	_tcp_client.connect_to_host("127.0.0.1", 8766)
 
 func _stop_hand_tracker_ipc() -> void:
-	pass
+	if _tcp_client:
+		_tcp_client.disconnect_from_host()
+	_tcp_buffer = ""
+
+func _poll_webcam_stream(delta: float) -> void:
+	if not _tcp_client:
+		return
+	_tcp_client.poll()
+	var status = _tcp_client.get_status()
+	if status == StreamPeerTCP.STATUS_CONNECTED:
+		var available = _tcp_client.get_available_bytes()
+		if available > 0:
+			var data = _tcp_client.get_utf8_string(available)
+			_tcp_buffer += data
+			while "\n" in _tcp_buffer:
+				var newline_pos = _tcp_buffer.find("\n")
+				var line = _tcp_buffer.substr(0, newline_pos).strip_edges()
+				_tcp_buffer = _tcp_buffer.substr(newline_pos + 1)
+				if line.begins_with("{"):
+					var parsed = JSON.parse_string(line)
+					if parsed is Dictionary:
+						_on_gesture_received(parsed)
+	elif status == StreamPeerTCP.STATUS_NONE or status == StreamPeerTCP.STATUS_ERROR:
+		_reconnect_timer += delta
+		if _reconnect_timer >= 2.0:
+			_reconnect_timer = 0.0
+			_tcp_client.connect_to_host("127.0.0.1", 8766)
 
 func _on_gesture_received(gesture_data: Dictionary) -> void:
 	var gesture = gesture_data.get("gesture", "")
@@ -113,33 +179,37 @@ func _on_gesture_received(gesture_data: Dictionary) -> void:
 	_map_gesture_to_action(gesture, gesture_data)
 
 func _map_gesture_to_action(gesture: String, data: Dictionary) -> void:
-	var inv_manager = get_node_or_null("/root/InventoryManager")
-	var sim_bridge = get_node_or_null("/root/SimulationBridge")
+	var tilt = float(data.get("tilt_degrees", 0.0))
+	if tilt > 0.0:
+		tilt_angle_updated.emit(tilt)
 
 	match gesture:
-		"PINCH":
-			# Pick up small apparatus
-			print("Gesture: PINCH - Pick up")
+		"PINCH", "GRAB", "FIST":
+			if not is_holding_apparatus and currently_hovered_apparatus != null:
+				is_holding_apparatus = true
+				apparatus_grabbed.emit(currently_hovered_apparatus)
 		"PINCH_DRAG":
-			# Pour (tilt-governed)
-			var pour_rate = data.get("pour_rate", 0.0)
-			var tilt = data.get("tilt_degrees", 0.0)
-			if sim_bridge:
-				# Would trigger pour action
-				pass
-		"GRAB":
-			# Move vessel
-			var grab_strength = data.get("grab_strength", 0.0)
+			var pour_rate = float(data.get("pour_rate", 0.0))
+			if pour_rate > 0.0:
+				apparatus_poured.emit(pour_rate)
+			if tilt > 0.0:
+				tilt_angle_updated.emit(tilt)
+		"RELEASE", "IDLE":
+			if is_holding_apparatus:
+				is_holding_apparatus = false
+				apparatus_released.emit(null)
+		"SWIRL":
+			apparatus_swirled.emit(120.0)
 		"SWIPE":
-			# Turn knob
-			var swipe_x = data.get("swipe_delta_x", 0.0)
-			var swipe_y = data.get("swipe_delta_y", 0.0)
+			var swipe_x = float(data.get("swipe_delta_x", 0.0))
+			if currently_hovered_apparatus != null and currently_hovered_apparatus.has_method("adjust_knob"):
+				currently_hovered_apparatus.adjust_knob(swipe_x)
 		"POINT":
-			# Raycast select
 			var world_pos = data.get("world_position_3d", Vector3.ZERO)
-		"FIST":
-			# Firm lock on vessel
-			pass
+
+func release_apparatus() -> void:
+	is_holding_apparatus = false
+	apparatus_released.emit(null)
 
 # =============================================================================
 # JOY-CON SUPPORT

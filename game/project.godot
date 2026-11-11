@@ -1,5 +1,8 @@
-# Athanor Ascension - Godot Project Settings (project.godot)
-# This file contains the project configuration for Godot 4.7
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; but can be edited easily using the text editor.
+
+config_version=5
 
 [application]
 

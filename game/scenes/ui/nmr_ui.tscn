@@ -1,0 +1,308 @@
+[gd_scene load_steps=20 format=3 uid="uid://chemlab_nmr_ui_01"]
+
+[ext_resource type="Script" path="res://scenes/ui/nmr_ui.gd" id="1_nmr_ui_script"]
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Panel"]
+bg_color = Color(0.05, 0.05, 0.1, 0.95)
+border_color = Color(0.2, 0.4, 0.6, 1)
+border_width_bottom = 2
+border_width_left = 2
+border_width_right = 2
+border_width_top = 2
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_offset = Vector2(2, 2)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Button"]
+bg_color = Color(0.1, 0.2, 0.35, 1)
+border_color = Color(0.3, 0.5, 0.7, 1)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Button_Hover"]
+bg_color = Color(0.2, 0.4, 0.6, 1)
+border_color = Color(0.4, 0.6, 0.8, 1)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Button_Active"]
+bg_color = Color(0.3, 0.6, 0.9, 1)
+border_color = Color(0.5, 0.7, 1, 1)
+border_width_bottom = 2
+border_width_left = 2
+border_width_right = 2
+border_width_top = 2
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Progress"]
+bg_color = Color(0.05, 0.1, 0.2, 1)
+border_color = Color(0.2, 0.5, 0.8, 1)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Graph"]
+bg_color = Color(0.02, 0.02, 0.05, 1)
+border_color = Color(0.15, 0.3, 0.5, 1)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="Style_NMR_Sample_Card"]
+bg_color = Color(0.08, 0.12, 0.18, 0.95)
+border_color = Color(0.25, 0.35, 0.5, 1)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+
+[node name="NMRUI" type="Node3D" node_paths=PackedStringArray("root_panel")]
+script = ExtResource("1_nmr_ui_script")
+
+[node name="RootPanel" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(480, 320)
+layout_mode = 3
+
+[node name="MainPanel" type="PanelContainer" parent="RootPanel"]
+layout_mode = 2
+anchors_preset = 15
+custom_constants/panel_hmargin_left = 8
+custom_constants/panel_hmargin_right = 8
+custom_constants/panel_vmargin_top = 8
+custom_constants/panel_vmargin_bottom = 8
+theme_override_constants/panel_hmargin_left = 8
+theme_override_constants/panel_hmargin_right = 8
+theme_override_constants/panel_vmargin_top = 8
+theme_override_constants/panel_vmargin_bottom = 8
+theme_override_styleboxes/panel = SubResource("Style_NMR_Panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RootPanel/MainPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderBar" type="HBoxContainer" parent="RootPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/HeaderBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "NMR Spectrometer (400 MHz)"
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+
+[node name="StatusIndicator" type="HBoxContainer" parent="RootPanel/MainPanel/VBoxContainer/HeaderBar"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+
+[node name="StatusDot" type="Control" parent="RootPanel/MainPanel/VBoxContainer/HeaderBar/StatusIndicator"]
+layout_mode = 2
+custom_minimum_size = Vector2(12, 12)
+custom_maximum_size = Vector2(12, 12)
+
+[node name="StatusLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/HeaderBar/StatusIndicator"]
+layout_mode = 2
+text = "Ready"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.85, 1, 1)
+
+[node name="PowerButton" type="Button" parent="RootPanel/MainPanel/VBoxContainer/HeaderBar"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Power"
+theme_override_styleboxes/normal = SubResource("Style_NMR_Button")
+theme_override_styleboxes/hover = SubResource("Style_NMR_Button_Hover")
+theme_override_styleboxes/pressed = SubResource("Style_NMR_Button_Active")
+theme_override_font_sizes/font_size = 12
+
+[node name="SampleInfoCard" type="PanelContainer" parent="RootPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_styleboxes/panel = SubResource("Style_NMR_Sample_Card")
+custom_minimum_size = Vector2(0, 100)
+size_flags_vertical = 1
+
+[node name="SampleVBox" type="VBoxContainer" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard"]
+layout_mode = 2
+theme_override_constants/separation = 4
+custom_constants/panel_hmargin_left = 12
+custom_constants/panel_hmargin_right = 12
+custom_constants/panel_vmargin_top = 8
+custom_constants/panel_vmargin_bottom = 8
+
+[node name="SampleHeader" type="HBoxContainer" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SampleIcon" type="TextureRect" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleHeader"]
+layout_mode = 2
+custom_minimum_size = Vector2(32, 32)
+custom_maximum_size = Vector2(32, 32)
+expand_mode = 1
+stretch_mode = 2
+
+[node name="SampleNameLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "No Sample Inserted"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.9, 0.9, 1, 1)
+
+[node name="SampleDetails" type="GridContainer" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox"]
+layout_mode = 2
+columns = 4
+theme_override_constants/hseparation = 16
+theme_override_constants/vseparation = 4
+
+[node name="CompoundLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "Compound:"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+
+[node name="CompoundValue" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "—"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+
+[node name="ConcentrationLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "Conc.:"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+
+[node name="ConcentrationValue" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "—"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+
+[node name="SolventLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "Solvent:"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+
+[node name="SolventValue" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "—"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+
+[node name="TempLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "Temp.:"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
+
+[node name="TempValue" type="Label" parent="RootPanel/MainPanel/VBoxContainer/SampleInfoCard/SampleVBox/SampleDetails"]
+layout_mode = 2
+text = "—"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+
+[node name="SpectrumContainer" type="PanelContainer" parent="RootPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 180)
+size_flags_vertical = 3
+theme_override_styleboxes/panel = SubResource("Style_NMR_Graph")
+
+[node name="SpectrumGraph" type="Control" parent="RootPanel/MainPanel/VBoxContainer/SpectrumContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ControlBar" type="HBoxContainer" parent="RootPanel/MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="AnalyzeButton" type="Button" parent="RootPanel/MainPanel/VBoxContainer/ControlBar"]
+layout_mode = 2
+size_flags_horizontal = 1
+text = "Start Analysis"
+theme_override_styleboxes/normal = SubResource("Style_NMR_Button")
+theme_override_styleboxes/hover = SubResource("Style_NMR_Button_Hover")
+theme_override_styleboxes/pressed = SubResource("Style_NMR_Button_Active")
+theme_override_font_sizes/font_size = 13
+
+[node name="ProgressBar" type="ProgressBar" parent="RootPanel/MainPanel/VBoxContainer/ControlBar"]
+custom_minimum_size = Vector2(200, 20)
+size_flags_horizontal = 3
+step = 0.1
+value = 0.0
+max_value = 100.0
+show_percentage = true
+
+[node name="CancelButton" type="Button" parent="RootPanel/MainPanel/VBoxContainer/ControlBar"]
+layout_mode = 2
+size_flags_horizontal = 1
+text = "Cancel"
+theme_override_styleboxes/normal = SubResource("Style_NMR_Button")
+theme_override_styleboxes/hover = SubResource("Style_NMR_Button_Hover")
+theme_override_styleboxes/pressed = SubResource("Style_NMR_Button_Active")
+theme_override_font_sizes/font_size = 13
+visible = false
+
+[node name="EjectButton" type="Button" parent="RootPanel/MainPanel/VBoxContainer/ControlBar"]
+layout_mode = 2
+size_flags_horizontal = 1
+text = "Eject Sample"
+theme_override_styleboxes/normal = SubResource("Style_NMR_Button")
+theme_override_styleboxes/hover = SubResource("Style_NMR_Button_Hover")
+theme_override_styleboxes/pressed = SubResource("Style_NMR_Button_Active")
+theme_override_font_sizes/font_size = 13
+visible = false
+
+[node name="ErrorPanel" type="PanelContainer" parent="RootPanel/MainPanel/VBoxContainer"]
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+theme_override_styleboxes/panel = SubResource("Style_NMR_Panel")
+
+[node name="ErrorLabel" type="Label" parent="RootPanel/MainPanel/VBoxContainer/ErrorPanel"]
+layout_mode = 2
+text = "Error: No sample inserted"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

@@ -339,7 +339,7 @@ Safety Score → Grade → Stars (1–3) → XP Multiplier Modification
 
 | Limit | Value | Rationale |
 |-------|-------|-----------|
-| **Max Skill Level** | 120 (soft cap 100) | Runescape-style progression ceiling; 120 is post-mastery |
+| **Max Skill Level** | 120 (soft cap 100) | Classic RPG progression ceiling; 120 is post-mastery |
 | **Max Lab Tier** | 6 (Orbital 'Apex') | Content tier cap; no tier 7 planned |
 | **Max Suit Tier** | 6 (Positive-pressure BSL-4 / Remote manipulator) | Safety ceiling — beyond this, simulation abstracts |
 | **Max Codex Categories** | 6 (Analgesics, Dyes, Precursors, Natural Products, Forensic Standards, Psychoactives) | Collection completion goal |
@@ -408,7 +408,7 @@ Safety Score → Grade → Stars (1–3) → XP Multiplier Modification
 
 ### 9.1 Key Balance Findings
 
-1. ✅ **XP curve is well-designed** — Runescape-style formula with soft cap at 100 and exponential climb to 120 feels natural
+1. ✅ **XP curve is well-designed** — Classic mastery formula with soft cap at 100 and exponential climb to 120 feels natural
 2. ✅ **Lab unlock pacing is solid** — quest + skill gates provide natural progression without hard walls
 3. ✅ **Quest reward distribution is sustainable** — daily routines + weekly projects + quest chain cover all progression axes
 4. ⚠️ **Physics track may bottleneck** — consider reducing unlock reqs by 5 levels or adding cross-track alternatives

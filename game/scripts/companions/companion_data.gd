@@ -1,6 +1,6 @@
 # Companion System — Data Structures & Enums (Godot 4 Engine)
 # Defines all companion species, rarities, personalities, and chemistry support bonuses.
-# Complements the existing Runescape-style skill/quest system.
+# Complements the existing progressive skill/quest system.
 
 class_name CompanionData
 extends RefCounted
@@ -253,7 +253,7 @@ static func care_need_to_string(need: CareNeed) -> String:
 	return "Unknown"
 
 static func get_xp_for_level(level: int) -> int:
-	"""Uses the same Runescape-style curve as skills."""
+	"""Uses the canonical exponential progression curve for levels 1-120."""
 	if level <= 1:
 		return 0
 	var total = 0

@@ -1,22 +1,22 @@
 [gd_scene load_steps=50 format=3 uid="uid://chemlab_nmr_spectrometer_01"]
 
 [ext_resource type="Script" path="res://scenes/apparatus/nmr_spectrometer.gd" id="1_nmr_script"]
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Magnet"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Magnet"]
 albedo_color = Color(0.3, 0.3, 0.35, 1)
 metallic = 0.8
 roughness = 0.2
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Bore"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Bore"]
 albedo_color = Color(0.05, 0.05, 0.05, 1)
 metallic = 0.1
 roughness = 0.9
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Console"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Console"]
 albedo_color = Color(0.2, 0.2, 0.22, 1)
 metallic = 0.3
 roughness = 0.4
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Display"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Display"]
 albedo_color = Color(0.02, 0.02, 0.05, 1)
 emission_enabled = true
 emission = Color(0.1, 0.3, 0.5, 1)
@@ -24,43 +24,39 @@ emission_energy_multiplier = 2.0
 metallic = 0.0
 roughness = 0.1
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Sample_Tube"]
-albedo_color = Color(0.9, 0.95, 1.0, 1)
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Sample_Tube"]
+transparency = 1
+albedo_color = Color(0.9, 0.95, 1.0, 0.3)
 metallic = 0.0
 roughness = 0.05
-ior = 1.47
-transparency = 1
-alpha = 0.3
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Liquid"]
-albedo_color = Color(0.2, 0.5, 0.8, 1)
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Liquid"]
+transparency = 1
+albedo_color = Color(0.2, 0.5, 0.8, 0.8)
 metallic = 0.0
 roughness = 0.05
-ior = 1.33
-transparency = 1
-alpha = 0.8
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Keyboard"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Keyboard"]
 albedo_color = Color(0.15, 0.15, 0.17, 1)
 metallic = 0.2
 roughness = 0.6
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Shim"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Shim"]
 albedo_color = Color(0.4, 0.4, 0.45, 1)
 metallic = 0.5
 roughness = 0.3
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Gradient"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Gradient"]
 albedo_color = Color(0.8, 0.3, 0.1, 1)
 metallic = 0.9
 roughness = 0.2
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_RF"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_RF"]
 albedo_color = Color(0.9, 0.7, 0.1, 1)
 metallic = 0.95
 roughness = 0.1
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Label"]
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Label"]
 albedo_color = Color(1.0, 0.1, 0.1, 1)
 emission_enabled = true
 emission = Color(1.0, 0.0, 0.0, 1)
@@ -68,82 +64,72 @@ emission_energy_multiplier = 1.0
 metallic = 0.0
 roughness = 0.8
 
-[ext_resource type="StandardMaterial3D" id="Mat_NMR_Trigger"]
-albedo_color = Color(0.0, 1.0, 0.0, 1)
+[sub_resource type="StandardMaterial3D" id="Mat_NMR_Trigger"]
 transparency = 1
-alpha = 0.0
+albedo_color = Color(0.0, 1.0, 0.0, 0.0)
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Magnet"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Magnet"]
 height = 1.2
 radius = 0.4
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Bore"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Bore"]
 height = 1.4
 radius = 0.05
 
-[ext_resource type="BoxMesh" id="Mesh_NMR_Console"]
+[sub_resource type="BoxMesh" id="Mesh_NMR_Console"]
 size = Vector3(0.8, 0.48, 0.8)
 
-[ext_resource type="PlaneMesh" id="Mesh_NMR_Display"]
+[sub_resource type="PlaneMesh" id="Mesh_NMR_Display"]
 size = Vector3(0.35, 0.28, 0.001)
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Sample_Tube"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Sample_Tube"]
 height = 0.15
 radius = 0.025
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Liquid"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Liquid"]
 height = 0.12
 radius = 0.022
 
-[ext_resource type="BoxMesh" id="Mesh_NMR_Keyboard"]
+[sub_resource type="BoxMesh" id="Mesh_NMR_Keyboard"]
 size = Vector3(0.6, 0.2, 0.15)
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Cryogen_Port"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Cryogen_Port"]
+top_radius = 0.03
+bottom_radius = 0.03
 height = 0.1
-radius = 0.03
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Shim"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Shim"]
+top_radius = 0.18
+bottom_radius = 0.18
 height = 0.8
-radius = 0.18
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_Gradient"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Gradient"]
+top_radius = 0.12
+bottom_radius = 0.12
 height = 0.7
-radius = 0.12
 
-[ext_resource type="CylinderMesh" id="Mesh_NMR_RF"]
+[sub_resource type="CylinderMesh" id="Mesh_NMR_RF"]
+top_radius = 0.07
+bottom_radius = 0.07
 height = 0.6
-radius = 0.07
 
-[ext_resource type="PlaneMesh" id="Mesh_NMR_Warning_Label"]
-size = Vector3(0.3, 0.3, 0.001)
+[sub_resource type="PlaneMesh" id="Mesh_NMR_Warning_Label"]
+size = Vector2(0.3, 0.3)
 
-[ext_resource type="CircleMesh" id="Mesh_NMR_Warning_Symbol"]
-radius = 0.1
+[sub_resource type="CylinderMesh" id="Mesh_NMR_Warning_Symbol"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.002
 
-[ext_resource type="PlaneMesh" id="Mesh_NMR_Interaction_Trigger"]
+[sub_resource type="PlaneMesh" id="Mesh_NMR_Interaction_Trigger"]
 size = Vector3(0.6, 0.6, 0.001)
 
-[ext_resource type="CylinderShape3D" id="Shape_NMR_Bore"]
+[sub_resource type="CylinderShape3D" id="Shape_NMR_Bore"]
 height = 1.4
 radius = 0.05
 
-[ext_resource type="BoxShape3D" id="Shape_NMR_Trigger"]
+[sub_resource type="BoxShape3D" id="Shape_NMR_Trigger"]
 size = Vector3(0.6, 0.01, 0.6)
-
-[ext_resource type="AudioStreamPlayer3D" id="Audio_NMR_Motor"]
-unit_size = 3.0
-max_distance = 15.0
-volume_db = -10.0
-
-[ext_resource type="AudioStreamPlayer3D" id="Audio_NMR_Shim"]
-unit_size = 2.0
-max_distance = 8.0
-volume_db = -15.0
-
-[ext_resource type="OmniLight3D" id="Light_NMR_Status"]
-light_color = Color(0.0, 1.0, 0.0, 1)
-light_energy = 1.0
-omni_range = 2.0
 
 [node name="NMRSpectrometer" type="StaticBody3D" node_paths=PackedStringArray("MagnetHousing", "BoreCollision", "SampleTubeSlot", "DisplayScreen", "ConsoleUnit", "PowerSwitch", "StatusLED", "InsertionSensor", "MotorAudio", "ShimAudio", "InteractionTrigger")]
 script = ExtResource("1_nmr_script")
@@ -161,8 +147,8 @@ interaction_trigger = NodePath("InteractionTrigger")
 
 [node name="MagnetHousing" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
-mesh = ExtResource("Mesh_NMR_Magnet")
-material_override = ExtResource("Mat_NMR_Magnet")
+mesh = SubResource("Mesh_NMR_Magnet")
+material_override = SubResource("Mat_NMR_Magnet")
 
 [node name="BoreCollision" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
@@ -172,20 +158,20 @@ monitoring = true
 monitorable = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BoreCollision"]
-shape = ExtResource("Shape_NMR_Bore")
+shape = SubResource("Shape_NMR_Bore")
 
 [node name="SampleTubeSlot" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
 
 [node name="DisplayScreen" type="MeshInstance3D" parent="."]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.2, 0, 0.55)
-mesh = ExtResource("Mesh_NMR_Display")
-material_override = ExtResource("Mat_NMR_Display")
+mesh = SubResource("Mesh_NMR_Display")
+material_override = SubResource("Mat_NMR_Display")
 
 [node name="ConsoleUnit" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0, 0.4)
-mesh = ExtResource("Mesh_NMR_Console")
-material_override = ExtResource("Mat_NMR_Console")
+mesh = SubResource("Mesh_NMR_Console")
+material_override = SubResource("Mat_NMR_Console")
 
 [node name="PowerSwitch" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.3, 0.5)
@@ -204,7 +190,7 @@ monitoring = true
 monitorable = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InsertionSensor"]
-shape = ExtResource("Shape_NMR_Bore")
+shape = SubResource("Shape_NMR_Bore")
 
 [node name="MotorAudio" type="AudioStreamPlayer3D" parent="."]
 unit_size = 3.0
@@ -224,61 +210,61 @@ monitoring = true
 monitorable = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionTrigger"]
-shape = ExtResource("Shape_NMR_Trigger")
+shape = SubResource("Shape_NMR_Trigger")
 
 [node name="MagnetInternals" type="Node3D" parent="."]
 
 [node name="ShimCoils" type="MeshInstance3D" parent="MagnetInternals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
-mesh = ExtResource("Mesh_NMR_Shim")
-material_override = ExtResource("Mat_NMR_Shim")
+mesh = SubResource("Mesh_NMR_Shim")
+material_override = SubResource("Mat_NMR_Shim")
 
 [node name="GradientCoils" type="MeshInstance3D" parent="MagnetInternals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
-mesh = ExtResource("Mesh_NMR_Gradient")
-material_override = ExtResource("Mat_NMR_Gradient")
+mesh = SubResource("Mesh_NMR_Gradient")
+material_override = SubResource("Mat_NMR_Gradient")
 
 [node name="RF_Coil" type="MeshInstance3D" parent="MagnetInternals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
-mesh = ExtResource("Mesh_NMR_RF")
-material_override = ExtResource("Mat_NMR_RF")
+mesh = SubResource("Mesh_NMR_RF")
+material_override = SubResource("Mat_NMR_RF")
 
 [node name="WarningLabel" type="MeshInstance3D" parent="."]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.5, 0.5)
-mesh = ExtResource("Mesh_NMR_Warning_Label")
-material_override = ExtResource("Mat_NMR_Label")
+mesh = SubResource("Mesh_NMR_Warning_Label")
+material_override = SubResource("Mat_NMR_Label")
 
 [node name="WarningSymbol" type="MeshInstance3D" parent="."]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0.5, 0.52)
-mesh = ExtResource("Mesh_NMR_Warning_Symbol")
-material_override = ExtResource("Mat_NMR_Label")
+mesh = SubResource("Mesh_NMR_Warning_Symbol")
+material_override = SubResource("Mat_NMR_Label")
 
 [node name="Keyboard" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, -0.4, 0.15)
-mesh = ExtResource("Mesh_NMR_Keyboard")
-material_override = ExtResource("Mat_NMR_Keyboard")
+mesh = SubResource("Mesh_NMR_Keyboard")
+material_override = SubResource("Mat_NMR_Keyboard")
 
 [node name="CryogenPorts" type="Node3D" parent="."]
 
 [node name="CryogenPort_0" type="MeshInstance3D" parent="CryogenPorts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0, 1.25)
-mesh = ExtResource("Mesh_NMR_Cryogen_Port")
-material_override = ExtResource("Mat_NMR_Magnet")
+mesh = SubResource("Mesh_NMR_Cryogen_Port")
+material_override = SubResource("Mat_NMR_Magnet")
 
 [node name="CryogenPort_1" type="MeshInstance3D" parent="CryogenPorts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 1.25)
-mesh = ExtResource("Mesh_NMR_Cryogen_Port")
-material_override = ExtResource("Mat_NMR_Magnet")
+mesh = SubResource("Mesh_NMR_Cryogen_Port")
+material_override = SubResource("Mat_NMR_Magnet")
 
 [node name="CryogenPort_2" type="MeshInstance3D" parent="CryogenPorts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0, 1.25)
-mesh = ExtResource("Mesh_NMR_Cryogen_Port")
-material_override = ExtResource("Mat_NMR_Magnet")
+mesh = SubResource("Mesh_NMR_Cryogen_Port")
+material_override = SubResource("Mat_NMR_Magnet")
 
 [node name="CryogenPort_3" type="MeshInstance3D" parent="CryogenPorts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 1.25)
-mesh = ExtResource("Mesh_NMR_Cryogen_Port")
-material_override = ExtResource("Mat_NMR_Magnet")
+mesh = SubResource("Mesh_NMR_Cryogen_Port")
+material_override = SubResource("Mat_NMR_Magnet")
 
 [node name="SampleTube" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
@@ -288,16 +274,16 @@ angular_damp = 0.1
 
 [node name="TubeMesh" type="MeshInstance3D" parent="SampleTube"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-mesh = ExtResource("Mesh_NMR_Sample_Tube")
-material_override = ExtResource("Mat_NMR_Sample_Tube")
+mesh = SubResource("Mesh_NMR_Sample_Tube")
+material_override = SubResource("Mat_NMR_Sample_Tube")
 
 [node name="LiquidMesh" type="MeshInstance3D" parent="SampleTube"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-mesh = ExtResource("Mesh_NMR_Liquid")
-material_override = ExtResource("Mat_NMR_Liquid")
+mesh = SubResource("Mesh_NMR_Liquid")
+material_override = SubResource("Mat_NMR_Liquid")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SampleTube"]
-shape = ExtResource("Shape_NMR_Bore")
+shape = SubResource("Shape_NMR_Bore")
 
 [node name="Meta" type="Node3D" parent="SampleTube"]
 meta_sample_type = "nmr_sample"

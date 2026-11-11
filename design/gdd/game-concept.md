@@ -33,7 +33,7 @@ Open-world regions (conceptual, not movement mechanics):
 | **Life Sciences** | Genetics, Biochemistry, Pharmacology, Synthetic Biology |
 | **Specialized** | Radiochemistry, Environmental Science, Materials Science, Computational Chemistry |
 
-Each skill follows the RuneScape-style exponential XP curve with 120 max level, soft cap at 100, and 10 rank titles. **Intelligence Points (IP)** are earned separately and spent on talent trees.
+Each skill follows a classic mastery exponential XP curve with 120 max level, soft cap at 100, and 10 rank titles. **Intelligence Points (IP)** are earned separately and spent on talent trees.
 
 ### 3.2 Companion & Aetherkin System
 Companion creatures providing laboratory support and, later, controlled combat:

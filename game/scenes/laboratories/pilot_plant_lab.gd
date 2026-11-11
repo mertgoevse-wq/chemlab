@@ -74,19 +74,19 @@ func _build_ui() -> void:
 	safe_btn.pressed.connect(func(): _evaluate_safety())
 	safe.add_child(safe_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 388)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -119,7 +119,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Callable) -> void:
@@ -127,8 +127,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _cursor(parent))
 	cb.size = Vector2(220, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -142,14 +142,17 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _cursor(parent: Control) -> float:
 	return (parent.get_child_count() - 1) * 40
+
+func _refresh_all() -> void:
+	_run_balance()
 
 func _run_balance() -> void:
 	# CSTR material balance: X = k*tau/(1+k*tau), tau = V/Q
@@ -163,55 +166,55 @@ func _run_balance() -> void:
 
 	_conversion = conversion
 
-	var txt = []
-	txt.push("[center][b]Material balance[/b][/center]")
-	txt.push("")
-	txt.push("Operation: %s" % _process)
-	txt.push("Feed rate: %0.1f L/h" % _feed_rate)
-	txt.push("Reactor volume: %0.0f L" % v_reactor_l)
-	txt.push("Residence time: %0.1f min" % tau_min)
-	txt.push("Rate constant k: %0.4f min⁻¹" % k_min)
-	txt.push("")
-	txt.push("Conversion: %0.1f%%" % (conversion * 100))
-	txt.push("Product rate: %0.1f kg/h" % product_kg_h)
-	txt.push("GMP compliant: %s" % (_gmp_compliant and "yes" or "no"))
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Material balance[/b][/center]")
+	txt.append("")
+	txt.append("Operation: %s" % _process)
+	txt.append("Feed rate: %0.1f L/h" % _feed_rate)
+	txt.append("Reactor volume: %0.0f L" % v_reactor_l)
+	txt.append("Residence time: %0.1f min" % tau_min)
+	txt.append("Rate constant k: %0.4f min⁻¹" % k_min)
+	txt.append("")
+	txt.append("Conversion: %0.1f%%" % (conversion * 100))
+	txt.append("Product rate: %0.1f kg/h" % product_kg_h)
+	txt.append("GMP compliant: %s" % (_gmp_compliant and "yes" or "no"))
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] CSTR: X = k·τ/(1+k·τ). Longer residence or faster kinetics → higher conversion.")
-	why.push("Scale-up: keep τ and k constant; geometry changes heat transfer (surface/volume ratio).")
-	why.push("GMP: documented SOPs, batch records, validated cleaning.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] CSTR: X = k·τ/(1+k·τ). Longer residence or faster kinetics → higher conversion.")
+	why.append("Scale-up: keep τ and k constant; geometry changes heat transfer (surface/volume ratio).")
+	why.append("GMP: documented SOPs, batch records, validated cleaning.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green" if _gmp_compliant and conversion > 0.5 else "amber"
 	_log.append_text("[color=%s]→[/color] Balance: X=%0.1f%%, product %0.1f kg/h, GMP=%s\n" % [level, conversion*100, product_kg_h, (_gmp_compliant and "yes" or "no")])
 
 func _evaluate_safety() -> void:
-	var txt = []
-	txt.push("[center][b]Safety evaluation[/b][/center]")
-	txt.push("")
-	txt.push("Reactor temp: %0.0f °C" % _reactor_temp_c)
-	txt.push("Pressure: %0.1f bar" % _pressure_bar)
-	txt.push("Cooling duty: %0.0f kW" % _cooling_duty)
-	txt.push("")
-	txt.push("Thermal runaway scenario: %s" % (_runaway_risk and "ACTIVE" or "no"))
-	txt.push("Pressure relief valve: %s" % (_relief_valve_open and "OPEN" or "closed"))
-	txt.push("Toxic release: %s" % (_toxic_release and "ACTIVE" or "no"))
-	txt.push("")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Safety evaluation[/b][/center]")
+	txt.append("")
+	txt.append("Reactor temp: %0.0f °C" % _reactor_temp_c)
+	txt.append("Pressure: %0.1f bar" % _pressure_bar)
+	txt.append("Cooling duty: %0.0f kW" % _cooling_duty)
+	txt.append("")
+	txt.append("Thermal runaway scenario: %s" % (_runaway_risk and "ACTIVE" or "no"))
+	txt.append("Pressure relief valve: %s" % (_relief_valve_open and "OPEN" or "closed"))
+	txt.append("Toxic release: %s" % (_toxic_release and "ACTIVE" or "no"))
+	txt.append("")
 	if _runaway_risk:
-		txt.push("CRITICAL: Thermal runaway detected — emergency cooling + quench required.")
+		txt.append("CRITICAL: Thermal runaway detected — emergency cooling + quench required.")
 	if _pressure_bar > 6.0 and not _relief_valve_open:
-		txt.push("WARNING: Overpressure — relief valve must open.")
+		txt.append("WARNING: Overpressure — relief valve must open.")
 	if _toxic_release:
-		txt.push("CRITICAL: Toxic release — evacuate, scrubber on.")
+		txt.append("CRITICAL: Toxic release — evacuate, scrubber on.")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] Runaway: heat generation > heat removal → exponential T rise.")
-	why.push("Pressure relief: protect vessel at MAEP. Toxic release: scrubber, evacuation, PPE.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] Runaway: heat generation > heat removal → exponential T rise.")
+	why.append("Pressure relief: protect vessel at MAEP. Toxic release: scrubber, evacuation, PPE.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green"
 	if _runaway_risk or _toxic_release:
@@ -219,11 +222,3 @@ func _evaluate_safety() -> void:
 	elif _pressure_bar > 6.0 or _reactor_temp_c > 150.0:
 		level = "amber"
 	_log.append_text("[color=%s]→[/color] Safety: temp %0.0f°C, pressure %0.1f bar, runaway=%s\n" % [level, _reactor_temp_c, _pressure_bar, (_runaway_risk and "YES" or "no")])
-
-func exp(x: float) -> float:
-	var result = 1.0
-	var term = 1.0
-	for i in range(1, 25):
-		term *= x / i
-		result += term
-	return result

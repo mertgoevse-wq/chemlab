@@ -45,8 +45,10 @@ var _briefing_speaker: Label = null
 var _briefing_body: RichTextLabel = null
 var _overlay_alpha: float = 1.0
 var _overlay_tween: Tween = null
+var _root_control: Control = null
 
 func _ready() -> void:
+	_root_control = get_node_or_null("RootControl") as Control
 	if warning_banner_panel:
 		warning_banner_panel.visible = false
 	if celebration_modal:
@@ -60,7 +62,8 @@ func _ready() -> void:
 	_refresh_hud_display()
 	# AC-style contextual fade: the quest card dims after 3s of no lean, so the
 	# 3D laboratory stays the focus and the overlay only reappears on lean.
-	modulate.a = 1.0
+	if _root_control:
+		_root_control.modulate.a = 1.0
 	_set_overlay_alpha(1.0)
 
 
@@ -69,8 +72,9 @@ func _set_overlay_alpha(value: float) -> void:
 		_overlay_tween.kill()
 	_overlay_tween = null
 	_overlay_alpha = clampf(value, 0.0, 1.0)
-	_overlay_tween = create_tween()
-	_overlay_tween.tween_property(self, "modulate:a", _overlay_alpha, 0.3)
+	if _root_control:
+		_overlay_tween = create_tween()
+		_overlay_tween.tween_property(_root_control, "modulate:a", _overlay_alpha, 0.3)
 
 
 func _on_lean_started() -> void:

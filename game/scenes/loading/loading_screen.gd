@@ -14,6 +14,7 @@ var _pulse_phase: float = 0.0
 var _particles: Array[Dictionary] = []
 var _loading_complete: bool = false
 var _transitioning: bool = false
+var _any_input_received: bool = false
 
 # UI elements
 var _sigil_texture: TextureRect
@@ -27,6 +28,14 @@ func _ready() -> void:
 	_start_time = Time.get_ticks_msec() / 1000.0
 	_init_particles()
 	_start_loading()
+
+func _init_particles() -> void:
+	_particles.clear()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _loading_complete and (event is InputEventKey or event is InputEventMouseButton or event is InputEventJoypadButton):
+		if event.is_pressed():
+			_any_input_received = true
 
 func _cache_nodes() -> void:
 	_sigil_texture = %SigilTexture
@@ -42,7 +51,7 @@ func _cache_nodes() -> void:
 
 func _start_loading() -> void:
 	# Simulate loading steps
-	var steps = [
+	var steps: Array[Dictionary] = [
 		{ "text": "Loading thermodynamic database...", "progress": 10, "delay": 0.5 },
 		{ "text": "Initializing reaction engine...", "progress": 25, "delay": 0.8 },
 		{ "text": "Loading PiHKAL/TiHKAL catalog...", "progress": 40, "delay": 1.0 },
@@ -56,7 +65,7 @@ func _start_loading() -> void:
 
 	_run_loading_sequence(steps)
 
-async func _run_loading_sequence(steps: Array[Dictionary]) -> void:
+func _run_loading_sequence(steps: Array[Dictionary]) -> void:
 	for step in steps:
 		_loading_text.text = step.text
 		_progress_bar.value = step.progress
@@ -78,14 +87,9 @@ async func _run_loading_sequence(steps: Array[Dictionary]) -> void:
 	_transition_to_main_menu()
 
 func _wait_for_input() -> void:
-	var timer = Timer.new()
-	timer.wait_time = 0.1
-	timer.autostart = true
-
-	while true:
-		await timer.timeout
-		if Input.is_any_key_pressed() or Input.is_mouse_button_pressed(0) or Input.is_joy_button_pressed(0, 0):
-			break
+	_any_input_received = false
+	while not _any_input_received:
+		await get_tree().process_frame
 
 func _transition_to_main_menu() -> void:
 	_transitioning = true
@@ -135,7 +139,7 @@ func _update_particles(delta: float) -> void:
 		particle.vel *= 0.98  # Drag
 
 	# Remove dead particles
-	var alive = []
+	var alive: Array[Dictionary] = []
 	for p in _particles:
 		if p.life > 0:
 			alive.append(p)
@@ -156,21 +160,25 @@ func _spawn_sigil_particle() -> void:
 	})
 
 func _update_sigil_particles() -> void:
-	var canvas = get_canvas_item()
-	for particle in _particles:
-		var alpha = particle.life / particle.max_life
-		draw_circle(particle.pos, particle.size * particle.life, particle.color * particle.alpha)
+	queue_redraw()
 
 func _draw() -> void:
 	# Draw background glow behind sigil
-	var center = get_rect().size / 2
+	var center = get_rect().size / 2.0
 	var time = Time.get_ticks_msec() / 1000.0
 
 	# Outer glow rings
 	for i in range(3):
-		var radius = 120 + i * 40 + sin(time * 2.0 + i) * 5
+		var radius = 120.0 + i * 40.0 + sin(time * 2.0 + i) * 5.0
 		var alpha = 0.15 / (i + 1)
-		draw_circle(Vector2(0, 0), radius, Color(0.2, 0.5, 1.0, alpha), false, 3)
+		draw_circle(center, radius, Color(0.2, 0.5, 1.0, alpha), false, 3.0)
+
+	# Particles
+	for particle in _particles:
+		var alpha = clampf(particle.life / maxf(particle.max_life, 0.001), 0.0, 1.0)
+		var col: Color = particle.color
+		col.a *= alpha
+		draw_circle(center + particle.pos, particle.size, col)
 
 	# Alchemical symbols rotating
 	for i in range(7):

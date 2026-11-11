@@ -71,19 +71,19 @@ func _build_ui() -> void:
 	analyze_btn.pressed.connect(func(): _analyze_microstructure())
 	vac.add_child(analyze_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 368)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -116,7 +116,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Callable) -> void:
@@ -124,8 +124,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _cursor(parent))
 	cb.size = Vector2(200, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -139,14 +139,17 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _cursor(parent: Control) -> float:
 	return (parent.get_child_count() - 1) * 40
+
+func _refresh_all() -> void:
+	_run_treatment()
 
 func _run_treatment() -> void:
 	# Sintering/annealing model: grain growth d^n - d0^n = k*t*exp(-Q/RT)
@@ -171,53 +174,50 @@ func _run_treatment() -> void:
 	_grain_size_um = d_um
 	_phase_purity = purity
 	_hardness_hv = 100.0 + 50.0 * (1.0 - _grain_size_um / 50.0)  # Hall-Petch-ish
-	_hardness_hv = clamp(_hardness_hv, 10.0, 500.0)
+	_hardness_hv = clampf(_hardness_hv, 10.0, 500.0)
 
-	var txt = []
-	txt.push("[center][b]Heat treatment result[/b][/center]")
-	txt.push("")
-	txt.push("Process: %s" % _process)
-	txt.push("T = %0.0f °C, t = %0.1f h, atmosphere = %s" % [_temperature_c, _time_h, _atmosphere])
-	txt.push("")
-	txt.push("Grain size: %0.2f µm" % _grain_size_um)
-	txt.push("Phase purity: %0.0f%%" % (_phase_purity * 100))
-	txt.push("Hardness: %0.1f HV" % _hardness_hv)
-	txt.push("")
-	txt.push("Grain growth: dⁿ − d₀ⁿ = k·t·exp(−Q/RT)")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Heat treatment result[/b][/center]")
+	txt.append("")
+	txt.append("Process: %s" % _process)
+	txt.append("T = %0.0f °C, t = %0.1f h, atmosphere = %s" % [_temperature_c, _time_h, _atmosphere])
+	txt.append("")
+	txt.append("Grain size: %0.2f µm" % _grain_size_um)
+	txt.append("Phase purity: %0.0f%%" % (_phase_purity * 100))
+	txt.append("Hardness: %0.1f HV" % _hardness_hv)
+	txt.append("")
+	txt.append("Grain growth: dⁿ − d₀ⁿ = k·t·exp(−Q/RT)")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] Higher T and longer t → grain growth (Hall–Petch: finer grains = harder).")
-	why.push("Wrong atmosphere → oxidation/impurities → lower phase purity.")
-	why.push("Contamination → second phases, inclusions.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] Higher T and longer t → grain growth (Hall–Petch: finer grains = harder).")
+	why.append("Wrong atmosphere → oxidation/impurities → lower phase purity.")
+	why.append("Contamination → second phases, inclusions.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green" if _phase_purity > 0.9 and not _contamination else "amber"
 	_log.append_text("[color=%s]→[/color] Treatment: %s, grain %0.2f µm, purity %0.0f%%\n" % [level, _process, _grain_size_um, _phase_purity * 100])
 
 func _analyze_microstructure() -> void:
-	var txt = []
-	txt.push("[center][b]Microstructure analysis[/b][/center]")
-	txt.push("")
-	txt.push("Vacuum: %0.2e mbar" % _vacuum_mbar)
-	txt.push("Grain size: %0.2f µm" % _grain_size_um)
-	txt.push("Phase purity: %0.0f%%" % (_phase_purity * 100))
-	txt.push("")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Microstructure analysis[/b][/center]")
+	txt.append("")
+	txt.append("Vacuum: %0.2e mbar" % _vacuum_mbar)
+	txt.append("Grain size: %0.2f µm" % _grain_size_um)
+	txt.append("Phase purity: %0.0f%%" % (_phase_purity * 100))
+	txt.append("")
 	if _vacuum_mbar > 1.0 and _process == "sintering":
-		txt.push("WARNING: Pressure too high for clean sintering — oxidation likely.")
+		txt.append("WARNING: Pressure too high for clean sintering — oxidation likely.")
 	elif _vacuum_mbar < 1e-3:
-		txt.push("UHV reached — clean surface, good for thin films.")
+		txt.append("UHV reached — clean surface, good for thin films.")
 	else:
-		txt.push("Pressure adequate for bulk heat treatment.")
-	txt.push("")
-	txt.push("XRD would show: %s" % (_phase_purity > 0.95 and "single phase" or "mixed phases + impurities"))
+		txt.append("Pressure adequate for bulk heat treatment.")
+	txt.append("")
+	txt.append("XRD would show: %s" % (_phase_purity > 0.95 and "single phase" or "mixed phases + impurities"))
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 	_log.append_text("[color=cyan]→[/color] Microstructure: %0.2f µm grains, %0.0f%% purity, %0.2e mbar\n" % [_grain_size_um, _phase_purity * 100, _vacuum_mbar])
-
-func clamp(v: float, lo: float, hi: float) -> float:
-	return max(lo, min(hi, v))
 
 func exp(x: float) -> float:
 	var result = 1.0

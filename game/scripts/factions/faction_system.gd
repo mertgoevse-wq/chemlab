@@ -4,14 +4,29 @@
 
 extends Node
 
-class_name FactionSystem
-
 signal reputation_changed(faction_id: String, old_rep: int, new_rep: int)
 signal tier_changed(faction_id: String, old_tier: String, new_tier: String)
 signal vendor_unlocked(faction_id: String, vendor_id: String)
 signal world_state_changed()
 
 const FACTION_DATA = preload("res://data/factions/faction_database.json")
+
+func _get_data() -> Dictionary:
+	if FACTION_DATA and FACTION_DATA.data is Dictionary:
+		return FACTION_DATA.data
+	return {}
+
+func _get_factions() -> Dictionary:
+	return _get_data().get("factions", {})
+
+func _get_faction(faction_id: String) -> Dictionary:
+	return _get_factions().get(faction_id, {})
+
+func _get_reputation_system() -> Dictionary:
+	return _get_data().get("reputation_system", {})
+
+func _get_dynamic_world_state() -> Dictionary:
+	return _get_data().get("dynamic_world_state", {})
 
 var reputations: Dictionary = {}
 var unlocked_vendors: Dictionary = {}  # faction_id -> Array[vendor_id]
@@ -21,9 +36,10 @@ func _ready() -> void:
 	_load_save_data()
 
 func _initialize_reputations() -> void:
-	for faction_id in FACTION_DATA.factions:
-		var faction = FACTION_DATA.factions[faction_id]
-		reputations[faction_id] = faction.starting_reputation
+	var factions = _get_factions()
+	for faction_id in factions:
+		var faction = factions[faction_id]
+		reputations[faction_id] = faction.get("starting_reputation", 0)
 		unlocked_vendors[faction_id] = []
 
 func _load_save_data() -> void:
@@ -74,19 +90,19 @@ func modify_reputation(faction_id: String, amount: int, source: String = "") -> 
 	print("Rep %s: %d -> %d (%s)" % [faction_id, old_rep, new_rep, source])
 
 func _get_tier_at_rep(faction_id: String, rep: int) -> String:
-	var faction = FACTION_DATA.factions[faction_id]
-	for tier in faction.reputation_tiers:
-		if rep >= tier.min and rep <= tier.max:
-			return tier.title
+	var faction = _get_faction(faction_id)
+	for tier in faction.get("reputation_tiers", []):
+		if rep >= tier.get("min", -100) and rep <= tier.get("max", 100):
+			return tier.get("title", "Unknown")
 	return "Unknown"
 
 func get_current_tier(faction_id: String) -> String:
 	return _get_tier_at_rep(faction_id, reputations.get(faction_id, 0))
 
 func get_tier_info(faction_id: String, tier_title: String) -> Dictionary:
-	var faction = FACTION_DATA.factions[faction_id]
-	for tier in faction.reputation_tiers:
-		if tier.title == tier_title:
+	var faction = _get_faction(faction_id)
+	for tier in faction.get("reputation_tiers", []):
+		if tier.get("title", "") == tier_title:
 			return tier
 	return {}
 
@@ -95,7 +111,7 @@ func get_tier_info(faction_id: String, tier_title: String) -> Dictionary:
 # =============================================================================
 
 func _apply_cross_faction_effects(source_faction: String, amount: int) -> void:
-	var cross_effects = FACTION_DATA.reputation_system.cross_faction_effects
+	var cross_effects = _get_reputation_system().get("cross_faction_effects", {})
 	if not cross_effects.has(source_faction):
 		return
 
@@ -120,12 +136,13 @@ func _apply_cross_faction_effects(source_faction: String, amount: int) -> void:
 # =============================================================================
 
 func _check_vendor_unlocks(faction_id: String) -> void:
-	var faction = FACTION_DATA.factions[faction_id]
+	var faction = _get_faction(faction_id)
 	var current_rep = reputations[faction_id]
+	var vendors = faction.get("vendors", {})
 
-	for vendor_id in faction.vendors:
-		var vendor = faction.vendors[vendor_id]
-		var unlock_tier = vendor.discount_at_tier
+	for vendor_id in vendors:
+		var vendor = vendors[vendor_id]
+		var unlock_tier = vendor.get("discount_at_tier", "")
 		var unlock_rep = _get_min_rep_for_tier(faction_id, unlock_tier)
 
 		if current_rep >= unlock_rep and vendor_id not in unlocked_vendors[faction_id]:
@@ -134,48 +151,52 @@ func _check_vendor_unlocks(faction_id: String) -> void:
 			print("Vendor unlocked: %s (%s)" % [vendor_id, faction_id])
 
 func _get_min_rep_for_tier(faction_id: String, tier_title: String) -> int:
-	var faction = FACTION_DATA.factions[faction_id]
-	for tier in faction.reputation_tiers:
-		if tier.title == tier_title:
-			return tier.min
+	var faction = _get_faction(faction_id)
+	for tier in faction.get("reputation_tiers", []):
+		if tier.get("title", "") == tier_title:
+			return tier.get("min", 100)
 	return 100
 
 func get_unlocked_vendors(faction_id: String) -> Array[Dictionary]:
-	var result = []
+	var result: Array[Dictionary] = []
 	if not unlocked_vendors.has(faction_id):
 		return result
 
-	var faction = FACTION_DATA.factions[faction_id]
+	var faction = _get_faction(faction_id)
+	var vendors = faction.get("vendors", {})
 	for vendor_id in unlocked_vendors[faction_id]:
-		if faction.vendors.has(vendor_id):
-			var vendor = faction.vendors[vendor_id].duplicate()
-			vendor.id = vendor_id
-			vendor.faction = faction_id
+		if vendors.has(vendor_id):
+			var vendor = vendors[vendor_id].duplicate()
+			vendor["id"] = vendor_id
+			vendor["faction"] = faction_id
 			result.append(vendor)
 	return result
 
-func get_vendor_items(faction_id: String, vendor_id: String) -> Array[String]:
-	var faction = FACTION_DATA.factions[faction_id]
-	if faction.vendors.has(vendor_id):
-		return faction.vendors[vendor_id].items.duplicate()
+func get_vendor_items(faction_id: String, vendor_id: String) -> Array:
+	var faction = _get_faction(faction_id)
+	var vendors = faction.get("vendors", {})
+	if vendors.has(vendor_id):
+		return vendors[vendor_id].get("items", []).duplicate()
 	return []
 
 func purchase_from_vendor(faction_id: String, vendor_id: String, item_id: String, quantity: int = 1) -> bool:
 	if vendor_id not in unlocked_vendors.get(faction_id, []):
 		return false
 
-	var faction = FACTION_DATA.factions[faction_id]
-	if not faction.vendors.has(vendor_id):
+	var faction = _get_faction(faction_id)
+	var vendors = faction.get("vendors", {})
+	if not vendors.has(vendor_id):
 		return false
 
-	var vendor = faction.vendors[vendor_id]
-	if item_id not in vendor.items:
+	var vendor = vendors[vendor_id]
+	var items = vendor.get("items", [])
+	if item_id not in items:
 		return false
 
 	# Check discount
 	var discount = 0.0
-	for tier in faction.reputation_tiers:
-		if reputations[faction_id] >= tier.min and tier.title == vendor.discount_at_tier:
+	for tier in faction.get("reputation_tiers", []):
+		if reputations[faction_id] >= tier.get("min", 0) and tier.get("title", "") == vendor.get("discount_at_tier", ""):
 			discount = 0.15  # 15% discount at unlock tier
 			break
 
@@ -191,8 +212,9 @@ func purchase_from_vendor(faction_id: String, vendor_id: String, item_id: String
 
 func get_lab_control(lab_id: String) -> Dictionary:
 	# Determine which faction controls a lab based on reputation and events
-	var world_state = FACTION_DATA.dynamic_world_state.lab_control
-	if not world_state.labs.has(lab_id):
+	var lab_control_state = _get_dynamic_world_state().get("lab_control", {})
+	var labs = lab_control_state.get("labs", [])
+	if lab_id not in labs:
 		return { "control": "neutral", "faction": null }
 
 	# Simplified: highest reputation faction gets control
@@ -224,15 +246,16 @@ func get_market_price_multiplier(reagent_id: String) -> float:
 
 func get_npc_attitude(faction_id: String) -> String:
 	var rep = reputations.get(faction_id, 0)
-	var thresholds = FACTION_DATA.dynamic_world_state.npc_attitudes.thresholds
+	var npc_attitudes = _get_dynamic_world_state().get("npc_attitudes", {})
+	var thresholds = npc_attitudes.get("thresholds", {})
 
-	if rep <= thresholds.hostile:
+	if rep <= thresholds.get("hostile", -50):
 		return "hostile"
-	elif rep <= thresholds.unfriendly:
+	elif rep <= thresholds.get("unfriendly", -10):
 		return "unfriendly"
-	elif rep <= thresholds.neutral:
+	elif rep <= thresholds.get("neutral", 10):
 		return "neutral"
-	elif rep <= thresholds.friendly:
+	elif rep <= thresholds.get("friendly", 50):
 		return "friendly"
 	else:
 		return "reverent"

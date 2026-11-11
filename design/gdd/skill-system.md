@@ -6,7 +6,7 @@
 **Source of Truth (data-driven layer):** `design/gdd/data/skills.json`  
 **Codebase reference:** `src/chemlab/skills/{milestones,quest_engine,skill_manager,skill_types}.py`, `tests/test_skill_system.py`
 
-This document expands the existing Runescape-style skill & quest system — originally five disciplines (SAFETY, ANALYTICAL, THERMODYNAMICS, PREPARATIVE, COMPUTATIONAL), each with six milestone gates and apparatus/reagent/ability unlocks — into four full discipline tracks for Phase B: **Chemistry / Biology / Forensics / Engineering**. It preserves the original five disciplines for Phase A campaigns so existing serialization, quest prerequisites, and sandbox-mode gating continue to pass.
+This document expands the existing classic skill & quest system — originally five disciplines (SAFETY, ANALYTICAL, THERMODYNAMICS, PREPARATIVE, COMPUTATIONAL), each with six milestone gates and apparatus/reagent/ability unlocks — into four full discipline tracks for Phase B: **Chemistry / Biology / Forensics / Engineering**. It preserves the original five disciplines for Phase A campaigns so existing serialization, quest prerequisites, and sandbox-mode gating continue to pass.
 
 All data that drives game behavior lives in **JSON** (`design/gdd/data/skills.json`), never hardcoded. The Python side mirrors that JSON as structured dataclasses; the GDD is the human-readable contract of the same data. See §2 for the shared curve, §3–§7 for each discipline track, §8 for integration and backwards compatibility.
 
@@ -26,7 +26,7 @@ The design is data-driven: every piece of progression state — level, xp, unloc
 
 ### 2.1 Master XP Curve
 
-Every skill uses the same exponential curve inherited from Runescape. The base table, rebuilt once at module import in `skill_progression.py`:
+Every skill uses the same exponential curve based on classic RPG mastery math. The base table, rebuilt once at module import in `skill_progression.py`:
 
 | Level | Total XP required to reach | Delta to next level |
 |-------|-----------------------------|----------------------|
@@ -56,7 +56,7 @@ Schema (`skills.json`, entry `master_curve`):
     "formula": "floor(level + 300*2^(level/7) / 4)",
     "max_level": 120,
     "soft_cap": 100,
-    "description": "Runescape classic exponential curve, rebuilt once at import."
+    "description": "Classic exponential mastery curve, rebuilt once at import."
   }
 }
 ```
@@ -189,7 +189,7 @@ Chemistry milestones use a spread of 3, 10, 15, 25, 50, 100 levels, not 1, 10, 2
 }
 ```
 
-Each milestone's apparatus/reagent/ability lists live in `skills.json` under `apparatus_unlocks[skill][level]`, `reagent_unlocks[skill][level]`, `ability_unlocks[skill][level]`, exactly mirroring the Phase A `skill_types.py` structure. Milestone titles, descriptions, and narrative callbacks must mirror the existing Runescape-6-per-skill convention so `test_all_five_skills_have_six_milestones` remains valid (it iterates `SkillType` enum; new tracks are validated separately by `test_chemical_track_has_correct_milestone_count` written in Phase B PR).
+Each milestone's apparatus/reagent/ability lists live in `skills.json` under `apparatus_unlocks[skill][level]`, `reagent_unlocks[skill][level]`, `ability_unlocks[skill][level]`, exactly mirroring the Phase A `skill_types.py` structure. Milestone titles, descriptions, and narrative callbacks must mirror the existing 6-milestones-per-skill convention so `test_all_five_skills_have_six_milestones` remains valid (it iterates `SkillType` enum; new tracks are validated separately by `test_chemical_track_has_correct_milestone_count` written in Phase B PR).
 
 ---
 

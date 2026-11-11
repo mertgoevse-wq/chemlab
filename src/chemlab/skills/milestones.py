@@ -4,7 +4,7 @@ Milestone definitions for ChemLab skill progression.
 A milestone unlocks at a specific skill level and grants apparatus,
 reagents, abilities, or narrative credentials. Mirrors the node-unlock
 structure from docs/STORY_AND_QUESTS.md §2 but generalized across all
-levels 1-120 using Runescape-style thresholds.
+levels 1-120 using exponential threshold curves.
 """
 
 from __future__ import annotations

@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-GAME_DIR = Path("C:/Users/Win11 Pro/Desktop/chemlab/.claude/worktrees/musing-northcutt-7a05af/game")
+GAME_DIR = Path(__file__).resolve().parent.parent / "game"
 SCRIPTS_DIR = GAME_DIR / "scripts"
 SCENES_DIR = GAME_DIR / "scenes"
 
@@ -24,6 +24,7 @@ SCENES_DIR = GAME_DIR / "scenes"
 # =============================================================================
 # 1. GDSCRIPT & TSCN SYNTAX & ARCHITECTURE VERIFICATION
 # =============================================================================
+
 
 def test_script_files_exist():
     """Verify all required scripts and scenes exist in target directories."""
@@ -61,7 +62,7 @@ def test_input_manager_gdscript_structure():
     # Schmitt trigger hysteresis constants
     assert "0.045" in content  # PINCH enter
     assert "0.065" in content  # PINCH exit
-    assert "38.0" in content   # POUR angle threshold
+    assert "38.0" in content  # POUR angle threshold
 
 
 def test_quest_manager_campaign_objectives():
@@ -122,6 +123,7 @@ def test_save_manager_gdscript_structure():
 # =============================================================================
 # 2. 1-EURO ADAPTIVE LOW-PASS FILTER MATHEMATICAL VERIFICATION
 # =============================================================================
+
 
 class PyOneEuroFilter:
     """Exact Python mirror of the GDScript OneEuroFilter implementation."""
@@ -219,8 +221,10 @@ def test_one_euro_filter_tracks_fast_hand_motion_without_lag():
 # 3. SCHMITT TRIGGER GESTURE HYSTERESIS
 # =============================================================================
 
+
 class SchmittTriggerPinch:
     """Schmitt trigger model for MediaPipe pinch recognition."""
+
     def __init__(self, enter_dist: float = 0.045, exit_dist: float = 0.065):
         self.enter_dist = enter_dist
         self.exit_dist = exit_dist
@@ -263,6 +267,7 @@ def test_pinch_schmitt_trigger_hysteresis():
 
 class SchmittTriggerPour:
     """Schmitt trigger model for wrist tilt pour recognition."""
+
     def __init__(self, enter_angle: float = 38.0, exit_angle: float = 34.0):
         self.enter_angle = enter_angle
         self.exit_angle = exit_angle
@@ -316,7 +321,7 @@ def test_swirl_circular_trajectory_detection():
 
     for i in range(samples):
         t = i * dt
-        theta = 2.0 * math.pi * 2.0 * t # 2 revs per second
+        theta = 2.0 * math.pi * 2.0 * t  # 2 revs per second
         x = 0.5 + 0.05 * math.cos(theta)
         y = 0.5 + 0.05 * math.sin(theta)
         trajectory.append((x, y, t))
@@ -350,8 +355,10 @@ def test_swirl_circular_trajectory_detection():
 # 4. QUEST & OSHA COMPLIANCE SIMULATION
 # =============================================================================
 
+
 class QuestProgressionSimulator:
     """Mirrors QuestManager logic for unit testing."""
+
     def __init__(self):
         self.safety_score = 100.0
         self.ppe_equipped = False
@@ -442,9 +449,9 @@ def test_quest_1_safety_violations_penalties():
 
     # Attempt dispensing acid without PPE
     sim.dispense_hcl(10.0)
-    assert sim.safety_score == 70.0 # -25 for no PPE, -5 for untared balance
+    assert sim.safety_score == 70.0  # -25 for no PPE, -5 for untared balance
     assert len(sim.violations) == 2
 
     # High flow rate dumping of titrant
     sim.titrate_naoh(ml=5.0, pour_rate=0.85)
-    assert sim.safety_score == 55.0 # -15 for violent pour
+    assert sim.safety_score == 55.0  # -15 for violent pour

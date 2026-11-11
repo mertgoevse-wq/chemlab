@@ -38,8 +38,9 @@ func _generate_hub_layout() -> void:
 	var radius = 30.0
 	var lab_count = labs.size()
 
-	for i, lab in labs:
-		var angle = (i / lab_count) * TAU - PI/2  # Start at top
+	for i in range(lab_count):
+		var lab = labs[i]
+		var angle = (float(i) / maxf(float(lab_count), 1.0)) * TAU - PI/2  # Start at top
 		var pos = Vector3(cos(angle) * radius, 0, sin(angle) * radius)
 		_lab_positions[lab.id] = pos
 
@@ -86,7 +87,7 @@ func _create_lab_entrance(lab: Dictionary, pos: Vector3, angle: float) -> void:
 	(collision.shape as CylinderShape3D).radius = 3.0
 	(collision.shape as CylinderShape3D).height = 5.0
 	area.add_child(collision)
-	area.connect("body_entered", func(body): _on_player_approach(lab.id).bind(lab.id))
+	area.body_entered.connect(func(_body): _on_player_approach(lab.id))
 	entrance.add_child(area)
 
 	add_child(entrance)
@@ -142,8 +143,9 @@ func _create_suit_lockers() -> void:
 	             "genomics", "cell_culture", "radiochemistry", "accelerator",
 	             "fusor", "materials", "cleanroom", "pilot_plant", "forensic", "orbital", "cryogenic"]
 
-	for i, suit_id in suits:
-		var angle = (i / suits.size()) * TAU
+	for i in range(suits.size()):
+		var suit_id = suits[i]
+		var angle = (float(i) / maxf(float(suits.size()), 1.0)) * TAU
 		var radius = 8.0
 		var pos = Vector3(cos(angle) * radius, 0, sin(angle) * radius)
 
@@ -173,7 +175,7 @@ func _create_suit_lockers() -> void:
 		collision.shape = BoxShape3D.new()
 		(collision.shape as BoxShape3D).size = Vector3(3.0, 3.0, 2.0)
 		area.add_child(collision)
-		area.connect("body_entered", func(body): _on_suit_interact(suit_id).bind(suit_id))
+		area.body_entered.connect(func(_body): _on_suit_interact(suit_id))
 		locker.add_child(area)
 
 		add_child(locker)
@@ -217,6 +219,15 @@ func _on_suit_interact(suit_id: String) -> void:
 	var inv_manager = get_node_or_null("/root/InventoryManager")
 	if inv_manager:
 		inv_manager.open_radial_wheel("equipment")
+
+func _on_player_approach(lab_id: String) -> void:
+	print("Player approached lab entrance: %s" % lab_id)
+	for lab in labs:
+		if lab.get("id", "") == lab_id:
+			var scene_path = lab.get("scene_path", "")
+			if scene_path != "":
+				get_tree().change_scene_to_file(scene_path)
+			break
 
 func _on_elevator_called(body: Node3D) -> void:
 	# Animate elevator to upper levels

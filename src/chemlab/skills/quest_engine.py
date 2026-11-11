@@ -1,5 +1,5 @@
 """
-Data-driven quest engine for ChemLab's Runescape-style progression system.
+Data-driven quest engine for ChemLab's skill progression system.
 
 Quests are defined as JSON-compatible dictionaries (matching the schema in
 docs/STORY_AND_QUESTS.md §3) and evaluated against live simulation context
@@ -13,9 +13,10 @@ import json
 from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass, field
-from chemlab.compat import StrEnum, UTC
 from pathlib import Path
 from typing import Any
+
+from chemlab.compat import StrEnum
 
 
 class QuestStatus(StrEnum):

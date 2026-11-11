@@ -1,5 +1,5 @@
 """
-Skill type definitions for the ChemLab Runescape-style progression system.
+Skill type definitions for the ChemLab skill progression system.
 
 Defines the five scientific disciplines (SAFETY, ANALYTICAL, THERMODYNAMICS,
 PREPARATIVE, COMPUTATIONAL) matching the disciplines documented in
@@ -9,7 +9,8 @@ docs/STORY_AND_QUESTS.md §2, plus helper data for milestone unlocks.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from chemlab.compat import StrEnum, UTC
+
+from chemlab.compat import StrEnum
 
 
 class SkillType(StrEnum):

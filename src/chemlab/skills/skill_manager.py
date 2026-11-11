@@ -1,5 +1,5 @@
 """
-SkillManager — Runescape-style skill progression runtime state.
+SkillManager — Skill progression runtime state.
 
 Tracks XP, level, and unlocked content per skill discipline. Emits callbacks
 (observable via simple observer list) when a skill levels up or a milestone
@@ -54,7 +54,7 @@ class SkillState:
 
 class SkillManager:
     """
-    Manages all five skill disciplines with Runescape-style progression.
+    Manages all five skill disciplines with exponential skill progression.
 
     Observers are callables(skill_type: SkillType, level: int) invoked on
     level-up; milestone_observers are callables(milestone: Milestone) invoked

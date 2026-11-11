@@ -232,10 +232,10 @@ func _process_named_pipe_messages() -> void:
 
 	while _pipe_file.file_open and not _pipe_file.eof_reached():
 		var line = _pipe_file.get_line().strip_edges()
-		if line == "":
+		if line == "" or not (line.begins_with("{") or line.begins_with("[")):
 			continue
 		var parsed = JSON.parse_string(line)
-		if parsed == null:
+		if not (parsed is Dictionary):
 			continue
 		var req_id = parsed.get("request_id", "")
 		if _pending_requests.has(req_id):
@@ -248,10 +248,10 @@ func _parse_ipc_response(data: String) -> void:
 	var lines = data.split("\n")
 	for line in lines:
 		line = line.strip_edges()
-		if line == "":
+		if line == "" or not (line.begins_with("{") or line.begins_with("[")):
 			continue
 		var parsed = JSON.parse_string(line)
-		if parsed == null:
+		if not (parsed is Dictionary):
 			continue
 		var req_id = parsed.get("request_id", "")
 		if _pending_requests.has(req_id):

@@ -1,5 +1,5 @@
 """
-Unit tests for the Runescape-style skill & quest system in src/chemlab/skills/.
+Unit tests for the skill & quest progression system in src/chemlab/skills/.
 
 Covers skill progression (XP curve, leveling), SkillManager runtime state,
 milestone unlocks, and the QuestEngine lifecycle (availability, objectives,

@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+import os
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -65,10 +66,12 @@ class LocalReactionAIBridge:
         endpoint: str = "http://127.0.0.1:20128/v1",
         model: str = "kc/kilo-auto/free",
         timeout_seconds: float = 1.5,
+        api_key: str | None = None,
     ) -> None:
         self.endpoint = endpoint.rstrip("/")
         self.model = model
         self.timeout_seconds = timeout_seconds
+        self.api_key = api_key or os.getenv("OMNIROUTE_API_KEY") or os.getenv("OPENAI_API_KEY")
 
     def predict_reaction(self, request: ReactionFactorRequest) -> ChemicalReactionPrediction:
         """
@@ -158,10 +161,13 @@ class LocalReactionAIBridge:
             "max_tokens": 512,
         }
         try:
+            headers = {"Content-Type": "application/json"}
+            if self.api_key:
+                headers["Authorization"] = f"Bearer {self.api_key}"
             req = urllib.request.Request(
                 url,
                 data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
+                headers=headers,
                 method="POST",
             )
             with urllib.request.urlopen(req, timeout=self.timeout_seconds) as resp:

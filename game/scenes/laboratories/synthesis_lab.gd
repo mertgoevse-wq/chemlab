@@ -8,6 +8,7 @@
 extends Control
 
 const Chem = preload("res://scripts/labs/synthesis_chemistry.gd")
+const Catalog = preload("res://scripts/labs/synthesis_catalog.gd")
 const SCENE_HUB: String = "res://scenes/laboratories/lab_hub.tscn"
 
 const BG: Color = Color(0.028, 0.038, 0.05, 1.0)
@@ -21,6 +22,7 @@ const RED: Color = Color(1.0, 0.41, 0.37)
 const GREEN: Color = Color(0.42, 0.86, 0.67)
 const GLASS: Color = Color(0.68, 0.82, 0.88, 0.22)
 
+var _protocol: Dictionary = {}
 var _stage: int = 1
 var _mass_g: float = 13.8
 var _anhydride_ml: float = 14.2
@@ -45,12 +47,19 @@ var _controls: VBoxContainer
 var _report: RichTextLabel
 var _status: Label
 var _next_btn: Button
+var _title_label: Label
+var _subtitle_label: Label
+var _briefing: RichTextLabel
+var _category_opt: OptionButton
+var _protocol_opt: OptionButton
+var _protocol_list_cache: Array[Dictionary] = []
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	_build_ui()
+	_populate_categories()
 	_set_stage(1)
 	set_process(true)
 
@@ -67,8 +76,12 @@ func _notification(what: int) -> void:
 
 func _params() -> Dictionary:
 	return {
+		"protocol": _protocol,
+		"protocol_id": str(_protocol.get("id", "aspirin")),
 		"salicylic_mass_g": _mass_g,
 		"anhydride_ml": _anhydride_ml,
+		"reagent_a_mass": _mass_g,
+		"reagent_b_amount": _anhydride_ml,
 		"catalyst_drops": _catalyst_drops,
 		"stir_rpm": _stir_rpm,
 		"reflux_temp_c": _temp_c,
@@ -87,23 +100,174 @@ func _ppe_ok() -> bool:
 
 
 # =============================================================================
+# PROTOCOL CATALOG BINDINGS
+# =============================================================================
+
+func _populate_categories() -> void:
+	if _category_opt == null:
+		return
+	_category_opt.clear()
+	var cats: Array[String] = Catalog.get_categories()
+	for i in range(cats.size()):
+		_category_opt.add_item(cats[i], i)
+	if not cats.is_empty():
+		_populate_protocols_for_category(cats[0], "aspirin")
+	else:
+		_select_protocol("aspirin")
+
+
+func _populate_protocols_for_category(cat_name: String, default_proto_id: String = "") -> void:
+	if _protocol_opt == null:
+		return
+	_protocol_opt.clear()
+	_protocol_list_cache = Catalog.get_protocols_in_category(cat_name)
+	var select_idx: int = 0
+	for i in range(_protocol_list_cache.size()):
+		var p: Dictionary = _protocol_list_cache[i]
+		_protocol_opt.add_item(str(p.get("name", "Unknown")), i)
+		if not default_proto_id.is_empty() and str(p.get("id", "")) == default_proto_id:
+			select_idx = i
+	if not _protocol_list_cache.is_empty():
+		_protocol_opt.selected = select_idx
+		_select_protocol(str(_protocol_list_cache[select_idx].get("id", "aspirin")))
+
+
+func _on_category_selected(idx: int) -> void:
+	var cat_name: String = _category_opt.get_item_text(idx)
+	_populate_protocols_for_category(cat_name)
+
+
+func _on_protocol_selected(idx: int) -> void:
+	if idx >= 0 and idx < _protocol_list_cache.size():
+		var p: Dictionary = _protocol_list_cache[idx]
+		_select_protocol(str(p.get("id", "")))
+
+
+func _select_protocol(proto_id: String) -> void:
+	_protocol = Catalog.get_protocol(proto_id)
+	if _protocol.is_empty():
+		_protocol = Catalog.get_protocol("aspirin")
+
+	if _title_label != null:
+		_title_label.text = "ORGANIC SYNTHESIS  ·  %s" % str(_protocol.get("name", "ACETYLSALICYLIC ACID")).to_upper()
+	if _subtitle_label != null:
+		var rA_name: String = str(_protocol.get("reagent_a", {}).get("name", "Reagent A"))
+		var rB_name: String = str(_protocol.get("reagent_b", {}).get("name", "Reagent B"))
+		var cat_name: String = str(_protocol.get("catalyst", {}).get("name", "H₂SO₄"))
+		_subtitle_label.text = "%s + %s  ·  %s  ·  MW %.2f g/mol" % [rA_name, rB_name, cat_name, float(_protocol.get("mw", 180.16))]
+
+	_submitted = false
+	_last_result = {}
+	_reflux_done = false
+
+	var rA: Dictionary = _protocol.get("reagent_a", {})
+	var rB: Dictionary = _protocol.get("reagent_b", {})
+	var reflux_info: Dictionary = _protocol.get("reflux", {})
+	var workup_info: Dictionary = _protocol.get("workup", {})
+
+	_mass_g = float(rA.get("default", 13.8))
+	_anhydride_ml = float(rB.get("default", 14.2))
+	_catalyst_drops = int(_protocol.get("catalyst", {}).get("default_drops", 5))
+	_stir_rpm = float(reflux_info.get("stir_rpm", 450.0))
+	_temp_c = float(reflux_info.get("default_temp", 70.0))
+	_reflux_min = float(reflux_info.get("default_min", 20.0))
+	_hood = true
+	_ice_c = float(workup_info.get("ice_temp_c", 2.0))
+	_water_ml = float(workup_info.get("quench_water_ml", 30.0))
+	_ethanol_ml = float(workup_info.get("recryst_solvent_ml", 15.0))
+	_seeded = bool(workup_info.get("seed_crystal", true))
+
+	_update_briefing()
+	_set_stage(1)
+	if _status != null:
+		_status.text = "Protocol loaded: %s (%s). Don PPE, weigh %s, then charge the flask." % [
+			str(_protocol.get("name", "")), str(_protocol.get("category", "")), str(rA.get("name", "reagent"))
+		]
+
+
+func _update_briefing() -> void:
+	if _briefing == null:
+		return
+	var proto_name: String = str(_protocol.get("name", "Acetylsalicylic acid"))
+	var desc: String = str(_protocol.get("description", "Aspirin synthesis via O-acylation."))
+	var cat: String = str(_protocol.get("category", "Industrial APIs"))
+	var rA: Dictionary = _protocol.get("reagent_a", {})
+	var rB: Dictionary = _protocol.get("reagent_b", {})
+	var reflux_info: Dictionary = _protocol.get("reflux", {})
+	var anal_info: Dictionary = _protocol.get("analytical", {})
+
+	var text := "[font_size=15][b]PROTOCOL SPECIFICATION[/b][/font_size]\n"
+	text += "[color=#85949f]%s · %s[/color]\n\n" % [cat, proto_name]
+	text += "[b]Overview[/b]\n%s\n\n" % desc
+	text += "[b]Reagent A (Precursor)[/b]\n"
+	text += "• %s (MW %.2f g/mol, %s)\n" % [str(rA.get("name", "")), float(rA.get("mw", 0.0)), str(rA.get("unit", "g"))]
+	text += "[b]Reagent B[/b]\n"
+	text += "• %s (MW %.2f g/mol, %s)\n\n" % [str(rB.get("name", "")), float(rB.get("mw", 0.0)), str(rB.get("unit", "mL"))]
+	text += "[b]Target Specifications[/b]\n"
+	text += "• Product MW: %.2f g/mol\n" % float(_protocol.get("mw", 0.0))
+	text += "• Literature MP: %.1f °C\n" % float(anal_info.get("mp_pure", 0.0))
+	text += "• Purity Gate: ≥ %.1f %%\n" % float(anal_info.get("purity_pass", 95.0))
+	text += "• Yield Contract: ≥ %.1f g\n\n" % float(anal_info.get("yield_pass_g", 10.0))
+	text += "[b]Validated Window[/b]\n"
+	text += "• Reflux: %.0f–%.0f °C for %.0f min\n" % [
+		float(reflux_info.get("temp_optimal_low", 65.0)),
+		float(reflux_info.get("temp_optimal_high", 75.0)),
+		float(reflux_info.get("optimal_min", 20.0))
+	]
+	text += "• Degradation threshold: > %.0f °C\n" % float(reflux_info.get("temp_degrade", 85.0))
+	text += "\n[b]Safety gate[/b]\n"
+	text += "Fume hood on, sash low. Goggles, nitrile gloves and lab coat are required before the first reagent is opened.\n\n"
+	text += "[i]The assay does not reward luck. It reports what your conditions actually produced.[/i]"
+	_briefing.text = text
+
+
+# =============================================================================
 # UI CONSTRUCTION
 # =============================================================================
 
 func _build_ui() -> void:
-	var title := Label.new()
-	title.text = "ORGANIC SYNTHESIS  ·  ACETYLSALICYLIC ACID"
-	title.position = Vector2(22.0, 14.0)
-	title.add_theme_font_size_override("font_size", 20)
-	title.add_theme_color_override("font_color", TEXT)
-	add_child(title)
+	_title_label = Label.new()
+	_title_label.text = "ORGANIC SYNTHESIS  ·  ACETYLSALICYLIC ACID"
+	_title_label.position = Vector2(22.0, 10.0)
+	_title_label.add_theme_font_size_override("font_size", 18)
+	_title_label.add_theme_color_override("font_color", TEXT)
+	add_child(_title_label)
 
-	var subtitle := Label.new()
-	subtitle.text = "Salicylic acid + acetic anhydride  ·  H₂SO₄ catalysed  ·  offline stoichiometry"
-	subtitle.position = Vector2(22.0, 40.0)
-	subtitle.add_theme_font_size_override("font_size", 11)
-	subtitle.add_theme_color_override("font_color", DIM)
-	add_child(subtitle)
+	_subtitle_label = Label.new()
+	_subtitle_label.text = "Salicylic acid + acetic anhydride  ·  H₂SO₄ catalysed  ·  offline stoichiometry"
+	_subtitle_label.position = Vector2(22.0, 34.0)
+	_subtitle_label.add_theme_font_size_override("font_size", 11)
+	_subtitle_label.add_theme_color_override("font_color", DIM)
+	add_child(_subtitle_label)
+
+	var selector_box := HBoxContainer.new()
+	selector_box.position = Vector2(480.0, 14.0)
+	selector_box.custom_minimum_size = Vector2(560.0, 32.0)
+	selector_box.add_theme_constant_override("separation", 8)
+
+	var cat_lbl := Label.new()
+	cat_lbl.text = "Category:"
+	cat_lbl.add_theme_font_size_override("font_size", 11)
+	cat_lbl.add_theme_color_override("font_color", CYAN)
+	selector_box.add_child(cat_lbl)
+
+	_category_opt = OptionButton.new()
+	_category_opt.custom_minimum_size = Vector2(170.0, 28.0)
+	_category_opt.item_selected.connect(_on_category_selected)
+	selector_box.add_child(_category_opt)
+
+	var proto_lbl := Label.new()
+	proto_lbl.text = "Route:"
+	proto_lbl.add_theme_font_size_override("font_size", 11)
+	proto_lbl.add_theme_color_override("font_color", CYAN)
+	selector_box.add_child(proto_lbl)
+
+	_protocol_opt = OptionButton.new()
+	_protocol_opt.custom_minimum_size = Vector2(220.0, 28.0)
+	_protocol_opt.item_selected.connect(_on_protocol_selected)
+	selector_box.add_child(_protocol_opt)
+
+	add_child(selector_box)
 
 	var back := Button.new()
 	back.text = "← Laboratory network"
@@ -115,35 +279,15 @@ func _build_ui() -> void:
 	back.pressed.connect(func(): get_tree().change_scene_to_file(SCENE_HUB))
 	add_child(back)
 
-	var briefing := RichTextLabel.new()
-	briefing.bbcode_enabled = true
-	briefing.position = Vector2(20.0, 70.0)
-	briefing.custom_minimum_size = Vector2(300.0, 610.0)
-	briefing.size = Vector2(300.0, 610.0)
-	briefing.add_theme_font_size_override("normal_font_size", 11)
-	briefing.add_theme_font_size_override("bold_font_size", 12)
-	briefing.text = """[font_size=15][b]PROTOCOL  SYN-01[/b][/font_size]
-[color=#85949f]Aspirin · CAS 50-78-2 · M = 180.16 g/mol[/color]
-
-[b]Reaction[/b]
-Salicylic acid + acetic anhydride → acetylsalicylic acid + acetic acid. One equivalent each; the anhydride is charged at 1.4–1.6 eq so the acid is limiting.
-
-[b]Stages[/b]
-1  Weigh 13.8 g acid, charge 14.2 mL anhydride and 5 drops H₂SO₄.
-2  Reflux at 65–75 °C for 20 min. Below 60 °C conversion stalls; above 85 °C the batch tars.
-3  Quench on ice with water, then recrystallise from ethanol/water.
-4  Assay: purity, isolated yield, melting point and TLC.
-
-[b]Hazards[/b]
-[color=#ffb45c]GHS05[/color]  corrosive (anhydride, H₂SO₄)
-[color=#ffb45c]GHS07[/color]  harmful / lachrymator
-[color=#ff6b60]GHS08[/color]  respiratory sensitisation
-
-[b]Safety gate[/b]
-Fume hood on, sash low. Goggles, nitrile gloves and lab coat are required before the first reagent is opened.
-
-[i]The assay does not reward luck. It reports what your conditions actually produced.[/i]"""
-	add_child(briefing)
+	_briefing = RichTextLabel.new()
+	_briefing.bbcode_enabled = true
+	_briefing.position = Vector2(20.0, 70.0)
+	_briefing.custom_minimum_size = Vector2(300.0, 610.0)
+	_briefing.size = Vector2(300.0, 610.0)
+	_briefing.add_theme_font_size_override("normal_font_size", 11)
+	_briefing.add_theme_font_size_override("bold_font_size", 12)
+	_briefing.scroll_active = true
+	add_child(_briefing)
 
 	_controls = VBoxContainer.new()
 	_controls.position = Vector2(0.0, 0.0)
@@ -292,10 +436,22 @@ func _set_stage(stage: int) -> void:
 
 
 func _build_stage_one() -> void:
-	_add_intro("STAGE 1 / 4 — WEIGH & CHARGE", "Tare the balance, weigh the acid, then charge the anhydride and catalyst into the dry flask.")
-	_add_slider("Salicylic acid", "g", 10.0, 17.0, 0.1, _mass_g, 1, func(v): _mass_g = v)
-	_add_slider("Acetic anhydride", "mL", 8.0, 22.0, 0.1, _anhydride_ml, 1, func(v): _anhydride_ml = v)
-	_add_slider("H₂SO₄ catalyst", "drops", 0.0, 8.0, 1.0, float(_catalyst_drops), 0, func(v): _catalyst_drops = int(v))
+	var rA: Dictionary = _protocol.get("reagent_a", {})
+	var rB: Dictionary = _protocol.get("reagent_b", {})
+	var rA_name: String = str(rA.get("name", "Salicylic acid"))
+	var rB_name: String = str(rB.get("name", "Acetic anhydride"))
+	var rA_unit: String = str(rA.get("unit", "g"))
+	var rB_unit: String = str(rB.get("unit", "mL"))
+	var rA_min: float = float(rA.get("min", 1.0))
+	var rA_max: float = float(rA.get("max", 50.0))
+	var rB_min: float = float(rB.get("min", 1.0))
+	var rB_max: float = float(rB.get("max", 50.0))
+	var cat_name: String = str(_protocol.get("catalyst", {}).get("name", "H₂SO₄ catalyst"))
+
+	_add_intro("STAGE 1 / 4 — WEIGH & CHARGE", "Tare the balance, weigh %s, then charge %s and catalyst into the dry flask." % [rA_name, rB_name])
+	_add_slider(rA_name, rA_unit, rA_min, rA_max, 0.1, _mass_g, 1, func(v): _mass_g = v)
+	_add_slider(rB_name, rB_unit, rB_min, rB_max, 0.1, _anhydride_ml, 1, func(v): _anhydride_ml = v)
+	_add_slider(cat_name, "drops", 0.0, 10.0, 1.0, float(_catalyst_drops), 0, func(v): _catalyst_drops = int(v))
 	_add_slider("Stirrer", "rpm", 0.0, 1200.0, 50.0, _stir_rpm, 0, func(v): _stir_rpm = v)
 
 	var ppe_row := HBoxContainer.new()
@@ -308,9 +464,14 @@ func _build_stage_one() -> void:
 
 
 func _build_stage_two() -> void:
-	_add_intro("STAGE 2 / 4 — REFLUX", "Bring the mantle to 65–75 °C and hold reflux for 20 minutes. The condenser must stay cold; vapour leaving the top is lost reagent.")
-	_add_slider("Mantle temperature", "°C", 40.0, 110.0, 1.0, _temp_c, 0, func(v): _temp_c = v)
-	_add_slider("Reflux time", "min", 5.0, 40.0, 1.0, _reflux_min, 0, func(v): _reflux_min = v)
+	var reflux_info: Dictionary = _protocol.get("reflux", {})
+	var t_low: float = float(reflux_info.get("temp_optimal_low", 65.0))
+	var t_high: float = float(reflux_info.get("temp_optimal_high", 75.0))
+	var opt_min: float = float(reflux_info.get("optimal_min", 20.0))
+
+	_add_intro("STAGE 2 / 4 — REFLUX", "Bring the mantle to %.0f–%.0f °C and hold reflux for %.0f minutes. The condenser must stay cold; vapour leaving the top is lost reagent." % [t_low, t_high, opt_min])
+	_add_slider("Mantle temperature", "°C", 30.0, 140.0, 1.0, _temp_c, 0, func(v): _temp_c = v)
+	_add_slider("Reflux time", "min", 2.0, maxf(60.0, opt_min * 2.0), 1.0, _reflux_min, 0, func(v): _reflux_min = v)
 	_add_check("Fume hood running / sash low", _hood, _on_hood)
 
 	var run := Button.new()
@@ -329,10 +490,12 @@ func _build_stage_two() -> void:
 
 
 func _build_stage_three() -> void:
-	_add_intro("STAGE 3 / 4 — QUENCH & CRYSTALLISE", "Pour the cooled mixture onto ice water to hydrolyse excess anhydride. Filter, then recrystallise from ethanol/water and dry.")
-	_add_slider("Ice bath", "°C", -5.0, 25.0, 1.0, _ice_c, 0, func(v): _ice_c = v)
-	_add_slider("Quench water", "mL", 0.0, 60.0, 1.0, _water_ml, 0, func(v): _water_ml = v)
-	_add_slider("Recrystallisation ethanol", "mL", 0.0, 30.0, 1.0, _ethanol_ml, 0, func(v): _ethanol_ml = v)
+	var workup_info: Dictionary = _protocol.get("workup", {})
+	var solv_name: String = str(workup_info.get("solvent", "ethanol"))
+	_add_intro("STAGE 3 / 4 — QUENCH & CRYSTALLISE", "Pour the cooled mixture onto ice water to hydrolyse excess unreacted reagent. Filter, then recrystallise from %s and dry." % solv_name)
+	_add_slider("Ice bath", "°C", -10.0, 25.0, 1.0, _ice_c, 0, func(v): _ice_c = v)
+	_add_slider("Quench water", "mL", 0.0, 80.0, 1.0, _water_ml, 0, func(v): _water_ml = v)
+	_add_slider("Recrystallisation " + solv_name, "mL", 0.0, 50.0, 1.0, _ethanol_ml, 0, func(v): _ethanol_ml = v)
 	_add_check("Add seed crystal", _seeded, _on_seed)
 	_add_nav(true, "Go to assay →")
 
@@ -468,7 +631,8 @@ func submit_batch() -> Dictionary:
 
 	var skills := get_node_or_null("/root/SkillManager")
 	if skills != null:
-		skills.add_xp("chemistry", xp, "Aspirin synthesis")
+		var proto_name: String = str(_protocol.get("name", "Aspirin"))
+		skills.add_xp("chemistry", xp, "%s synthesis" % proto_name)
 		if xp_eng > 0:
 			skills.add_xp("engineering", xp_eng, "Reflux rig operation")
 
@@ -476,9 +640,9 @@ func submit_batch() -> Dictionary:
 	if vitals != null:
 		if not _hood:
 			if vitals.has_method("add_chemical_exposure"):
-				vitals.add_chemical_exposure("acetic_anhydride", 120.0, 2.0)
+				vitals.add_chemical_exposure("organic_vapour", 120.0, 2.0)
 			if vitals.has_method("apply_hazard_damage"):
-				vitals.apply_hazard_damage(4.0, "chemical_burn", "open-bench acetic anhydride")
+				vitals.apply_hazard_damage(4.0, "chemical_burn", "open-bench organic vapour")
 		if _temp_c > 100.0:
 			if vitals.has_method("apply_hazard_damage"):
 				vitals.apply_hazard_damage(5.0, "thermal_burn", "reflux runaway")
@@ -512,21 +676,7 @@ func _save_record(result: Dictionary) -> void:
 
 
 func _on_new_batch() -> void:
-	_submitted = false
-	_last_result = {}
-	_reflux_done = false
-	_mass_g = 13.8
-	_anhydride_ml = 14.2
-	_catalyst_drops = 5
-	_stir_rpm = 450.0
-	_temp_c = 70.0
-	_reflux_min = 20.0
-	_hood = true
-	_ice_c = 2.0
-	_water_ml = 30.0
-	_ethanol_ml = 15.0
-	_seeded = true
-	_set_stage(1)
+	_select_protocol(str(_protocol.get("id", "aspirin")))
 	_status.text = "New batch. PPE is retained; reagents reset to the protocol defaults."
 	_status.add_theme_color_override("font_color", DIM)
 
@@ -538,26 +688,39 @@ func _on_new_batch() -> void:
 func _refresh_live() -> void:
 	if _report == null:
 		return
-	var moles_sal: float = _mass_g / Chem.MW_SALICYLIC
-	var moles_anh: float = _anhydride_ml * Chem.DENSITY_ANHYDRIDE / Chem.MW_ANHYDRIDE
+	var rA: Dictionary = _protocol.get("reagent_a", {})
+	var rB: Dictionary = _protocol.get("reagent_b", {})
+	var rA_name: String = str(rA.get("name", "Salicylic acid"))
+	var rB_name: String = str(rB.get("name", "Acetic anhydride"))
+	var mw_a: float = float(rA.get("mw", Chem.MW_SALICYLIC))
+	var mw_b: float = float(rB.get("mw", Chem.MW_ANHYDRIDE))
+	var density_b: float = float(rB.get("density", Chem.DENSITY_ANHYDRIDE))
+	var mw_product: float = float(_protocol.get("mw", Chem.MW_ASPIRIN))
+	var proto_name: String = str(_protocol.get("name", "Aspirin"))
+	var proto_id: String = str(_protocol.get("id", "aspirin")).to_upper()
+	var cat_name: String = str(_protocol.get("catalyst", {}).get("name", "H₂SO₄"))
+	var solv_name: String = str(_protocol.get("workup", {}).get("solvent", "EtOH"))
+
+	var moles_sal: float = _mass_g / mw_a
+	var moles_anh: float = _anhydride_ml * density_b / mw_b
 	var equivalents: float = moles_anh / moles_sal if moles_sal > 0.0 else 0.0
-	var theoretical: float = minf(moles_sal, moles_anh) * Chem.MW_ASPIRIN
-	var limiting := "salicylic acid" if moles_sal <= moles_anh else "acetic anhydride"
+	var theoretical: float = minf(moles_sal, moles_anh) * mw_product
+	var limiting := rA_name if moles_sal <= moles_anh else rB_name
 	var hood_color := GREEN if _hood else RED
 	var ppe_color := GREEN if _ppe_ok() else AMBER
 	var text := "[font_size=15][b]BATCH RECORD[/b][/font_size]\n"
-	text += "[color=#85949f]SYN-01 · Aspirin · stage %d / 4[/color]\n\n" % _stage
+	text += "[color=#85949f]%s · %s · stage %d / 4[/color]\n\n" % [proto_id, proto_name, _stage]
 	text += "[b]STOICHIOMETRY[/b]\n"
-	text += "Salicylic acid   %.2f g  →  %.1f mmol\n" % [_mass_g, moles_sal * 1000.0]
-	text += "Acetic anhydride %.1f mL → %.1f mmol\n" % [_anhydride_ml, moles_anh * 1000.0]
+	text += "%-16s %.2f g  →  %.1f mmol\n" % [rA_name.left(16), _mass_g, moles_sal * 1000.0]
+	text += "%-16s %.1f mL → %.1f mmol\n" % [rB_name.left(16), _anhydride_ml, moles_anh * 1000.0]
 	text += "Molar ratio      %.2f eq\n" % equivalents
 	text += "Limiting         [color=#ffb45c]%s[/color]\n" % limiting
 	text += "Theoretical      %.2f g\n\n" % theoretical
 	text += "[b]CONDITIONS[/b]\n"
 	text += "Reflux           %.0f °C · %.0f min\n" % [_temp_c, _reflux_min]
 	text += "Stirrer          %.0f rpm\n" % _stir_rpm
-	text += "Catalyst         %d drops H₂SO₄\n" % _catalyst_drops
-	text += "Crystallisation  %.0f °C ice · %d mL EtOH%s\n" % [_ice_c, int(_ethanol_ml), " · seeded" if _seeded else ""]
+	text += "Catalyst         %d drops %s\n" % [_catalyst_drops, cat_name]
+	text += "Crystallisation  %.0f °C ice · %d mL %s%s\n" % [_ice_c, int(_ethanol_ml), solv_name, " · seeded" if _seeded else ""]
 	text += "Fume hood        [color=#%s]%s[/color]\n" % [hood_color.to_html(false), "ON" if _hood else "OFF"]
 	text += "PPE              [color=#%s]%s[/color]\n\n" % [ppe_color.to_html(false), "complete" if _ppe_ok() else "incomplete"]
 

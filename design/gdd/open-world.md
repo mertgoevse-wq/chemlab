@@ -274,7 +274,7 @@ Because ChemLab does not feature real-time vehicle driving or avatar traversal, 
 - No OSHA penalties, no financial costs, no reputation tracking.
 
 ### 7.2 Origins Campaign Mode ("Progression Engine")
-The narrative campaign utilizes a Runescape-inspired progression system across five core skill disciplines:
+The narrative campaign utilizes a classic mastery progression system across five core skill disciplines:
 1. **Analytical Chemistry:** Titration accuracy, balance precision, NMR/HPLC spectrum interpretation, purity quantification.
 2. **Organic Synthesis:** Multi-step reaction assembly, reflux monitoring, recrystallization, yield optimization.
 3. **Biotechnology & Genetics:** Sterile technique, PCR thermal cycling, gel electrophoresis, plasmid transformation.

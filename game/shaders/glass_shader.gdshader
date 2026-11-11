@@ -79,7 +79,7 @@ void fragment() {
 
 	// 7. PBR Output Assembly with AC Visual Upgrade
 	// Apply copper-amber reflection tint (#D97706 @ 8%) to the refraction path for a warm laboratory glass aesthetic
-	var tinted_refraction_with_ac = mix(tinted_refraction, ac_reflection_tint.rgb, ac_reflection_tint.a);
+	vec3 tinted_refraction_with_ac = mix(tinted_refraction, ac_reflection_tint.rgb, ac_reflection_tint.a);
 	ALBEDO = mix(tinted_refraction_with_ac, edge_specular, fresnel * 0.9);
 	ROUGHNESS = roughness;
 	METALLIC = 0.0;

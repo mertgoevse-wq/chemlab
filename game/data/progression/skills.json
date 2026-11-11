@@ -1,16 +1,129 @@
 {
   "version": "1.0.0",
-  "description": "RuneScape-style skill system for Athanor Ascension. 15 skills, 120 levels, exponential XP, Intelligence Points (IP) as meta-currency.",
+  "description": "Progressive skill system for Athanor Ascension. 15 skills, 120 levels, exponential XP, Intelligence Points (IP) as meta-currency.",
   "xp_formula": {
-    "description": "Adapted RuneScape formula: XP = floor(sum_{i=1}^{level} (i + 300 * 2^(i/7))) / 4",
+    "description": "Exponential formula: XP = floor(sum_{i=1}^{level} (i + 300 * 2^(i/7))) / 4",
     "base_xp_per_level": [
-      0, 83, 174, 276, 388, 512, 650, 801, 969, 1154, 1358, 1584, 1833, 2107, 2411, 2746, 3115, 3523, 3973, 4470,
-      5018, 5624, 6291, 7028, 7842, 8740, 9730, 10824, 12031, 13363, 14833, 16456, 18247, 20224, 22406, 24815, 27473,
-      30408, 33648, 37224, 41171, 45529, 50339, 55649, 61512, 67983, 75127, 83014, 91721, 101333, 111945, 123660,
-      136594, 150872, 166636, 184040, 203254, 224466, 247886, 273742, 302288, 333804, 368599, 406906, 449036, 495308,
-      545967, 601552, 662532, 729429, 802726, 883008, 970960, 1067258, 1172578, 1287629, 1413257, 1550449, 1700211,
-      1863799, 2042518, 2237750, 2450983, 2683884, 2938162, 3215601, 3518139, 3847763, 4206587, 4596969, 5021435,
-      5482909, 5983431, 6525268, 7111077, 7744723, 8430307, 9171224, 9971112, 10834202, 11764896, 12768651
+      0,
+      83,
+      174,
+      276,
+      388,
+      512,
+      650,
+      801,
+      969,
+      1154,
+      1358,
+      1584,
+      1833,
+      2107,
+      2411,
+      2746,
+      3115,
+      3523,
+      3973,
+      4470,
+      5018,
+      5624,
+      6291,
+      7028,
+      7842,
+      8740,
+      9730,
+      10824,
+      12031,
+      13363,
+      14833,
+      16456,
+      18247,
+      20224,
+      22406,
+      24815,
+      27473,
+      30408,
+      33648,
+      37224,
+      41171,
+      45529,
+      50339,
+      55649,
+      61512,
+      67983,
+      75127,
+      83014,
+      91721,
+      101333,
+      111945,
+      123660,
+      136594,
+      150872,
+      166636,
+      184040,
+      203254,
+      224466,
+      247886,
+      273742,
+      302288,
+      333804,
+      368599,
+      407015,
+      449428,
+      496254,
+      547953,
+      605032,
+      668051,
+      737627,
+      814445,
+      899257,
+      992895,
+      1096278,
+      1210421,
+      1336443,
+      1475581,
+      1629200,
+      1798808,
+      1986068,
+      2192818,
+      2421087,
+      2673114,
+      2951373,
+      3258594,
+      3597792,
+      3972294,
+      4385776,
+      4842295,
+      5346332,
+      5902831,
+      6517253,
+      7195629,
+      7944614,
+      8771558,
+      9684577,
+      10692629,
+      11805606,
+      13034431,
+      14391160,
+      15889109,
+      17542976,
+      19368992,
+      21385073,
+      23611006,
+      26068632,
+      28782069,
+      31777943,
+      35085654,
+      38737661,
+      42769801,
+      47221641,
+      52136869,
+      57563718,
+      63555443,
+      70170840,
+      77474828,
+      85539082,
+      94442737,
+      104273167
     ],
     "max_level": 120,
     "soft_cap": 100,
@@ -23,24 +136,221 @@
       "category": "Core Sciences",
       "icon": "res://assets/ui/skills/chemistry.png",
       "description": "Core synthesis, purification, analysis. Unlocks reagents, procedures, lab access.",
-      "milestones": {
-        "10": "Basic glassware handling, simple neutralizations",
-        "20": "Reflux setup, recrystallization, TLC basics",
-        "30": "Distillation, extraction, melting point analysis",
-        "40": "Multi-step synthesis, protecting groups",
-        "50": "Advanced catalysis, chiral resolution",
-        "60": "Total synthesis design, retrosynthetic analysis",
-        "70": "Natural product isolation, structure elucidation",
-        "80": "Process chemistry, scale-up, flow chemistry",
-        "90": "Novel methodology development",
-        "100": "Master Synthetist — custom reagent design"
-      },
+      "milestones": [
+        {
+          "level": 1,
+          "title": "Stockroom Baseline & Volumetric Basics",
+          "description": "Basic glassware handling, gravimetric taring on analytical balance, and simple liquid dispensing.",
+          "unlocked_apparatus": [
+            "Erlenmeyer Flask (250 mL)",
+            "Glass Stirring Rod",
+            "Class A Volumetric Pipette (10 mL)",
+            "Beaker (250 mL)"
+          ],
+          "unlocked_reagents": [
+            "water",
+            "nacl",
+            "salicylic_acid",
+            "universal_indicator"
+          ],
+          "unlocked_abilities": [
+            "Meniscus Reading",
+            "Direct Taring",
+            "Single-Stage Solution Preparation"
+          ],
+          "unlocked_lab_access": [
+            "Academic Teaching Lab (Bay 1)"
+          ],
+          "unlocked_recipes": [
+            "saline_solution_0_9pct",
+            "stock_indicator_solution"
+          ]
+        },
+        {
+          "level": 10,
+          "title": "Reflux Heating & Precision Titration",
+          "description": "Rigging vertical Liebig condensers for thermal reflux and dropwise burets for acid-base quantification.",
+          "unlocked_apparatus": [
+            "Liebig Condenser (300 mm)",
+            "Heating Mantle with Magnetic Stirrer",
+            "Precision Buret (50 mL)",
+            "Porcelain Contrast Tile"
+          ],
+          "unlocked_reagents": [
+            "hcl",
+            "naoh",
+            "acetic_anhydride",
+            "phenolphthalein",
+            "h2so4_cat"
+          ],
+          "unlocked_abilities": [
+            "Dropwise Stopcock Titration",
+            "Reflux Condensation Rigging",
+            "Exotherm Monitoring"
+          ],
+          "unlocked_lab_access": [
+            "Organic Synthesis Lab (North Bench)"
+          ],
+          "unlocked_recipes": [
+            "aspirin_acetylsalicylic_acid",
+            "potassium_acid_phthalate_standardization"
+          ]
+        },
+        {
+          "level": 25,
+          "title": "Fractional Distillation & Vacuum Filtration",
+          "description": "Thermal equilibrium vapor-liquid separation with Vigreux columns and Büchner aspirator filtration.",
+          "unlocked_apparatus": [
+            "Vigreux Distillation Column",
+            "Büchner Funnel & Vacuum Flask",
+            "Water Aspirator Pump",
+            "Recrystallization Dish"
+          ],
+          "unlocked_reagents": [
+            "ethanol",
+            "acetone",
+            "p_aminophenol",
+            "acetic_anhydride",
+            "celite_filter_aid"
+          ],
+          "unlocked_abilities": [
+            "Vapor Temperature Plateau Tracking",
+            "Vacuum Cake Washing",
+            "Active Crystallization Seeding"
+          ],
+          "unlocked_lab_access": [
+            "Preparative Distillation Pilot Suite"
+          ],
+          "unlocked_recipes": [
+            "paracetamol_acetaminophen",
+            "fractional_bioethanol_refinement"
+          ]
+        },
+        {
+          "level": 50,
+          "title": "Chromatography & Multi-Step Heterocyclic Synthesis",
+          "description": "HPLC-DAD analytical assay verification, Fischer indole synthesis, and dye precipitation.",
+          "unlocked_apparatus": [
+            "HPLC-DAD System",
+            "UV-Vis Spectrophotometer",
+            "Rotary Evaporator (Rotavap)",
+            "Melting Point Apparatus"
+          ],
+          "unlocked_reagents": [
+            "aniline",
+            "o_nitrobenzaldehyde",
+            "phenylhydrazine",
+            "pyruvic_acid",
+            "polyphosphoric_acid"
+          ],
+          "unlocked_abilities": [
+            "Chromatographic Peak Deconvolution",
+            "Beer-Lambert Linearity Calibration",
+            "Vacuum Solvent Stripping"
+          ],
+          "unlocked_lab_access": [
+            "Analytical Spectroscopy Core (Wing Alpha)"
+          ],
+          "unlocked_recipes": [
+            "indigo_dye_synthesis",
+            "fischer_indole_precursor",
+            "benzocaine_synthesis"
+          ]
+        },
+        {
+          "level": 75,
+          "title": "Inert Atmosphere & Schlenk Technique",
+          "description": "Handling pyrophoric, air-sensitive, and anhydrous organometallics under dry argon Schlenk manifolds.",
+          "unlocked_apparatus": [
+            "Double-Manifold Schlenk Line",
+            "Argon Atmosphere Glovebox",
+            "Sublimation Cold Finger",
+            "GC-MS Quadrupole"
+          ],
+          "unlocked_reagents": [
+            "diethyl_ether_anhydrous",
+            "tetrahydrofuran_anhydrous",
+            "sodium_borohydride",
+            "lithium_aluminum_hydride",
+            "nmr_solvent_cdcl3"
+          ],
+          "unlocked_abilities": [
+            "Cannula Transfer Under Inert Gas",
+            "Septum Syringe Metering",
+            "Quadrupole Mass Fragmentation Interpretation"
+          ],
+          "unlocked_lab_access": [
+            "Advanced Organometallic & Catalysis Bay"
+          ],
+          "unlocked_recipes": [
+            "caffeine_sublimation_extraction",
+            "catalytic_cross_coupling_biaryl",
+            "pihkal_phenethylamine_reduction_model"
+          ]
+        },
+        {
+          "level": 100,
+          "title": "Athanor Core Master Synthesis & FT-NMR Structural Elucidation",
+          "description": "Full laboratory autonomy: multi-step retrosynthetic campaigns, 400 MHz FT-NMR elucidation, and custom molecule design.",
+          "unlocked_apparatus": [
+            "Athanor Core Automated Reactor",
+            "400 MHz FT-NMR Spectrometer",
+            "High-Resolution Orbitrap Mass Spectrometer",
+            "Continuous Flow Microreactor"
+          ],
+          "unlocked_reagents": [
+            "all_preparative_reagents",
+            "deuterated_solvents_full_library",
+            "chiral_catalyst_library",
+            "supercritical_co2_cylinder"
+          ],
+          "unlocked_abilities": [
+            "Autonomous Retrosynthetic Routing",
+            "2D COSY/HSQC NMR Multiplet Parsing",
+            "Reaction Network In-Silico Optimization"
+          ],
+          "unlocked_lab_access": [
+            "Athanor Deep Research Sanctum",
+            "Full Unrestricted Sandbox Chemistry"
+          ],
+          "unlocked_recipes": [
+            "total_synthesis_alkaloid_scaffold",
+            "tihkal_tryptamine_condensation_model",
+            "macrolide_core_assembly"
+          ]
+        }
+      ],
       "unlocks": {
-        "reagents": ["salicylic_acid", "acetic_anhydride", "h2so4", "naoh", "hcl", "ethanol", "methanol", "acetone", "ether", "dcm"],
-        "equipment": ["reflux_condenser", "separatory_funnel", "rotary_evaporator", "tlc_plate", "melting_point_app"],
-        "labs": ["teaching", "organic_synthesis"],
-        "companions": ["lab_rat", "instrumented_rat"]
-      }
+        "reagents": [
+          "salicylic_acid",
+          "acetic_anhydride",
+          "h2so4",
+          "naoh",
+          "hcl",
+          "ethanol",
+          "methanol",
+          "acetone",
+          "ether",
+          "dcm"
+        ],
+        "equipment": [
+          "reflux_condenser",
+          "separatory_funnel",
+          "rotary_evaporator",
+          "tlc_plate",
+          "melting_point_app"
+        ],
+        "labs": [
+          "teaching",
+          "organic_synthesis"
+        ],
+        "companions": [
+          "lab_rat",
+          "instrumented_rat"
+        ]
+      },
+      "display_name": "Chemistry: Synthesis & Analysis",
+      "color_hex": "#FF6A00"
     },
     {
       "id": "biology",
@@ -48,24 +358,214 @@
       "category": "Core Sciences",
       "icon": "res://assets/ui/skills/biology.png",
       "description": "Cell culture, microbiology, molecular biology, genetics.",
-      "milestones": {
-        "10": "Aseptic technique, plate streaking, microscopy",
-        "20": "Cell counting, viability assays, media prep",
-        "30": "Transfection, transformation, plasmid prep",
-        "40": "PCR, qPCR, gel electrophoresis",
-        "50": "CRISPR design, screening, validation",
-        "60": "Cell line engineering, stable lines",
-        "70": "Organoids, differentiation, single-cell",
-        "80": "Synthetic biology, pathway engineering",
-        "90": "Genome editing therapeutics",
-        "100": "Master Biologist — custom organism design"
-      },
+      "milestones": [
+        {
+          "level": 1,
+          "title": "Pipetting Discipline & Buffer Preparation",
+          "description": "Aspiration/dispense ergonomics, microvolume measurement, and enzymatic buffer stabilization.",
+          "unlocked_apparatus": [
+            "Adjustable Micropipettes (P20, P200, P1000)",
+            "Vortex Mixer",
+            "Benchtop Microcentrifuge",
+            "pH Indicator Strip Box"
+          ],
+          "unlocked_reagents": [
+            "tris_hcl_buffer",
+            "edta_disodium",
+            "molecular_grade_water",
+            "nacl_sterile"
+          ],
+          "unlocked_abilities": [
+            "Sub-Microliter Wet Dispense",
+            "Enzymatic Thawing on Ice",
+            "Serial Dilution Calculation"
+          ],
+          "unlocked_lab_access": [
+            "Molecular Biology Training Bench"
+          ],
+          "unlocked_recipes": [
+            "tae_running_buffer_50x",
+            "te_dna_storage_buffer"
+          ]
+        },
+        {
+          "level": 10,
+          "title": "Endpoint PCR Amplification",
+          "description": "Primer-template annealing thermodynamics, denaturation ramps, and thermal cycler programming.",
+          "unlocked_apparatus": [
+            "96-Well Thermal Cycler (Gradient Block)",
+            "PCR Tube Rack",
+            "Mini-Centrifuge for Strip Tubes",
+            "Ice Basin"
+          ],
+          "unlocked_reagents": [
+            "taq_dna_polymerase",
+            "dntp_mix_10mm",
+            "pcr_buffer_with_mgcl2",
+            "control_template_lambda_dna",
+            "forward_reverse_primer_set_a"
+          ],
+          "unlocked_abilities": [
+            "Annealing Temperature Optimization (Ta)",
+            "Extension Time Calculation",
+            "Contamination Prevention Aseptic Pipetting"
+          ],
+          "unlocked_lab_access": [
+            "Amplification Clean Suite (Pre-PCR / Post-PCR)"
+          ],
+          "unlocked_recipes": [
+            "standard_pcr_amplicon_500bp",
+            "gc_rich_colony_pcr_protocol"
+          ]
+        },
+        {
+          "level": 25,
+          "title": "Horizontal Agarose Gel Electrophoresis",
+          "description": "Agarose melting, comb casting, electric field mobility, and DNA ladder size estimation.",
+          "unlocked_apparatus": [
+            "Horizontal Gel Electrophoresis Chamber",
+            "High-Voltage Power Supply (300V)",
+            "UV Transilluminator Darkroom Box",
+            "Gel Casting Tray with Combs"
+          ],
+          "unlocked_reagents": [
+            "agarose_molecular_biology_grade",
+            "gelgreen_nucleic_acid_stain",
+            "dna_ladder_1kb_plus",
+            "6x_glycerol_loading_dye"
+          ],
+          "unlocked_abilities": [
+            "Band Size Interpolation",
+            "Voltage Gradient Calibration (V/cm)",
+            "Gel Slab Extraction & Purification"
+          ],
+          "unlocked_lab_access": [
+            "Gel Documentation & Imaging Darkroom"
+          ],
+          "unlocked_recipes": [
+            "1pct_agarose_analytical_gel",
+            "dna_fragment_band_recovery_purification"
+          ]
+        },
+        {
+          "level": 50,
+          "title": "Restriction Enzyme Digestion & Polyacrylamide Gel (PAGE)",
+          "description": "Endonuclease restriction mapping, sticky-end ligation, and denaturing PAGE resolution.",
+          "unlocked_apparatus": [
+            "Vertical Mini-PROTEAN PAGE Cell",
+            "37°C Enzyme Incubation Dry Bath",
+            "Microplate Spectrophotometer (Nanodrop)",
+            "Sonicator Cell Disruptor"
+          ],
+          "unlocked_reagents": [
+            "ecori_restriction_endonuclease",
+            "bamhi_restriction_endonuclease",
+            "hindiii_restriction_endonuclease",
+            "t4_dna_ligase",
+            "acrylamide_bisacrylamide_solution_29_1"
+          ],
+          "unlocked_abilities": [
+            "Restriction Fragment Length Polymorphism (RFLP) Analysis",
+            "Plasmid Topological Dissection",
+            "Cohesive-End Ligation Stoichiometry"
+          ],
+          "unlocked_lab_access": [
+            "Recombinant DNA Cloning Facility (BSL-1)"
+          ],
+          "unlocked_recipes": [
+            "plasmid_vector_digest_linearization",
+            "sds_page_recombinant_protein_assay"
+          ]
+        },
+        {
+          "level": 75,
+          "title": "CRISPR-Cas9 Targeted Cleavage & Reporter Assays",
+          "description": "Single-guide RNA (sgRNA) design, ribonucleoprotein complex in-vitro cleavage, and GFP/luciferase bioluminescence assays.",
+          "unlocked_apparatus": [
+            "Biosafety Cabinet Class II Type A2",
+            "CO2 Cell Culture Incubator (37°C, 5% CO2)",
+            "Fluorescence Inverted Microscope",
+            "Multi-Mode Plate Reader"
+          ],
+          "unlocked_reagents": [
+            "recombinant_spcas9_protein",
+            "synthetic_sgrna_library",
+            "gfp_reporter_construct_plasmid",
+            "luciferin_substrate",
+            "lipofectamine_transfection_reagent"
+          ],
+          "unlocked_abilities": [
+            "Protospacer Adjacent Motif (PAM) Recognition",
+            "Non-Homologous End Joining (NHEJ) Cleavage Verification",
+            "Bioluminescent Kinetic Luminescence Reading"
+          ],
+          "unlocked_lab_access": [
+            "CRISPR Biotech Cleanroom (BSL-2)"
+          ],
+          "unlocked_recipes": [
+            "cas9_in_vitro_cleavage_assay",
+            "fluorescent_reporter_transfection_protocol"
+          ]
+        },
+        {
+          "level": 100,
+          "title": "Synthetic Biology Foundry & Nanopore Sequencing",
+          "description": "De novo gene assembly (Golden Gate / Gibson), real-time long-read sequencing, and metabolic pathway engineering.",
+          "unlocked_apparatus": [
+            "Oxford Nanopore MinION Sequencer",
+            "Acoustic Liquid Handler Workstation",
+            "Automated BioBrick Assembly Station",
+            "Benchtop Bioreactor (5 L Fermenter)"
+          ],
+          "unlocked_reagents": [
+            "gibson_assembly_master_mix",
+            "bsai_type_iis_restriction_enzyme",
+            "nanopore_flow_cell_r10_4",
+            "synthetic_minimal_promoter_library",
+            "expression_chassis_e_coli_bl21"
+          ],
+          "unlocked_abilities": [
+            "Real-Time Read Electrical De-Muxing",
+            "Metabolic Flux Stoichiometric Balancing",
+            "Multi-Part Golden Gate Assembly Design"
+          ],
+          "unlocked_lab_access": [
+            "Synthetic Genomics Core & High-Containment BSL-3 Cleanroom"
+          ],
+          "unlocked_recipes": [
+            "five_part_biosynthetic_pathway_assembly",
+            "whole_plasmid_long_read_sequencing_validation"
+          ]
+        }
+      ],
       "unlocks": {
-        "reagents": ["lb_media", "ampicillin", "iptg", "xgal", "taq_polymerase", "dntps", "primers"],
-        "equipment": ["biosafety_cabinet", "incubator", "centrifuge", "pcr_machine", "gel_doc"],
-        "labs": ["cell_culture", "genomics"],
-        "companions": ["lab_axolotl", "archive_raven"]
-      }
+        "reagents": [
+          "lb_media",
+          "ampicillin",
+          "iptg",
+          "xgal",
+          "taq_polymerase",
+          "dntps",
+          "primers"
+        ],
+        "equipment": [
+          "biosafety_cabinet",
+          "incubator",
+          "centrifuge",
+          "pcr_machine",
+          "gel_doc"
+        ],
+        "labs": [
+          "cell_culture",
+          "genomics"
+        ],
+        "companions": [
+          "lab_axolotl",
+          "archive_raven"
+        ]
+      },
+      "display_name": "Biology: Molecular Methods & Genetics",
+      "color_hex": "#2E8B57"
     },
     {
       "id": "physics",
@@ -86,10 +586,28 @@
         "100": "Master Physicist — custom beamline design"
       },
       "unlocks": {
-        "reagents": ["deuterium_gas", "helium_3", "lithium_7", "boron_10"],
-        "equipment": ["vacuum_pump", "turbo_pump", "neutron_detector", "geiger_counter", "scintillator"],
-        "labs": ["accelerator", "fusor", "nuclear"],
-        "companions": ["xenon_owl", "ferro_snail"]
+        "reagents": [
+          "deuterium_gas",
+          "helium_3",
+          "lithium_7",
+          "boron_10"
+        ],
+        "equipment": [
+          "vacuum_pump",
+          "turbo_pump",
+          "neutron_detector",
+          "geiger_counter",
+          "scintillator"
+        ],
+        "labs": [
+          "accelerator",
+          "fusor",
+          "nuclear"
+        ],
+        "companions": [
+          "xenon_owl",
+          "ferro_snail"
+        ]
       }
     },
     {
@@ -112,9 +630,19 @@
       },
       "unlocks": {
         "reagents": [],
-        "equipment": ["hpc_access", "gpu_cluster", "quantum_simulator"],
-        "labs": ["computational", "all"],
-        "companions": ["null_moth", "prism_finch"]
+        "equipment": [
+          "hpc_access",
+          "gpu_cluster",
+          "quantum_simulator"
+        ],
+        "labs": [
+          "computational",
+          "all"
+        ],
+        "companions": [
+          "null_moth",
+          "prism_finch"
+        ]
       }
     },
     {
@@ -123,24 +651,210 @@
       "category": "Applied Investigation",
       "icon": "res://assets/ui/skills/forensics.png",
       "description": "Crime scene, toxicology, trace evidence, court testimony.",
-      "milestones": {
-        "10": "Evidence collection, chain of custody, photography",
-        "20": "Presumptive tests, colorimetry, microscopy",
-        "30": "GC-MS, LC-MS/MS method development",
-        "40": "Toxicology interpretation, post-mortem redistribution",
-        "50": "Expert testimony, report writing, accreditation",
-        "60": "Novel psychoactives, NPS identification",
-        "70": "Chemical attribution, synthesis route tracing",
-        "80": "Mass disaster victim identification",
-        "90": "Method validation, uncertainty budgets",
-        "100": "Master Forensic Chemist — novel method invention"
-      },
+      "milestones": [
+        {
+          "level": 1,
+          "title": "Crime Scene Securing & Physical Evidence Recovery",
+          "description": "Perimeter cordon protocols, chain-of-custody documentation, electrostatic dust lifting, and evidence bagging.",
+          "unlocked_apparatus": [
+            "Evidence Collection Kit",
+            "UV Crime Scene Flashlight (365 nm / 395 nm)",
+            "Scale Reference Rulers (ABFO No. 2)",
+            "Tamper-Evident Evidence Bags"
+          ],
+          "unlocked_reagents": [
+            "ninhydrin_spray_aerosol",
+            "latent_black_fingerprint_powder",
+            "cyethyl_fixative",
+            "sterile_cotton_swabs"
+          ],
+          "unlocked_abilities": [
+            "ABFO Photomacrographic Scaling",
+            "Chain-of-Custody Manifest Logging",
+            "Surface Ridge Pattern Spotting"
+          ],
+          "unlocked_lab_access": [
+            "Police Station Evidence Intake Room"
+          ],
+          "unlocked_recipes": [
+            "ninhydrin_latent_print_developer",
+            "iodine_fuming_chamber_preparation"
+          ]
+        },
+        {
+          "level": 10,
+          "title": "Chemiluminescent Blood Detection & Chemical Spot Tests",
+          "description": "Luminol catalytic oxidation with hemoglobin iron, Kastle-Meyer phenolphthalin tests, and Marquis presumptive reagent screens.",
+          "unlocked_apparatus": [
+            "Darkroom Chemical Spray Rig",
+            "Spot Plate (12-Well Porcelain)",
+            "Fiberscope Comparison Loupe",
+            "Portable Forensic Camera with Orange Barrier Filter"
+          ],
+          "unlocked_reagents": [
+            "luminol_free_base",
+            "sodium_perborate_oxidizer",
+            "phenolphthalin_reduced",
+            "marquis_reagent",
+            "mecke_reagent"
+          ],
+          "unlocked_abilities": [
+            "Chemiluminescent Glow Contrast Photography",
+            "Presumptive Catalytic Color Transition Timing",
+            "False-Positive Bleach Discriminator"
+          ],
+          "unlocked_lab_access": [
+            "Forensic Biology & Serology Workstation"
+          ],
+          "unlocked_recipes": [
+            "sensitized_luminol_blood_spray",
+            "kastle_meyer_presumptive_blood_reagent"
+          ]
+        },
+        {
+          "level": 25,
+          "title": "Ballistics Residue & Cyanoacrylate Fuming",
+          "description": "Gunshot residue (GSR) barium/antimony testing, bullet striation matching, and superglue chamber latent print development.",
+          "unlocked_apparatus": [
+            "Heated Cyanoacrylate Fuming Chamber",
+            "Ballistics Comparison Scope (Dual Stage)",
+            "GSR Carbon Stub Mounts",
+            "Digital Micrometer Gauge"
+          ],
+          "unlocked_reagents": [
+            "ethyl_cyanoacrylate_monomer",
+            "rhodamine_6g_fluorescent_dye",
+            "sodium_rhodizonate_lead_test",
+            "greiss_reagent_nitrite_screen"
+          ],
+          "unlocked_abilities": [
+            "Striation Land and Groove Alignment",
+            "Superglue Ridge Polycondensation Control",
+            "Nitrite Stippling Distance Estimation"
+          ],
+          "unlocked_lab_access": [
+            "Forensic Ballistics & Trace Evidence Suite"
+          ],
+          "unlocked_recipes": [
+            "cyanoacrylate_heat_humidified_development",
+            "rhodamine_fluorescent_dye_dip_wash"
+          ]
+        },
+        {
+          "level": 50,
+          "title": "Toxicological Screening & Immunoassay Diagnostics",
+          "description": "Enzyme-linked immunosorbent assay (ELISA) screening, solid-phase extraction (SPE) from biological matrices, and handheld Raman spectrometry.",
+          "unlocked_apparatus": [
+            "Solid-Phase Extraction (SPE) Vacuum Manifold",
+            "Handheld Raman Raw-Material Spectrometer",
+            "96-Well ELISA Microplate Reader",
+            "Centrifugal Filter Units"
+          ],
+          "unlocked_reagents": [
+            "spe_c18_cartridges",
+            "elisa_opiate_screen_kit",
+            "elisa_amphetamine_screen_kit",
+            "methanol_hplc_grade",
+            "formic_acid_trace_grade"
+          ],
+          "unlocked_abilities": [
+            "Raman Surface Interrogation Through Glass",
+            "SPE Biological Elution Partitioning",
+            "Competitive Immunoassay Cutoff Thresholding"
+          ],
+          "unlocked_lab_access": [
+            "Forensic Toxicology & Medical Examiner Annex"
+          ],
+          "unlocked_recipes": [
+            "spe_plasma_extraction_toxicology",
+            "raman_unknown_powder_spectral_library_match"
+          ]
+        },
+        {
+          "level": 75,
+          "title": "Clandestine Lab Hazard Profiling & Byproduct Fingerprinting",
+          "description": "Profiling illicit synthesis routes, tracing synthetic impurities (PiHKAL/TiHKAL byproduct profiles), and toxic air monitoring.",
+          "unlocked_apparatus": [
+            "Portable HazMat PID Gas Detector",
+            "Thermal Desorption Gas Chromatography Tube Sampler",
+            "Explosive Precursor Spot Kit",
+            "Full Face CBRN Respirator"
+          ],
+          "unlocked_reagents": [
+            "phenylacetone_trace_standard",
+            "methylamine_hydrochloride_tracer",
+            "pseudoephedrine_reference",
+            "iodine_red_phosphorus_residue_standard",
+            "anhydrous_ammonia_sniffer_ampoule"
+          ],
+          "unlocked_abilities": [
+            "Route-Specific Route-Signature Byproduct Fingerprinting",
+            "Phosphine Gas Ambient Threat Mitigation",
+            "Clandestine Lab Reaction Vessel Residual Analysis"
+          ],
+          "unlocked_lab_access": [
+            "Badlands Clandestine Investigation Hotspot",
+            "HazMat Forensics Response Unit"
+          ],
+          "unlocked_recipes": [
+            "leuckart_impurity_signature_isolation",
+            "reductive_amination_byproduct_profiling"
+          ]
+        },
+        {
+          "level": 100,
+          "title": "Forensic Master Reconstruction & Expert Witness Clearance",
+          "description": "Complete 3D crime-scene photogrammetric trajectory reconstruction, isotopic ratio mass spectrometry (IRMS), and judicial evidentiary certification.",
+          "unlocked_apparatus": [
+            "3D LiDAR Spatial Crime-Scene Scanner",
+            "Isotope Ratio Mass Spectrometer (IRMS)",
+            "Forensic Audio Spectrum Forensic De-Noiser",
+            "Federal Court Evidence Vault Console"
+          ],
+          "unlocked_reagents": [
+            "deuterium_hydrogen_ratio_standards",
+            "carbon_13_reference_gas",
+            "strontium_isotope_trace_spike",
+            "legal_tamper_seal_cartridges"
+          ],
+          "unlocked_abilities": [
+            "3D Ballistic Trajectory Ray-Casting",
+            "Geographic Provenance Isotopic Sourcing",
+            "Federal Court Admissible Forensic Certificate Generation"
+          ],
+          "unlocked_lab_access": [
+            "Chief Medical Examiner & Interpol Forensic Hub"
+          ],
+          "unlocked_recipes": [
+            "irms_synthetic_provenance_certification",
+            "multimodal_forensic_reconstruction_bundle"
+          ]
+        }
+      ],
       "unlocks": {
-        "reagents": ["marquis_reagent", "mecke_reagent", "mandelin_reagent", "froehde_reagent"],
-        "equipment": ["gc_ms", "lc_msms", "ftir", "raman", "polarized_microscope"],
-        "labs": ["forensic_toxicology"],
-        "companions": ["contraband_cat", "search_dog"]
-      }
+        "reagents": [
+          "marquis_reagent",
+          "mecke_reagent",
+          "mandelin_reagent",
+          "froehde_reagent"
+        ],
+        "equipment": [
+          "gc_ms",
+          "lc_msms",
+          "ftir",
+          "raman",
+          "polarized_microscope"
+        ],
+        "labs": [
+          "forensic_toxicology"
+        ],
+        "companions": [
+          "contraband_cat",
+          "search_dog"
+        ]
+      },
+      "display_name": "Forensics: Investigation & Evidence Analysis",
+      "color_hex": "#8B0000"
     },
     {
       "id": "toxicology",
@@ -161,10 +875,25 @@
         "100": "Master Toxicologist — paradigm-shifting methods"
       },
       "unlocks": {
-        "reagents": ["nadph", "s9_fraction", "glutathione", "cyp_enzymes"],
-        "equipment": ["high_content_imaging", "microelectrode_array", "organ_chip"],
-        "labs": ["toxicology", "cell_culture"],
-        "companions": ["brinejack", "halide_newt"]
+        "reagents": [
+          "nadph",
+          "s9_fraction",
+          "glutathione",
+          "cyp_enzymes"
+        ],
+        "equipment": [
+          "high_content_imaging",
+          "microelectrode_array",
+          "organ_chip"
+        ],
+        "labs": [
+          "toxicology",
+          "cell_culture"
+        ],
+        "companions": [
+          "brinejack",
+          "halide_newt"
+        ]
       }
     },
     {
@@ -187,9 +916,22 @@
       },
       "unlocks": {
         "reagents": [],
-        "equipment": ["glassblowing_torch", "lathe", "mill", "3d_printer", "pcb_fab"],
-        "labs": ["all", "cleanroom", "materials"],
-        "companions": ["calcine_hound", "glasswing_moth"]
+        "equipment": [
+          "glassblowing_torch",
+          "lathe",
+          "mill",
+          "3d_printer",
+          "pcb_fab"
+        ],
+        "labs": [
+          "all",
+          "cleanroom",
+          "materials"
+        ],
+        "companions": [
+          "calcine_hound",
+          "glasswing_moth"
+        ]
       }
     },
     {
@@ -212,9 +954,21 @@
       },
       "unlocks": {
         "reagents": [],
-        "equipment": ["supplied_air_respirator", "chemical_suit", "radiation_shield", "spill_kit"],
-        "labs": ["all", "radiochemistry", "biosafety"],
-        "companions": ["wall_gecko", "carrier_pigeon"]
+        "equipment": [
+          "supplied_air_respirator",
+          "chemical_suit",
+          "radiation_shield",
+          "spill_kit"
+        ],
+        "labs": [
+          "all",
+          "radiochemistry",
+          "biosafety"
+        ],
+        "companions": [
+          "wall_gecko",
+          "carrier_pigeon"
+        ]
       }
     },
     {
@@ -237,9 +991,21 @@
       },
       "unlocks": {
         "reagents": [],
-        "equipment": ["liquid_handler", "plate_hotel", "robot_arm", "scheduler_software"],
-        "labs": ["pilot_plant", "cleanroom", "high_throughput"],
-        "companions": ["mercurial_ferret", "lumen_eel"]
+        "equipment": [
+          "liquid_handler",
+          "plate_hotel",
+          "robot_arm",
+          "scheduler_software"
+        ],
+        "labs": [
+          "pilot_plant",
+          "cleanroom",
+          "high_throughput"
+        ],
+        "companions": [
+          "mercurial_ferret",
+          "lumen_eel"
+        ]
       }
     },
     {
@@ -262,9 +1028,22 @@
       },
       "unlocks": {
         "reagents": [],
-        "equipment": ["glovebox", "hot_cell", "isolator", "manipulator", "hepa_filter"],
-        "labs": ["radiochemistry", "biosafety", "cleanroom"],
-        "companions": ["obsidian_beetle", "sable_lynx"]
+        "equipment": [
+          "glovebox",
+          "hot_cell",
+          "isolator",
+          "manipulator",
+          "hepa_filter"
+        ],
+        "labs": [
+          "radiochemistry",
+          "biosafety",
+          "cleanroom"
+        ],
+        "companions": [
+          "obsidian_beetle",
+          "sable_lynx"
+        ]
       }
     },
     {
@@ -286,10 +1065,28 @@
         "100": "Master Nuclear Engineer — new fuel cycle"
       },
       "unlocks": {
-        "reagents": ["uranyl_nitrate", "plutonium_nitrate", "tpb", "dodecane", "hdehp"],
-        "equipment": ["reactor_simulator", "hot_cell", "purex_mixer_settler", "vitrification"],
-        "labs": ["nuclear", "radiochemistry", "orbital"],
-        "companions": ["ember_drake", "chrysalis_warden"]
+        "reagents": [
+          "uranyl_nitrate",
+          "plutonium_nitrate",
+          "tpb",
+          "dodecane",
+          "hdehp"
+        ],
+        "equipment": [
+          "reactor_simulator",
+          "hot_cell",
+          "purex_mixer_settler",
+          "vitrification"
+        ],
+        "labs": [
+          "nuclear",
+          "radiochemistry",
+          "orbital"
+        ],
+        "companions": [
+          "ember_drake",
+          "chrysalis_warden"
+        ]
       }
     },
     {
@@ -311,10 +1108,29 @@
         "100": "Master Geneticist — novel genetic code"
       },
       "unlocks": {
-        "reagents": ["cas9_protein", "sgRNA", "donor_template", "aav_vector", "lentivirus"],
-        "equipment": ["sequencer", "pcr_machine", "electroporator", "microfluidics", "ngs_prep"],
-        "labs": ["genomics", "cell_culture", "synthetic_biology"],
-        "companions": ["verdant_sloth", "tideglass_serpent"]
+        "reagents": [
+          "cas9_protein",
+          "sgRNA",
+          "donor_template",
+          "aav_vector",
+          "lentivirus"
+        ],
+        "equipment": [
+          "sequencer",
+          "pcr_machine",
+          "electroporator",
+          "microfluidics",
+          "ngs_prep"
+        ],
+        "labs": [
+          "genomics",
+          "cell_culture",
+          "synthetic_biology"
+        ],
+        "companions": [
+          "verdant_sloth",
+          "tideglass_serpent"
+        ]
       }
     },
     {
@@ -336,10 +1152,30 @@
         "100": "Master Biochemist — undruggable targets"
       },
       "unlocks": {
-        "reagents": ["atp", "nadh", "coenzyme_a", "sams", "fmoc_amino_acids"],
-        "equipment": ["crystallography", "cryoem", "nmr", "spr", "itc", "mass_spec"],
-        "labs": ["biochemistry", "structural_biology", "drug_discovery"],
-        "companions": ["auric_kite", "prism_finch"]
+        "reagents": [
+          "atp",
+          "nadh",
+          "coenzyme_a",
+          "sams",
+          "fmoc_amino_acids"
+        ],
+        "equipment": [
+          "crystallography",
+          "cryoem",
+          "nmr",
+          "spr",
+          "itc",
+          "mass_spec"
+        ],
+        "labs": [
+          "biochemistry",
+          "structural_biology",
+          "drug_discovery"
+        ],
+        "companions": [
+          "auric_kite",
+          "prism_finch"
+        ]
       }
     },
     {
@@ -361,10 +1197,27 @@
         "100": "Master Pharmacologist — first-in-class drugs"
       },
       "unlocks": {
-        "reagents": ["radioligands", "gtp_gamma_s", "fluorogenic_substrates", "biosensors"],
-        "equipment": ["binding_plate_reader", "imager", "microdialysis", "pet_scanner"],
-        "labs": ["pharmacology", "toxicity", "clinical"],
-        "companions": ["cinderling", "mercurial_ferret"]
+        "reagents": [
+          "radioligands",
+          "gtp_gamma_s",
+          "fluorogenic_substrates",
+          "biosensors"
+        ],
+        "equipment": [
+          "binding_plate_reader",
+          "imager",
+          "microdialysis",
+          "pet_scanner"
+        ],
+        "labs": [
+          "pharmacology",
+          "toxicity",
+          "clinical"
+        ],
+        "companions": [
+          "cinderling",
+          "mercurial_ferret"
+        ]
       }
     },
     {
@@ -386,10 +1239,27 @@
         "100": "Master Synthetic Biologist — programmable life"
       },
       "unlocks": {
-        "reagents": ["biobricks", "mo_cyto", "cell_free_extract", "ribosome"],
-        "equipment": ["bioreactor", "chemostat", "cell_free_system", "dna_synthesizer"],
-        "labs": ["synthetic_biology", "pilot_plant", "orbital"],
-        "companions": ["tideglass_serpent", "aurek_kite"]
+        "reagents": [
+          "biobricks",
+          "mo_cyto",
+          "cell_free_extract",
+          "ribosome"
+        ],
+        "equipment": [
+          "bioreactor",
+          "chemostat",
+          "cell_free_system",
+          "dna_synthesizer"
+        ],
+        "labs": [
+          "synthetic_biology",
+          "pilot_plant",
+          "orbital"
+        ],
+        "companions": [
+          "tideglass_serpent",
+          "aurek_kite"
+        ]
       }
     },
     {
@@ -411,10 +1281,29 @@
         "100": "Master Radiochemist — novel radionuclide therapy"
       },
       "unlocks": {
-        "reagents": ["nota", "dota", "dota_ga", "psma_ligand", "fafb"],
-        "equipment": ["cyclotron", "hot_cell", "dose_calibrator", "radio_tlc", "radio_hplc"],
-        "labs": ["radiochemistry", "nuclear_medicine", "nuclear"],
-        "companions": ["xenon_owl", "halide_newt"]
+        "reagents": [
+          "nota",
+          "dota",
+          "dota_ga",
+          "psma_ligand",
+          "fafb"
+        ],
+        "equipment": [
+          "cyclotron",
+          "hot_cell",
+          "dose_calibrator",
+          "radio_tlc",
+          "radio_hplc"
+        ],
+        "labs": [
+          "radiochemistry",
+          "nuclear_medicine",
+          "nuclear"
+        ],
+        "companions": [
+          "xenon_owl",
+          "halide_newt"
+        ]
       }
     },
     {
@@ -436,10 +1325,28 @@
         "100": "Master Environmental Chemist — global impact"
       },
       "unlocks": {
-        "reagents": ["spe_cartridges", "pfas_standards", "isotope_labeled", "passive_samplers"],
-        "equipment": ["gc_msms", "lc_hrms", "field_gc", "drone_sampler", "buoy_sensor"],
-        "labs": ["environmental", "analytical", "field"],
-        "companions": ["search_dog", "archive_raven"]
+        "reagents": [
+          "spe_cartridges",
+          "pfas_standards",
+          "isotope_labeled",
+          "passive_samplers"
+        ],
+        "equipment": [
+          "gc_msms",
+          "lc_hrms",
+          "field_gc",
+          "drone_sampler",
+          "buoy_sensor"
+        ],
+        "labs": [
+          "environmental",
+          "analytical",
+          "field"
+        ],
+        "companions": [
+          "search_dog",
+          "archive_raven"
+        ]
       }
     },
     {
@@ -462,10 +1369,32 @@
         "100": "Master Materials Scientist — materials by design"
       },
       "unlocks": {
-        "reagents": ["metal_organics", "precursors", "surfactants", "templates", "scaffolds"],
-        "equipment": ["sem", "tem", "xrd", "xps", "sputter", "ald", "battery_cycler"],
-        "labs": ["materials", "cleanroom", "pilot_plant", "orbital"],
-        "companions": ["ferro_snail", "aurek_kite"]
+        "reagents": [
+          "metal_organics",
+          "precursors",
+          "surfactants",
+          "templates",
+          "scaffolds"
+        ],
+        "equipment": [
+          "sem",
+          "tem",
+          "xrd",
+          "xps",
+          "sputter",
+          "ald",
+          "battery_cycler"
+        ],
+        "labs": [
+          "materials",
+          "cleanroom",
+          "pilot_plant",
+          "orbital"
+        ],
+        "companions": [
+          "ferro_snail",
+          "aurek_kite"
+        ]
       }
     },
     {
@@ -488,9 +1417,20 @@
       },
       "unlocks": {
         "reagents": [],
-        "equipment": ["hpc", "gpu_cluster", "quantum_computer", "tensor_cores"],
-        "labs": ["computational", "all"],
-        "companions": ["null_moth", "prism_finch"]
+        "equipment": [
+          "hpc",
+          "gpu_cluster",
+          "quantum_computer",
+          "tensor_cores"
+        ],
+        "labs": [
+          "computational",
+          "all"
+        ],
+        "companions": [
+          "null_moth",
+          "prism_finch"
+        ]
       }
     }
   ],
@@ -511,57 +1451,144 @@
         "name": "Synthesis Mastery",
         "description": "Yield, purity, speed, novel routes.",
         "tiers": [
-          { "cost": 10, "effect": "+5% yield all syntheses" },
-          { "cost": 25, "effect": "Unlock protecting group strategies" },
-          { "cost": 50, "effect": "+10% purity, -10% time" },
-          { "cost": 100, "effect": "Custom retrosynthesis AI assistant" },
-          { "cost": 200, "effect": "One-click total synthesis planning" }
+          {
+            "cost": 10,
+            "effect": "+5% yield all syntheses"
+          },
+          {
+            "cost": 25,
+            "effect": "Unlock protecting group strategies"
+          },
+          {
+            "cost": 50,
+            "effect": "+10% purity, -10% time"
+          },
+          {
+            "cost": 100,
+            "effect": "Custom retrosynthesis AI assistant"
+          },
+          {
+            "cost": 200,
+            "effect": "One-click total synthesis planning"
+          }
         ]
       },
       "safety_expertise": {
         "name": "Safety Expertise",
         "description": "Risk reduction, containment, emergency response.",
         "tiers": [
-          { "cost": 10, "effect": "-20% injury severity" },
-          { "cost": 25, "effect": "Auto-neutralization on spill" },
-          { "cost": 50, "effect": "Fume hood efficiency +25%" },
-          { "cost": 100, "effect": "Radiation dose -50%" },
-          { "cost": 200, "effect": "Chrysalis Warden: one fatal accident prevention per cycle" }
+          {
+            "cost": 10,
+            "effect": "-20% injury severity"
+          },
+          {
+            "cost": 25,
+            "effect": "Auto-neutralization on spill"
+          },
+          {
+            "cost": 50,
+            "effect": "Fume hood efficiency +25%"
+          },
+          {
+            "cost": 100,
+            "effect": "Radiation dose -50%"
+          },
+          {
+            "cost": 200,
+            "effect": "Chrysalis Warden: one fatal accident prevention per cycle"
+          }
         ]
       },
       "companion_bond": {
         "name": "Companion Bond",
         "description": "Deeper bonds, more slots, better abilities.",
         "tiers": [
-          { "cost": 10, "effect": "+1 companion slot (max 4)" },
-          { "cost": 25, "effect": "Companion XP +25%" },
-          { "cost": 50, "effect": "Unlock mythic companion evolution" },
-          { "cost": 100, "effect": "Telepathic link: remote command" },
-          { "cost": 200, "effect": "Ember Drake: furnace work, molten handling" }
+          {
+            "cost": 10,
+            "effect": "+1 companion slot (max 4)"
+          },
+          {
+            "cost": 25,
+            "effect": "Companion XP +25%"
+          },
+          {
+            "cost": 50,
+            "effect": "Unlock mythic companion evolution"
+          },
+          {
+            "cost": 100,
+            "effect": "Telepathic link: remote command"
+          },
+          {
+            "cost": 200,
+            "effect": "Ember Drake: furnace work, molten handling"
+          }
         ]
       },
       "exploration": {
         "name": "Exploration",
         "description": "World discovery, hidden labs, secrets.",
         "tiers": [
-          { "cost": 10, "effect": "Reveal nearby hidden containers" },
-          { "cost": 25, "effect": "Fast travel between unlocked labs" },
-          { "cost": 50, "effect": "Detect secret passages, hidden rooms" },
-          { "cost": 100, "effect": "Orbital access: microgravity lab" },
-          { "cost": 200, "effect": "Athanor Deep Sanctum: autonomous pilot plant" }
+          {
+            "cost": 10,
+            "effect": "Reveal nearby hidden containers"
+          },
+          {
+            "cost": 25,
+            "effect": "Fast travel between unlocked labs"
+          },
+          {
+            "cost": 50,
+            "effect": "Detect secret passages, hidden rooms"
+          },
+          {
+            "cost": 100,
+            "effect": "Orbital access: microgravity lab"
+          },
+          {
+            "cost": 200,
+            "effect": "Athanor Deep Sanctum: autonomous pilot plant"
+          }
         ]
       },
       "social_influence": {
         "name": "Social Influence",
         "description": "Faction reputation, NPC relationships, trade.",
         "tiers": [
-          { "cost": 10, "effect": "Faction rep gain +15%" },
-          { "cost": 25, "effect": "Unlock faction-specific vendors" },
-          { "cost": 50, "effect": "NPC romance/friendship options" },
-          { "cost": 100, "effect": "Mediate faction conflicts" },
-          { "cost": 200, "effect": "Found your own faction / institute" }
+          {
+            "cost": 10,
+            "effect": "Faction rep gain +15%"
+          },
+          {
+            "cost": 25,
+            "effect": "Unlock faction-specific vendors"
+          },
+          {
+            "cost": 50,
+            "effect": "NPC romance/friendship options"
+          },
+          {
+            "cost": 100,
+            "effect": "Mediate faction conflicts"
+          },
+          {
+            "cost": 200,
+            "effect": "Found your own faction / institute"
+          }
         ]
       }
     }
-  }
+  },
+  "rank_titles": [
+    "Trainee (Labor-Praktikant)",
+    "Apprentice (Chemielaborant-Lehrling)",
+    "Journeyman (Technischer Assistent)",
+    "Expert (Analytiker)",
+    "Specialist (Synthese-Spezialist)",
+    "Master (Laborleiter)",
+    "Grandmaster (Meister-Alchemist)",
+    "Archmage (Forschungsdirektor)",
+    "Legend (Kavli-Helmholtz Fellow)",
+    "Transcendent (Athanor Architect)"
+  ]
 }

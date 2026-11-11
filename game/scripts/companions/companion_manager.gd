@@ -4,8 +4,6 @@
 
 extends Node
 
-class_name CompanionManager
-
 signal companion_added(companion_id: String, species_id: String)
 signal companion_removed(companion_id: String)
 signal companion_evolved(companion_id: String, new_stage: int)
@@ -17,14 +15,15 @@ signal active_companions_changed()
 const SPECIES_DATA = preload("res://data/companions/species_database.json")
 
 # Companion runtime data
-var companions: Dictionary = {}  # companion_id -> CompanionData
+var companions: Dictionary = {}  # companion_id -> CompanionInstance
 var active_companions: Array[String] = []  # Max 2 walking, 3 total (5 at Lv 50)
 var max_active_walking: int = 2
 var max_total_companions: int = 3
 var next_companion_id: int = 1
+var _species_cache: Dictionary = {}
 
-# Companion class
-class CompanionData:
+# Companion runtime class
+class CompanionInstance:
 	var companion_id: String = ""
 	var species_id: String = ""
 	var name: String = ""
@@ -46,7 +45,19 @@ func _ready() -> void:
 	_load_save_data()
 
 func _load_species_data() -> void:
-	pass  # Species data loaded from JSON when needed
+	if not _species_cache.is_empty():
+		return
+	if SPECIES_DATA and SPECIES_DATA.data is Dictionary:
+		var data: Dictionary = SPECIES_DATA.data
+		for category in ["working_animals", "aetherkin"]:
+			if data.has(category) and data[category] is Array:
+				for sp in data[category]:
+					if sp is Dictionary and sp.has("id"):
+						_species_cache[sp.id] = sp
+
+func _get_species(species_id: String) -> Dictionary:
+	_load_species_data()
+	return _species_cache.get(species_id, {})
 
 func _load_save_data() -> void:
 	var save_manager = get_node_or_null("/root/SaveManager")
@@ -68,10 +79,9 @@ func _emit_active_changed() -> void:
 # =============================================================================
 
 func add_companion(species_id: String, custom_name: String = "") -> String:
-	if not SPECIES_DATA.has(species_id):
+	var species = _get_species(species_id)
+	if species.is_empty():
 		return ""
-
-	var species = SPECIES_DATA[species_id]
 
 	# Check max companions
 	if companions.size() >= max_total_companions:
@@ -80,10 +90,10 @@ func add_companion(species_id: String, custom_name: String = "") -> String:
 	var companion_id = "comp_%d" % next_companion_id
 	next_companion_id += 1
 
-	var comp = CompanionData.new()
+	var comp = CompanionInstance.new()
 	comp.companion_id = companion_id
 	comp.species_id = species_id
-	comp.name = custom_name if custom_name != "" else species.name
+	comp.name = custom_name if custom_name != "" else species.get("name", species_id)
 	comp.level = 1
 	comp.xp = 0
 	comp.bond = 0.1
@@ -95,7 +105,7 @@ func add_companion(species_id: String, custom_name: String = "") -> String:
 	comp.stats = _calculate_base_stats(species).duplicate()
 
 	# Learn starting abilities
-	for ability in species.starting_abilities:
+	for ability in species.get("starting_abilities", []):
 		comp.known_abilities.append(ability)
 
 	companions[companion_id] = comp
@@ -165,8 +175,8 @@ func grant_companion_xp(companion_id: String, amount: int) -> void:
 	if not companions.has(companion_id) or amount <= 0:
 		return
 
-	var comp = companions[companion_id]
-	var species = SPECIES_DATA[comp.species_id]
+	var comp: CompanionInstance = companions[companion_id]
+	var species = _get_species(comp.species_id)
 
 	comp.xp += amount
 	companion_xp_gained.emit(companion_id, amount)
@@ -180,8 +190,8 @@ func grant_companion_xp(companion_id: String, amount: int) -> void:
 	_save_companions()
 
 func _level_up_companion(companion_id: String) -> void:
-	var comp = companions[companion_id]
-	var species = SPECIES_DATA[comp.species_id]
+	var comp: CompanionInstance = companions[companion_id]
+	var species = _get_species(comp.species_id)
 
 	comp.level += 1
 
@@ -189,48 +199,59 @@ func _level_up_companion(companion_id: String) -> void:
 	_apply_level_stats(comp, species)
 
 	# Learn new abilities
-	if species.ability_unlocks.has(str(comp.level)):
-		for ability in species.ability_unlocks[str(comp.level)]:
+	var ability_unlocks = species.get("ability_unlocks", {})
+	if ability_unlocks.has(str(comp.level)):
+		for ability in ability_unlocks[str(comp.level)]:
 			if ability not in comp.known_abilities:
 				comp.known_abilities.append(ability)
 
 	# Check evolution
-	if species.evolution_stages.has(str(comp.level)) and comp.evolution_stage < species.evolution_stages[str(comp.level)]:
-		_evolve_companion(companion_id)
+	var evolution_stages = species.get("evolution_stages", {})
+	if evolution_stages.has(str(comp.level)):
+		var stage_info = evolution_stages[str(comp.level)]
+		var target_stage = stage_info.get("stage", 0) if stage_info is Dictionary else int(stage_info)
+		if comp.evolution_stage < target_stage:
+			_evolve_companion(companion_id)
 
 	print("%s reached level %d!" % [comp.name, comp.level])
 
 func _evolve_companion(companion_id: String) -> void:
-	var comp = companions[companion_id]
-	var species = SPECIES_DATA[comp.species_id]
+	var comp: CompanionInstance = companions[companion_id]
+	var species = _get_species(comp.species_id)
 
 	comp.evolution_stage += 1
-	comp.name = "%s (%s)" % [species.name, species.evolution_names[comp.evolution_stage]]
+	var evo_names = species.get("evolution_names", [])
+	var evo_name = evo_names[comp.evolution_stage] if comp.evolution_stage < evo_names.size() else species.get("name", "")
+	comp.name = "%s (%s)" % [species.get("name", ""), evo_name]
 
 	# Apply evolution stat multipliers
-	var evo_data = species.evolution_stages[str(comp.level)]
-	for stat in evo_data.stat_multipliers:
-		comp.stats[stat] = comp.stats.get(stat, 1.0) * evo_data.stat_multipliers[stat]
+	var evolution_stages = species.get("evolution_stages", {})
+	if evolution_stages.has(str(comp.level)):
+		var evo_data = evolution_stages[str(comp.level)]
+		if evo_data is Dictionary:
+			var multipliers = evo_data.get("stat_multipliers", {})
+			for stat in multipliers:
+				comp.stats[stat] = comp.stats.get(stat, 1.0) * multipliers[stat]
 
-	# Unlock evolution abilities
-	if evo_data.has("abilities"):
-		for ability in evo_data.abilities:
-			if ability not in comp.known_abilities:
-				comp.known_abilities.append(ability)
+			# Unlock evolution abilities
+			if evo_data.has("abilities"):
+				for ability in evo_data.abilities:
+					if ability not in comp.known_abilities:
+						comp.known_abilities.append(ability)
 
 	companion_evolved.emit(companion_id, comp.evolution_stage)
-	print("%s evolved to %s!" % [comp.name, species.evolution_names[comp.evolution_stage]])
+	print("%s evolved to %s!" % [comp.name, evo_name])
 
-func _xp_for_level(level: int, species: Dictionary) -> int:
-	# RuneScape-style XP curve adapted for companions
+func _xp_for_level(level: int, _species: Dictionary) -> int:
+	# Exponential XP curve adapted for companions
 	var base = 100
 	return int(base * pow(1.5, level - 1))
 
 func _calculate_base_stats(species: Dictionary) -> Dictionary:
-	return species.base_stats.duplicate()
+	return species.get("base_stats", {}).duplicate()
 
-func _apply_level_stats(comp: CompanionData, species: Dictionary) -> void:
-	var growth = species.stat_growth_per_level
+func _apply_level_stats(comp: CompanionInstance, species: Dictionary) -> void:
+	var growth = species.get("stat_growth_per_level", {})
 	for stat in growth:
 		comp.stats[stat] = comp.stats.get(stat, 1.0) + growth[stat]
 
@@ -242,7 +263,7 @@ func modify_bond(companion_id: String, amount: float) -> void:
 	if not companions.has(companion_id):
 		return
 
-	var comp = companions[companion_id]
+	var comp: CompanionInstance = companions[companion_id]
 	comp.bond = clamp(comp.bond + amount, 0.0, 1.0)
 
 	# Bond milestones
@@ -251,20 +272,21 @@ func modify_bond(companion_id: String, amount: float) -> void:
 	companion_bond_changed.emit(companion_id, comp.bond)
 	_save_companions()
 
-func _check_bond_milestones(comp: CompanionData) -> void:
-	milestones = [0.25, 0.5, 0.75, 0.9, 1.0]
+func _check_bond_milestones(comp: CompanionInstance) -> void:
+	var milestones = [0.25, 0.5, 0.75, 0.9, 1.0]
 	for milestone in milestones:
 		if comp.bond >= milestone:
 			# Grant milestone rewards
 			_grant_bond_reward(comp, milestone)
 
-func _grant_bond_reward(comp: CompanionData, milestone: float) -> void:
+func _grant_bond_reward(comp: CompanionInstance, milestone: float) -> void:
 	match milestone:
 		0.25:
 			# Unlock passive ability
-			var species = SPECIES_DATA[comp.species_id]
-			if species.passive_abilities.size() > 0:
-				var passive = species.passive_abilities[0]
+			var species = _get_species(comp.species_id)
+			var passives = species.get("passive_abilities", [])
+			if passives.size() > 0:
+				var passive = passives[0]
 				if passive not in comp.known_abilities:
 					comp.known_abilities.append(passive)
 		0.5:
@@ -279,7 +301,7 @@ func _grant_bond_reward(comp: CompanionData, milestone: float) -> void:
 			pass
 		1.0:
 			# Mythic evolution unlock (if species has it)
-			var species = SPECIES_DATA[comp.species_id]
+			var species = _get_species(comp.species_id)
 			if species.has("mythic_evolution"):
 				# Unlock mythic quest
 				pass
@@ -292,7 +314,7 @@ func trigger_ability(companion_id: String, ability_id: String, target: Variant =
 	if not companions.has(companion_id):
 		return false
 
-	var comp = companions[companion_id]
+	var comp: CompanionInstance = companions[companion_id]
 	if ability_id not in comp.known_abilities:
 		return false
 
@@ -307,11 +329,12 @@ func trigger_ability(companion_id: String, ability_id: String, target: Variant =
 		return false
 
 	# Check energy cost
-	if comp.energy < ability_def.energy_cost:
+	var energy_cost = ability_def.get("energy_cost", 0.0)
+	if comp.energy < energy_cost:
 		return false
 
-	comp.energy -= ability_def.energy_cost
-	comp.current_ability_cooldowns[ability_id] = ability_def.cooldown
+	comp.energy -= energy_cost
+	comp.current_ability_cooldowns[ability_id] = ability_def.get("cooldown", 0.0)
 
 	# Execute ability effect
 	_execute_ability_effect(companion_id, ability_id, ability_def, target)
@@ -320,32 +343,32 @@ func trigger_ability(companion_id: String, ability_id: String, target: Variant =
 	return true
 
 func _execute_ability_effect(companion_id: String, ability_id: String, ability_def: Dictionary, target: Variant) -> void:
-	var comp = companions[companion_id]
-	var species = SPECIES_DATA[comp.species_id]
+	var comp: CompanionInstance = companions[companion_id]
+	var ability_type = ability_def.get("type", "")
 
 	# Lab buff abilities
-	if ability_def.type == "lab_buff":
+	if ability_type == "lab_buff":
 		_apply_lab_buff(ability_def, comp)
 
 	# Combat abilities (tactical)
-	elif ability_def.type == "combat":
+	elif ability_type == "combat":
 		_execute_combat_ability(ability_id, ability_def, comp, target)
 
 	# Utility abilities
-	elif ability_def.type == "utility":
+	elif ability_type == "utility":
 		_execute_utility_ability(ability_id, ability_def, comp, target)
 
 	# Passive abilities are always active
-	elif ability_def.type == "passive":
+	elif ability_type == "passive":
 		pass  # Handled in stat calculations
 
-func _apply_lab_buff(ability_def: Dictionary, comp: CompanionData) -> void:
+func _apply_lab_buff(ability_def: Dictionary, _comp: CompanionInstance) -> void:
 	var sim_bridge = get_node_or_null("/root/SimulationBridge")
 	if not sim_bridge:
 		return
 
-	for effect in ability_def.effects:
-		match effect.type:
+	for effect in ability_def.get("effects", []):
+		match effect.get("type", ""):
 			"yield_bonus":
 				sim_bridge.set_global_yield_modifier(sim_bridge.get_global_yield_modifier() + effect.value)
 			"purity_bonus":
@@ -357,12 +380,12 @@ func _apply_lab_buff(ability_def: Dictionary, comp: CompanionData) -> void:
 			"hazard_warning":
 				sim_bridge.enable_hazard_warning(effect.value)
 
-func _execute_combat_ability(ability_id: String, ability_def: Dictionary, comp: CompanionData, target: Variant) -> void:
+func _execute_combat_ability(_ability_id: String, _ability_def: Dictionary, _comp: CompanionInstance, _target: Variant) -> void:
 	# Tactical combat: positioning, timing, resource management
 	# This integrates with the combat system
 	pass
 
-func _execute_utility_ability(ability_id: String, ability_def: Dictionary, comp: CompanionData, target: Variant) -> void:
+func _execute_utility_ability(ability_id: String, _ability_def: Dictionary, _comp: CompanionInstance, _target: Variant) -> void:
 	match ability_id:
 		"fetch_reagent":
 			# Companion fetches reagent from storage
@@ -370,7 +393,7 @@ func _execute_utility_ability(ability_id: String, ability_def: Dictionary, comp:
 		"clean_spill":
 			# Auto-neutralize spill
 			var vitals = get_node_or_null("/root/PlayerVitals")
-			if vitals:
+			if vitals and vitals.has_method("trigger_auto_neutralize"):
 				vitals.trigger_auto_neutralize()
 		"detect_contamination":
 			# Enable contamination vision mode
@@ -405,16 +428,16 @@ func feed_companion(companion_id: String, food_id: String) -> bool:
 	if not companions.has(companion_id):
 		return false
 
-	var comp = companions[companion_id]
+	var comp: CompanionInstance = companions[companion_id]
 	var food_def = _get_food_definition(food_id)
 	if not food_def:
 		return false
 
-	comp.hunger = clamp(comp.hunger - food_def.nutrition, 0.0, 1.0)
-	comp.loyalty = clamp(comp.loyalty + food_def.loyalty_bonus, 0.0, 1.0)
-	comp.energy = clamp(comp.energy + food_def.energy_restore, 0.0, 1.0)
+	comp.hunger = clamp(comp.hunger - food_def.get("nutrition", 0.0), 0.0, 1.0)
+	comp.loyalty = clamp(comp.loyalty + food_def.get("loyalty_bonus", 0.0), 0.0, 1.0)
+	comp.energy = clamp(comp.energy + food_def.get("energy_restore", 0.0), 0.0, 1.0)
 
-	modify_bond(companion_id, food_def.bond_bonus)
+	modify_bond(companion_id, food_def.get("bond_bonus", 0.0))
 	return true
 
 # =============================================================================
@@ -439,7 +462,7 @@ func start_auto_battle(enemy_party: Array[Dictionary]) -> Dictionary:
 	# Simplified auto-battle simulation
 	var team_power = 0
 	for comp_data in active:
-		var comp = companions[comp_data.companion_id]
+		var comp: CompanionInstance = companions[comp_data.companion_id]
 		team_power += comp.level * comp.stats.get("power", 10) * (1.0 + comp.bond)
 
 	var enemy_power = 0
@@ -466,7 +489,7 @@ func start_tactical_combat(enemy_party: Array[Dictionary]) -> Dictionary:
 # HELPERS
 # =============================================================================
 
-func _companion_to_dict(comp: CompanionData) -> Dictionary:
+func _companion_to_dict(comp: CompanionInstance) -> Dictionary:
 	return {
 		"companion_id": comp.companion_id,
 		"species_id": comp.species_id,
@@ -481,7 +504,7 @@ func _companion_to_dict(comp: CompanionData) -> Dictionary:
 		"active": comp.active,
 		"known_abilities": comp.known_abilities,
 		"stats": comp.stats,
-		"species_name": SPECIES_DATA[comp.species_id].name
+		"species_name": _get_species(comp.species_id).get("name", comp.species_id)
 	}
 
 func _get_ability_definition(ability_id: String) -> Dictionary:

@@ -4,8 +4,6 @@
 
 extends Node
 
-class_name InventoryManager
-
 signal item_added(item_id: String, quantity: int)
 signal item_removed(item_id: String, quantity: int)
 signal equipment_changed(slot_id: String, item_id: String)
@@ -14,6 +12,13 @@ signal radial_wheel_opened()
 signal radial_wheel_closed()
 
 const EQUIPMENT_DATA = preload("res://data/equipment/equipment_database.json")
+
+func _get_data() -> Dictionary:
+	if EQUIPMENT_DATA and EQUIPMENT_DATA.data is Dictionary:
+		return EQUIPMENT_DATA.data
+	return {}
+
+var _equipment_slots_map: Dictionary = {}
 
 # Equipment slots (Assassin's Creed style)
 var equipment: Dictionary = {}  # slot_id -> item_id or null
@@ -30,8 +35,13 @@ func _ready() -> void:
 
 func _initialize_slots() -> void:
 	# Initialize equipment slots
-	for slot in EQUIPMENT_DATA.equipment_slots:
-		equipment[slot.id] = null
+	var data = _get_data()
+	var slots = data.get("equipment_slots", [])
+	for slot in slots:
+		var s_id = slot.get("id", "")
+		if s_id != "":
+			equipment[s_id] = null
+			_equipment_slots_map[s_id] = slot
 
 	# Initialize quick slots (8 slots)
 	quick_slots.resize(8)
@@ -67,7 +77,7 @@ func _emit_equipment_signals() -> void:
 # =============================================================================
 
 func equip_item(slot_id: String, item_id: String) -> bool:
-	if not EQUIPMENT_DATA.equipment_slots.has(slot_id):
+	if not _equipment_slots_map.has(slot_id) and not equipment.has(slot_id):
 		return false
 
 	var item_def = _get_item_definition(item_id)
@@ -161,7 +171,6 @@ func _apply_stat_modifier(stat_name: String, value: float, equip: bool) -> void:
 			# Enable hazard detection UI
 			pass
 		"auto_neutralize":
-			var vitals = get_node_or_null("/root/PlayerVitals")
 			if vitals:
 				vitals.set_auto_neutralize(equip)
 		_:
@@ -173,19 +182,21 @@ func _check_set_bonuses() -> void:
 		if equipment[slot_id] != "" and equipment[slot_id] != null:
 			equipped_items.append(equipment[slot_id])
 
-	for set_def in EQUIPMENT_DATA.equipment_sets:
+	var data = _get_data()
+	for set_def in data.get("equipment_sets", []):
 		var pieces_equipped = 0
-		for piece_id in set_def.pieces:
+		for piece_id in set_def.get("pieces", []):
 			if piece_id in equipped_items:
 				pieces_equipped += 1
 
 		# Apply highest achieved bonus
-		for bonus_threshold in set_def.bonuses:
+		var bonuses = set_def.get("bonuses", {})
+		for bonus_threshold in bonuses:
+			var bonus = bonuses[bonus_threshold]
 			if pieces_equipped >= int(bonus_threshold):
-				var bonus = set_def.bonuses[bonus_threshold]
-				_apply_set_bonus(bonus.stat, bonus.value, true)
+				_apply_set_bonus(bonus.get("stat", ""), float(bonus.get("value", 0.0)), true)
 			else:
-				_apply_set_bonus(bonus.stat, bonus.value, false)
+				_apply_set_bonus(bonus.get("stat", ""), float(bonus.get("value", 0.0)), false)
 
 func _apply_set_bonus(stat: String, value: float, apply: bool) -> void:
 	_apply_stat_modifier(stat, value, apply)

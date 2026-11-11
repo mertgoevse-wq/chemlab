@@ -74,19 +74,19 @@ func _build_ui() -> void:
 	conf_btn.pressed.connect(func(): _evaluate_admissibility())
 	conf.add_child(conf_btn)
 
-	_log := RichTextLabel.new()
+	_log = RichTextLabel.new()
 	_log.position = Vector2(608, 368)
 	_log.size = Vector2(560, 220)
 	_log.add_theme_color_override("font_color", TEXT)
 	add_child(_log)
 
-	_readout := RichTextLabel.new()
+	_readout = RichTextLabel.new()
 	_readout.position = Vector2(1192, 68)
 	_readout.size = Vector2(420, 540)
 	_readout.add_theme_color_override("font_color", TEXT)
 	add_child(_readout)
 
-	_why_panel := RichTextLabel.new()
+	_why_panel = RichTextLabel.new()
 	_why_panel.position = Vector2(1192, 620)
 	_why_panel.size = Vector2(420, 120)
 	_why_panel.add_theme_color_override("font_color", AMBER)
@@ -119,7 +119,7 @@ func _anchor_dropdown(parent: Control, label: String, options: Array, current: S
 	for o in options:
 		opt.add_item(o)
 	opt.select(options.find(current))
-	opt.item_selected.connect(func(idx): on_changed(opt.get_item_text(idx)))
+	opt.item_selected.connect(func(idx): on_changed.call(opt.get_item_text(idx)))
 	parent.add_child(opt)
 
 func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Callable) -> void:
@@ -127,8 +127,8 @@ func _anchor_checkbox(parent: Control, label: String, cur: bool, on_changed: Cal
 	cb.text = label
 	cb.position = Vector2(14, _cursor(parent))
 	cb.size = Vector2(220, 24)
-	cb.pressed = cur
-	cb.toggled.connect(func(v): on_changed(v))
+	cb.button_pressed = cur
+	cb.toggled.connect(func(v): on_changed.call(v))
 	parent.add_child(cb)
 
 func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, cur: float, on_changed: Callable) -> void:
@@ -142,14 +142,17 @@ func _anchor_slider(parent: Control, label: String, min_v: float, max_v: float, 
 	var sld := HSlider.new()
 	sld.position = Vector2(14, _cursor(parent) + 16)
 	sld.size = Vector2(200, 24)
-	sld.min = min_v
-	sld.max = max_v
+	sld.min_value = min_v
+	sld.max_value = max_v
 	sld.value = cur
-	sld.value_changed.connect(func(v): on_changed(v))
+	sld.value_changed.connect(func(v): on_changed.call(v))
 	parent.add_child(sld)
 
 func _cursor(parent: Control) -> float:
 	return (parent.get_child_count() - 1) * 40
+
+func _refresh_all() -> void:
+	_run_screening()
 
 func _run_screening() -> void:
 	# Screening: measured = true * recovery * matrix_factor + noise
@@ -159,62 +162,56 @@ func _run_screening() -> void:
 	if _contamination:
 		_concentration += 0.02  # false positive contribution
 	var measured = _concentration * _spe_recovery * matrix_factor
-	_measured_conc = clamp(measured, 0.0, 1.0)
+	_measured_conc = clampf(measured, 0.0, 1.0)
 	_uncertainty = _measured_conc * 0.15  # 15% relative uncertainty
-	var cutoff = {
+	var cutoff_dict = {
 		"ethanol": 0.02,
 		"cocaine": 0.01,
 		"opioids": 0.005,
 		"benzodiazepines": 0.005,
 		"cannabis": 0.005,
-	}[_analyte] or 0.01
+	}
+	var cutoff: float = cutoff_dict.get(_analyte, 0.01)
 	_detected = _measured_conc > cutoff
 
-	var txt = []
-	txt.push("[center][b]Screening result[/b][/center]")
-	txt.push("")
-	txt.push("Sample: %s  Analyte: %s" % [_sample_type, _analyte])
-	txt.push("True concentration: %0.3f g/dL" % _concentration)
-	txt.push("SPE recovery: %0.0f%%" % (_spe_recovery * 100))
-	txt.push("Matrix effect: %s" % (_matrix_effect and "yes (ion suppression)" or "no"))
-	txt.push("Contamination: %s" % (_contamination and "yes" or "no"))
-	txt.push("")
-	txt.push("Measured: %0.3f ± %0.3f g/dL" % [_measured_conc, _uncertainty])
-	txt.push("Cutoff: %0.3f g/dL" % cutoff)
-	txt.push("Detected: %s" % (_detected and "POSITIVE" or "negative"))
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Screening result[/b][/center]")
+	txt.append("")
+	txt.append("Sample: %s  Analyte: %s" % [_sample_type, _analyte])
+	txt.append("True concentration: %0.3f g/dL" % _concentration)
+	txt.append("SPE recovery: %0.0f%%" % (_spe_recovery * 100))
+	txt.append("Matrix effect: %s" % (_matrix_effect and "yes (ion suppression)" or "no"))
+	txt.append("Contamination: %s" % (_contamination and "yes" or "no"))
+	txt.append("")
+	txt.append("Measured: %0.3f ± %0.3f g/dL" % [_measured_conc, _uncertainty])
+	txt.append("Cutoff: %0.3f g/dL" % cutoff)
+	txt.append("Detected: %s" % (_detected and "POSITIVE" or "negative"))
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 
-	var why = []
-	why.push("[b]Why:[/b] SPE recovery <100% under-reads concentration.")
-	why.push("Matrix effects suppress/enhance ionisation in LC-MS/MS.")
-	why.push("Contamination → false positives. Chain of custody → legal admissibility.")
-	_why_panel.text = why.join("\n")
+	var why: PackedStringArray = []
+	why.append("[b]Why:[/b] SPE recovery <100% under-reads concentration.")
+	why.append("Matrix effects suppress/enhance ionisation in LC-MS/MS.")
+	why.append("Contamination → false positives. Chain of custody → legal admissibility.")
+	_why_panel.text = "\n".join(why)
 
 	var level = "green" if _detected else "green"
 	_log.append_text("[color=%s]→[/color] Screening: %s = %0.3f g/dL (cutoff %0.3f)\n" % [level, _analyte, _measured_conc, cutoff])
 
 func _evaluate_admissibility() -> void:
-	var txt = []
-	txt.push("[center][b]Chain of custody & admissibility[/b][/center]")
-	txt.push("")
-	txt.push("Chain of custody intact: %s" % (_chain_of_custody and "yes" or "BROKEN"))
-	txt.push("Confirmatory LC-MS/MS: %s" % (_confirmatory and "yes" or "no"))
-	txt.push("Measured: %0.3f ± %0.3f g/dL" % [_measured_conc, _uncertainty])
-	txt.push("")
+	var txt: PackedStringArray = []
+	txt.append("[center][b]Chain of custody & admissibility[/b][/center]")
+	txt.append("")
+	txt.append("Chain of custody intact: %s" % (_chain_of_custody and "yes" or "BROKEN"))
+	txt.append("Confirmatory LC-MS/MS: %s" % (_confirmatory and "yes" or "no"))
+	txt.append("Measured: %0.3f ± %0.3f g/dL" % [_measured_conc, _uncertainty])
+	txt.append("")
 	var admissible = _chain_of_custody and _confirmatory
-	txt.push("Legally admissible: %s" % (admissible and "YES" or "NO"))
-	txt.push("")
-	txt.push("Without chain of custody: evidence excluded.")
-	txt.push("Without confirmation: screening only, not for court.")
+	txt.append("Legally admissible: %s" % (admissible and "YES" or "NO"))
+	txt.append("")
+	txt.append("Without chain of custody: evidence excluded.")
+	txt.append("Without confirmation: screening only, not for court.")
 
-	_readout.text = txt.join("\n")
+	_readout.text = "\n".join(txt)
 	_why_panel.text = "[b]Why:[/b] Forensic results require documented custody and orthogonal confirmation (LC-MS/MS) to be admissible in court."
 	_log.append_text("[color=%s]→[/color] Admissibility: %s\n" % [(_chain_of_custody and _confirmatory and "green" or "red"), (admissible and "YES" or "NO")])
-
-func clamp(v: float, lo: float, hi: float) -> float:
-	return max(lo, min(hi, v))
-
-func randf_range(min_v: float, max_v: float) -> float:
-	# Deterministic pseudo-random in range
-	return min_v + (max_v - min_v) * (fmod(time_get_ticks_msec() * 1103515245 + 12345, 2147483648) / 2147483648.0)

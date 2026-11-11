@@ -4,14 +4,13 @@
 
 extends Node
 
-class_name SaveManager
-
 signal save_completed(success: bool)
 signal load_completed(success: bool)
 signal data_changed(key: String, value: Variant)
 
 const SAVE_SLOTS: int = 10
 const CURRENT_VERSION: int = 1
+const LEGACY_SAVE_PATH: String = "user://chemlab_save.json"
 
 # Save data storage
 var save_data: Dictionary = {}
@@ -20,8 +19,12 @@ var auto_save_enabled: bool = true
 var auto_save_interval: float = 300.0  # 5 minutes
 var _auto_save_timer: Timer
 
-func _ready() -> void:
+func _init() -> void:
 	_initialize_save_data()
+
+func _ready() -> void:
+	if save_data.is_empty():
+		_initialize_save_data()
 	_load_settings()
 	_start_auto_save()
 
@@ -88,10 +91,11 @@ func save_game(slot: int = -1) -> bool:
 	if slot < 1 or slot > SAVE_SLOTS:
 		return false
 
+	current_slot = slot
 	var slot_data = _collect_save_data()
 	slot_data["slot"] = slot
 	slot_data["timestamp"] = Time.get_unix_time_from_system()
-	slot_data["playtime"] = save_data.playtime
+	slot_data["playtime"] = save_data.get("playtime", 0.0)
 
 	save_data.slots[str(slot)] = slot_data
 	save_data.current_slot = slot
@@ -105,6 +109,7 @@ func load_game(slot: int) -> bool:
 	if slot < 1 or slot > SAVE_SLOTS:
 		return false
 
+	current_slot = slot
 	var success = _read_save_file()
 	if not success:
 		return false
@@ -118,7 +123,6 @@ func load_game(slot: int) -> bool:
 		# Could run migration here
 
 	_apply_save_data(slot_data)
-	current_slot = slot
 	load_completed.emit(true)
 	return true
 
@@ -163,8 +167,9 @@ func get_all_saves() -> Array[Dictionary]:
 	return result
 
 func _format_playtime(seconds: float) -> String:
-	var hours = int(seconds / 3600)
-	var minutes = int((seconds % 3600) / 60)
+	var total_sec = int(seconds)
+	var hours = total_sec / 3600
+	var minutes = (total_sec % 3600) / 60
 	return "%02d:%02d" % [hours, minutes]
 
 # =============================================================================
@@ -172,13 +177,14 @@ func _format_playtime(seconds: float) -> String:
 # =============================================================================
 
 func _collect_save_data() -> Dictionary:
-	var skill_manager = get_node_or_null("/root/SkillManager")
-	var inv_manager = get_node_or_null("/root/InventoryManager")
-	var vitals = get_node_or_null("/root/PlayerVitals")
-	var quest_manager = get_node_or_null("/root/QuestManager")
-	var comp_manager = get_node_or_null("/root/CompanionManager")
-	var faction_sys = get_node_or_null("/root/FactionSystem")
-	var char_creator = get_node_or_null("/root/CharacterCreator")
+	var in_tree = is_inside_tree()
+	var skill_manager = get_node_or_null("/root/SkillManager") if in_tree else null
+	var inv_manager = get_node_or_null("/root/InventoryManager") if in_tree else null
+	var vitals = get_node_or_null("/root/PlayerVitals") if in_tree else null
+	var quest_manager = get_node_or_null("/root/QuestManager") if in_tree else null
+	var comp_manager = get_node_or_null("/root/CompanionManager") if in_tree else null
+	var faction_sys = get_node_or_null("/root/FactionSystem") if in_tree else null
+	var char_creator = get_node_or_null("/root/CharacterCreator") if in_tree else null
 
 	return {
 		"version": CURRENT_VERSION,
@@ -190,17 +196,18 @@ func _collect_save_data() -> Dictionary:
 		"companions": comp_manager.to_dict() if comp_manager else {},
 		"factions": faction_sys.to_dict() if faction_sys else {},
 		"location": _get_current_location(),
-		"playtime": save_data.playtime + (Time.get_unix_time_from_system() - _get_session_start())
+		"playtime": save_data.get("playtime", 0.0) + (Time.get_unix_time_from_system() - _get_session_start())
 	}
 
 func _apply_save_data(slot_data: Dictionary) -> void:
-	var skill_manager = get_node_or_null("/root/SkillManager")
-	var inv_manager = get_node_or_null("/root/InventoryManager")
-	var vitals = get_node_or_null("/root/PlayerVitals")
-	var quest_manager = get_node_or_null("/root/QuestManager")
-	var comp_manager = get_node_or_null("/root/CompanionManager")
-	var faction_sys = get_node_or_null("/root/FactionSystem")
-	var char_creator = get_node_or_null("/root/CharacterCreator")
+	var in_tree = is_inside_tree()
+	var skill_manager = get_node_or_null("/root/SkillManager") if in_tree else null
+	var inv_manager = get_node_or_null("/root/InventoryManager") if in_tree else null
+	var vitals = get_node_or_null("/root/PlayerVitals") if in_tree else null
+	var quest_manager = get_node_or_null("/root/QuestManager") if in_tree else null
+	var comp_manager = get_node_or_null("/root/CompanionManager") if in_tree else null
+	var faction_sys = get_node_or_null("/root/FactionSystem") if in_tree else null
+	var char_creator = get_node_or_null("/root/CharacterCreator") if in_tree else null
 
 	if char_creator and slot_data.has("character"):
 		char_creator.apply_character_to_game(slot_data.character)
@@ -308,6 +315,32 @@ func unlock_lab(lab_id: String) -> void:
 		save_data.statistics.labs_unlocked.append(lab_id)
 		data_changed.emit("labs_unlocked", save_data.statistics.labs_unlocked)
 
+func unlock_content(content_type: String, content_id: String) -> void:
+	match content_type:
+		"lab":
+			unlock_lab(content_id)
+		"companion":
+			unlock_companion(content_id)
+		"achievement":
+			unlock_achievement(content_id)
+		"reagent", "equipment":
+			var inv = get_node_or_null("/root/InventoryManager")
+			if inv and inv.has_method("add_item"):
+				inv.add_item(content_id, 1)
+			data_changed.emit("content_unlocked", {"type": content_type, "id": content_id})
+		_:
+			data_changed.emit("content_unlocked", {"type": content_type, "id": content_id})
+
+func unlock_all_sandbox() -> void:
+	var all_labs = [
+		"analytical_lab", "synthesis_lab", "titration_practicum", "accelerator_lab", "fusor_lab",
+		"electrochemistry_lab", "cell_culture_lab", "radiochemistry_lab", "materials_lab", "cleanroom_lab",
+		"pilot_plant_lab", "forensic_lab", "orbital_lab", "cryogenic_lab", "lab_hub"
+	]
+	for lab_id in all_labs:
+		unlock_lab(lab_id)
+	data_changed.emit("sandbox_mode_activated", true)
+
 func unlock_companion(companion_id: String) -> void:
 	if companion_id not in save_data.statistics.companions_bonded:
 		save_data.statistics.companions_bonded.append(companion_id)
@@ -395,3 +428,16 @@ func to_dict() -> Dictionary:
 
 func from_dict(data: Dictionary) -> void:
 	save_data = data
+
+func record_quest_completion(quest_id: String) -> void:
+	if not save_data.has("completed_quests"):
+		save_data["completed_quests"] = []
+	if quest_id not in save_data["completed_quests"]:
+		save_data["completed_quests"].append(quest_id)
+		data_changed.emit("quest_completed", quest_id)
+
+func add_notebook_entry(entry: Dictionary) -> void:
+	if not save_data.has("notebook_entries"):
+		save_data["notebook_entries"] = []
+	save_data["notebook_entries"].append(entry)
+	data_changed.emit("notebook_entry_added", entry)

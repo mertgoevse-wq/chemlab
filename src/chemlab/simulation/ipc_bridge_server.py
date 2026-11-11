@@ -972,6 +972,7 @@ class ThreadedIPCServer:
 
         # Analytical chemistry
         self._registry.register("NMR", self._bridge.handle_nmr)
+        self._registry.register("NMR_ANALYSIS", self._bridge.handle_nmr)
         self._registry.register("GCMS", self._bridge.handle_gcms)
         self._registry.register("HPLC", self._bridge.handle_hplc)
         self._registry.register("MELTING_POINT", self._bridge.handle_melting_point)

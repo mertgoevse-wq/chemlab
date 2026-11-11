@@ -29,18 +29,111 @@ func _ready() -> void:
 	_update_all()
 
 func _cache_nodes() -> void:
-	_health_bar = %HealthBar
-	_stamina_bar = %StaminaBar
-	_radiation_bar = %RadiationBar
-	_chemical_bar = %ChemicalBar
-	_health_label = %HealthLabel
-	_stamina_label = %StaminaLabel
-	_radiation_label = %RadiationLabel
-	_chemical_label = %ChemicalLabel
-	_injury_container = %InjuryContainer
-	_effects_container = %EffectsContainer
+	if has_node("%HealthBar"):
+		_health_bar = %HealthBar
+		_stamina_bar = %StaminaBar
+		_radiation_bar = %RadiationBar
+		_chemical_bar = %ChemicalBar
+		_health_label = %HealthLabel
+		_stamina_label = %StaminaLabel
+		_radiation_label = %RadiationLabel
+		_chemical_label = %ChemicalLabel
+		_injury_container = %InjuryContainer
+		_effects_container = %EffectsContainer
+	else:
+		_build_default_ui()
 
 	vitals = get_node_or_null("/root/PlayerVitals")
+
+func _build_default_ui() -> void:
+	var root_control := Control.new()
+	root_control.name = "HUDControl"
+	root_control.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(root_control)
+
+	var panel := PanelContainer.new()
+	panel.name = "VitalsPanel"
+	panel.position = Vector2(20, 20)
+	panel.custom_minimum_size = Vector2(280, 160)
+	root_control.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.name = "VitalsVBox"
+	panel.add_child(vbox)
+
+	# Health
+	var h_box := HBoxContainer.new()
+	var h_title := Label.new()
+	h_title.text = "VITALS:"
+	h_box.add_child(h_title)
+	_health_label = Label.new()
+	_health_label.text = "100 / 100"
+	h_box.add_child(_health_label)
+	vbox.add_child(h_box)
+
+	_health_bar = ProgressBar.new()
+	_health_bar.max_value = 100
+	_health_bar.value = 100
+	_health_bar.custom_minimum_size = Vector2(260, 16)
+	vbox.add_child(_health_bar)
+
+	# Stamina
+	var s_box := HBoxContainer.new()
+	var s_title := Label.new()
+	s_title.text = "STAMINA:"
+	s_box.add_child(s_title)
+	_stamina_label = Label.new()
+	_stamina_label.text = "100%"
+	s_box.add_child(_stamina_label)
+	vbox.add_child(s_box)
+
+	_stamina_bar = ProgressBar.new()
+	_stamina_bar.max_value = 100
+	_stamina_bar.value = 100
+	_stamina_bar.custom_minimum_size = Vector2(260, 12)
+	vbox.add_child(_stamina_bar)
+
+	# Radiation
+	var r_box := HBoxContainer.new()
+	var r_title := Label.new()
+	r_title.text = "RAD DOSE:"
+	r_box.add_child(r_title)
+	_radiation_label = Label.new()
+	_radiation_label.text = "0.00 mSv"
+	r_box.add_child(_radiation_label)
+	vbox.add_child(r_box)
+
+	_radiation_bar = ProgressBar.new()
+	_radiation_bar.max_value = 1000
+	_radiation_bar.value = 0
+	_radiation_bar.custom_minimum_size = Vector2(260, 12)
+	vbox.add_child(_radiation_bar)
+
+	# Chemical exposure
+	var c_box := HBoxContainer.new()
+	var c_title := Label.new()
+	c_title.text = "TOXIC EXPOSURE:"
+	c_box.add_child(c_title)
+	_chemical_label = Label.new()
+	_chemical_label.text = "0 ppm·min"
+	c_box.add_child(_chemical_label)
+	vbox.add_child(c_box)
+
+	_chemical_bar = ProgressBar.new()
+	_chemical_bar.max_value = 5000
+	_chemical_bar.value = 0
+	_chemical_bar.custom_minimum_size = Vector2(260, 12)
+	vbox.add_child(_chemical_bar)
+
+	# Containers
+	_injury_container = VBoxContainer.new()
+	_injury_container.name = "InjuryContainer"
+	vbox.add_child(_injury_container)
+
+	_effects_container = HBoxContainer.new()
+	_effects_container.name = "EffectsContainer"
+	vbox.add_child(_effects_container)
 
 func _connect_signals() -> void:
 	if vitals:
@@ -52,9 +145,9 @@ func _connect_signals() -> void:
 		vitals.incapacitated.connect(_on_incapacitated)
 		vitals.stabilised.connect(_on_stabilised)
 
-func set_hud_visible(visible: bool) -> void:
-	_hud_visible = visible
-	visible = visible
+func set_hud_visible(p_visible: bool) -> void:
+	_hud_visible = p_visible
+	visible = p_visible
 
 func _update_all() -> void:
 	if not vitals:
@@ -75,11 +168,23 @@ func _on_health_changed(current: float, maximum: float) -> void:
 
 	# Color coding
 	if current / maximum > 0.6:
-		_health_bar.set("theme_override_styles/progress/fill_color", Color(0.2, 0.8, 0.2))
+		_set_bar_fill_color(_health_bar, Color(0.2, 0.8, 0.2))
 	elif current / maximum > 0.3:
-		_health_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.8, 0.0))
+		_set_bar_fill_color(_health_bar, Color(1.0, 0.8, 0.0))
 	else:
-		_health_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.2, 0.2))
+		_set_bar_fill_color(_health_bar, Color(1.0, 0.2, 0.2))
+
+func _set_bar_fill_color(bar: ProgressBar, color: Color) -> void:
+	if not bar:
+		return
+	var style: StyleBoxFlat = null
+	if bar.has_theme_stylebox_override("fill"):
+		style = bar.get_theme_stylebox("fill") as StyleBoxFlat
+	if not style:
+		style = StyleBoxFlat.new()
+		style.set_corner_radius_all(2)
+		bar.add_theme_stylebox_override("fill", style)
+	style.bg_color = color
 
 func _on_stamina_changed(stamina: float) -> void:
 	_stamina_bar.value = stamina
@@ -93,11 +198,11 @@ func _on_radiation_changed(dose_msv: float) -> void:
 
 	# Color coding
 	if dose_msv > PlayerVitals.RADIATION_ANNUAL_LIMIT_MSV:
-		_radiation_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.0, 0.0))
+		_set_bar_fill_color(_radiation_bar, Color(1.0, 0.0, 0.0))
 	elif dose_msv > 10.0:
-		_radiation_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.5, 0.0))
+		_set_bar_fill_color(_radiation_bar, Color(1.0, 0.5, 0.0))
 	else:
-		_radiation_bar.set("theme_override_styles/progress/fill_color", Color(0.0, 0.5, 1.0))
+		_set_bar_fill_color(_radiation_bar, Color(0.0, 0.5, 1.0))
 
 func _on_exposure_changed(chemical: String, ppm_minutes: float) -> void:
 	# Update chemical exposure display
@@ -112,11 +217,11 @@ func _on_exposure_changed(chemical: String, ppm_minutes: float) -> void:
 
 	# Color coding
 	if total_exposure > max_exp * 0.8:
-		_chemical_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.0, 0.0))
+		_set_bar_fill_color(_chemical_bar, Color(1.0, 0.0, 0.0))
 	elif total_exposure > max_exp * 0.5:
-		_chemical_bar.set("theme_override_styles/progress/fill_color", Color(1.0, 0.5, 0.0))
+		_set_bar_fill_color(_chemical_bar, Color(1.0, 0.5, 0.0))
 	else:
-		_chemical_bar.set("theme_override_styles/progress/fill_color", Color(0.5, 0.0, 1.0))
+		_set_bar_fill_color(_chemical_bar, Color(0.5, 0.0, 1.0))
 
 	# Update detailed chemical list if visible
 	if show_detailed:
@@ -206,9 +311,11 @@ func _get_injury_color(injury_type: String) -> Color:
 		_: return Color(1.0, 1.0, 1.0)
 
 func _process(delta: float) -> void:
+	if not _injury_container:
+		return
 	# Update injury timers
 	for child in _injury_container.get_children():
 		if child.has_meta("progress_bar"):
-			var progress = child.get_meta("progress_bar")
-			var injury_id = child.get_meta("injury_id")
-			# Would update from vitals
+			var progress = child.get_meta("progress_bar") as ProgressBar
+			if progress and progress.value > 0.0:
+				progress.value = maxf(0.0, progress.value - delta)

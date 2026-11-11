@@ -1,7 +1,7 @@
 """
-ChemLab Runescape-Style Skill & Quest System.
+ChemLab Skill & Quest Progression System.
 
-Provides 5 scientific disciplines with Runescape-style XP progression
+Provides 5 scientific disciplines with exponential XP progression
 (levels 1-120), milestone-based unlocks of apparatus/reagents/abilities,
 and a data-driven quest engine integrated with the story progression manager.
 """

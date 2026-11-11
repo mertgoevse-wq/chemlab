@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary & Psychological Foundation
 
-This document translates the core engagement loops of **Runescape**, **World of Warcraft**, **Factorio**, **Subnautica**, and **Stardew Valley** into ChemLab's chemistry simulation context. Every loop is grounded in behavioral psychology: **variable-ratio reinforcement**, **goal-gradient effect**, **completionist drive**, **mastery motivation**, and **social identity signaling**.
+This document translates the core engagement loops of **classic RPG skill progression**, **World of Warcraft**, **Factorio**, **Subnautica**, and **Stardew Valley** into ChemLab's chemistry simulation context. Every loop is grounded in behavioral psychology: **variable-ratio reinforcement**, **goal-gradient effect**, **completionist drive**, **mastery motivation**, and **social identity signaling**.
 
 **Design Principle:** The chemistry IS the gameplay. No abstracted "crafting bars" — every drop titrated, every crystal filtered, every spectrum interpreted is a real player action with verifiable scientific consequence.
 
@@ -102,7 +102,7 @@ func _on_drop_impacted(vessel_id: String) -> void:
 
 ## 4. Meso-Loops: Session-Level Progression (5–45 min)
 
-### 4.1 Synthesis Quest Arc (The "Runescape Quest" Model)
+### 4.1 Synthesis Quest Arc (The "Multi-Stage Mastery Quest" Model)
 
 ```
 QUEST STRUCTURE (per quest-system.md §4):
@@ -583,9 +583,9 @@ VISUAL: "Thesis Defense" cutscene — player presents research, committee reassi
 
 ## 15. Appendix: Reference Game Loop Deconstructions
 
-### 15.1 Runescape → ChemLab Mapping
+### 15.1 Classic Skill Progression → ChemLab Mapping
 
-| Runescape System | ChemLab Equivalent |
+| Classic Progression System | ChemLab Equivalent |
 |------------------|-------------------|
 | Skill XP (1–99/120) | 4 Track Skills (1–100) + 5 Legacy Skills |
 | Quest Points → Cape | Quest Completion → Lab Tier + Titles |

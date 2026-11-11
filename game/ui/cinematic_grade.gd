@@ -4,8 +4,6 @@
 
 extends Node
 
-class_name CinematicGrade
-
 signal grade_changed(lab_id: String)
 signal effect_toggled(effect_name: String, enabled: bool)
 
@@ -185,8 +183,8 @@ func _set_profile(profile: Dictionary) -> void:
 func _apply_to_environment() -> void:
 	# Apply to current world environment
 	var viewport = get_viewport()
-	if viewport and viewport.world and viewport.world.environment:
-		var env = viewport.world.environment
+	if viewport and viewport.world_3d and viewport.world_3d.environment:
+		var env = viewport.world_3d.environment
 
 		# Color grading (if supported)
 		# env.adjustment_enabled = true

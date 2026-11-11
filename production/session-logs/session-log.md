@@ -234,3 +234,79 @@ src/chemlab/world/procedural_labs.py
 tools/vendor/natprd
 ---
 
+## Session End: 20261110_191217
+### Commits
+32330f5 feat: add skill references and contracts
+9bbe86a feat: add design docs, agent settings, chemistry module, and CCGS integration
+4122abd feat: update skills, config, quests, models, and synthesis wizard
+b5fee12 feat: consolidate chemistry core, update safety and simulation modules
+1a3144f feat: add 49 agents, 74 skills, hooks, rules and scripts
+3c133bf feat: add electrochemistry, cell culture, radiochemistry, materials, cleanroom, pilot plant, forensic, orbital, cryogenic labs and quests
+f28d457 fix(chemistry): restore HalfReaction import in nernst module
+43e10a1 feat(quests): add electrochemistry, cell culture, radiochemistry quests
+adef341 feat(labs): add pilot plant, forensic, orbital, cryogenic terminals
+a43ef07 feat(labs): add electrochemistry, cell culture, radiochemistry, materials, cleanroom terminals
+### Uncommitted Changes
+tools/vendor/natprd
+---
+
+## Session End: 20261110_192432
+### Commits
+32330f5 feat: add skill references and contracts
+9bbe86a feat: add design docs, agent settings, chemistry module, and CCGS integration
+4122abd feat: update skills, config, quests, models, and synthesis wizard
+b5fee12 feat: consolidate chemistry core, update safety and simulation modules
+1a3144f feat: add 49 agents, 74 skills, hooks, rules and scripts
+3c133bf feat: add electrochemistry, cell culture, radiochemistry, materials, cleanroom, pilot plant, forensic, orbital, cryogenic labs and quests
+f28d457 fix(chemistry): restore HalfReaction import in nernst module
+43e10a1 feat(quests): add electrochemistry, cell culture, radiochemistry quests
+adef341 feat(labs): add pilot plant, forensic, orbital, cryogenic terminals
+a43ef07 feat(labs): add electrochemistry, cell culture, radiochemistry, materials, cleanroom terminals
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+tools/vendor/natprd
+---
+
+## Session End: 20261110_193058
+### Commits
+32330f5 feat: add skill references and contracts
+9bbe86a feat: add design docs, agent settings, chemistry module, and CCGS integration
+4122abd feat: update skills, config, quests, models, and synthesis wizard
+b5fee12 feat: consolidate chemistry core, update safety and simulation modules
+1a3144f feat: add 49 agents, 74 skills, hooks, rules and scripts
+3c133bf feat: add electrochemistry, cell culture, radiochemistry, materials, cleanroom, pilot plant, forensic, orbital, cryogenic labs and quests
+f28d457 fix(chemistry): restore HalfReaction import in nernst module
+43e10a1 feat(quests): add electrochemistry, cell culture, radiochemistry quests
+adef341 feat(labs): add pilot plant, forensic, orbital, cryogenic terminals
+a43ef07 feat(labs): add electrochemistry, cell culture, radiochemistry, materials, cleanroom terminals
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+tools/vendor/natprd
+---
+
+## Session End: 20261110_193911
+### Commits
+32330f5 feat: add skill references and contracts
+9bbe86a feat: add design docs, agent settings, chemistry module, and CCGS integration
+4122abd feat: update skills, config, quests, models, and synthesis wizard
+b5fee12 feat: consolidate chemistry core, update safety and simulation modules
+1a3144f feat: add 49 agents, 74 skills, hooks, rules and scripts
+3c133bf feat: add electrochemistry, cell culture, radiochemistry, materials, cleanroom, pilot plant, forensic, orbital, cryogenic labs and quests
+f28d457 fix(chemistry): restore HalfReaction import in nernst module
+43e10a1 feat(quests): add electrochemistry, cell culture, radiochemistry quests
+adef341 feat(labs): add pilot plant, forensic, orbital, cryogenic terminals
+a43ef07 feat(labs): add electrochemistry, cell culture, radiochemistry, materials, cleanroom terminals
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/compaction-log.txt
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+tools/vendor/natprd
+---
+
