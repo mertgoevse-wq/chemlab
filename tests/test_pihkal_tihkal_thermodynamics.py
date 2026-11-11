@@ -91,9 +91,9 @@ def test_closed_reaction_steps_conserve_each_element():
     for route in routes:
         for step in route.steps:
             if not step.is_closed_system:
-                assert (
-                    step.balance_note.strip()
-                ), f"Open-system step {route.id}:{step.step_number} needs a balance note"
+                assert step.balance_note.strip(), (
+                    f"Open-system step {route.id}:{step.step_number} needs a balance note"
+                )
                 continue
 
             reactant_atoms: Counter[str] = Counter()
@@ -156,9 +156,9 @@ def test_henry_condensation_standard_state_is_exothermic_but_not_favorable_at_re
     # Assert
     assert res.delta_h_kj_mol < 0.0, "Catalog estimate should be exothermic"
     assert res.delta_s_j_mol_k < 0.0
-    assert (
-        not res.is_spontaneous
-    ), "Standard-state favorability must not be inferred from a heated literature procedure"
+    assert not res.is_spontaneous, (
+        "Standard-state favorability must not be inferred from a heated literature procedure"
+    )
     assert res.equilibrium_constant_k_eq < 1.0
 
 

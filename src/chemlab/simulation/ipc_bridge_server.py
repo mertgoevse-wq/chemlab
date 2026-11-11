@@ -20,9 +20,8 @@ import logging
 import socket
 import threading
 import time
-from dataclasses import dataclass, asdict
-from typing import Any, Callable
-from queue import Queue, Empty
+from collections.abc import Callable
+from dataclasses import dataclass
 
 # Configure logging
 logging.basicConfig(
@@ -140,23 +139,124 @@ class ScientificEngineBridge:
     def _element_to_z(self, element: str) -> int:
         """Convert element symbol to atomic number."""
         element_map = {
-            "H": 1, "HE": 2, "LI": 3, "BE": 4, "B": 5, "C": 6, "N": 7, "O": 8,
-            "F": 9, "NE": 10, "NA": 11, "MG": 12, "AL": 13, "SI": 14, "P": 15,
-            "S": 16, "CL": 17, "AR": 18, "K": 19, "CA": 20, "SC": 21, "TI": 22,
-            "V": 23, "CR": 24, "MN": 25, "FE": 26, "CO": 27, "NI": 28, "CU": 29,
-            "ZN": 30, "GA": 31, "GE": 32, "AS": 33, "SE": 34, "BR": 35, "KR": 36,
-            "RB": 37, "SR": 38, "Y": 39, "ZR": 40, "NB": 41, "MO": 42, "TC": 43,
-            "RU": 44, "RH": 45, "PD": 46, "AG": 47, "CD": 48, "IN": 49, "SN": 50,
-            "SB": 51, "TE": 52, "I": 53, "XE": 54, "CS": 55, "BA": 56, "LA": 57,
-            "CE": 58, "PR": 59, "ND": 60, "PM": 61, "SM": 62, "EU": 63, "GD": 64,
-            "TB": 65, "DY": 66, "HO": 67, "ER": 68, "TM": 69, "YB": 70, "LU": 71,
-            "HF": 72, "TA": 73, "W": 74, "RE": 75, "OS": 76, "IR": 77, "PT": 78,
-            "AU": 79, "HG": 80, "TL": 81, "PB": 82, "BI": 83, "PO": 84, "AT": 85,
-            "RN": 86, "FR": 87, "RA": 88, "AC": 89, "TH": 90, "PA": 91, "U": 92,
-            "NP": 93, "PU": 94, "AM": 95, "CM": 96, "BK": 97, "CF": 98, "ES": 99,
-            "FM": 100, "MD": 101, "NO": 102, "LR": 103, "RF": 104, "DB": 105,
-            "SG": 106, "BH": 107, "HS": 108, "MT": 109, "DS": 110, "RG": 111,
-            "CN": 112, "NH": 113, "FL": 114, "MC": 115, "LV": 116, "TS": 117, "OG": 118,
+            "H": 1,
+            "HE": 2,
+            "LI": 3,
+            "BE": 4,
+            "B": 5,
+            "C": 6,
+            "N": 7,
+            "O": 8,
+            "F": 9,
+            "NE": 10,
+            "NA": 11,
+            "MG": 12,
+            "AL": 13,
+            "SI": 14,
+            "P": 15,
+            "S": 16,
+            "CL": 17,
+            "AR": 18,
+            "K": 19,
+            "CA": 20,
+            "SC": 21,
+            "TI": 22,
+            "V": 23,
+            "CR": 24,
+            "MN": 25,
+            "FE": 26,
+            "CO": 27,
+            "NI": 28,
+            "CU": 29,
+            "ZN": 30,
+            "GA": 31,
+            "GE": 32,
+            "AS": 33,
+            "SE": 34,
+            "BR": 35,
+            "KR": 36,
+            "RB": 37,
+            "SR": 38,
+            "Y": 39,
+            "ZR": 40,
+            "NB": 41,
+            "MO": 42,
+            "TC": 43,
+            "RU": 44,
+            "RH": 45,
+            "PD": 46,
+            "AG": 47,
+            "CD": 48,
+            "IN": 49,
+            "SN": 50,
+            "SB": 51,
+            "TE": 52,
+            "I": 53,
+            "XE": 54,
+            "CS": 55,
+            "BA": 56,
+            "LA": 57,
+            "CE": 58,
+            "PR": 59,
+            "ND": 60,
+            "PM": 61,
+            "SM": 62,
+            "EU": 63,
+            "GD": 64,
+            "TB": 65,
+            "DY": 66,
+            "HO": 67,
+            "ER": 68,
+            "TM": 69,
+            "YB": 70,
+            "LU": 71,
+            "HF": 72,
+            "TA": 73,
+            "W": 74,
+            "RE": 75,
+            "OS": 76,
+            "IR": 77,
+            "PT": 78,
+            "AU": 79,
+            "HG": 80,
+            "TL": 81,
+            "PB": 82,
+            "BI": 83,
+            "PO": 84,
+            "AT": 85,
+            "RN": 86,
+            "FR": 87,
+            "RA": 88,
+            "AC": 89,
+            "TH": 90,
+            "PA": 91,
+            "U": 92,
+            "NP": 93,
+            "PU": 94,
+            "AM": 95,
+            "CM": 96,
+            "BK": 97,
+            "CF": 98,
+            "ES": 99,
+            "FM": 100,
+            "MD": 101,
+            "NO": 102,
+            "LR": 103,
+            "RF": 104,
+            "DB": 105,
+            "SG": 106,
+            "BH": 107,
+            "HS": 108,
+            "MT": 109,
+            "DS": 110,
+            "RG": 111,
+            "CN": 112,
+            "NH": 113,
+            "FL": 114,
+            "MC": 115,
+            "LV": 116,
+            "TS": 117,
+            "OG": 118,
         }
         return element_map.get(element.upper(), 0)
 
@@ -312,7 +412,8 @@ class ScientificEngineBridge:
 
         try:
             # Create PCRProtocol object with PCRStep objects
-            from chemlab.simulation.genetics_engine import PCRProtocol, PCRCycle, PCRStep
+            from chemlab.simulation.genetics_engine import PCRCycle, PCRProtocol, PCRStep
+
             cycle = PCRCycle(
                 denaturation=PCRStep(
                     name="denaturation",
@@ -386,11 +487,13 @@ class ScientificEngineBridge:
             # Convert samples to fragment format
             fragments = []
             for s in samples:
-                fragments.append({
-                    "size_bp": s.get("size_bp", 1000),
-                    "concentration_ng_ul": s.get("concentration", 10.0),
-                    "label": s.get("label", "sample"),
-                })
+                fragments.append(
+                    {
+                        "size_bp": s.get("size_bp", 1000),
+                        "concentration_ng_ul": s.get("concentration", 10.0),
+                        "label": s.get("label", "sample"),
+                    }
+                )
             result = self._genetics_engine.simulate_gel_electrophoresis(
                 fragments=fragments,
                 voltage_v=voltage_v,
@@ -448,6 +551,7 @@ class ScientificEngineBridge:
 
         try:
             from chemlab.simulation.genetics_engine import SgRNA
+
             sg = SgRNA(
                 target_sequence=target_sequence,
                 pam_sequence="NGG",
@@ -527,6 +631,7 @@ class ScientificEngineBridge:
 
         try:
             from chemlab.simulation.nuclear_engine import FuelAssembly
+
             fuel = FuelAssembly(
                 enrichment=fuel_enrichment,
                 mass_kg=10000.0,
@@ -634,6 +739,7 @@ class ScientificEngineBridge:
 
         try:
             from chemlab.simulation.nuclear_engine import FuelAssembly
+
             # Create a default spent fuel assembly
             fuel = FuelAssembly(
                 enrichment=spent_fuel.get("enrichment", 0.04),
@@ -982,15 +1088,9 @@ class ThreadedIPCServer:
         # Genetics
         self._registry.register("PCR", self._bridge.handle_pcr)
         self._registry.register("PRIMER_DESIGN", self._bridge.handle_primer_design)
-        self._registry.register(
-            "GEL_ELECTROPHORESIS", self._bridge.handle_gel_electrophoresis
-        )
-        self._registry.register(
-            "RESTRICTION_DIGEST", self._bridge.handle_restriction_digest
-        )
-        self._registry.register(
-            "SANGER_SEQUENCING", self._bridge.handle_sanger_sequencing
-        )
+        self._registry.register("GEL_ELECTROPHORESIS", self._bridge.handle_gel_electrophoresis)
+        self._registry.register("RESTRICTION_DIGEST", self._bridge.handle_restriction_digest)
+        self._registry.register("SANGER_SEQUENCING", self._bridge.handle_sanger_sequencing)
         self._registry.register("CRISPR", self._bridge.handle_crispr)
         self._registry.register("QPCR", self._bridge.handle_qpcr)
 
@@ -1090,9 +1190,7 @@ class ThreadedIPCServer:
                         start_time = time.perf_counter()
 
                         if self._registry.has_command(request.command):
-                            response_data = self._registry.execute(
-                                request.command, request.payload
-                            )
+                            response_data = self._registry.execute(request.command, request.payload)
                             duration_ms = (time.perf_counter() - start_time) * 1000.0
                             response = IPCResponse(
                                 request_id=request.request_id,
@@ -1117,7 +1215,9 @@ class ThreadedIPCServer:
                     except Exception as e:
                         logger.exception("Error processing request")
                         response = IPCResponse(
-                            request_id=request_data.get("request_id", "") if isinstance(request_data, dict) else "",
+                            request_id=request_data.get("request_id", "")
+                            if isinstance(request_data, dict)
+                            else "",
                             status="ERROR",
                             error=str(e),
                         )

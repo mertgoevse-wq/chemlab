@@ -27,8 +27,14 @@ def test_pathways_registered() -> None:
 def test_glycolysis_mass_balance_conserved() -> None:
     """Integrating glycolysis should not create/destroy carbon mass unrealistically."""
     init = {
-        "Glc": 1.0, "ATP": 5.0, "ADP": 1.0, "NAD+": 2.0, "NADH": 0.0,
-        "Pi": 5.0, "H2O": 55.0, "H+": 1e-7,
+        "Glc": 1.0,
+        "ATP": 5.0,
+        "ADP": 1.0,
+        "NAD+": 2.0,
+        "NADH": 0.0,
+        "Pi": 5.0,
+        "H2O": 55.0,
+        "H+": 1e-7,
     }
     for s in GLYCOLYSIS.species:
         init.setdefault(s, 0.0)
@@ -43,9 +49,19 @@ def test_glycolysis_mass_balance_conserved() -> None:
 def test_krebs_steady_state_reaches_positive_flux() -> None:
     """Krebs cycle integrates to positive metabolite turnover."""
     init = {
-        "Acetyl-CoA": 0.1, "Oxaloacetate": 0.1, "NAD+": 1.0, "NADH": 0.0,
-        "FAD": 0.1, "FADH2": 0.0, "GDP": 0.1, "GTP": 0.0,
-        "CoA": 0.2, "H2O": 55.0, "Pi": 5.0, "CO2": 0.0, "H+": 1e-7,
+        "Acetyl-CoA": 0.1,
+        "Oxaloacetate": 0.1,
+        "NAD+": 1.0,
+        "NADH": 0.0,
+        "FAD": 0.1,
+        "FADH2": 0.0,
+        "GDP": 0.1,
+        "GTP": 0.0,
+        "CoA": 0.2,
+        "H2O": 55.0,
+        "Pi": 5.0,
+        "CO2": 0.0,
+        "H+": 1e-7,
     }
     for s in KREBS.species:
         init.setdefault(s, 0.0)

@@ -51,7 +51,13 @@ static func _ensure_loaded() -> void:
 
 	_catalog_cache = {}
 	_protocols_by_id = {}
-	_categories = ["Industrial APIs", "PiHKAL Phenethylamines", "TiHKAL Tryptamines"]
+	_categories = [
+		"Industrial APIs",
+		"Classical Organic & Dyes (Vogel)",
+		"Natural Product Isolation & Extractions",
+		"PiHKAL Phenethylamines",
+		"TiHKAL Tryptamines"
+	]
 
 	# 1. Load built-in Industrial APIs
 	var industrial: Array[Dictionary] = [
@@ -65,13 +71,33 @@ static func _ensure_loaded() -> void:
 	for p in industrial:
 		_protocols_by_id[p["id"]] = p
 
-	# 2. Load PiHKAL compounds
+	# 2. Load Classical Organic & Dyes (Vogel's Practical Organic Chemistry)
+	var vogel: Array[Dictionary] = [
+		_make_luminol_protocol(),
+		_make_fluorescein_protocol(),
+		_make_sulfanilamide_protocol()
+	]
+	_catalog_cache["Classical Organic & Dyes (Vogel)"] = vogel
+	for p in vogel:
+		_protocols_by_id[p["id"]] = p
+
+	# 3. Load Natural Product Isolation & Extractions
+	var natural: Array[Dictionary] = [
+		_make_piperine_protocol(),
+		_make_limonene_protocol(),
+		_make_eugenol_protocol()
+	]
+	_catalog_cache["Natural Product Isolation & Extractions"] = natural
+	for p in natural:
+		_protocols_by_id[p["id"]] = p
+
+	# 4. Load PiHKAL compounds
 	var pihkal_list := _load_json_protocols(PIHKAL_PATH, "PiHKAL Phenethylamines")
 	_catalog_cache["PiHKAL Phenethylamines"] = pihkal_list
 	for p in pihkal_list:
 		_protocols_by_id[p["id"]] = p
 
-	# 3. Load TiHKAL compounds
+	# 5. Load TiHKAL compounds
 	var tihkal_list := _load_json_protocols(TIHKAL_PATH, "TiHKAL Tryptamines")
 	_catalog_cache["TiHKAL Tryptamines"] = tihkal_list
 	for p in tihkal_list:
@@ -599,5 +625,459 @@ static func _make_benzocaine_protocol() -> Dictionary:
 		"hazards": [
 			{"code": "GHS05", "text": "acid burns during initial charge"},
 			{"code": "GHS07", "text": "local anesthetic skin desensitisation"}
+		]
+	}
+
+
+static func _make_luminol_protocol() -> Dictionary:
+	return {
+		"id": "luminol",
+		"name": "Luminol (Vogel)",
+		"chemical_name": "5-Amino-2,3-dihydrophthalazine-1,4-dione",
+		"category": "Classical Organic & Dyes (Vogel)",
+		"code": "SYN-V01",
+		"cas": "521-31-3",
+		"mw": 177.16,
+		"formula": "C8H7N3O2",
+		"description": "Vogel's Organic Synthesis: 3-Nitrophthalic acid condensation with hydrazine sulfate in high-boiling triethylene glycol, followed by sodium dithionite reduction to produce chemiluminescent luminol.",
+		"reaction_title": "3-Nitrophthalic acid + hydrazine sulfate → luminol",
+		"reagent_a": {
+			"id": "3_nitrophthalic_acid",
+			"name": "3-Nitrophthalic acid",
+			"unit": "g",
+			"mw": 211.13,
+			"default": 10.0,
+			"min": 5.0,
+			"max": 20.0,
+			"step": 0.1,
+			"decimals": 1
+		},
+		"reagent_b": {
+			"id": "hydrazine_sulfate",
+			"name": "Hydrazine sulfate solution",
+			"unit": "mL",
+			"mw": 130.12,
+			"density": 1.12,
+			"default": 12.0,
+			"min": 6.0,
+			"max": 25.0,
+			"step": 0.5,
+			"decimals": 1
+		},
+		"catalyst": {
+			"name": "Sodium dithionite (Na2S2O4) reduction drops",
+			"unit": "drops",
+			"default": 6,
+			"min": 0,
+			"max": 10,
+			"optimal": 6
+		},
+		"reflux": {
+			"temp_optimal_low": 100.0,
+			"temp_optimal_high": 115.0,
+			"temp_degrade": 130.0,
+			"temp_polymerize": 150.0,
+			"default_temp": 105.0,
+			"temp_min": 60.0,
+			"temp_max": 160.0,
+			"optimal_min": 25.0,
+			"default_min": 25.0,
+			"duration_min": 10.0,
+			"duration_max": 60.0
+		},
+		"workup": {
+			"ice_c": 2.0,
+			"water_ml": 40.0,
+			"ethanol_ml": 15.0,
+			"seeded": true
+		},
+		"analytical": {
+			"mp_pure": 319.0,
+			"mp_tolerance": 5.0,
+			"tlc_rf": 0.35,
+			"purity_pass": 95.0,
+			"yield_pass_g": 6.8
+		},
+		"hazards": [
+			{"code": "GHS07", "text": "irritating to respiratory system"},
+			{"code": "GHS08", "text": "target organ systemic toxicity"}
+		]
+	}
+
+
+static func _make_fluorescein_protocol() -> Dictionary:
+	return {
+		"id": "fluorescein",
+		"name": "Fluorescein (Vogel)",
+		"chemical_name": "3',6'-Dihydroxyspiro[isobenzofuran-1(3H),9'-[9H]xanthen]-3-one",
+		"category": "Classical Organic & Dyes (Vogel)",
+		"code": "SYN-V02",
+		"cas": "2321-07-5",
+		"mw": 332.31,
+		"formula": "C20H12O5",
+		"description": "Vogel's Organic Synthesis: Phthalic anhydride + 2 equivalents of resorcinol with catalytic anhydrous zinc chloride at 180°C melt. Emits intense green fluorescence (521 nm) in basic solution.",
+		"reaction_title": "Resorcinol + phthalic anhydride → fluorescein",
+		"reagent_a": {
+			"id": "resorcinol",
+			"name": "Resorcinol",
+			"unit": "g",
+			"mw": 110.11,
+			"default": 11.0,
+			"min": 5.0,
+			"max": 22.0,
+			"step": 0.1,
+			"decimals": 1
+		},
+		"reagent_b": {
+			"id": "phthalic_anhydride",
+			"name": "Phthalic anhydride",
+			"unit": "g",
+			"mw": 148.12,
+			"density": 1.53,
+			"default": 7.4,
+			"min": 3.0,
+			"max": 15.0,
+			"step": 0.1,
+			"decimals": 1
+		},
+		"catalyst": {
+			"name": "Anhydrous ZnCl2 catalyst portions",
+			"unit": "drops",
+			"default": 5,
+			"min": 0,
+			"max": 8,
+			"optimal": 5
+		},
+		"reflux": {
+			"temp_optimal_low": 175.0,
+			"temp_optimal_high": 185.0,
+			"temp_degrade": 210.0,
+			"temp_polymerize": 230.0,
+			"default_temp": 180.0,
+			"temp_min": 120.0,
+			"temp_max": 240.0,
+			"optimal_min": 40.0,
+			"default_min": 40.0,
+			"duration_min": 15.0,
+			"duration_max": 75.0
+		},
+		"workup": {
+			"ice_c": 5.0,
+			"water_ml": 60.0,
+			"ethanol_ml": 20.0,
+			"seeded": false
+		},
+		"analytical": {
+			"mp_pure": 314.0,
+			"mp_tolerance": 6.0,
+			"tlc_rf": 0.58,
+			"purity_pass": 93.0,
+			"yield_pass_g": 13.5
+		},
+		"hazards": [
+			{"code": "GHS07", "text": "skin and eye irritant"}
+		]
+	}
+
+
+static func _make_sulfanilamide_protocol() -> Dictionary:
+	return {
+		"id": "sulfanilamide",
+		"name": "Sulfanilamide (Vogel)",
+		"chemical_name": "4-Aminobenzenesulfonamide",
+		"category": "Classical Organic & Dyes (Vogel)",
+		"code": "SYN-V03",
+		"cas": "63-74-1",
+		"mw": 172.20,
+		"formula": "C6H8N2O2S",
+		"description": "Vogel's Organic Synthesis: Iconic antibacterial sulfa drug. 4-Acetamidobenzenesulfonyl chloride ammonolysis followed by selective acidic amide deprotection.",
+		"reaction_title": "4-Acetamidobenzenesulfonyl chloride + NH4OH → sulfanilamide",
+		"reagent_a": {
+			"id": "acetamido_sulfonyl_chloride",
+			"name": "4-Acetamidobenzenesulfonyl chloride",
+			"unit": "g",
+			"mw": 233.67,
+			"default": 11.7,
+			"min": 5.0,
+			"max": 25.0,
+			"step": 0.1,
+			"decimals": 1
+		},
+		"reagent_b": {
+			"id": "ammonium_hydroxide",
+			"name": "Concentrated NH4OH",
+			"unit": "mL",
+			"mw": 35.05,
+			"density": 0.90,
+			"default": 25.0,
+			"min": 10.0,
+			"max": 50.0,
+			"step": 1.0,
+			"decimals": 0
+		},
+		"catalyst": {
+			"name": "Dilute HCl deprotection drops",
+			"unit": "drops",
+			"default": 6,
+			"min": 0,
+			"max": 10,
+			"optimal": 6
+		},
+		"reflux": {
+			"temp_optimal_low": 75.0,
+			"temp_optimal_high": 85.0,
+			"temp_degrade": 105.0,
+			"temp_polymerize": 125.0,
+			"default_temp": 80.0,
+			"temp_min": 40.0,
+			"temp_max": 130.0,
+			"optimal_min": 30.0,
+			"default_min": 30.0,
+			"duration_min": 10.0,
+			"duration_max": 60.0
+		},
+		"workup": {
+			"ice_c": 2.0,
+			"water_ml": 40.0,
+			"ethanol_ml": 15.0,
+			"seeded": true
+		},
+		"analytical": {
+			"mp_pure": 165.5,
+			"mp_tolerance": 2.0,
+			"tlc_rf": 0.42,
+			"purity_pass": 96.0,
+			"yield_pass_g": 7.2
+		},
+		"hazards": [
+			{"code": "GHS05", "text": "corrosive ammonia vapor"},
+			{"code": "GHS07", "text": "harmful if swallowed"}
+		]
+	}
+
+
+static func _make_piperine_protocol() -> Dictionary:
+	return {
+		"id": "piperine",
+		"name": "Piperine Soxhlet Extraction",
+		"chemical_name": "(2E,4E)-5-(1,3-Benzodioxol-5-yl)-1-(piperidin-1-yl)penta-2,4-dien-1-one",
+		"category": "Natural Product Isolation & Extractions",
+		"code": "EXT-01",
+		"cas": "94-62-2",
+		"mw": 285.34,
+		"formula": "C17H19NO3",
+		"description": "Natural product isolation: Continuous solid-liquid Soxhlet extraction of Piper nigrum (black pepper) with 95% ethanol, followed by ethanolic KOH precipitation of resinous gums.",
+		"reaction_title": "Ground black pepper Soxhlet extraction → pure piperine",
+		"reagent_a": {
+			"id": "black_pepper_ground",
+			"name": "Ground black pepper solids",
+			"unit": "g",
+			"mw": 285.34,
+			"default": 20.0,
+			"min": 10.0,
+			"max": 50.0,
+			"step": 1.0,
+			"decimals": 0
+		},
+		"reagent_b": {
+			"id": "ethanol_95",
+			"name": "95% Ethanol solvent",
+			"unit": "mL",
+			"mw": 46.07,
+			"density": 0.81,
+			"default": 60.0,
+			"min": 30.0,
+			"max": 120.0,
+			"step": 5.0,
+			"decimals": 0
+		},
+		"catalyst": {
+			"name": "10% Alcoholic KOH clarifying drops",
+			"unit": "drops",
+			"default": 5,
+			"min": 0,
+			"max": 8,
+			"optimal": 5
+		},
+		"reflux": {
+			"temp_optimal_low": 76.0,
+			"temp_optimal_high": 80.0,
+			"temp_degrade": 95.0,
+			"temp_polymerize": 115.0,
+			"default_temp": 78.0,
+			"temp_min": 50.0,
+			"temp_max": 110.0,
+			"optimal_min": 45.0,
+			"default_min": 45.0,
+			"duration_min": 15.0,
+			"duration_max": 90.0
+		},
+		"workup": {
+			"ice_c": 3.0,
+			"water_ml": 25.0,
+			"ethanol_ml": 10.0,
+			"seeded": true
+		},
+		"analytical": {
+			"mp_pure": 130.0,
+			"mp_tolerance": 2.5,
+			"tlc_rf": 0.55,
+			"purity_pass": 95.0,
+			"yield_pass_g": 1.2
+		},
+		"hazards": [
+			{"code": "GHS07", "text": "sternutator (severe sneezing reflex on inhalation)"}
+		]
+	}
+
+
+static func _make_limonene_protocol() -> Dictionary:
+	return {
+		"id": "limonene",
+		"name": "D-Limonene Steam Distillation",
+		"chemical_name": "(4R)-1-Methyl-4-(prop-1-en-2-yl)cyclohex-1-ene",
+		"category": "Natural Product Isolation & Extractions",
+		"code": "EXT-02",
+		"cas": "5989-27-5",
+		"mw": 136.23,
+		"formula": "C10H16",
+		"description": "Natural product isolation: Direct steam distillation of Citrus sinensis flavedo (orange peel). Co-distillation with water vapor separated via Dean-Stark receiver and dried over MgSO4.",
+		"reaction_title": "Citrus flavedo zest steam distillation → D-limonene",
+		"reagent_a": {
+			"id": "orange_peel_flavedo",
+			"name": "Fresh orange peel zest",
+			"unit": "g",
+			"mw": 136.23,
+			"default": 50.0,
+			"min": 20.0,
+			"max": 100.0,
+			"step": 1.0,
+			"decimals": 0
+		},
+		"reagent_b": {
+			"id": "deionized_water",
+			"name": "Deionized water steam source",
+			"unit": "mL",
+			"mw": 18.02,
+			"density": 1.00,
+			"default": 100.0,
+			"min": 50.0,
+			"max": 200.0,
+			"step": 10.0,
+			"decimals": 0
+		},
+		"catalyst": {
+			"name": "NaCl salting-out portions",
+			"unit": "drops",
+			"default": 4,
+			"min": 0,
+			"max": 8,
+			"optimal": 4
+		},
+		"reflux": {
+			"temp_optimal_low": 96.0,
+			"temp_optimal_high": 100.0,
+			"temp_degrade": 120.0,
+			"temp_polymerize": 140.0,
+			"default_temp": 98.0,
+			"temp_min": 70.0,
+			"temp_max": 130.0,
+			"optimal_min": 40.0,
+			"default_min": 40.0,
+			"duration_min": 15.0,
+			"duration_max": 75.0
+		},
+		"workup": {
+			"ice_c": 4.0,
+			"water_ml": 20.0,
+			"ethanol_ml": 0.0,
+			"seeded": false
+		},
+		"analytical": {
+			"mp_pure": -74.0,
+			"mp_tolerance": 5.0,
+			"tlc_rf": 0.88,
+			"purity_pass": 96.0,
+			"yield_pass_g": 1.8
+		},
+		"hazards": [
+			{"code": "GHS02", "text": "flammable terpene liquid"},
+			{"code": "GHS07", "text": "skin sensitizer"},
+			{"code": "GHS09", "text": "toxic to aquatic life with long lasting effects"}
+		]
+	}
+
+
+static func _make_eugenol_protocol() -> Dictionary:
+	return {
+		"id": "eugenol",
+		"name": "Eugenol Acid-Base Extraction",
+		"chemical_name": "4-Allyl-2-methoxyphenol",
+		"category": "Natural Product Isolation & Extractions",
+		"code": "EXT-03",
+		"cas": "97-53-0",
+		"mw": 164.20,
+		"formula": "C10H12O2",
+		"description": "Natural product isolation: Acid-base extractive isolation from Syzygium aromaticum (clove oil). Deprotonation with 5% KOH to form water-soluble potassium phenolate, washing out non-phenolic terpenes, and regenerating pure eugenol with HCl.",
+		"reaction_title": "Clove bud oil acid-base extraction → pure eugenol",
+		"reagent_a": {
+			"id": "clove_oil_crude",
+			"name": "Crude clove bud oil",
+			"unit": "g",
+			"mw": 164.20,
+			"default": 10.0,
+			"min": 5.0,
+			"max": 25.0,
+			"step": 0.5,
+			"decimals": 1
+		},
+		"reagent_b": {
+			"id": "koh_solution_5pct",
+			"name": "5% Aqueous KOH solution",
+			"unit": "mL",
+			"mw": 56.11,
+			"density": 1.04,
+			"default": 30.0,
+			"min": 15.0,
+			"max": 60.0,
+			"step": 1.0,
+			"decimals": 0
+		},
+		"catalyst": {
+			"name": "10% HCl re-acidification drops",
+			"unit": "drops",
+			"default": 6,
+			"min": 0,
+			"max": 10,
+			"optimal": 6
+		},
+		"reflux": {
+			"temp_optimal_low": 20.0,
+			"temp_optimal_high": 30.0,
+			"temp_degrade": 60.0,
+			"temp_polymerize": 80.0,
+			"default_temp": 25.0,
+			"temp_min": 15.0,
+			"temp_max": 90.0,
+			"optimal_min": 20.0,
+			"default_min": 20.0,
+			"duration_min": 10.0,
+			"duration_max": 45.0
+		},
+		"workup": {
+			"ice_c": 5.0,
+			"water_ml": 30.0,
+			"ethanol_ml": 0.0,
+			"seeded": false
+		},
+		"analytical": {
+			"mp_pure": -9.0,
+			"mp_tolerance": 3.0,
+			"tlc_rf": 0.51,
+			"purity_pass": 97.0,
+			"yield_pass_g": 7.5
+		},
+		"hazards": [
+			{"code": "GHS07", "text": "skin and eye irritant, strong dental clove aroma"}
 		]
 	}

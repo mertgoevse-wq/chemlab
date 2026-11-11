@@ -10,11 +10,11 @@ import math
 import random
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 try:
     from rdkit import Chem
     from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
+
     RDKIT_AVAILABLE = True
 except ImportError:
     RDKIT_AVAILABLE = False
@@ -24,9 +24,11 @@ except ImportError:
 # Data Classes for Instrument Results
 # ============================================================================
 
+
 @dataclass
 class InstrumentConfig:
     """Configuration for an analytical instrument."""
+
     name: str
     enabled: bool = True
     parameters: dict = field(default_factory=dict)
@@ -35,6 +37,7 @@ class InstrumentConfig:
 @dataclass
 class NMRPeak:
     """Single NMR peak with chemical shift, multiplicity, and integral."""
+
     chemical_shift_ppm: float
     multiplicity: str  # s, d, t, q, m, br s, dd, dt, etc.
     integral_h: int
@@ -45,6 +48,7 @@ class NMRPeak:
 @dataclass
 class NMRResult:
     """NMR spectrometer result (1H or 13C)."""
+
     nucleus: str  # "1H" or "13C"
     frequency_mhz: float
     solvent: str
@@ -58,10 +62,11 @@ class NMRResult:
 @dataclass
 class GCMSPeak:
     """Single GC-MS peak with retention time and mass spectrum."""
+
     retention_time_min: float
     mass_spectrum: dict[int, float]  # m/z -> relative intensity
     base_peak_mz: int
-    molecular_ion_mz: Optional[int] = None
+    molecular_ion_mz: int | None = None
     compound_name: str = ""
     nist_match_factor: float = 0.0
     area_percent: float = 0.0
@@ -70,6 +75,7 @@ class GCMSPeak:
 @dataclass
 class GCMSResult:
     """GC-MS instrument result."""
+
     peaks: list[GCMSPeak]
     column: str = "DB-5MS"
     temperature_program: str = "60-300°C @ 10°C/min"
@@ -82,6 +88,7 @@ class GCMSResult:
 @dataclass
 class HPLCPeak:
     """Single HPLC peak with retention time and UV spectrum."""
+
     retention_time_min: float
     area: float
     height: float
@@ -94,6 +101,7 @@ class HPLCPeak:
 @dataclass
 class HPLCResult:
     """HPLC instrument result."""
+
     peaks: list[HPLCPeak]
     column: str = "C18"
     mobile_phase_a: str = "H2O + 0.1% TFA"
@@ -107,6 +115,7 @@ class HPLCResult:
 @dataclass
 class MeltingPointResult:
     """Melting point apparatus result."""
+
     onset_c: float
     clear_c: float
     range_c: float
@@ -119,6 +128,7 @@ class MeltingPointResult:
 @dataclass
 class BalanceResult:
     """Analytical balance result."""
+
     mass_g: float
     readability_g: float = 0.0001
     repeatability_g: float = 0.0001
@@ -132,6 +142,7 @@ class BalanceResult:
 @dataclass
 class PHMeterResult:
     """pH meter result."""
+
     ph: float
     temperature_c: float = 25.0
     electrode_type: str = "glass_combination"
@@ -144,6 +155,7 @@ class PHMeterResult:
 @dataclass
 class TitrationResult:
     """Titration result."""
+
     equivalence_volume_ml: float
     equivalence_ph: float
     concentration_m: float
@@ -157,14 +169,15 @@ class TitrationResult:
 # Analytical Engine
 # ============================================================================
 
+
 class AnalyticalEngine:
     """Simulation engine for all 6 core analytical instruments."""
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str | None = None):
         self.config = self._load_config(config_path)
         self._compound_cache: dict[str, dict] = {}
 
-    def _load_config(self, config_path: Optional[str]) -> dict:
+    def _load_config(self, config_path: str | None) -> dict:
         """Load instrument tuning configuration from JSON or use defaults."""
         default_config = {
             "nmr": {
@@ -339,23 +352,28 @@ class AnalyticalEngine:
                 "heavy_atom_count": 3,
             },
         }
-        return known.get(smiles, {
-            "molecular_weight": 100.0,
-            "formula": "CxHyOz",
-            "num_rotatable_bonds": 2,
-            "num_h_donors": 1,
-            "num_h_acceptors": 2,
-            "tpsa": 30.0,
-            "logp": 1.0,
-            "num_aromatic_rings": 0,
-            "heavy_atom_count": 6,
-        })
+        return known.get(
+            smiles,
+            {
+                "molecular_weight": 100.0,
+                "formula": "CxHyOz",
+                "num_rotatable_bonds": 2,
+                "num_h_donors": 1,
+                "num_h_acceptors": 2,
+                "tpsa": 30.0,
+                "logp": 1.0,
+                "num_aromatic_rings": 0,
+                "heavy_atom_count": 6,
+            },
+        )
 
     # -----------------------------------------------------------------------
     # NMR Spectrometer (1H / 13C)
     # -----------------------------------------------------------------------
 
-    def run_nmr_1h(self, smiles: str, solvent: str = "cdcl3", scans: Optional[int] = None) -> NMRResult:
+    def run_nmr_1h(
+        self, smiles: str, solvent: str = "cdcl3", scans: int | None = None
+    ) -> NMRResult:
         """Simulate 1H NMR spectrum at 400 MHz."""
         config = self.config["nmr"]
         freq = config["spectrometer_frequency_mhz"]
@@ -367,12 +385,14 @@ class AnalyticalEngine:
         # Add residual solvent peak
         if solvent in config["residual_solvent_shifts_1h"]:
             solvent_shift = config["residual_solvent_shifts_1h"][solvent]
-            peaks.append(NMRPeak(
-                chemical_shift_ppm=solvent_shift,
-                multiplicity="s",
-                integral_h=0,
-                assignment=f"{solvent} residual"
-            ))
+            peaks.append(
+                NMRPeak(
+                    chemical_shift_ppm=solvent_shift,
+                    multiplicity="s",
+                    integral_h=0,
+                    assignment=f"{solvent} residual",
+                )
+            )
 
         return NMRResult(
             nucleus="1H",
@@ -383,7 +403,9 @@ class AnalyticalEngine:
             acquisition_time_s=scans * 2.0,
         )
 
-    def run_nmr_13c(self, smiles: str, solvent: str = "cdcl3", scans: Optional[int] = None) -> NMRResult:
+    def run_nmr_13c(
+        self, smiles: str, solvent: str = "cdcl3", scans: int | None = None
+    ) -> NMRResult:
         """Simulate 13C NMR spectrum at 100 MHz."""
         config = self.config["nmr"]
         freq = config["spectrometer_frequency_mhz"] / 4.0  # ~100 MHz
@@ -443,22 +465,26 @@ class AnalyticalEngine:
 
         # Aliphatic region
         if n_h > 3:
-            peaks.append(NMRPeak(
-                chemical_shift_ppm=1.2 + random.uniform(-0.3, 0.5),
-                multiplicity="t" if random.random() > 0.5 else "s",
-                integral_h=min(3, n_h // 3),
-                assignment="aliphatic CH3"
-            ))
+            peaks.append(
+                NMRPeak(
+                    chemical_shift_ppm=1.2 + random.uniform(-0.3, 0.5),
+                    multiplicity="t" if random.random() > 0.5 else "s",
+                    integral_h=min(3, n_h // 3),
+                    assignment="aliphatic CH3",
+                )
+            )
             n_h -= 3
 
         # Methylene
         if n_h > 2:
-            peaks.append(NMRPeak(
-                chemical_shift_ppm=1.6 + random.uniform(-0.3, 1.0),
-                multiplicity="m",
-                integral_h=min(2, n_h // 2),
-                assignment="CH2"
-            ))
+            peaks.append(
+                NMRPeak(
+                    chemical_shift_ppm=1.6 + random.uniform(-0.3, 1.0),
+                    multiplicity="m",
+                    integral_h=min(2, n_h // 2),
+                    assignment="CH2",
+                )
+            )
             n_h -= 2
 
         # Methine or heteroatom-attached
@@ -466,32 +492,38 @@ class AnalyticalEngine:
             shift = 3.5 + random.uniform(0, 1.5)
             if props.get("num_h_acceptors", 0) > 0:
                 shift += 0.5
-            peaks.append(NMRPeak(
-                chemical_shift_ppm=shift,
-                multiplicity="m",
-                integral_h=min(1, n_h),
-                assignment="CH-X"
-            ))
+            peaks.append(
+                NMRPeak(
+                    chemical_shift_ppm=shift,
+                    multiplicity="m",
+                    integral_h=min(1, n_h),
+                    assignment="CH-X",
+                )
+            )
             n_h -= 1
 
         # Aromatic
         if props.get("num_aromatic_rings", 0) > 0:
             n_aromatic_h = min(4, props.get("heavy_atom_count", 6) - 6)
-            peaks.append(NMRPeak(
-                chemical_shift_ppm=7.2 + random.uniform(-0.3, 0.5),
-                multiplicity="m",
-                integral_h=n_aromatic_h,
-                assignment="Ar-H"
-            ))
+            peaks.append(
+                NMRPeak(
+                    chemical_shift_ppm=7.2 + random.uniform(-0.3, 0.5),
+                    multiplicity="m",
+                    integral_h=n_aromatic_h,
+                    assignment="Ar-H",
+                )
+            )
 
         # Exchangeable protons (OH, NH)
         if props.get("num_h_donors", 0) > 0:
-            peaks.append(NMRPeak(
-                chemical_shift_ppm=random.uniform(4.0, 12.0),
-                multiplicity="br s",
-                integral_h=props["num_h_donors"],
-                assignment="exchangeable"
-            ))
+            peaks.append(
+                NMRPeak(
+                    chemical_shift_ppm=random.uniform(4.0, 12.0),
+                    multiplicity="br s",
+                    integral_h=props["num_h_donors"],
+                    assignment="exchangeable",
+                )
+            )
 
         return peaks
 
@@ -534,7 +566,7 @@ class AnalyticalEngine:
     # GC-MS
     # -----------------------------------------------------------------------
 
-    def run_gc_ms(self, smiles: str, column: Optional[str] = None) -> GCMSResult:
+    def run_gc_ms(self, smiles: str, column: str | None = None) -> GCMSResult:
         """Simulate GC-MS analysis."""
         config = self.config["gc_ms"]
         column = column or config["column"]
@@ -547,7 +579,7 @@ class AnalyticalEngine:
         for peak in peaks:
             for i in range(10):
                 rt = peak.retention_time_min - 0.05 + i * 0.01
-                intensity = peak.mass_spectrum.get(peak.base_peak_mz, 100) * (1 - abs(i-5)*0.1)
+                intensity = peak.mass_spectrum.get(peak.base_peak_mz, 100) * (1 - abs(i - 5) * 0.1)
                 tic.append((rt, intensity))
 
         return GCMSResult(
@@ -571,7 +603,7 @@ class AnalyticalEngine:
                     molecular_ion_mz=180,
                     compound_name="Aspirin",
                     nist_match_factor=96.5,
-                    area_percent=98.2
+                    area_percent=98.2,
                 ),
             ],
             "CC(=O)Nc1ccc(O)cc1": [  # Paracetamol
@@ -582,7 +614,7 @@ class AnalyticalEngine:
                     molecular_ion_mz=151,
                     compound_name="Paracetamol",
                     nist_match_factor=94.8,
-                    area_percent=97.5
+                    area_percent=97.5,
                 ),
             ],
         }
@@ -607,21 +639,25 @@ class AnalyticalEngine:
         base_peak = max(spectrum, key=spectrum.get)
         mol_ion = round(mw) if spectrum.get(round(mw), 0) > 5 else None
 
-        return [GCMSPeak(
-            retention_time_min=rt,
-            mass_spectrum=spectrum,
-            base_peak_mz=base_peak,
-            molecular_ion_mz=mol_ion,
-            compound_name=f"Unknown (MW {mw:.1f})",
-            nist_match_factor=random.uniform(70, 90),
-            area_percent=random.uniform(85, 99)
-        )]
+        return [
+            GCMSPeak(
+                retention_time_min=rt,
+                mass_spectrum=spectrum,
+                base_peak_mz=base_peak,
+                molecular_ion_mz=mol_ion,
+                compound_name=f"Unknown (MW {mw:.1f})",
+                nist_match_factor=random.uniform(70, 90),
+                area_percent=random.uniform(85, 99),
+            )
+        ]
 
     # -----------------------------------------------------------------------
     # HPLC
     # -----------------------------------------------------------------------
 
-    def run_hplc(self, smiles: str, column: Optional[str] = None, wavelength: Optional[float] = None) -> HPLCResult:
+    def run_hplc(
+        self, smiles: str, column: str | None = None, wavelength: float | None = None
+    ) -> HPLCResult:
         """Simulate HPLC analysis with UV detection."""
         config = self.config["hplc"]
         column = column or config["column"]
@@ -652,7 +688,7 @@ class AnalyticalEngine:
                     width_min=0.12,
                     uv_spectrum={220.0: 1.2, 254.0: 0.95, 280.0: 0.6, 300.0: 0.3},
                     compound_name="Aspirin",
-                    purity_percent=99.2
+                    purity_percent=99.2,
                 ),
             ],
         }
@@ -677,29 +713,33 @@ class AnalyticalEngine:
             if w not in uv_spec:
                 uv_spec[w] = random.uniform(0.05, 0.3)
 
-        return [HPLCPeak(
-            retention_time_min=rt,
-            area=random.uniform(5000, 20000),
-            height=random.uniform(500, 3000),
-            width_min=random.uniform(0.08, 0.15),
-            uv_spectrum=uv_spec,
-            compound_name=f"Compound (MW {mw:.1f})",
-            purity_percent=random.uniform(95, 99.9)
-        )]
+        return [
+            HPLCPeak(
+                retention_time_min=rt,
+                area=random.uniform(5000, 20000),
+                height=random.uniform(500, 3000),
+                width_min=random.uniform(0.08, 0.15),
+                uv_spectrum=uv_spec,
+                compound_name=f"Compound (MW {mw:.1f})",
+                purity_percent=random.uniform(95, 99.9),
+            )
+        ]
 
     # -----------------------------------------------------------------------
     # Melting Point
     # -----------------------------------------------------------------------
 
-    def run_melting_point(self, smiles: str, heating_rate: Optional[float] = None) -> MeltingPointResult:
+    def run_melting_point(
+        self, smiles: str, heating_rate: float | None = None
+    ) -> MeltingPointResult:
         """Simulate melting point determination."""
         config = self.config["melting_point"]
         heating_rate = heating_rate or config["heating_rate_c_min"]
 
         known_mp = {
             "CC(=O)Oc1ccccc1C(=O)O": (135.0, 136.0),  # Aspirin
-            "CC(=O)Nc1ccc(O)cc1": (169.0, 170.5),    # Paracetamol
-            "c1ccc(cc1)C=O": (-26.0, -25.0),          # Benzaldehyde (bp 178°C)
+            "CC(=O)Nc1ccc(O)cc1": (169.0, 170.5),  # Paracetamol
+            "c1ccc(cc1)C=O": (-26.0, -25.0),  # Benzaldehyde (bp 178°C)
         }
 
         if smiles in known_mp:
@@ -718,7 +758,7 @@ class AnalyticalEngine:
             heating_rate_c_min=heating_rate,
             atmosphere="air",
             sample_mass_mg=config["sample_mass_mg"],
-            purity_estimate_percent=100 - (clear - onset) * 10 + 0.1
+            purity_estimate_percent=100 - (clear - onset) * 10 + 0.1,
         )
 
     # -----------------------------------------------------------------------
@@ -739,7 +779,9 @@ class AnalyticalEngine:
             measurements.append(target_mass_g + noise)
 
         mean_mass = sum(measurements) / len(measurements)
-        std_dev = math.sqrt(sum((m - mean_mass)**2 for m in measurements) / (len(measurements) - 1))
+        std_dev = math.sqrt(
+            sum((m - mean_mass) ** 2 for m in measurements) / (len(measurements) - 1)
+        )
         uncertainty = max(readability * 2, std_dev * 2)  # k=2 coverage factor
 
         return BalanceResult(
@@ -750,7 +792,7 @@ class AnalyticalEngine:
             uncertainty_g=round(uncertainty, 6),
             calibration_status="calibrated",
             draft_shield_closed=True,
-            temperature_c=22.0
+            temperature_c=22.0,
         )
 
     # -----------------------------------------------------------------------
@@ -783,7 +825,7 @@ class AnalyticalEngine:
             slope_mv_per_ph=round(slope, 2),
             offset_mv=round(offset, 1),
             calibration_points=config["calibration_buffers"],
-            stability_criteria_met=stability
+            stability_criteria_met=stability,
         )
 
     # -----------------------------------------------------------------------
@@ -797,7 +839,7 @@ class AnalyticalEngine:
         analyte_volume_ml: float = 25.0,
         analyte_concentration_m: float = 0.1,
         titrant_concentration_m: float = 0.1,
-        indicator: str = "phenolphthalein"
+        indicator: str = "phenolphthalein",
     ) -> TitrationResult:
         """Simulate acid-base titration."""
         config = self.config["titrator"]
@@ -856,7 +898,7 @@ class AnalyticalEngine:
             indicator=indicator,
             titrant=titrant,
             analyte=analyte,
-            curve_data=curve
+            curve_data=curve,
         )
 
 

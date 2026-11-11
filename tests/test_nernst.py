@@ -11,7 +11,7 @@ import math
 
 import pytest
 
-from chemlab.simulation.electrochemistry.constants import F, R, T0
+from chemlab.simulation.electrochemistry.constants import T0, F, R
 from chemlab.simulation.electrochemistry.half_reactions import HALF_REACTION_REGISTRY
 from chemlab.simulation.electrochemistry.nernst import NernstSolver
 

@@ -9,8 +9,12 @@ Validates:
 
 import pytest
 
-from chemlab.simulation.electrochemistry.constants import F, M_COPPER
-from chemlab.simulation.electrochemistry.electrolysis import ElectrolysisCell, faraday_mass_deposited, faraday_moles_electrons
+from chemlab.simulation.electrochemistry.constants import M_COPPER, F
+from chemlab.simulation.electrochemistry.electrolysis import (
+    ElectrolysisCell,
+    faraday_mass_deposited,
+    faraday_moles_electrons,
+)
 
 
 @pytest.mark.unit

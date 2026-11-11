@@ -15,6 +15,8 @@ signal skill_leveled_up(skill_id: String, new_level: int)
 signal intelligence_points_changed(amount: int, new_total: int)
 signal talent_unlocked(talent_id: String)
 signal milestone_reached(skill_id: String, milestone_level: int)
+signal skill_mastered(skill_id: String, level: int)
+signal all_skills_mastered()
 
 const DATA_PATH: String = "res://data/progression/skills.json"
 const SAVE_KEY: String = "skills"
@@ -210,6 +212,10 @@ func xp_to_reach_level(level: int) -> int:
 		_build_curve()
 	var clamped := clampi(level, 1, _max_level)
 	return _thresholds[clamped - 1]
+
+
+func get_xp_for_level(level: int) -> int:
+	return xp_to_reach_level(level)
 
 
 func level_for_xp(xp: int) -> int:
@@ -417,6 +423,10 @@ func add_xp(skill_id: String, amount: int, reason: String = "") -> Dictionary:
 	if after > before:
 		level_up.emit(skill_id, before, after)
 		skill_leveled_up.emit(skill_id, after)
+		if before < 99 and after >= 99:
+			skill_mastered.emit(skill_id, after)
+			if is_all_skills_mastered():
+				all_skills_mastered.emit()
 
 	var newly_unlocked_milestones: Array = []
 	for milestone in get_milestones(skill_id):
@@ -445,6 +455,21 @@ func grant_skill_xp(skill_id: String, amount: int, source: String = "") -> void:
 
 func has_milestone(skill_id: String, milestone_level: int) -> bool:
 	return milestone_level in reached_milestones.get(skill_id, [])
+
+
+func is_all_skills_mastered() -> bool:
+	for skill_id in TRACK_ORDER:
+		if get_level(skill_id) < 99:
+			return false
+	return true
+
+
+func get_mastered_skills() -> Array[String]:
+	var result: Array[String] = []
+	for skill_id in TRACK_ORDER:
+		if get_level(skill_id) >= 99:
+			result.append(skill_id)
+	return result
 
 
 # =============================================================================

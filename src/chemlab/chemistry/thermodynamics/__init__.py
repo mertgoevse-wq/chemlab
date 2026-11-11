@@ -10,12 +10,12 @@ from this package for backwards compatibility.
 """
 
 from .engine import (  # noqa: F401
-    CanteraThermodynamicsEngine,
-    ReactionThermodynamicsResult,
+    R_GAS,
     THERMO_DATABASE,
     THERMO_ENGINE,
+    CanteraThermodynamicsEngine,
+    ReactionThermodynamicsResult,
     ThermodynamicState,
-    R_GAS,
 )
 
 __all__ = [

@@ -7,10 +7,9 @@ All potentials in V vs SHE, current densities in A/cm².
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
-from chemlab.simulation.electrochemistry.constants import F, R, T0
+from chemlab.simulation.electrochemistry.constants import T0
 
 
 @dataclass
@@ -120,7 +119,9 @@ class CorrosionSimulator:
         for e in potentials:
             i_a.append(1e-6 * 10 ** ((e - (-0.76)) / cs.anodic_tafel_slope_v_dec))
             i_c.append(-1e-5 * 10 ** (((0.34) - e) / cs.cathodic_tafel_slope_v_dec))
-        return TafelCurve(potentials_v=potentials, anodic_currents_a_cm2=i_a, cathodic_currents_a_cm2=i_c)
+        return TafelCurve(
+            potentials_v=potentials, anodic_currents_a_cm2=i_a, cathodic_currents_a_cm2=i_c
+        )
 
     def corrosion_rate(
         self,

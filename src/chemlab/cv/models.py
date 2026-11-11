@@ -3,11 +3,12 @@ Computer Vision Models for ChemLab.
 Hand tracking, gesture recognition, and landmark data structures.
 """
 
-from chemlab.compat import StrEnum, UTC
 from typing import Annotated
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from chemlab.compat import UTC, StrEnum
 
 
 class GestureType(StrEnum):
@@ -79,14 +80,14 @@ class OptimizedGesture(StrEnum):
     """Optimized gesture set for chemistry lab interactions."""
 
     IDLE = "IDLE"
-    PINCH = "PINCH"           # Pickup small apparatus (test tubes, pipettes)
-    PINCH_DRAG = "PINCH_DRAG" # Pinch + move = pour
-    POUR = "PINCH_DRAG"       # Backward compatibility alias
-    SWIRL = "SWIRL"           # Backward compatibility alias
-    GRAB = "GRAB"             # Move vessel (beakers, flasks)
-    FIST = "FIST"             # Firm lock on vessel
-    SWIPE = "SWIPE"           # Turn knob (stir plate, valve)
-    POINT = "POINT"           # Raycast select (UI, balances)
+    PINCH = "PINCH"  # Pickup small apparatus (test tubes, pipettes)
+    PINCH_DRAG = "PINCH_DRAG"  # Pinch + move = pour
+    POUR = "PINCH_DRAG"  # Backward compatibility alias
+    SWIRL = "SWIRL"  # Backward compatibility alias
+    GRAB = "GRAB"  # Move vessel (beakers, flasks)
+    FIST = "FIST"  # Firm lock on vessel
+    SWIPE = "SWIPE"  # Turn knob (stir plate, valve)
+    POINT = "POINT"  # Raycast select (UI, balances)
     RELEASE = "RELEASE"
 
 

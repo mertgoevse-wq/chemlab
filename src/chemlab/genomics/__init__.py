@@ -11,22 +11,22 @@ Provides:
 - Interactive genome editor
 """
 
-from chemlab.genomics.assembly import GenomeAssembly, Chromosome, Gene, Transcript, Exon
-from chemlab.genomics.variants import Variant, SNP, CNV, VariantEffectPredictor
+from chemlab.genomics.assembly import Chromosome, Exon, Gene, GenomeAssembly, Transcript
+from chemlab.genomics.browser import BrowserTrack, ChromosomeBrowser
+from chemlab.genomics.crispr import CRISPRGuideDesigner, GuideRNA, GuideScore
+from chemlab.genomics.dosage import DosageSimulator
+from chemlab.genomics.editor import Edit, EditSimulation, GenomeEditor
+from chemlab.genomics.interval_tree import GenomicIntervalTree
+from chemlab.genomics.loader import (
+    download_assembly,
+    get_available_assemblies,
+    load_genome_assembly,
+)
+from chemlab.genomics.primers import Primer, PrimerDesigner, PrimerPair
 from chemlab.genomics.regulatory import RegulatoryRegion
 from chemlab.genomics.repeats import RepeatElement
 from chemlab.genomics.sequence import GenomicSequence
-from chemlab.genomics.interval_tree import GenomicIntervalTree
-from chemlab.genomics.browser import ChromosomeBrowser, BrowserTrack
-from chemlab.genomics.dosage import DosageSimulator
-from chemlab.genomics.crispr import CRISPRGuideDesigner, GuideRNA, GuideScore
-from chemlab.genomics.primers import PrimerDesigner, Primer, PrimerPair
-from chemlab.genomics.editor import GenomeEditor, Edit, EditSimulation
-from chemlab.genomics.loader import (
-    load_genome_assembly,
-    get_available_assemblies,
-    download_assembly,
-)
+from chemlab.genomics.variants import CNV, SNP, Variant, VariantEffectPredictor
 
 __version__ = "1.0.0"
 

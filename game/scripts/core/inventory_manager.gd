@@ -32,6 +32,26 @@ var radial_wheel_category: String = "tools"  # tools, consumables, companions, e
 func _ready() -> void:
 	_initialize_slots()
 	_load_save_data()
+	_connect_to_skill_mastery()
+
+func _connect_to_skill_mastery() -> void:
+	var skill_mgr = get_node_or_null("/root/SkillManager")
+	if skill_mgr:
+		if skill_mgr.has_signal("skill_mastered"):
+			skill_mgr.skill_mastered.connect(_on_skill_mastered)
+		if skill_mgr.has_signal("all_skills_mastered"):
+			skill_mgr.all_skills_mastered.connect(_on_all_skills_mastered)
+
+func _on_skill_mastered(skill_id: String, _level: int) -> void:
+	var regalia_id = "regalia_" + skill_id
+	if not has_item(regalia_id):
+		add_item(regalia_id, 1)
+
+func _on_all_skills_mastered() -> void:
+	if not has_item("regalia_omniscient_alchemist"):
+		add_item("regalia_omniscient_alchemist", 1)
+	if not has_item("hood_omniscient_alchemist"):
+		add_item("hood_omniscient_alchemist", 1)
 
 func _initialize_slots() -> void:
 	# Initialize equipment slots
@@ -81,11 +101,23 @@ func equip_item(slot_id: String, item_id: String) -> bool:
 		return false
 
 	var item_def = _get_item_definition(item_id)
-	if not item_def:
+	if not item_def or item_def.is_empty():
 		return false
 
-	if item_def.slot != slot_id:
+	if item_def.get("slot", "") != slot_id:
 		return false
+
+	# Check level / mastery requirements
+	var skill_mgr = get_node_or_null("/root/SkillManager")
+	if skill_mgr:
+		if item_def.get("all_skills_mastered", false):
+			if not skill_mgr.is_all_skills_mastered():
+				return false
+		elif item_def.has("skill_requirement") and item_def.skill_requirement is Dictionary:
+			var req_skill = item_def.skill_requirement.get("skill", "")
+			var req_lvl = int(item_def.skill_requirement.get("level", 1))
+			if skill_mgr.get_skill_level(req_skill) < req_lvl:
+				return false
 
 	# Unequip current item if any
 	if equipment.has(slot_id) and equipment[slot_id] != "" and equipment[slot_id] != null:
@@ -378,12 +410,11 @@ func _has_station_access(station_id: String) -> bool:
 
 func _get_item_definition(item_id: String) -> Dictionary:
 	# Search in equipment items
-	for item in EQUIPMENT_DATA.equipment_items:
-		if item.id == item_id:
+	for item in _get_data().get("equipment_items", []):
+		if item.get("id", "") == item_id:
 			return item
 
-	# Would also search reagent database, consumable database, etc.
-	# For now return basic structure
+	# Fallback basic structure
 	return {
 		"id": item_id,
 		"name": item_id,

@@ -9,11 +9,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Literal
 
 
 class RegulatoryFeatureType(str, Enum):
     """Types of regulatory features."""
+
     PROMOTER = "promoter"
     ENHANCER = "enhancer"
     SILENCER = "silencer"
@@ -28,6 +28,7 @@ class RegulatoryFeatureType(str, Enum):
 
 class ActivityState(str, Enum):
     """Activity states of regulatory regions."""
+
     ACTIVE = "active"
     POISED = "poised"
     REPRESSED = "repressed"
@@ -42,6 +43,7 @@ class RegulatoryRegion:
 
     Represents a genomic region with regulatory function.
     """
+
     region_id: str
     chromosome: str
     start_bp: int

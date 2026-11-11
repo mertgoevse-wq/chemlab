@@ -8,18 +8,19 @@ transcripts, exons, and complete genome assemblies.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
 from enum import Enum
 
 
 class Strand(str, Enum):
     """DNA strand orientation."""
+
     POSITIVE = "+"
     NEGATIVE = "-"
 
 
 class Biotype(str, Enum):
     """Gene/transcript biotype classifications."""
+
     PROTEIN_CODING = "protein_coding"
     LNCRNA = "lncRNA"
     MIRNA = "miRNA"
@@ -37,6 +38,7 @@ class Biotype(str, Enum):
 
 class GeneStatus(str, Enum):
     """Gene status classifications."""
+
     KNOWN = "KNOWN"
     NOVEL = "NOVEL"
     PUTATIVE = "PUTATIVE"
@@ -51,6 +53,7 @@ class Chromosome:
 
     Represents a single chromosome/scaffold with sequence and metadata.
     """
+
     accession: str
     name: str
     organism: str
@@ -102,6 +105,7 @@ class Gene:
 
     Represents a gene locus with genomic coordinates and metadata.
     """
+
     gene_id: str
     symbol: str
     name: str
@@ -145,6 +149,7 @@ class Exon:
 
     Represents a single exon within a transcript.
     """
+
     exon_id: str
     transcript_id: str
     chromosome: str
@@ -179,6 +184,7 @@ class Transcript:
 
     Represents a transcript with exon structure and coding sequence.
     """
+
     transcript_id: str
     gene_id: str
     chromosome: str
@@ -281,6 +287,7 @@ class GenomeAssembly:
     Contains all chromosomes, genes, transcripts, and annotations
     for a single genome build.
     """
+
     organism: str
     name: str
     accession: str
@@ -358,12 +365,7 @@ class GenomeAssembly:
         """Get all transcripts on a chromosome."""
         return self._transcripts_by_chrom.get(chromosome, [])
 
-    def find_genes_in_region(
-        self,
-        chromosome: str,
-        start_bp: int,
-        end_bp: int
-    ) -> list[Gene]:
+    def find_genes_in_region(self, chromosome: str, start_bp: int, end_bp: int) -> list[Gene]:
         """Find all genes overlapping a genomic region."""
         result = []
         for gene in self.get_genes_on_chromosome(chromosome):
@@ -372,10 +374,7 @@ class GenomeAssembly:
         return result
 
     def find_transcripts_in_region(
-        self,
-        chromosome: str,
-        start_bp: int,
-        end_bp: int
+        self, chromosome: str, start_bp: int, end_bp: int
     ) -> list[Transcript]:
         """Find all transcripts overlapping a genomic region."""
         result = []
@@ -392,6 +391,7 @@ class GenomeAssembly:
     @property
     def chromosome_names(self) -> list[str]:
         """List of chromosome names in order."""
+
         # Standard ordering: 1-22, X, Y, MT
         def sort_key(name: str) -> tuple:
             name_clean = name.replace("chr", "")

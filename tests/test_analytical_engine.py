@@ -6,25 +6,25 @@ for Godot UI rendering with proper physical models.
 """
 
 import json
-import pytest
 import math
 from pathlib import Path
 
+import pytest
+
 from chemlab.simulation.analytical_engine import (
     AnalyticalEngine,
-    NMRResult,
-    GCMSResult,
-    HPLCResult,
-    MeltingPointResult,
     BalanceResult,
+    GCMSPeak,
+    GCMSResult,
+    HPLCPeak,
+    HPLCResult,
+    InstrumentConfig,
+    MeltingPointResult,
+    NMRPeak,
+    NMRResult,
     PHMeterResult,
     TitrationResult,
-    NMRPeak,
-    GCMSPeak,
-    HPLCPeak,
-    InstrumentConfig,
 )
-
 
 # Test data for common compounds
 ASPIRIN_SMILES = "CC(=O)Oc1ccccc1C(=O)O"
@@ -87,7 +87,9 @@ class TestNMRSpectrometer:
         peak_shifts = [p.chemical_shift_ppm for p in result.peaks]
 
         # Acetyl methyl singlet ~2.35 ppm
-        acetyl_peak = next((p for p in result.peaks if abs(p.chemical_shift_ppm - 2.35) < 0.15), None)
+        acetyl_peak = next(
+            (p for p in result.peaks if abs(p.chemical_shift_ppm - 2.35) < 0.15), None
+        )
         assert acetyl_peak is not None
         assert acetyl_peak.multiplicity in ("s", "singlet")
         assert acetyl_peak.integral_h == 3
@@ -115,7 +117,9 @@ class TestNMRSpectrometer:
         engine = AnalyticalEngine()
         result = engine.run_nmr_1h(ASPIRIN_SMILES, solvent="cdcl3")
 
-        solvent_peaks = [p for p in result.peaks if p.assignment and "cdcl3" in p.assignment.lower()]
+        solvent_peaks = [
+            p for p in result.peaks if p.assignment and "cdcl3" in p.assignment.lower()
+        ]
         assert len(solvent_peaks) >= 1
         assert abs(solvent_peaks[0].chemical_shift_ppm - 7.26) < 0.1
 
@@ -330,9 +334,11 @@ class TestTitration:
         """HCl + NaOH titration should have equivalence at 7.0 pH."""
         engine = AnalyticalEngine()
         result = engine.run_titration(
-            analyte="HCl", titrant="NaOH",
-            analyte_volume_ml=25.0, analyte_concentration_m=0.1,
-            titrant_concentration_m=0.1
+            analyte="HCl",
+            titrant="NaOH",
+            analyte_volume_ml=25.0,
+            analyte_concentration_m=0.1,
+            titrant_concentration_m=0.1,
         )
 
         assert isinstance(result, TitrationResult)
@@ -344,9 +350,11 @@ class TestTitration:
         """Acetic acid + NaOH titration should have equivalence > 7."""
         engine = AnalyticalEngine()
         result = engine.run_titration(
-            analyte="CH3COOH", titrant="NaOH",
-            analyte_volume_ml=25.0, analyte_concentration_m=0.1,
-            titrant_concentration_m=0.1
+            analyte="CH3COOH",
+            titrant="NaOH",
+            analyte_volume_ml=25.0,
+            analyte_concentration_m=0.1,
+            titrant_concentration_m=0.1,
         )
 
         assert result.equivalence_ph > 7.0
@@ -420,10 +428,10 @@ class TestInstrumentConfig:
         """Engine should load custom configuration from file."""
         config = {
             "nmr": {"spectrometer_frequency_mhz": 600.0, "default_scans_1h": 32},
-            "gc_ms": {"column": "DB-17MS"}
+            "gc_ms": {"column": "DB-17MS"},
         }
         config_path = tmp_path / "custom_config.json"
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             json.dump(config, f)
 
         engine = AnalyticalEngine(str(config_path))

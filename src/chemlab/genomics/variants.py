@@ -9,11 +9,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Literal
 
 
 class VariantType(str, Enum):
     """Variant type classifications."""
+
     SNP = "SNP"
     SNV = "SNV"
     INSERTION = "insertion"
@@ -31,6 +31,7 @@ class ConsequenceType(str, Enum):
 
     From most severe to least severe:
     """
+
     TRANSCRIPT_ABLATION = "transcript_ablation"
     SPLICE_DONOR_VARIANT = "splice_donor_variant"
     SPLICE_ACCEPTOR_VARIANT = "splice_acceptor_variant"
@@ -59,6 +60,7 @@ class ConsequenceType(str, Enum):
 
 class ClinicalSignificance(str, Enum):
     """Clinical significance classifications (ClinVar-style)."""
+
     PATHOGENIC = "pathogenic"
     LIKELY_PATHOGENIC = "likely_pathogenic"
     UNCERTAIN_SIGNIFICANCE = "uncertain_significance"
@@ -79,6 +81,7 @@ class Variant:
 
     Represents a genetic variant with genomic coordinates and alleles.
     """
+
     variant_id: str
     chromosome: str
     position_bp: int
@@ -127,6 +130,7 @@ class Variant:
 @dataclass(slots=True)
 class SNP(Variant):
     """Single Nucleotide Polymorphism variant."""
+
     variant_type: VariantType = VariantType.SNP
     rsid: str = ""
     sift_prediction: str = ""
@@ -142,6 +146,7 @@ class SNP(Variant):
 @dataclass(slots=True)
 class CNV(Variant):
     """Copy Number Variation variant."""
+
     variant_type: VariantType = VariantType.CNV
     cnv_id: str = ""
     start_bp: int = 0
@@ -160,6 +165,7 @@ class CNV(Variant):
 @dataclass(slots=True)
 class StructuralVariant(Variant):
     """Structural variant (inversion, translocation, etc.)."""
+
     variant_type: VariantType = VariantType.STRUCTURAL
     sv_type: str = ""  # INV, TRA, DUP, DEL, INS, BND
     mate_chromosome: str = ""
@@ -171,6 +177,7 @@ class StructuralVariant(Variant):
 @dataclass(slots=True)
 class ConservationScore:
     """Evolutionary conservation scores."""
+
     phastcons: float = 0.0
     phylop: float = 0.0
     primate_phastcons: float = 0.0
@@ -181,6 +188,7 @@ class ConservationScore:
 @dataclass(slots=True)
 class FunctionalScore:
     """Functional prediction scores."""
+
     sift_score: float | None = None
     sift_prediction: str = ""
     polyphen_score: float | None = None
@@ -203,6 +211,7 @@ class VariantConsequence:
 
     VEP-style consequence with detailed annotation.
     """
+
     variant_id: str
     transcript_id: str
     gene_id: str
@@ -222,7 +231,7 @@ class VariantConsequence:
 
     # Sequence changes
     cdna_change: str = ""  # e.g., c.123A>G
-    cds_change: str = ""   # e.g., c.123A>G
+    cds_change: str = ""  # e.g., c.123A>G
     protein_change: str = ""  # e.g., p.Arg41Gly
 
     # Codon details
@@ -305,8 +314,9 @@ class VariantConsequence:
             ConsequenceType.FEATURE_ELONGATION: 22,
             ConsequenceType.FEATURE_TRUNCATION: 23,
         }
-        return severity_order.get(self.most_severe_consequence, 99) < \
-               severity_order.get(other.most_severe_consequence, 99)
+        return severity_order.get(self.most_severe_consequence, 99) < severity_order.get(
+            other.most_severe_consequence, 99
+        )
 
 
 class VariantEffectPredictor:
@@ -376,12 +386,7 @@ class VariantEffectPredictor:
     def __init__(self) -> None:
         self._consequence_cache: dict[str, list[VariantConsequence]] = {}
 
-    def predict(
-        self,
-        variant: Variant,
-        assembly,
-        transcripts: list
-    ) -> list[VariantConsequence]:
+    def predict(self, variant: Variant, assembly, transcripts: list) -> list[VariantConsequence]:
         """
         Predict all consequences of a variant on given transcripts.
 
@@ -410,11 +415,7 @@ class VariantEffectPredictor:
         self._consequence_cache[cache_key] = consequences
         return consequences
 
-    def _predict_for_transcript(
-        self,
-        variant: Variant,
-        transcript
-    ) -> VariantConsequence | None:
+    def _predict_for_transcript(self, variant: Variant, transcript) -> VariantConsequence | None:
         """Predict consequence for a single transcript."""
         # Check if variant overlaps transcript
         if not self._overlaps_transcript(variant, transcript):
@@ -430,10 +431,7 @@ class VariantEffectPredictor:
         if not consequence_terms:
             return None
 
-        most_severe = min(
-            consequence_terms,
-            key=lambda c: self.CONSEQUENCE_RANK.get(c, 99)
-        )
+        most_severe = min(consequence_terms, key=lambda c: self.CONSEQUENCE_RANK.get(c, 99))
         impact = self.CONSEQUENCE_IMPACT.get(most_severe, "MODIFIER")
 
         # Get protein position if in CDS
@@ -470,12 +468,7 @@ class VariantEffectPredictor:
         """Get variant position within transcript (1-indexed)."""
         return transcript.genomic_to_transcript_coord(variant.position_bp)
 
-    def _get_protein_position(
-        self,
-        variant: Variant,
-        transcript,
-        tx_pos: int
-    ) -> int | None:
+    def _get_protein_position(self, variant: Variant, transcript, tx_pos: int) -> int | None:
         """Get protein position if variant is in CDS."""
         if not transcript.is_protein_coding:
             return None
@@ -496,24 +489,25 @@ class VariantEffectPredictor:
         return protein_pos
 
     def _determine_consequences(
-        self,
-        variant: Variant,
-        transcript,
-        tx_pos: int
+        self, variant: Variant, transcript, tx_pos: int
     ) -> list[ConsequenceType]:
         """Determine all consequence terms for variant on transcript."""
         terms = []
 
         # Check if in CDS
-        in_cds = transcript.is_protein_coding and \
-                 transcript.cds_start_bp <= variant.position_bp <= transcript.cds_end_bp
+        in_cds = (
+            transcript.is_protein_coding
+            and transcript.cds_start_bp <= variant.position_bp <= transcript.cds_end_bp
+        )
 
         # Check if in UTR
         in_five_prime_utr = False
         in_three_prime_utr = False
         if transcript.is_protein_coding:
-            if tx_pos < transcript.genomic_to_transcript_coord(transcript.cds_start_bp) or \
-               transcript.cds_start_bp == 0:
+            if (
+                tx_pos < transcript.genomic_to_transcript_coord(transcript.cds_start_bp)
+                or transcript.cds_start_bp == 0
+            ):
                 in_five_prime_utr = True
             elif tx_pos > transcript.genomic_to_transcript_coord(transcript.cds_end_bp):
                 in_three_prime_utr = True
@@ -583,7 +577,7 @@ class VariantEffectPredictor:
 
     def _distance_to_splice_donor(self, variant: Variant, transcript) -> int:
         """Distance to nearest splice donor site (5' end of intron)."""
-        min_dist = float('inf')
+        min_dist = float("inf")
         for exon in transcript.exons:
             if transcript.strand.value == "+":
                 donor = exon.end_bp
@@ -592,11 +586,11 @@ class VariantEffectPredictor:
             dist = variant.position_bp - donor
             if abs(dist) < abs(min_dist):
                 min_dist = dist
-        return min_dist if min_dist != float('inf') else 0
+        return min_dist if min_dist != float("inf") else 0
 
     def _distance_to_splice_acceptor(self, variant: Variant, transcript) -> int:
         """Distance to nearest splice acceptor site (3' end of intron)."""
-        min_dist = float('inf')
+        min_dist = float("inf")
         for exon in transcript.exons:
             if transcript.strand.value == "+":
                 acceptor = exon.start_bp
@@ -605,14 +599,16 @@ class VariantEffectPredictor:
             dist = variant.position_bp - acceptor
             if abs(dist) < abs(min_dist):
                 min_dist = dist
-        return min_dist if min_dist != float('inf') else 0
+        return min_dist if min_dist != float("inf") else 0
 
     def _is_start_lost(self, variant: Variant, transcript) -> bool:
         """Check if variant disrupts start codon."""
         if transcript.cds_start_bp == 0:
             return False
-        return variant.position_bp == transcript.cds_start_bp and \
-               variant.ref_allele != variant.alt_allele
+        return (
+            variant.position_bp == transcript.cds_start_bp
+            and variant.ref_allele != variant.alt_allele
+        )
 
     def _is_stop_gained(self, variant: Variant, transcript) -> bool:
         """Check if variant creates a stop codon."""
@@ -623,13 +619,18 @@ class VariantEffectPredictor:
         """Check if variant removes a stop codon."""
         if transcript.cds_end_bp == 0:
             return False
-        return variant.position_bp == transcript.cds_end_bp and \
-               variant.ref_allele != variant.alt_allele
+        return (
+            variant.position_bp == transcript.cds_end_bp
+            and variant.ref_allele != variant.alt_allele
+        )
 
     def _is_frameshift(self, variant: Variant, transcript) -> bool:
         """Check if variant causes frameshift."""
-        return variant.is_indel and len(variant.ref_allele) != len(variant.alt_allele) \
-               and abs(len(variant.alt_allele) - len(variant.ref_allele)) % 3 != 0
+        return (
+            variant.is_indel
+            and len(variant.ref_allele) != len(variant.alt_allele)
+            and abs(len(variant.alt_allele) - len(variant.ref_allele)) % 3 != 0
+        )
 
     def _is_missense(self, variant: Variant, transcript) -> bool:
         """Check if variant causes missense mutation."""
@@ -644,11 +645,7 @@ class VariantEffectPredictor:
         return variant.is_indel and abs(len(variant.alt_allele) - len(variant.ref_allele)) % 3 == 0
 
     def _add_sequence_changes(
-        self,
-        consequence: VariantConsequence,
-        variant: Variant,
-        transcript,
-        tx_pos: int
+        self, consequence: VariantConsequence, variant: Variant, transcript, tx_pos: int
     ) -> None:
         """Add sequence change annotations (cDNA, CDS, protein)."""
         # cDNA change

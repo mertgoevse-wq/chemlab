@@ -28,7 +28,9 @@ def faraday_moles_electrons(current_a: float, duration_s: float) -> float:
     return current_a * duration_s / F
 
 
-def faraday_mass_deposited(molar_mass_g_mol: float, current_a: float, duration_s: float, n_electrons: int) -> float:
+def faraday_mass_deposited(
+    molar_mass_g_mol: float, current_a: float, duration_s: float, n_electrons: int
+) -> float:
     """Mass deposited: m = M * I * t / (n * F)."""
     n_e = faraday_moles_electrons(current_a, duration_s)
     return molar_mass_g_mol * n_e / n_electrons

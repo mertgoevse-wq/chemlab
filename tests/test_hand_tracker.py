@@ -13,14 +13,14 @@ import numpy as np
 import pytest
 
 from chemlab.cv.hand_tracker import (
+    AirGuitarGesture,  # Backward compat alias
+    AirGuitarGestureEngine,  # Backward compat alias
+    AsyncHandTracker,
+    HandTrackingResult,  # Backward compat alias
     OptimizedGesture,
     OptimizedGestureEngine,
     OptimizedHandResult,
-    AsyncHandTracker,
     WebcamHandTracker,  # Backward compat alias
-    AirGuitarGesture,   # Backward compat alias
-    HandTrackingResult, # Backward compat alias
-    AirGuitarGestureEngine, # Backward compat alias
 )
 from chemlab_core.models import (
     Handedness,
@@ -28,10 +28,10 @@ from chemlab_core.models import (
     NormalizedLandmark,
 )
 
-
 # =============================================================================
 # FIXTURES
 # =============================================================================
+
 
 @pytest.fixture
 def mock_open_palm_landmarks() -> list[NormalizedLandmark]:
@@ -112,13 +112,14 @@ def mock_point_landmarks(
     lms[8] = NormalizedLandmark(x=0.5, y=0.3, z=0.0)  # Index tip far from wrist
     lms[12] = NormalizedLandmark(x=0.5, y=0.72, z=0.05)  # Middle curled
     lms[16] = NormalizedLandmark(x=0.55, y=0.72, z=0.05)  # Ring curled
-    lms[20] = NormalizedLandmark(x=0.6, y=0.72, z=0.05)   # Pinky curled
+    lms[20] = NormalizedLandmark(x=0.6, y=0.72, z=0.05)  # Pinky curled
     return lms
 
 
 # =============================================================================
 # GESTURE ENGINE TESTS
 # =============================================================================
+
 
 def test_gesture_engine_idle(mock_open_palm_landmarks: list[NormalizedLandmark]) -> None:
     engine = OptimizedGestureEngine()
@@ -297,6 +298,7 @@ def test_gesture_engine_fist_vs_grab(mock_grab_landmarks: list[NormalizedLandmar
 # TRACKER TESTS
 # =============================================================================
 
+
 def test_tracker_synthetic_mode(mock_pinch_landmarks: list[NormalizedLandmark]) -> None:
     tracker = AsyncHandTracker(use_synthetic=True)
     res = tracker.process_landmarks(
@@ -317,10 +319,10 @@ def test_tracker_one_euro_smoothing(mock_open_palm_landmarks: list[NormalizedLan
     # Add noise to landmarks
     noisy_lms = []
     for i, lm in enumerate(mock_open_palm_landmarks):
-        noise = 0.01 * np.sin(i * 10.0) if hasattr(np, 'sin') else 0.01 * math.sin(i * 10.0)
-        noisy_lms.append(NormalizedLandmark(
-            x=lm.x + noise, y=lm.y + noise, z=lm.z, visibility=lm.visibility
-        ))
+        noise = 0.01 * np.sin(i * 10.0) if hasattr(np, "sin") else 0.01 * math.sin(i * 10.0)
+        noisy_lms.append(
+            NormalizedLandmark(x=lm.x + noise, y=lm.y + noise, z=lm.z, visibility=lm.visibility)
+        )
 
     # Process multiple frames
     results = []
@@ -332,8 +334,16 @@ def test_tracker_one_euro_smoothing(mock_open_palm_landmarks: list[NormalizedLan
     raw_x = [lm.x for lm in noisy_lms[:4]]  # First few landmarks
     smoothed_x = [res.landmarks_smoothed[0].x for res in results]
 
-    raw_var = np.var(raw_x) if hasattr(np, 'var') else sum((x - np.mean(raw_x))**2 for x in raw_x) / len(raw_x)
-    smooth_var = np.var(smoothed_x) if hasattr(np, 'var') else sum((x - np.mean(smoothed_x))**2 for x in smoothed_x) / len(smoothed_x)
+    raw_var = (
+        np.var(raw_x)
+        if hasattr(np, "var")
+        else sum((x - np.mean(raw_x)) ** 2 for x in raw_x) / len(raw_x)
+    )
+    smooth_var = (
+        np.var(smoothed_x)
+        if hasattr(np, "var")
+        else sum((x - np.mean(smoothed_x)) ** 2 for x in smoothed_x) / len(smoothed_x)
+    )
 
     # Allow for initial frames where filter hasn't converged
     assert smooth_var <= raw_var * 1.5  # Should not amplify noise
@@ -354,6 +364,7 @@ def test_tracker_performance_stats() -> None:
 # =============================================================================
 # ASYNC TRACKER TESTS (Requires camera - skipped in CI without hardware)
 # =============================================================================
+
 
 @pytest.mark.skip(reason="Requires physical webcam hardware")
 def test_async_tracker_start_stop() -> None:
@@ -378,6 +389,7 @@ def test_async_tracker_receives_results() -> None:
 # =============================================================================
 # BACKWARD COMPATIBILITY TESTS
 # =============================================================================
+
 
 def test_backward_compat_aliases() -> None:
     """Ensure old class names still work."""
@@ -410,14 +422,15 @@ def test_backward_compat_engine() -> None:
     )
     result = engine.analyze(frame)
 
-    assert hasattr(result, 'gesture')
-    assert hasattr(result, 'pinch_distance')
-    assert hasattr(result, 'world_position_3d')
+    assert hasattr(result, "gesture")
+    assert hasattr(result, "pinch_distance")
+    assert hasattr(result, "world_position_3d")
 
 
 # =============================================================================
 # PERFORMANCE TARGET TESTS
 # =============================================================================
+
 
 def test_gesture_classification_speed() -> None:
     """Gesture classification should be < 1ms per frame."""
@@ -425,7 +438,7 @@ def test_gesture_classification_speed() -> None:
     lms = []
     lms.append(NormalizedLandmark(x=0.5, y=0.8, z=0.0))
     for i in range(1, 21):
-        lms.append(NormalizedLandmark(x=0.5, y=0.7 - i*0.01, z=0.0))
+        lms.append(NormalizedLandmark(x=0.5, y=0.7 - i * 0.01, z=0.0))
 
     frame = HandLandmarkFrame(
         frame_index=1,
@@ -446,7 +459,9 @@ def test_gesture_classification_speed() -> None:
     elapsed_ms = (time.perf_counter() - start) * 1000
 
     per_frame_ms = elapsed_ms / 100
-    assert per_frame_ms < 1.0, f"Gesture classification took {per_frame_ms:.3f}ms/frame, target < 1ms"
+    assert per_frame_ms < 1.0, (
+        f"Gesture classification took {per_frame_ms:.3f}ms/frame, target < 1ms"
+    )
 
 
 def test_one_euro_filter_speed() -> None:

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 from chemlab.simulation.electrochemistry.constants import F
 
-HALF_REACTION_REGISTRY: dict[str, "HalfReaction"] = {}
+HALF_REACTION_REGISTRY: dict[str, HalfReaction] = {}
 
 
 @dataclass(frozen=True)
@@ -36,7 +36,9 @@ def _hr(
     species_ox: str,
     species_red: str,
 ) -> HalfReaction:
-    hr = HalfReaction(id=id, equation=equation, E0_v=E0_v, n=n, species_ox=species_ox, species_red=species_red)
+    hr = HalfReaction(
+        id=id, equation=equation, E0_v=E0_v, n=n, species_ox=species_ox, species_red=species_red
+    )
     HALF_REACTION_REGISTRY[id] = hr
     return hr
 

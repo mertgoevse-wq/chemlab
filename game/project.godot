@@ -24,6 +24,8 @@ CompanionManager="*res://scripts/companions/companion_manager.gd"
 FactionSystem="*res://scripts/factions/faction_system.gd"
 CharacterCreator="*res://scripts/character/character_creator.gd"
 CinematicGrade="*res://ui/cinematic_grade.gd"
+OpenWorldManager="*res://scripts/world/open_world_manager.gd"
+LocalAIReactionAdvisor="*res://scripts/core/local_ai_reaction_advisor.gd"
 
 [display]
 

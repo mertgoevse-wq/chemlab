@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import math
 
-from chemlab.simulation.electrochemistry.constants import R, T0
+from chemlab.simulation.electrochemistry.constants import T0, R
 
 
 def michaelis_menten(
@@ -34,8 +34,8 @@ def hill_equation(
     """v = Vmax * [S]^n / (K0.5^n + [S]^n). n > 1 positive cooperativity."""
     if substrate_m < 0 or vmax_m_per_s < 0 or k05_m <= 0 or hill_coefficient <= 0:
         raise ValueError("substrate >= 0, vmax >= 0, k05 > 0, n > 0 required")
-    s_n = substrate_m ** hill_coefficient
-    k_n = k05_m ** hill_coefficient
+    s_n = substrate_m**hill_coefficient
+    k_n = k05_m**hill_coefficient
     return vmax_m_per_s * s_n / (k_n + s_n)
 
 
@@ -109,7 +109,7 @@ def substrate_inhibition(
     """Substrate inhibition: v = Vmax[S] / (Km + [S] + [S]²/Ksi)."""
     if substrate_m < 0 or vmax_m_per_s < 0 or km_m <= 0 or ksi_m <= 0:
         raise ValueError("substrate >= 0, vmax >= 0, km > 0, Ksi > 0 required")
-    return vmax_m_per_s * substrate_m / (km_m + substrate_m + substrate_m ** 2 / ksi_m)
+    return vmax_m_per_s * substrate_m / (km_m + substrate_m + substrate_m**2 / ksi_m)
 
 
 def arrhenius_rate(
@@ -121,8 +121,8 @@ def arrhenius_rate(
     """Arrhenius temperature correction: k(T) = k_ref * exp(-Ea/R * (1/T - 1/T_ref))."""
     if temperature_k <= 0 or reference_temperature_k <= 0 or activation_energy_kj_mol < 0:
         raise ValueError("temperatures > 0, Ea >= 0 required")
-    exponent = (
-        -(activation_energy_kj_mol * 1000.0 / R) * (1.0 / temperature_k - 1.0 / reference_temperature_k)
+    exponent = -(activation_energy_kj_mol * 1000.0 / R) * (
+        1.0 / temperature_k - 1.0 / reference_temperature_k
     )
     exponent = max(-700.0, min(700.0, exponent))  # clamp against overflow
     return rate_ref_m_per_s * math.exp(exponent)

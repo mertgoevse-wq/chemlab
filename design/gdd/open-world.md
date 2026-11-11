@@ -9,7 +9,7 @@
 ## 1. Vision & Conceptual Open-World Architecture
 
 ### 1.1 High-Level Fantasy
-In ChemLab: Origins, the open world is framed as an expansive, interconnected scientific ecosystem inspired by macro-progression models found in classic MMORPGs (World of Warcraft) and procedural exploration sandboxes (No Man's Sky). The player begins as an uncredentialed amateur working out of makeshift basement installations and progresses toward operating multi-million-credit industrial pilot plants, high-containment biosafety suites, and microgravity orbital laboratories.
+In ChemLab: Origins, the open world is framed as an expansive, interconnected scientific ecosystem inspired by macro-progression models found in classic MMORPGs and procedural exploration sandboxes (No Man's Sky). The player begins as an uncredentialed amateur working out of makeshift basement installations and progresses toward operating multi-million-credit industrial pilot plants, high-containment biosafety suites, and microgravity orbital laboratories.
 
 ### 1.2 Conceptual Structural Scope (No Locomotion Mechanics)
 This document specifies regional topology, facility node networks, quest gating, environmental scaling, and procedural lab structures. In accordance with ChemLab core tenets:

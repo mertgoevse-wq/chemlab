@@ -410,6 +410,410 @@
           ]
         }
       ]
+    },
+    {
+      "compound_id": "psilocybin",
+      "number": 18,
+      "name": "Psilocybin",
+      "chemical_name": "4-Phosphoryloxy-N,N-dimethyltryptamine",
+      "formula": "C12H17N2O4P",
+      "molecular_weight": 284.25,
+      "cas_number": "520-52-5",
+      "smiles": "CN(C)CCC1=CNC2=C1C(=CC=C2)OP(=O)(O)O",
+      "salt_form": "zwitterion",
+      "salt_mw": 284.25,
+      "mp_c": 222.0,
+      "tlc_rf": 0.15,
+      "class": "tryptamine",
+      "subclass": "4_phosphoryloxy",
+      "description": "Natural zwitterionic prodrug to psilocin found in Psilocybe mushrooms, prepared synthetically via regioselective phosphorylation of psilocin.",
+      "routes": [
+        {
+          "route_id": "psilocin_phosphorylation",
+          "name": "Phosphorylation of psilocin with dibenzyl phosphorochloridate followed by hydrogenolysis",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Regioselective Phosphorylation",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "psilocin", "name": "Psilocin (4-HO-DMT)", "amount": 5.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "dibenzyl_phosphorochloridate", "name": "Dibenzyl phosphorochloridate", "amount": 8.5, "unit": "g", "equivalents": 1.1},
+                {"reagent_id": "anhydrous_pyridine", "name": "Anhydrous pyridine", "amount": 25.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 0.0,
+                "duration_min": 120.0,
+                "solvent": "pyridine",
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Aqueous sodium bicarbonate extraction, partition into chloroform",
+                "isolation": "Chromatographic filtration on neutral alumina"
+              },
+              "expected_yield_pct": 74.0
+            },
+            {
+              "step_number": 2,
+              "name": "Catalytic Hydrogenolysis to Psilocybin",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "dibenzyl_psilocybin", "name": "Dibenzyl psilocybin ester", "amount": 6.5, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "palladium_on_carbon", "name": "10% Pd/C catalyst", "amount": 0.8, "unit": "g", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 25.0,
+                "duration_min": 180.0,
+                "solvent": "methanol",
+                "atmosphere": "hydrogen_1atm",
+                "fume_hood": true
+              },
+              "workup": {
+                "isolation": "Filter catalyst through Celite, concentrate under vacuum",
+                "recrystallization": "Boiling water / methanol zwitterion needles"
+              },
+              "expected_yield_pct": 86.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "5_meo_mipt",
+      "number": 40,
+      "name": "5-MeO-MiPT (Moxy)",
+      "chemical_name": "5-Methoxy-N-methyl-N-isopropyltryptamine",
+      "formula": "C15H22N2O",
+      "molecular_weight": 246.35,
+      "cas_number": "96096-55-8",
+      "smiles": "CC(C)N(C)CCC1=CNC2=C1C=C(C=C2)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 282.81,
+      "mp_c": 163.0,
+      "tlc_rf": 0.36,
+      "class": "tryptamine",
+      "subclass": "5_substituted",
+      "description": "Popular unsymmetrical dialkyltryptamine with potent tactile and empathogenic signature.",
+      "routes": [
+        {
+          "route_id": "speeter_anthony_moxy",
+          "name": "5-Methoxyindole + oxalyl chloride + methylisopropylamine -> LAH",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Glyoxylamide Formation",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "5_methoxyindole", "name": "5-Methoxyindole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 6.6, "unit": "mL", "equivalents": 1.1},
+                {"reagent_id": "methylisopropylamine", "name": "N-Methylisopropylamine", "amount": 14.5, "unit": "mL", "equivalents": 2.1}
+              ],
+              "conditions": {
+                "temperature_c": 0.0,
+                "duration_min": 60.0,
+                "solvent": "ether",
+                "fume_hood": true
+              },
+              "workup": {
+                "isolation": "Filter crystalline amide, wash with cold ether"
+              },
+              "expected_yield_pct": 85.0
+            },
+            {
+              "step_number": 2,
+              "name": "LAH Reduction to 5-MeO-MiPT Freebase",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "moxy_glyoxylamide", "name": "5-Methoxyindole-3-(N-methyl-N-isopropyl)glyoxylamide", "amount": 9.5, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.1, "unit": "g", "equivalents": 3.0}
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 240.0,
+                "solvent": "thf",
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser quench",
+                "salt_formation": "Dry HCl gas into ethyl acetate",
+                "recrystallization": "IPA / ether"
+              },
+              "expected_yield_pct": 79.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "dipt",
+      "number": 17,
+      "name": "DiPT",
+      "chemical_name": "N,N-Diisopropyltryptamine",
+      "formula": "C16H24N2",
+      "molecular_weight": 244.38,
+      "cas_number": "14780-24-6",
+      "smiles": "CC(C)N(CCC1=CNC2=CC=CC=C12)C(C)C",
+      "salt_form": "hydrochloride",
+      "salt_mw": 280.84,
+      "mp_c": 198.0,
+      "tlc_rf": 0.40,
+      "class": "tryptamine",
+      "subclass": "simple_tryptamines",
+      "description": "Renowned for its unique pharmacological selective distortion of auditory pitch perception.",
+      "routes": [
+        {
+          "route_id": "indole_oxalyl_diisopropylamine",
+          "name": "Speeter-Anthony synthesis from indole and diisopropylamine",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Indole-3-glyoxylamide Formation",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "indole", "name": "Indole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 8.0, "unit": "mL", "equivalents": 1.1},
+                {"reagent_id": "diisopropylamine", "name": "Diisopropylamine", "amount": 25.0, "unit": "mL", "equivalents": 2.1}
+              ],
+              "conditions": {
+                "temperature_c": 0.0,
+                "duration_min": 60.0,
+                "solvent": "ether",
+                "fume_hood": true
+              },
+              "workup": {
+                "isolation": "Collect yellow crystalline glyoxylamide"
+              },
+              "expected_yield_pct": 87.0
+            },
+            {
+              "step_number": 2,
+              "name": "Hydride Reduction to DiPT",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "dipt_glyoxylamide", "name": "Indole-3-(N,N-diisopropyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "LiAlH4", "amount": 4.5, "unit": "g", "equivalents": 3.1}
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 240.0,
+                "solvent": "thf",
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser quench",
+                "salt_formation": "HCl in ethyl acetate",
+                "recrystallization": "Acetone / ether"
+              },
+              "expected_yield_pct": 81.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "det",
+      "number": 16,
+      "name": "DET",
+      "chemical_name": "N,N-Diethyltryptamine",
+      "formula": "C14H20N2",
+      "molecular_weight": 216.32,
+      "cas_number": "61-50-7",
+      "smiles": "CCN(CC)CCC1=CNC2=CC=CC=C12",
+      "salt_form": "hydrochloride",
+      "salt_mw": 252.78,
+      "mp_c": 171.0,
+      "tlc_rf": 0.38,
+      "class": "tryptamine",
+      "subclass": "simple_tryptamines",
+      "description": "Short-acting dialkyltryptamine investigated clinically by Stephen Szara.",
+      "routes": [
+        {
+          "route_id": "speeter_anthony_det",
+          "name": "Indole + oxalyl chloride + diethylamine followed by LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Indole-3-(N,N-diethyl)glyoxylamide Formation",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "indole", "name": "Indole", "amount": 11.7, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 9.5, "unit": "mL", "equivalents": 1.1},
+                {"reagent_id": "diethylamine", "name": "Diethylamine", "amount": 22.0, "unit": "mL", "equivalents": 2.1}
+              ],
+              "conditions": {
+                "temperature_c": 0.0,
+                "duration_min": 45.0,
+                "solvent": "ether",
+                "fume_hood": true
+              },
+              "workup": {
+                "isolation": "Filter crystalline amide, wash with water and ether"
+              },
+              "expected_yield_pct": 89.0
+            },
+            {
+              "step_number": 2,
+              "name": "LAH Reduction to DET",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "det_glyoxylamide", "name": "Indole-3-(N,N-diethyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.6, "unit": "g", "equivalents": 3.0}
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 180.0,
+                "solvent": "thf",
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser quench",
+                "salt_formation": "Dry HCl gas in ether",
+                "recrystallization": "IPA / ethyl acetate"
+              },
+              "expected_yield_pct": 83.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "alpha_mt",
+      "number": 48,
+      "name": "aMT (alpha-MT)",
+      "chemical_name": "1-(1H-Indol-3-yl)propan-2-amine",
+      "formula": "C11H14N2",
+      "molecular_weight": 174.24,
+      "cas_number": "299-26-3",
+      "smiles": "CC(CC1=CNC2=CC=CC=C12)N",
+      "salt_form": "hydrochloride",
+      "salt_mw": 210.70,
+      "mp_c": 215.0,
+      "tlc_rf": 0.33,
+      "class": "tryptamine",
+      "subclass": "alpha_alkyl",
+      "description": "Alpha-methylated tryptamine analogue, developed originally as an antidepressant (Indopan).",
+      "routes": [
+        {
+          "route_id": "indole_carboxaldehyde_henry",
+          "name": "Indole-3-carboxaldehyde Henry condensation with nitroethane and reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Condensation to 1-(indol-3-yl)-2-nitropropene",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "indole_3_carboxaldehyde", "name": "Indole-3-carboxaldehyde", "amount": 14.5, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 15.0, "unit": "mL", "equivalents": 2.1},
+                {"reagent_id": "ammonium_acetate", "name": "Ammonium acetate", "amount": 3.5, "unit": "g", "equivalents": 0.45}
+              ],
+              "conditions": {
+                "temperature_c": 105.0,
+                "duration_min": 90.0,
+                "solvent": "acetic_acid",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Crash in ice water, collect brilliant orange crystalline nitropropene",
+                "recrystallization": "Boiling ethanol"
+              },
+              "expected_yield_pct": 84.0
+            },
+            {
+              "step_number": 2,
+              "name": "Hydride Reduction to alpha-MT",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "amt_nitropropene", "name": "1-(Indol-3-yl)-2-nitropropene", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 5.0, "unit": "g", "equivalents": 2.7}
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 240.0,
+                "solvent": "thf",
+                "atmosphere": "argon",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser quench",
+                "salt_formation": "Dry HCl in IPA",
+                "recrystallization": "Isopropanol / ether"
+              },
+              "expected_yield_pct": 77.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "harmine",
+      "number": 13,
+      "name": "Harmine",
+      "chemical_name": "7-Methoxy-1-methyl-9H-pyrido[3,4-b]indole",
+      "formula": "C13H12N2O",
+      "molecular_weight": 212.25,
+      "cas_number": "442-51-3",
+      "smiles": "CC1=NC=CC2=C1NC3=C2C=CC(=C3)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 248.71,
+      "mp_c": 261.0,
+      "tlc_rf": 0.47,
+      "class": "tryptamine",
+      "subclass": "beta_carbolines",
+      "description": "Archetypal reversible MAO-A inhibitor alkaloid from Banisteriopsis caapi and Peganum harmala, prepared via Pictet-Spengler condensation and dehydrogenation.",
+      "routes": [
+        {
+          "route_id": "pictet_spengler_harmine",
+          "name": "6-Methoxytryptamine Pictet-Spengler condensation with acetaldehyde followed by aromatization",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Pictet-Spengler Cyclization to Tetrahydroharmine",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "6_methoxytryptamine", "name": "6-Methoxytryptamine", "amount": 9.5, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "acetaldehyde", "name": "Acetaldehyde", "amount": 3.0, "unit": "mL", "equivalents": 1.1},
+                {"reagent_id": "dilute_sulfuric_acid", "name": "0.1N H2SO4 catalyst", "amount": 50.0, "unit": "mL", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 50.0,
+                "duration_min": 60.0,
+                "solvent": "aqueous_acid",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Basify with aqueous ammonia to pH 9.5, extract with chloroform",
+                "isolation": "Concentrate chloroform phase"
+              },
+              "expected_yield_pct": 82.0
+            },
+            {
+              "step_number": 2,
+              "name": "Catalytic Dehydrogenation to Harmine",
+              "type": "reaction",
+              "reagents": [
+                {"reagent_id": "tetrahydroharmine", "name": "Tetrahydroharmine", "amount": 7.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "palladium_on_carbon", "name": "10% Pd/C catalyst", "amount": 0.7, "unit": "g", "equivalents": 0.0}
+              ],
+              "conditions": {
+                "temperature_c": 180.0,
+                "duration_min": 180.0,
+                "solvent": "cumene",
+                "atmosphere": "air",
+                "fume_hood": true
+              },
+              "workup": {
+                "isolation": "Filter hot catalyst, cool to crystallize brilliant prismatic needles",
+                "recrystallization": "Ethanol"
+              },
+              "expected_yield_pct": 78.0
+            }
+          ]
+        }
+      ]
     }
   ]
 }

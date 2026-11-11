@@ -59,11 +59,14 @@ class TestIPCBridgeServer:
         """Test HANDSHAKE command returns server info and supported commands."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-handshake-1",
-            "command": "HANDSHAKE",
-            "payload": {"client": "test_client", "version": "1.0"}
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-handshake-1",
+                "command": "HANDSHAKE",
+                "payload": {"client": "test_client", "version": "1.0"},
+            },
+        )
 
         assert response["request_id"] == "test-handshake-1"
         assert response["status"] == "SUCCESS"
@@ -85,20 +88,20 @@ class TestIPCBridgeServer:
         """Test MIX_REAGENTS with HCl + NaOH neutralization."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-mix-1",
-            "command": "MIX_REAGENTS",
-            "payload": {
-                "vessel_id": "beaker_1",
-                "reagents": [
-                    {"id": "hcl", "moles": 0.05},
-                    {"id": "naoh", "moles": 0.05}
-                ],
-                "temperature_c": 22.0,
-                "addition_order_correct": True,
-                "in_fume_hood": True
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-mix-1",
+                "command": "MIX_REAGENTS",
+                "payload": {
+                    "vessel_id": "beaker_1",
+                    "reagents": [{"id": "hcl", "moles": 0.05}, {"id": "naoh", "moles": 0.05}],
+                    "temperature_c": 22.0,
+                    "addition_order_correct": True,
+                    "in_fume_hood": True,
+                },
+            },
+        )
 
         assert response["request_id"] == "test-mix-1"
         assert response["status"] == "SUCCESS"
@@ -115,24 +118,26 @@ class TestIPCBridgeServer:
         """Test MIX_REAGENTS with H2O2 + KI (elephant toothpaste)."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-mix-2",
-            "command": "MIX_REAGENTS",
-            "payload": {
-                "vessel_id": "beaker_2",
-                "reagents": [
-                    {"id": "h2o2", "moles": 0.1},
-                    {"id": "ki", "moles": 0.02}
-                ],
-                "temperature_c": 22.0,
-                "addition_order_correct": True,
-                "in_fume_hood": True
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-mix-2",
+                "command": "MIX_REAGENTS",
+                "payload": {
+                    "vessel_id": "beaker_2",
+                    "reagents": [{"id": "h2o2", "moles": 0.1}, {"id": "ki", "moles": 0.02}],
+                    "temperature_c": 22.0,
+                    "addition_order_correct": True,
+                    "in_fume_hood": True,
+                },
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         data = response["data"]
-        assert "Elephant Toothpaste" in data["reaction_name"] or "Catalytic" in data["reaction_name"]
+        assert (
+            "Elephant Toothpaste" in data["reaction_name"] or "Catalytic" in data["reaction_name"]
+        )
         assert data["is_exothermic"] is True
         assert data["bubbles_per_second"] > 0
         assert data["temperature_c"] > 22.0
@@ -141,18 +146,18 @@ class TestIPCBridgeServer:
         """Test MIX_REAGENTS with Ag+ + Cl- precipitation."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-mix-3",
-            "command": "MIX_REAGENTS",
-            "payload": {
-                "vessel_id": "beaker_3",
-                "reagents": [
-                    {"id": "Ag+", "moles": 0.01},
-                    {"id": "Cl-", "moles": 0.01}
-                ],
-                "temperature_c": 22.0
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-mix-3",
+                "command": "MIX_REAGENTS",
+                "payload": {
+                    "vessel_id": "beaker_3",
+                    "reagents": [{"id": "Ag+", "moles": 0.01}, {"id": "Cl-", "moles": 0.01}],
+                    "temperature_c": 22.0,
+                },
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         data = response["data"]
@@ -164,16 +169,19 @@ class TestIPCBridgeServer:
         """Test MIX_REAGENTS rejects invalid reagent format."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-mix-4",
-            "command": "MIX_REAGENTS",
-            "payload": {
-                "vessel_id": "beaker_4",
-                "reagents": [
-                    {"id": "hcl"}  # Missing 'moles'
-                ]
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-mix-4",
+                "command": "MIX_REAGENTS",
+                "payload": {
+                    "vessel_id": "beaker_4",
+                    "reagents": [
+                        {"id": "hcl"}  # Missing 'moles'
+                    ],
+                },
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         data = response["data"]
@@ -184,11 +192,9 @@ class TestIPCBridgeServer:
         """Test unknown command returns ERROR status."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-unknown-1",
-            "command": "UNKNOWN_COMMAND_XYZ",
-            "payload": {}
-        })
+        response = _send_request(
+            port, {"request_id": "test-unknown-1", "command": "UNKNOWN_COMMAND_XYZ", "payload": {}}
+        )
 
         assert response["request_id"] == "test-unknown-1"
         assert response["status"] == "ERROR"
@@ -200,11 +206,14 @@ class TestIPCBridgeServer:
 
         def client_thread(client_id: int, results: list):
             try:
-                response = _send_request(port, {
-                    "request_id": f"concurrent-{client_id}",
-                    "command": "HANDSHAKE",
-                    "payload": {"client": f"client_{client_id}"}
-                })
+                response = _send_request(
+                    port,
+                    {
+                        "request_id": f"concurrent-{client_id}",
+                        "command": "HANDSHAKE",
+                        "payload": {"client": f"client_{client_id}"},
+                    },
+                )
                 results.append(("success", response))
             except Exception as e:
                 results.append(("error", str(e)))
@@ -229,14 +238,14 @@ class TestIPCBridgeServer:
         """Test STEP_SIMULATION command returns valid vessel state."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-step-1",
-            "command": "STEP_SIMULATION",
-            "payload": {
-                "vessel_id": "vessel_1",
-                "dt": 0.1
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-step-1",
+                "command": "STEP_SIMULATION",
+                "payload": {"vessel_id": "vessel_1", "dt": 0.1},
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         data = response["data"]
@@ -252,15 +261,18 @@ class TestIPCBridgeServer:
         """Test NMR spectroscopy command."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-nmr-1",
-            "command": "NMR",
-            "payload": {
-                "smiles": "CC(=O)OC1=CC=CC=C1C(=O)O",  # Aspirin
-                "nucleus": "1H",
-                "field_mhz": 400.0
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-nmr-1",
+                "command": "NMR",
+                "payload": {
+                    "smiles": "CC(=O)OC1=CC=CC=C1C(=O)O",  # Aspirin
+                    "nucleus": "1H",
+                    "field_mhz": 400.0,
+                },
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         assert "data" in response
@@ -271,17 +283,20 @@ class TestIPCBridgeServer:
         """Test PCR simulation command."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-pcr-1",
-            "command": "PCR",
-            "payload": {
-                "template": "ATCGATCGATCG",
-                "forward_primer": "ATCGAT",
-                "reverse_primer": "GATCGA",
-                "cycles": 30,
-                "annealing_temp_c": 60.0
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-pcr-1",
+                "command": "PCR",
+                "payload": {
+                    "template": "ATCGATCGATCG",
+                    "forward_primer": "ATCGAT",
+                    "reverse_primer": "GATCGA",
+                    "cycles": 30,
+                    "annealing_temp_c": 60.0,
+                },
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         data = response["data"]
@@ -291,15 +306,14 @@ class TestIPCBridgeServer:
         """Test nuclear decay chain simulation."""
         server, port = ipc_server
 
-        response = _send_request(port, {
-            "request_id": "test-decay-1",
-            "command": "DECAY_CHAIN",
-            "payload": {
-                "isotope": "U-238",
-                "time_steps": 10,
-                "dt_s": 1.0
-            }
-        })
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-decay-1",
+                "command": "DECAY_CHAIN",
+                "payload": {"isotope": "U-238", "time_steps": 10, "dt_s": 1.0},
+            },
+        )
 
         assert response["status"] == "SUCCESS"
         data = response["data"]
@@ -347,11 +361,9 @@ class TestIPCServerLifecycle:
             assert server.is_running
 
             # Verify we can connect
-            response = _send_request(port, {
-                "request_id": "ctx-test",
-                "command": "HANDSHAKE",
-                "payload": {}
-            })
+            response = _send_request(
+                port, {"request_id": "ctx-test", "command": "HANDSHAKE", "payload": {}}
+            )
             assert response["status"] == "SUCCESS"
 
         # Server should be stopped after context exit

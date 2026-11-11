@@ -196,6 +196,19 @@
       "suit_requirements": ["cryogenic_gloves", "face_shield", "apron", "oxygen_monitor", "non_magnetic_tools"],
       "capacity": 2,
       "unlock_requirements": { "skills": { "physics": 50, "computational_chemistry": 30 }, "lab_access": ["cryogenic_vacuum"] }
+    },
+    {
+      "id": "apparatus_practicum",
+      "name": "Apparatus Suite & Metrology Practicum",
+      "archetype": "practicum",
+      "description": "Interactive certified metrology and apparatus training. Hands-on operation of Rotovap, Schlenk line, HPLC, Glovebox, Soxhlet, Centrifuge, and Analytical Balance.",
+      "unlock_level": 1,
+      "scene_path": "res://scenes/laboratories/apparatus_practicum.tscn",
+      "equipment": ["rotary_evaporator", "schlenk_line", "analytical_balance", "hplc_dad", "soxhlet_extractor", "uv_vis", "glove_box_inert", "high_speed_centrifuge"],
+      "hazards": ["vacuum_implosion", "pyrophoric_reagents", "high_pressure_solvents", "centrifugal_vibration"],
+      "suit_requirements": ["cotton_lab_coat", "safety_goggles", "nitrile_gloves", "lab_boots"],
+      "capacity": 8,
+      "unlock_requirements": {}
     }
   ]
 }

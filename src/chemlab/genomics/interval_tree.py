@@ -7,14 +7,15 @@ Used for finding genes, variants, and features in genomic regions.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Optional
 from bisect import bisect_left, bisect_right
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(slots=True)
 class Interval:
     """Genomic interval with associated data."""
+
     start: int
     end: int
     data: Any
@@ -109,9 +110,7 @@ class IntervalTree:
         return results
 
     def query_nearest(
-        self,
-        position: int,
-        max_distance: int | None = None
+        self, position: int, max_distance: int | None = None
     ) -> list[tuple[int, int, Any, int]]:
         """
         Find intervals nearest to a position.
@@ -170,21 +169,12 @@ class GenomicIntervalTree:
             self._trees[chromosome] = IntervalTree()
         return self._trees[chromosome]
 
-    def add_interval(
-        self,
-        chromosome: str,
-        start: int,
-        end: int,
-        data: Any
-    ) -> None:
+    def add_interval(self, chromosome: str, start: int, end: int, data: Any) -> None:
         """Add an interval to the chromosome-specific tree."""
         tree = self._get_tree(chromosome)
         tree.add(start, end, data)
 
-    def add_many(
-        self,
-        intervals: list[tuple[str, int, int, Any]]
-    ) -> None:
+    def add_many(self, intervals: list[tuple[str, int, int, Any]]) -> None:
         """Add multiple intervals efficiently."""
         # Group by chromosome
         by_chrom: dict[str, list[tuple[int, int, Any]]] = {}
@@ -196,12 +186,7 @@ class GenomicIntervalTree:
             tree = self._get_tree(chrom)
             tree.add_many(chrom_intervals)
 
-    def query(
-        self,
-        chromosome: str,
-        start: int,
-        end: int
-    ) -> list[tuple[int, int, Any]]:
+    def query(self, chromosome: str, start: int, end: int) -> list[tuple[int, int, Any]]:
         """
         Query intervals on a chromosome overlapping [start, end].
 
@@ -211,21 +196,14 @@ class GenomicIntervalTree:
             return []
         return self._trees[chromosome].query(start, end)
 
-    def query_point(
-        self,
-        chromosome: str,
-        position: int
-    ) -> list[tuple[int, int, Any]]:
+    def query_point(self, chromosome: str, position: int) -> list[tuple[int, int, Any]]:
         """Query intervals containing a single position on a chromosome."""
         if chromosome not in self._trees:
             return []
         return self._trees[chromosome].query_point(position)
 
     def query_nearest(
-        self,
-        chromosome: str,
-        position: int,
-        max_distance: int | None = None
+        self, chromosome: str, position: int, max_distance: int | None = None
     ) -> list[tuple[int, int, Any, int]]:
         """Find nearest intervals to a position on a chromosome."""
         if chromosome not in self._trees:
@@ -273,10 +251,7 @@ class GenomicIndex:
         return self._tracks.get(track_name)
 
     def query_all(
-        self,
-        chromosome: str,
-        start: int,
-        end: int
+        self, chromosome: str, start: int, end: int
     ) -> dict[str, list[tuple[int, int, Any]]]:
         """
         Query all tracks for a region.
@@ -291,9 +266,7 @@ class GenomicIndex:
         return results
 
     def query_point_all(
-        self,
-        chromosome: str,
-        position: int
+        self, chromosome: str, position: int
     ) -> dict[str, list[tuple[int, int, Any]]]:
         """Query all tracks at a single position."""
         results = {}

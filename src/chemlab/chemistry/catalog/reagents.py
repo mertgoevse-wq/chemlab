@@ -25,15 +25,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, StrEnum
-from typing import Annotated, Any
-from uuid import UUID, uuid4
-
-from chemlab.compat import UTC
-
 
 # =============================================================================
 # 1. Enumerations (consolidated from all three legacy modules)
 # =============================================================================
+
 
 class ReagentCategory(StrEnum):
     """High-level chemical classification of a substance."""
@@ -138,6 +134,7 @@ class GHSPictogram(StrEnum):
 # =============================================================================
 # 2. Data classes
 # =============================================================================
+
 
 @dataclass(frozen=True)
 class GHSHazard:
@@ -249,7 +246,7 @@ class ChemicalProfile:
             delta_t = temp_c - 20.0
             return max(0.01, self.vapor_pressure_kpa_20c * (2.0 ** (delta_t / 10.0)))
         log10_p_mmhg = a - (b / (temp_c + c))
-        p_mmhg = 10.0 ** log10_p_mmhg
+        p_mmhg = 10.0**log10_p_mmhg
         # 1 mmHg = 0.133322 kPa
         return max(0.01, p_mmhg * 0.133322)
 
@@ -370,7 +367,11 @@ _register(
                 5,
             ),
             _ghs(
-                "H272", "Kann Brand intensivieren; Oxidierendes Mittel.", "GHS03", SignalWord.DANGER, 1
+                "H272",
+                "Kann Brand intensivieren; Oxidierendes Mittel.",
+                "GHS03",
+                SignalWord.DANGER,
+                1,
             ),
         ),
         storage_group=StorageGroup.ACID_CABINET,
@@ -601,7 +602,11 @@ _register(
         particle_type=ParticleType.POWDER_CRYSTAL,
         ghs_hazards=(
             _ghs(
-                "H272", "Kann Brand intensivieren; Oxidierendes Mittel.", "GHS03", SignalWord.DANGER, 1
+                "H272",
+                "Kann Brand intensivieren; Oxidierendes Mittel.",
+                "GHS03",
+                SignalWord.DANGER,
+                1,
             ),
             _ghs("H400", "Sehr giftig für Wasserorganismen.", "GHS09", SignalWord.WARNING, 1),
         ),
@@ -669,7 +674,11 @@ _register(
         particle_type=ParticleType.LIQUID_DROPLET,
         ghs_hazards=(
             _ghs(
-                "H272", "Kann Brand intensivieren; Oxidierendes Mittel.", "GHS03", SignalWord.DANGER, 1
+                "H272",
+                "Kann Brand intensivieren; Oxidierendes Mittel.",
+                "GHS03",
+                SignalWord.DANGER,
+                1,
             ),
             _ghs(
                 "H314",
@@ -701,7 +710,11 @@ _register(
         particle_type=ParticleType.POWDER_CRYSTAL,
         ghs_hazards=(
             _ghs(
-                "H272", "Kann Brand intensivieren; Oxidierendes Mittel.", "GHS03", SignalWord.DANGER, 1
+                "H272",
+                "Kann Brand intensivieren; Oxidierendes Mittel.",
+                "GHS03",
+                SignalWord.DANGER,
+                1,
             ),
         ),
         storage_group=StorageGroup.OXIDIZER_STORAGE,
@@ -728,7 +741,9 @@ _register(
         default_color_rgba=_rgba(0.98, 0.99, 1.0, 1.0),
         particle_type=ParticleType.LIQUID_DROPLET,
         ghs_hazards=(
-            _ghs("H225", "Hocht entzündliche Flüssigkeit und Dämpfe.", "GHS02", SignalWord.DANGER, 2),
+            _ghs(
+                "H225", "Hocht entzündliche Flüssigkeit und Dämpfe.", "GHS02", SignalWord.DANGER, 2
+            ),
         ),
         storage_group=StorageGroup.FLAMMABLE_CABINET,
         common_uses="Lösungsmittel, Desinfektionsmittel, Extraktionsmittel",
@@ -752,7 +767,9 @@ _register(
         default_color_rgba=_rgba(0.98, 0.99, 1.0, 1.0),
         particle_type=ParticleType.LIQUID_DROPLET,
         ghs_hazards=(
-            _ghs("H225", "Hocht entzündliche Flüssigkeit und Dämpfe.", "GHS02", SignalWord.DANGER, 2),
+            _ghs(
+                "H225", "Hocht entzündliche Flüssigkeit und Dämpfe.", "GHS02", SignalWord.DANGER, 2
+            ),
             _ghs("H319", "Verursacht schwere Augenreizung.", "GHS07", SignalWord.WARNING, 2),
         ),
         storage_group=StorageGroup.FLAMMABLE_CABINET,
@@ -882,7 +899,11 @@ _register(
         particle_type=ParticleType.POWDER_CRYSTAL,
         ghs_hazards=(
             _ghs(
-                "H361d", "Vermutet, das Kind im Mutterleib zu schädigen.", "GHS08", SignalWord.DANGER, 2
+                "H361d",
+                "Vermutet, das Kind im Mutterleib zu schädigen.",
+                "GHS08",
+                SignalWord.DANGER,
+                2,
             ),
             _ghs(
                 "H410",
@@ -912,7 +933,11 @@ _register(
         particle_type=ParticleType.LIQUID_DROPLET,
         ghs_hazards=(
             _ghs(
-                "H272", "Kann Brand intensivieren; Oxidierendes Mittel.", "GHS03", SignalWord.DANGER, 1
+                "H272",
+                "Kann Brand intensivieren; Oxidierendes Mittel.",
+                "GHS03",
+                SignalWord.DANGER,
+                1,
             ),
         ),
         storage_group=StorageGroup.OXIDIZER_STORAGE,
@@ -1205,6 +1230,7 @@ REAGENT_REGISTRY: dict[str, Reagent] = dict(_REAGENTS)
 # 4. Lookup helpers
 # =============================================================================
 
+
 def get_reagent(reagent_id: str) -> Reagent:
     """Retrieve chemical reagent by identifier (case-insensitive, whitespace-tolerant)."""
     rid = reagent_id.lower().strip()
@@ -1350,7 +1376,9 @@ def _build_legacy_database() -> dict[str, ChemicalProfile]:
             is_base=is_base,
             acid_pka=reagent.pka,
             hazard_classes=hazard_classes,
-            signal_word=reagent.ghs_hazards[0].signal_word if reagent.ghs_hazards else SignalWord.NONE,
+            signal_word=reagent.ghs_hazards[0].signal_word
+            if reagent.ghs_hazards
+            else SignalWord.NONE,
             pictograms=pictograms,
             h_statements=list(reagent.hazard_statements),
             p_statements=[],
@@ -1378,10 +1406,16 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
     if not chem_a or not chem_b:
         raise ValueError(f"Unknown chemical ID: {chem_a_id if not chem_a else chem_b_id}")
 
-    direct_conflict = (chem_b_id in chem_a.incompatible_with) or (chem_a_id in chem_b.incompatible_with)
+    direct_conflict = (chem_b_id in chem_a.incompatible_with) or (
+        chem_a_id in chem_b.incompatible_with
+    )
 
-    has_oxidizer = (GHSClassLegacy.OXIDIZING in chem_a.hazard_classes) or (GHSClassLegacy.OXIDIZING in chem_b.hazard_classes)
-    has_flammable = (GHSClassLegacy.FLAMMABLE in chem_a.hazard_classes) or (GHSClassLegacy.FLAMMABLE in chem_b.hazard_classes)
+    has_oxidizer = (GHSClassLegacy.OXIDIZING in chem_a.hazard_classes) or (
+        GHSClassLegacy.OXIDIZING in chem_b.hazard_classes
+    )
+    has_flammable = (GHSClassLegacy.FLAMMABLE in chem_a.hazard_classes) or (
+        GHSClassLegacy.FLAMMABLE in chem_b.hazard_classes
+    )
     if has_oxidizer and has_flammable:
         return IncompatibilityResult(
             compatible=False,
@@ -1391,7 +1425,12 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
                 f"Severe fire and detonation danger: Oxidizer ({chem_a.name if GHSClassLegacy.OXIDIZING in chem_a.hazard_classes else chem_b.name}) "
                 f"violently reacts with flammable solvent ({chem_b.name if GHSClassLegacy.FLAMMABLE in chem_b.hazard_classes else chem_a.name})."
             ),
-            byproducts=["Thermal blast wave", "Carbon monoxide", "Dense smoke", "Flaming projectiles"]
+            byproducts=[
+                "Thermal blast wave",
+                "Carbon monoxide",
+                "Dense smoke",
+                "Flaming projectiles",
+            ],
         )
 
     if (chem_a.is_acid and chem_b.is_base) or (chem_a.is_base and chem_b.is_acid):
@@ -1401,7 +1440,7 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
                 risk_level="LOW",
                 reaction_type="CONTROLLED_NEUTRALIZATION",
                 hazard_description="Controlled stoichiometric neutralization. Moderate effervescence (CO2 gas) and mild temperature rise.",
-                byproducts=["CO2(g)", "H2O", "Salt precipitate"]
+                byproducts=["CO2(g)", "H2O", "Salt precipitate"],
             )
         return IncompatibilityResult(
             compatible=False,
@@ -1411,11 +1450,16 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
                 f"Dangerous rapid heat release and boiling: {chem_a.name} mixed with {chem_b.name}. "
                 "Can cause explosive steam eruption and corrosive aerosol splattering."
             ),
-            byproducts=["Superheated steam", "Corrosive caustic mist"]
+            byproducts=["Superheated steam", "Corrosive caustic mist"],
         )
 
-    if (chem_a_id == "potassium_permanganate" and chem_b_id in ["sulfuric_acid", "hydrochloric_acid"]) or \
-       (chem_b_id == "potassium_permanganate" and chem_a_id in ["sulfuric_acid", "hydrochloric_acid"]):
+    if (
+        chem_a_id == "potassium_permanganate"
+        and chem_b_id in ["sulfuric_acid", "hydrochloric_acid"]
+    ) or (
+        chem_b_id == "potassium_permanganate"
+        and chem_a_id in ["sulfuric_acid", "hydrochloric_acid"]
+    ):
         return IncompatibilityResult(
             compatible=False,
             risk_level="CRITICAL",
@@ -1424,18 +1468,27 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
                 "Mixing Potassium Permanganate with concentrated acid creates Manganese Heptoxide (Mn2O7), "
                 "an unstable explosive dark green oil that detonates spontaneously or emits toxic chlorine gas."
             ),
-            byproducts=["Mn2O7 (unstable explosive)", "Cl2 gas (with HCl)", "Toxic heavy metal mist"]
+            byproducts=[
+                "Mn2O7 (unstable explosive)",
+                "Cl2 gas (with HCl)",
+                "Toxic heavy metal mist",
+            ],
         )
 
     if chem_a.storage_group != chem_b.storage_group:
-        if (chem_a.storage_group == StorageGroup.FLAMMABLE_CABINET and chem_b.storage_group in [StorageGroup.ACID_CABINET, StorageGroup.OXIDIZER_STORAGE]) or \
-           (chem_b.storage_group == StorageGroup.FLAMMABLE_CABINET and chem_a.storage_group in [StorageGroup.ACID_CABINET, StorageGroup.OXIDIZER_STORAGE]):
+        if (
+            chem_a.storage_group == StorageGroup.FLAMMABLE_CABINET
+            and chem_b.storage_group in [StorageGroup.ACID_CABINET, StorageGroup.OXIDIZER_STORAGE]
+        ) or (
+            chem_b.storage_group == StorageGroup.FLAMMABLE_CABINET
+            and chem_a.storage_group in [StorageGroup.ACID_CABINET, StorageGroup.OXIDIZER_STORAGE]
+        ):
             return IncompatibilityResult(
                 compatible=False,
                 risk_level="MODERATE",
                 reaction_type="STORAGE_SEGREGATION_VIOLATION",
                 hazard_description=f"Storage violation: {chem_a.name} ({chem_a.storage_group.value}) must not be co-located with {chem_b.name} ({chem_b.storage_group.value}).",
-                byproducts=[]
+                byproducts=[],
             )
 
     if direct_conflict:
@@ -1444,7 +1497,7 @@ def check_chemical_compatibility(chem_a_id: str, chem_b_id: str) -> Incompatibil
             risk_level="SEVERE",
             reaction_type="INCOMPATIBLE_REAGENTS",
             hazard_description=f"Incompatible reagents: {chem_a.name} and {chem_b.name} react adversely.",
-            byproducts=[]
+            byproducts=[],
         )
 
     return IncompatibilityResult(compatible=True, risk_level="NONE")
@@ -1460,25 +1513,24 @@ def get_chemical_sds(chemical_id: str) -> dict[str, object]:
         "section_1_identification": {
             "product_name": chem.name,
             "chemical_formula": chem.formula,
-            "cas_number": chem.cas_number
+            "cas_number": chem.cas_number,
         },
         "section_2_hazard_identification": {
             "signal_word": chem.signal_word.value,
             "hazard_classes": [c.value for c in chem.hazard_classes],
             "pictograms": [p.value for p in chem.pictograms],
             "hazard_statements": chem.h_statements,
-            "precautionary_statements": chem.p_statements
+            "precautionary_statements": chem.p_statements,
         },
         "section_9_physical_chemical_properties": {
             "boiling_point_c": chem.boiling_point_c,
             "flash_point_c": chem.flash_point_c,
             "vapor_pressure_kpa_20c": chem.vapor_pressure_kpa_20c,
             "density_g_cm3": chem.density,
-            "is_volatile": chem.is_volatile
+            "is_volatile": chem.is_volatile,
         },
         "section_10_stability_reactivity": {
             "incompatibilities": chem.incompatible_with,
-            "storage_class": chem.storage_group.value
-        }
+            "storage_class": chem.storage_group.value,
+        },
     }
-

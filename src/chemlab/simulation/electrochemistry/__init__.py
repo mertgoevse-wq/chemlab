@@ -18,7 +18,6 @@ Modules:
 from chemlab.simulation.electrochemistry.constants import (  # noqa: F401
     AVOGADRO,
     ELECTRON_CHARGE_C,
-    F,
     M_ALUMINIUM,
     M_CHLORINE,
     M_COPPER,
@@ -28,8 +27,9 @@ from chemlab.simulation.electrochemistry.constants import (  # noqa: F401
     M_SODIUM,
     M_ZINC,
     NERNST_SLOPE_V_DECADE,
-    R,
     T0,
+    F,
+    R,
 )
 from chemlab.simulation.electrochemistry.electrolysis import (  # noqa: F401
     ElectrolysisCell,

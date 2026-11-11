@@ -10,10 +10,10 @@ re-exports from here for backwards compatibility.
 """
 
 from .oscillator import (  # noqa: F401
-    BriggsRauscherOscillator,
     COLOR_AMBER,
     COLOR_CLEAR,
     COLOR_DEEP_BLUE,
+    BriggsRauscherOscillator,
     lerp_color,
 )
 

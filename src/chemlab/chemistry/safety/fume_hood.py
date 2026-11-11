@@ -16,6 +16,7 @@ from dataclasses import dataclass
 @dataclass
 class FumeHoodModel:
     """Physical model of a laboratory fume hood."""
+
     width_m: float = 1.2
     height_m: float = 1.2
     depth_m: float = 0.8
@@ -23,7 +24,9 @@ class FumeHoodModel:
     target_face_velocity_ms: float = 0.5  # 100 fpm = 0.5 m/s
 
 
-def calculate_face_velocity(hood: FumeHoodModel, exhaust_flow_m3_s: float, sash_height_m: float) -> float:
+def calculate_face_velocity(
+    hood: FumeHoodModel, exhaust_flow_m3_s: float, sash_height_m: float
+) -> float:
     """Calculate face velocity v = Q / A."""
     raise NotImplementedError("Phase 4 implementation pending")
 

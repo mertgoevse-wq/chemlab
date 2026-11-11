@@ -16,8 +16,9 @@ from dataclasses import dataclass
 @dataclass
 class SemenovModel:
     """Semenov thermal explosion criterion parameters."""
+
     heat_generation_coeff: float  # W/K
-    heat_removal_coeff: float     # W/K
+    heat_removal_coeff: float  # W/K
     ambient_temp_k: float = 298.15
 
 
@@ -26,12 +27,16 @@ def calculate_adiabatic_runaway(model: SemenovModel, initial_temp_k: float) -> f
     raise NotImplementedError("Phase 4 implementation pending")
 
 
-def calculate_vapor_pressure_antoine(antoine_a: float, antoine_b: float, antoine_c: float, temp_c: float) -> float:
+def calculate_vapor_pressure_antoine(
+    antoine_a: float, antoine_b: float, antoine_c: float, temp_c: float
+) -> float:
     """Antoine equation: log10(P_mmHg) = A - B/(T+C). Returns kPa."""
     raise NotImplementedError("Phase 4 implementation pending")
 
 
-def calculate_stopper_pop_velocity(pressure_kpa: float, volume_l: float, stopper_mass_kg: float) -> float:
+def calculate_stopper_pop_velocity(
+    pressure_kpa: float, volume_l: float, stopper_mass_kg: float
+) -> float:
     """Stopper launch velocity v = sqrt(2 * ΔP * V / m)."""
     raise NotImplementedError("Phase 4 implementation pending")
 

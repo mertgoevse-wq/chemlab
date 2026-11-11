@@ -6,27 +6,28 @@ isotope production, fission yields, reactor simulation, and reprocessing.
 
 import math
 import random
+
 import pytest
 
 from chemlab.simulation.nuclear_engine import (
-    NuclearEngine,
-    DecayMode,
-    Isotope,
-    DecayChain,
-    ShieldingMaterial,
-    ReactorType,
-    ReactorState,
-    FuelAssembly,
-    ReprocessingStream,
-    NUCLEAR_ENGINE,
-    ELEMENT_SYMBOLS,
     ELEMENT_NAMES,
+    ELEMENT_SYMBOLS,
+    NUCLEAR_ENGINE,
+    DecayChain,
+    DecayMode,
+    FuelAssembly,
+    Isotope,
+    NuclearEngine,
+    ReactorState,
+    ReactorType,
+    ReprocessingStream,
+    ShieldingMaterial,
 )
-
 
 # ============================================================================
 # Isotope Catalog Tests (200+ isotopes)
 # ============================================================================
+
 
 def test_isotope_catalog_size():
     """Verify the isotope catalog contains a reasonable number of isotopes."""
@@ -155,6 +156,7 @@ def test_isotope_properties():
 # Decay Chain Tests
 # ============================================================================
 
+
 def test_u238_decay_chain():
     """Test U-238 decay chain completeness."""
     chain = NUCLEAR_ENGINE.decay_chains["U-238"]
@@ -212,6 +214,7 @@ def test_decay_chain_daughters():
 # ============================================================================
 # Decay Calculations Tests
 # ============================================================================
+
 
 def test_decay_constant():
     """Test decay constant calculation λ = ln(2) / T½."""
@@ -283,6 +286,7 @@ def test_stable_isotope_decay():
 # ============================================================================
 # Radiation Physics Tests
 # ============================================================================
+
 
 def test_alpha_range():
     """Test alpha particle range calculation."""
@@ -370,6 +374,7 @@ def test_shielding_thickness():
 # Reactor Physics Tests
 # ============================================================================
 
+
 def test_reactor_criticality_pwr():
     """Test PWR criticality calculation."""
     fuel = FuelAssembly(
@@ -434,10 +439,7 @@ def test_samarium_149_equilibrium():
 def test_fuel_burnup():
     """Test fuel burnup calculation."""
     result = NUCLEAR_ENGINE.fuel_burnup(
-        initial_enrichment=4.5,
-        power_mw=1000,
-        days=365,
-        mass_mtU=100
+        initial_enrichment=4.5, power_mw=1000, days=365, mass_mtU=100
     )
 
     assert result["burnup_gwd_mtU"] == pytest.approx(10.0, rel=0.1)
@@ -452,7 +454,7 @@ def test_fuel_burnup_high():
         initial_enrichment=4.5,
         power_mw=1000,
         days=1460,  # 4 years
-        mass_mtU=100
+        mass_mtU=100,
     )
 
     assert result["burnup_gwd_mtU"] == pytest.approx(40.0, rel=0.2)
@@ -464,6 +466,7 @@ def test_fuel_burnup_high():
 # ============================================================================
 # Reprocessing Tests
 # ============================================================================
+
 
 def test_reprocess_fuel():
     """Test PUREX reprocessing simulation."""
@@ -529,6 +532,7 @@ def test_reprocess_recovery_rates():
 # Detection & Measurement Tests
 # ============================================================================
 
+
 def test_geiger_muller_count_rate():
     """Test GM tube count rate calculation."""
     # 1 MBq source at 10 cm, 10 cm² detector, 1% efficiency
@@ -560,9 +564,7 @@ def test_gamma_spectrum_simulation():
     co60 = NUCLEAR_ENGINE.get_isotope(27, 60)
 
     spectrum = NUCLEAR_ENGINE.gamma_spectrum_simulation(
-        [(cs137, 1e6), (co60, 1e6)],
-        detector="HPGe",
-        live_time_s=3600
+        [(cs137, 1e6), (co60, 1e6)], detector="HPGe", live_time_s=3600
     )
 
     assert "peaks" in spectrum
@@ -589,6 +591,7 @@ def test_dosimeter_reading():
 # ============================================================================
 # Element Data Tests
 # ============================================================================
+
 
 def test_element_symbols():
     """Test element symbol lookup."""
@@ -618,6 +621,7 @@ def test_isotope_naming():
 # ============================================================================
 # Engine Interface Tests
 # ============================================================================
+
 
 def test_get_isotopes_by_element():
     """Test filtering isotopes by element."""
@@ -670,6 +674,7 @@ def test_global_engine_instance():
 # Integration Tests
 # ============================================================================
 
+
 def test_full_fuel_cycle():
     """Test complete fuel cycle simulation."""
     # Fresh fuel
@@ -715,8 +720,9 @@ def test_full_fuel_cycle():
     pu_stream = streams["plutonium_product"]
     hlw = streams["high_level_waste"]
 
-    total_out = (u_stream.mass_kg + pu_stream.mass_kg +
-                 hlw.mass_kg + streams["hull_end_fittings"].mass_kg)
+    total_out = (
+        u_stream.mass_kg + pu_stream.mass_kg + hlw.mass_kg + streams["hull_end_fittings"].mass_kg
+    )
 
     # Should be close to 500 kg (some losses)
     assert 450 < total_out < 550
@@ -730,7 +736,7 @@ def test_accident_scenario_dose():
 
     # Core inventory (simplified)
     cs137_inventory_bq = 1e18  # Bq
-    i131_inventory_bq = 5e17   # Bq
+    i131_inventory_bq = 5e17  # Bq
 
     # 1% release at 1 km
     release_fraction = 0.01
@@ -778,10 +784,11 @@ def test_shielding_design():
 # Edge Cases
 # ============================================================================
 
+
 def test_zero_half_life():
     """Test handling of stable isotopes."""
     c12 = NUCLEAR_ENGINE.get_isotope(6, 12)
-    assert NUCLEAR_ENGINE.half_life(c12) == float('inf')
+    assert NUCLEAR_ENGINE.half_life(c12) == float("inf")
     assert NUCLEAR_ENGINE.decay_constant(c12) == 0.0
 
 

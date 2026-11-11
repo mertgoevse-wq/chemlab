@@ -4,14 +4,11 @@
 
 from __future__ import annotations
 
-import math
 import json
+import math
 import socket
 import threading
-import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Any
-from queue import Queue, Empty
 from enum import Enum
 
 # =============================================================================
@@ -20,9 +17,11 @@ from enum import Enum
 
 R_GAS = 8.314462618  # J/(mol*K)
 
+
 @dataclass(frozen=True)
 class ThermodynamicState:
     """Standard thermodynamic properties at 298.15 K, 1 atm."""
+
     formula: str
     name: str
     delta_h_f_kj_mol: float
@@ -36,153 +35,457 @@ class ThermodynamicState:
     boiling_point_c: float = 100.0
     flash_point_c: float = -1.0
     is_volatile: bool = False
-    ghs_pictograms: List[str] = field(default_factory=list)
-    h_statements: List[str] = field(default_factory=list)
-    p_statements: List[str] = field(default_factory=list)
+    ghs_pictograms: list[str] = field(default_factory=list)
+    h_statements: list[str] = field(default_factory=list)
+    p_statements: list[str] = field(default_factory=list)
     cas_number: str = ""
 
+
 # Reference NIST/CRC database
-THERMO_DB: Dict[str, ThermodynamicState] = {
+THERMO_DB: dict[str, ThermodynamicState] = {
     # Water
     "H2O": ThermodynamicState("H2O", "Water (liquid)", -285.83, 69.91, 75.38, 18.015, 1.000),
     "H2O_gas": ThermodynamicState("H2O", "Water (steam)", -241.82, 188.83, 33.58, 18.015, 0.0006),
-
     # Strong acids
-    "HCl_aq": ThermodynamicState("HCl", "Hydrochloric Acid (aq)", -167.16, 56.5, 75.0, 36.461, 1.18,
-        is_acid=True, acid_pka=-7.0, boiling_point_c=110.0, is_volatile=True,
-        ghs_pictograms=["GHS05", "GHS07"], h_statements=["H314", "H335"],
-        p_statements=["P260", "P280", "P305+P351+P338"], cas_number="7647-01-0"),
-
-    "H2SO4_aq": ThermodynamicState("H2SO4", "Sulfuric Acid", -909.27, 20.1, 138.0, 98.079, 1.84,
-        is_acid=True, acid_pka=-3.0, boiling_point_c=337.0, is_volatile=False,
-        ghs_pictograms=["GHS05"], h_statements=["H314"],
-        p_statements=["P280", "P305+P351+P338"], cas_number="7664-93-9"),
-
-    "HNO3_aq": ThermodynamicState("HNO3", "Nitric Acid", -207.36, 146.4, 109.9, 63.013, 1.51,
-        is_acid=True, acid_pka=-1.4, boiling_point_c=121.0, is_volatile=True,
-        ghs_pictograms=["GHS03", "GHS05", "GHS07"], h_statements=["H272", "H314", "H331"],
-        p_statements=["P210", "P280", "P305+P351+P338"], cas_number="7697-37-2"),
-
+    "HCl_aq": ThermodynamicState(
+        "HCl",
+        "Hydrochloric Acid (aq)",
+        -167.16,
+        56.5,
+        75.0,
+        36.461,
+        1.18,
+        is_acid=True,
+        acid_pka=-7.0,
+        boiling_point_c=110.0,
+        is_volatile=True,
+        ghs_pictograms=["GHS05", "GHS07"],
+        h_statements=["H314", "H335"],
+        p_statements=["P260", "P280", "P305+P351+P338"],
+        cas_number="7647-01-0",
+    ),
+    "H2SO4_aq": ThermodynamicState(
+        "H2SO4",
+        "Sulfuric Acid",
+        -909.27,
+        20.1,
+        138.0,
+        98.079,
+        1.84,
+        is_acid=True,
+        acid_pka=-3.0,
+        boiling_point_c=337.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS05"],
+        h_statements=["H314"],
+        p_statements=["P280", "P305+P351+P338"],
+        cas_number="7664-93-9",
+    ),
+    "HNO3_aq": ThermodynamicState(
+        "HNO3",
+        "Nitric Acid",
+        -207.36,
+        146.4,
+        109.9,
+        63.013,
+        1.51,
+        is_acid=True,
+        acid_pka=-1.4,
+        boiling_point_c=121.0,
+        is_volatile=True,
+        ghs_pictograms=["GHS03", "GHS05", "GHS07"],
+        h_statements=["H272", "H314", "H331"],
+        p_statements=["P210", "P280", "P305+P351+P338"],
+        cas_number="7697-37-2",
+    ),
     # Strong bases
-    "NaOH_aq": ThermodynamicState("NaOH", "Sodium Hydroxide (aq)", -470.11, 48.1, 87.0, 39.997, 2.13,
-        is_base=True, acid_pka=15.7, boiling_point_c=1390.0, is_volatile=False,
-        ghs_pictograms=["GHS05"], h_statements=["H314"],
-        p_statements=["P280", "P305+P351+P338"], cas_number="1310-73-2"),
-
-    "KOH_aq": ThermodynamicState("KOH", "Potassium Hydroxide (aq)", -482.4, 78.9, 95.0, 56.106, 2.04,
-        is_base=True, acid_pka=15.7, boiling_point_c=1327.0, is_volatile=False,
-        ghs_pictograms=["GHS05"], h_statements=["H314"],
-        p_statements=["P280", "P305+P351+P338"], cas_number="1310-58-3"),
-
+    "NaOH_aq": ThermodynamicState(
+        "NaOH",
+        "Sodium Hydroxide (aq)",
+        -470.11,
+        48.1,
+        87.0,
+        39.997,
+        2.13,
+        is_base=True,
+        acid_pka=15.7,
+        boiling_point_c=1390.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS05"],
+        h_statements=["H314"],
+        p_statements=["P280", "P305+P351+P338"],
+        cas_number="1310-73-2",
+    ),
+    "KOH_aq": ThermodynamicState(
+        "KOH",
+        "Potassium Hydroxide (aq)",
+        -482.4,
+        78.9,
+        95.0,
+        56.106,
+        2.04,
+        is_base=True,
+        acid_pka=15.7,
+        boiling_point_c=1327.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS05"],
+        h_statements=["H314"],
+        p_statements=["P280", "P305+P351+P338"],
+        cas_number="1310-58-3",
+    ),
     # Weak acids
-    "CH3COOH_aq": ThermodynamicState("CH3COOH", "Acetic Acid", -484.5, 159.8, 124.3, 60.052, 1.05,
-        is_acid=True, acid_pka=4.76, boiling_point_c=118.0, is_volatile=True,
-        ghs_pictograms=["GHS02", "GHS05", "GHS07"], h_statements=["H226", "H314", "H332"],
-        p_statements=["P210", "P280", "P305+P351+P338"], cas_number="64-19-7"),
-
-    "C7H6O3": ThermodynamicState("C7H6O3", "Salicylic Acid", -589.9, 180.2, 159.0, 138.121, 1.44,
-        is_acid=True, acid_pka=2.97, boiling_point_c=211.0, is_volatile=False,
-        ghs_pictograms=["GHS07"], h_statements=["H315", "H319", "H335"],
-        p_statements=["P261", "P280", "P305+P351+P338"], cas_number="69-72-7"),
-
-    "C4H6O3": ThermodynamicState("C4H6O3", "Acetic Anhydride", -624.4, 269.0, 182.0, 102.089, 1.08,
-        acid_pka=15.0, boiling_point_c=140.0, is_volatile=True,
-        ghs_pictograms=["GHS02", "GHS05", "GHS07"], h_statements=["H226", "H314", "H332"],
-        p_statements=["P210", "P280", "P305+P351+P338"], cas_number="108-24-7"),
-
-    "C9H8O4": ThermodynamicState("C9H8O4", "Acetylsalicylic Acid (Aspirin)", -756.2, 208.5, 210.0, 180.158, 1.40,
-        is_acid=True, acid_pka=3.49, boiling_point_c=140.0, is_volatile=False,
-        ghs_pictograms=["GHS07"], h_statements=["H315", "H319"],
-        p_statements=["P280", "P305+P351+P338"], cas_number="50-78-2"),
-
-    "C6H7NO": ThermodynamicState("C6H7NO", "4-Aminophenol", -184.2, 155.0, 145.0, 109.126, 1.29,
-        is_base=True, acid_pka=10.3, boiling_point_c=284.0, is_volatile=False,
-        ghs_pictograms=["GHS07", "GHS09"], h_statements=["H301", "H315", "H319", "H410"],
-        p_statements=["P273", "P280", "P305+P351+P338"], cas_number="123-30-8"),
-
-    "C8H9NO2": ThermodynamicState("C8H9NO2", "Paracetamol", -445.8, 195.0, 192.0, 151.163, 1.26,
-        is_acid=True, acid_pka=9.5, boiling_point_c=420.0, is_volatile=False,
-        ghs_pictograms=["GHS07"], h_statements=["H301", "H315", "H319"],
-        p_statements=["P280", "P305+P351+P338"], cas_number="103-90-2"),
-
+    "CH3COOH_aq": ThermodynamicState(
+        "CH3COOH",
+        "Acetic Acid",
+        -484.5,
+        159.8,
+        124.3,
+        60.052,
+        1.05,
+        is_acid=True,
+        acid_pka=4.76,
+        boiling_point_c=118.0,
+        is_volatile=True,
+        ghs_pictograms=["GHS02", "GHS05", "GHS07"],
+        h_statements=["H226", "H314", "H332"],
+        p_statements=["P210", "P280", "P305+P351+P338"],
+        cas_number="64-19-7",
+    ),
+    "C7H6O3": ThermodynamicState(
+        "C7H6O3",
+        "Salicylic Acid",
+        -589.9,
+        180.2,
+        159.0,
+        138.121,
+        1.44,
+        is_acid=True,
+        acid_pka=2.97,
+        boiling_point_c=211.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS07"],
+        h_statements=["H315", "H319", "H335"],
+        p_statements=["P261", "P280", "P305+P351+P338"],
+        cas_number="69-72-7",
+    ),
+    "C4H6O3": ThermodynamicState(
+        "C4H6O3",
+        "Acetic Anhydride",
+        -624.4,
+        269.0,
+        182.0,
+        102.089,
+        1.08,
+        acid_pka=15.0,
+        boiling_point_c=140.0,
+        is_volatile=True,
+        ghs_pictograms=["GHS02", "GHS05", "GHS07"],
+        h_statements=["H226", "H314", "H332"],
+        p_statements=["P210", "P280", "P305+P351+P338"],
+        cas_number="108-24-7",
+    ),
+    "C9H8O4": ThermodynamicState(
+        "C9H8O4",
+        "Acetylsalicylic Acid (Aspirin)",
+        -756.2,
+        208.5,
+        210.0,
+        180.158,
+        1.40,
+        is_acid=True,
+        acid_pka=3.49,
+        boiling_point_c=140.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS07"],
+        h_statements=["H315", "H319"],
+        p_statements=["P280", "P305+P351+P338"],
+        cas_number="50-78-2",
+    ),
+    "C6H7NO": ThermodynamicState(
+        "C6H7NO",
+        "4-Aminophenol",
+        -184.2,
+        155.0,
+        145.0,
+        109.126,
+        1.29,
+        is_base=True,
+        acid_pka=10.3,
+        boiling_point_c=284.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS07", "GHS09"],
+        h_statements=["H301", "H315", "H319", "H410"],
+        p_statements=["P273", "P280", "P305+P351+P338"],
+        cas_number="123-30-8",
+    ),
+    "C8H9NO2": ThermodynamicState(
+        "C8H9NO2",
+        "Paracetamol",
+        -445.8,
+        195.0,
+        192.0,
+        151.163,
+        1.26,
+        is_acid=True,
+        acid_pka=9.5,
+        boiling_point_c=420.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS07"],
+        h_statements=["H301", "H315", "H319"],
+        p_statements=["P280", "P305+P351+P338"],
+        cas_number="103-90-2",
+    ),
     # Salts
-    "NaCl_aq": ThermodynamicState("NaCl", "Sodium Chloride (aq)", -407.27, 115.5, 85.0, 58.443, 2.16,
-        acid_pka=7.0, boiling_point_c=1465.0, is_volatile=False, cas_number="7647-14-5"),
-
-    "NaHCO3_aq": ThermodynamicState("NaHCO3", "Sodium Bicarbonate", -950.8, 101.7, 87.6, 84.007, 2.20,
-        is_base=True, acid_pka=10.3, boiling_point_c=851.0, is_volatile=False, cas_number="144-55-8"),
-
+    "NaCl_aq": ThermodynamicState(
+        "NaCl",
+        "Sodium Chloride (aq)",
+        -407.27,
+        115.5,
+        85.0,
+        58.443,
+        2.16,
+        acid_pka=7.0,
+        boiling_point_c=1465.0,
+        is_volatile=False,
+        cas_number="7647-14-5",
+    ),
+    "NaHCO3_aq": ThermodynamicState(
+        "NaHCO3",
+        "Sodium Bicarbonate",
+        -950.8,
+        101.7,
+        87.6,
+        84.007,
+        2.20,
+        is_base=True,
+        acid_pka=10.3,
+        boiling_point_c=851.0,
+        is_volatile=False,
+        cas_number="144-55-8",
+    ),
     # Peroxides
-    "H2O2_aq": ThermodynamicState("H2O2", "Hydrogen Peroxide", -191.17, 143.9, 89.1, 34.015, 1.45,
-        acid_pka=11.7, boiling_point_c=150.0, is_volatile=True,
-        ghs_pictograms=["GHS03", "GHS05", "GHS07"], h_statements=["H272", "H314", "H332"],
-        p_statements=["P210", "P280", "P305+P351+P338"], cas_number="7722-84-1"),
-
+    "H2O2_aq": ThermodynamicState(
+        "H2O2",
+        "Hydrogen Peroxide",
+        -191.17,
+        143.9,
+        89.1,
+        34.015,
+        1.45,
+        acid_pka=11.7,
+        boiling_point_c=150.0,
+        is_volatile=True,
+        ghs_pictograms=["GHS03", "GHS05", "GHS07"],
+        h_statements=["H272", "H314", "H332"],
+        p_statements=["P210", "P280", "P305+P351+P338"],
+        cas_number="7722-84-1",
+    ),
     # Iodides
-    "KI_aq": ThermodynamicState("KI", "Potassium Iodide", -327.9, 106.3, 51.3, 166.002, 3.12,
-        acid_pka=7.0, boiling_point_c=1330.0, is_volatile=False, cas_number="7681-11-0"),
-
+    "KI_aq": ThermodynamicState(
+        "KI",
+        "Potassium Iodide",
+        -327.9,
+        106.3,
+        51.3,
+        166.002,
+        3.12,
+        acid_pka=7.0,
+        boiling_point_c=1330.0,
+        is_volatile=False,
+        cas_number="7681-11-0",
+    ),
     # Gases
-    "O2_gas": ThermodynamicState("O2", "Oxygen Gas", 0.0, 205.15, 29.38, 31.999, 0.0014,
-        boiling_point_c=-183.0, is_volatile=True,
-        ghs_pictograms=["GHS03", "GHS04"], h_statements=["H270", "H280"],
-        p_statements=["P220", "P244"], cas_number="7782-44-7"),
-
-    "CO2_gas": ThermodynamicState("CO2", "Carbon Dioxide", -393.51, 213.74, 37.11, 44.01, 0.0019,
-        is_acid=True, acid_pka=6.35, boiling_point_c=-78.5, is_volatile=True,
-        ghs_pictograms=["GHS04"], h_statements=["H280"], p_statements=["P403"], cas_number="124-38-9"),
-
+    "O2_gas": ThermodynamicState(
+        "O2",
+        "Oxygen Gas",
+        0.0,
+        205.15,
+        29.38,
+        31.999,
+        0.0014,
+        boiling_point_c=-183.0,
+        is_volatile=True,
+        ghs_pictograms=["GHS03", "GHS04"],
+        h_statements=["H270", "H280"],
+        p_statements=["P220", "P244"],
+        cas_number="7782-44-7",
+    ),
+    "CO2_gas": ThermodynamicState(
+        "CO2",
+        "Carbon Dioxide",
+        -393.51,
+        213.74,
+        37.11,
+        44.01,
+        0.0019,
+        is_acid=True,
+        acid_pka=6.35,
+        boiling_point_c=-78.5,
+        is_volatile=True,
+        ghs_pictograms=["GHS04"],
+        h_statements=["H280"],
+        p_statements=["P403"],
+        cas_number="124-38-9",
+    ),
     # Organic solvents
-    "C2H5OH": ThermodynamicState("C2H5OH", "Ethanol", -277.69, 160.7, 112.3, 46.068, 0.789,
-        acid_pka=15.9, boiling_point_c=78.37, is_volatile=True,
-        ghs_pictograms=["GHS02", "GHS07"], h_statements=["H225", "H319"],
-        p_statements=["P210", "P280", "P305+P351+P338"], cas_number="64-17-5"),
-
-    "CH3OH": ThermodynamicState("CH3OH", "Methanol", -238.6, 126.8, 81.6, 32.042, 0.792,
-        acid_pka=15.5, boiling_point_c=64.7, is_volatile=True,
-        ghs_pictograms=["GHS02", "GHS06", "GHS08"], h_statements=["H225", "H301", "H311", "H331", "H370"],
-        p_statements=["P210", "P280", "P305+P351+P338", "P310"], cas_number="67-56-1"),
-
+    "C2H5OH": ThermodynamicState(
+        "C2H5OH",
+        "Ethanol",
+        -277.69,
+        160.7,
+        112.3,
+        46.068,
+        0.789,
+        acid_pka=15.9,
+        boiling_point_c=78.37,
+        is_volatile=True,
+        ghs_pictograms=["GHS02", "GHS07"],
+        h_statements=["H225", "H319"],
+        p_statements=["P210", "P280", "P305+P351+P338"],
+        cas_number="64-17-5",
+    ),
+    "CH3OH": ThermodynamicState(
+        "CH3OH",
+        "Methanol",
+        -238.6,
+        126.8,
+        81.6,
+        32.042,
+        0.792,
+        acid_pka=15.5,
+        boiling_point_c=64.7,
+        is_volatile=True,
+        ghs_pictograms=["GHS02", "GHS06", "GHS08"],
+        h_statements=["H225", "H301", "H311", "H331", "H370"],
+        p_statements=["P210", "P280", "P305+P351+P338", "P310"],
+        cas_number="67-56-1",
+    ),
     # Indicators
-    "phenolphthalein": ThermodynamicState("C20H14O4", "Phenolphthalein", -500.0, 200.0, 200.0, 318.32, 1.27,
-        is_acid=True, acid_pka=9.4, boiling_point_c=300.0, is_volatile=False, cas_number="77-09-8"),
-
+    "phenolphthalein": ThermodynamicState(
+        "C20H14O4",
+        "Phenolphthalein",
+        -500.0,
+        200.0,
+        200.0,
+        318.32,
+        1.27,
+        is_acid=True,
+        acid_pka=9.4,
+        boiling_point_c=300.0,
+        is_volatile=False,
+        cas_number="77-09-8",
+    ),
     # Briggs-Rauscher components
-    "MnSO4_aq": ThermodynamicState("MnSO4", "Manganese(II) Sulfate", -1065.0, 120.0, 100.0, 151.001, 3.25,
-        boiling_point_c=700.0, is_volatile=False,
-        ghs_pictograms=["GHS07", "GHS09"], h_statements=["H302", "H315", "H319", "H410"],
-        p_statements=["P273", "P280", "P305+P351+P338"], cas_number="7785-87-7"),
-
-    "KIO3_aq": ThermodynamicState("KIO3", "Potassium Iodate", -490.0, 150.0, 110.0, 214.001, 3.89,
-        boiling_point_c=560.0, is_volatile=False,
-        ghs_pictograms=["GHS03", "GHS07"], h_statements=["H272", "H302", "H315", "H319"],
-        p_statements=["P210", "P280", "P305+P351+P338"], cas_number="7758-05-6"),
-
-    "malonic_acid": ThermodynamicState("C3H4O4", "Malonic Acid", -850.0, 160.0, 130.0, 104.06, 1.62,
-        is_acid=True, acid_pka=2.83, boiling_point_c=200.0, is_volatile=False,
-        ghs_pictograms=["GHS07"], h_statements=["H315", "H319"],
-        p_statements=["P280", "P305+P351+P338"], cas_number="141-82-2"),
-
+    "MnSO4_aq": ThermodynamicState(
+        "MnSO4",
+        "Manganese(II) Sulfate",
+        -1065.0,
+        120.0,
+        100.0,
+        151.001,
+        3.25,
+        boiling_point_c=700.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS07", "GHS09"],
+        h_statements=["H302", "H315", "H319", "H410"],
+        p_statements=["P273", "P280", "P305+P351+P338"],
+        cas_number="7785-87-7",
+    ),
+    "KIO3_aq": ThermodynamicState(
+        "KIO3",
+        "Potassium Iodate",
+        -490.0,
+        150.0,
+        110.0,
+        214.001,
+        3.89,
+        boiling_point_c=560.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS03", "GHS07"],
+        h_statements=["H272", "H302", "H315", "H319"],
+        p_statements=["P210", "P280", "P305+P351+P338"],
+        cas_number="7758-05-6",
+    ),
+    "malonic_acid": ThermodynamicState(
+        "C3H4O4",
+        "Malonic Acid",
+        -850.0,
+        160.0,
+        130.0,
+        104.06,
+        1.62,
+        is_acid=True,
+        acid_pka=2.83,
+        boiling_point_c=200.0,
+        is_volatile=False,
+        ghs_pictograms=["GHS07"],
+        h_statements=["H315", "H319"],
+        p_statements=["P280", "P305+P351+P338"],
+        cas_number="141-82-2",
+    ),
     # Precipitation ions
     "Ag+": ThermodynamicState("Ag+", "Silver Ion", 105.0, 72.0, 50.0, 107.87, 1.0, is_ion=True),
     "Cl-": ThermodynamicState("Cl-", "Chloride Ion", -167.2, 56.5, 50.0, 35.45, 1.0, is_ion=True),
     "Ba2+": ThermodynamicState("Ba2+", "Barium Ion", -537.6, 8.0, 50.0, 137.33, 1.0, is_ion=True),
-    "SO4^2-": ThermodynamicState("SO4^2-", "Sulfate Ion", -909.3, 20.1, 50.0, 96.06, 1.0, is_ion=True),
+    "SO4^2-": ThermodynamicState(
+        "SO4^2-", "Sulfate Ion", -909.3, 20.1, 50.0, 96.06, 1.0, is_ion=True
+    ),
     "Pb2+": ThermodynamicState("Pb2+", "Lead(II) Ion", 0.0, 18.5, 50.0, 207.2, 1.0, is_ion=True),
     "Ca2+": ThermodynamicState("Ca2+", "Calcium Ion", -542.8, -53.1, 50.0, 40.08, 1.0, is_ion=True),
-    "CO3^2-": ThermodynamicState("CO3^2-", "Carbonate Ion", -677.1, -56.9, 50.0, 60.01, 1.0,
-        is_base=True, acid_pka=10.3, is_ion=True),
-    "Fe3+": ThermodynamicState("Fe3+", "Iron(III) Ion", -48.5, -137.7, 50.0, 55.85, 1.0,
-        is_acid=True, acid_pka=2.2, is_ion=True),
-    "OH-": ThermodynamicState("OH-", "Hydroxide Ion", -230.0, -10.9, 50.0, 17.01, 1.0,
-        is_base=True, acid_pka=15.7, is_ion=True),
-    "Cu2+": ThermodynamicState("Cu2+", "Copper(II) Ion", 64.8, -99.6, 50.0, 63.55, 1.0,
-        is_acid=True, acid_pka=7.0, is_ion=True),
+    "CO3^2-": ThermodynamicState(
+        "CO3^2-",
+        "Carbonate Ion",
+        -677.1,
+        -56.9,
+        50.0,
+        60.01,
+        1.0,
+        is_base=True,
+        acid_pka=10.3,
+        is_ion=True,
+    ),
+    "Fe3+": ThermodynamicState(
+        "Fe3+",
+        "Iron(III) Ion",
+        -48.5,
+        -137.7,
+        50.0,
+        55.85,
+        1.0,
+        is_acid=True,
+        acid_pka=2.2,
+        is_ion=True,
+    ),
+    "OH-": ThermodynamicState(
+        "OH-",
+        "Hydroxide Ion",
+        -230.0,
+        -10.9,
+        50.0,
+        17.01,
+        1.0,
+        is_base=True,
+        acid_pka=15.7,
+        is_ion=True,
+    ),
+    "Cu2+": ThermodynamicState(
+        "Cu2+",
+        "Copper(II) Ion",
+        64.8,
+        -99.6,
+        50.0,
+        63.55,
+        1.0,
+        is_acid=True,
+        acid_pka=7.0,
+        is_ion=True,
+    ),
 }
 
 # =============================================================================
 # CORE CALCULATION ENGINE
 # =============================================================================
+
 
 @dataclass
 class ReactionThermodynamicsResult:
@@ -196,8 +499,9 @@ class ReactionThermodynamicsResult:
     equilibrium_constant_k_eq: float
     rate_constant_k: float
     adiabatic_temperature_rise_c: float
-    half_life_seconds: Optional[float] = None
-    warnings: List[str] = field(default_factory=list)
+    half_life_seconds: float | None = None
+    warnings: list[str] = field(default_factory=list)
+
 
 class CanteraThermodynamicsEngine:
     """Pure Python thermodynamics and kinetics calculator."""
@@ -205,13 +509,13 @@ class CanteraThermodynamicsEngine:
     def __init__(self):
         self.db = THERMO_DB
 
-    def get_species(self, key: str) -> Optional[ThermodynamicState]:
+    def get_species(self, key: str) -> ThermodynamicState | None:
         return self.db.get(key)
 
     def calculate_reaction_thermodynamics(
         self,
-        reactants: Dict[str, float],
-        products: Dict[str, float],
+        reactants: dict[str, float],
+        products: dict[str, float],
         temperature_c: float = 25.0,
         activation_energy_kj_mol: float = 55.0,
         pre_exponential_factor_a: float = 1.0e11,
@@ -262,11 +566,17 @@ class CanteraThermodynamicsEngine:
         # Warnings
         warnings = []
         if delta_h_kj < -150.0:
-            warnings.append("Stark exotherme Reaktion — Explosions- und Siedeverzugsgefahr ohne Kühlbad.")
+            warnings.append(
+                "Stark exotherme Reaktion — Explosions- und Siedeverzugsgefahr ohne Kühlbad."
+            )
         if delta_t_ad > 120.0:
-            warnings.append("Adiabatischer Temperatursprung überschreitet Lösemittelsiedepunkt — Rückflusskühler erforderlich.")
+            warnings.append(
+                "Adiabatischer Temperatursprung überschreitet Lösemittelsiedepunkt — Rückflusskühler erforderlich."
+            )
         if delta_g_kj > 30.0:
-            warnings.append("Reaktion ist unter Normalbedingungen nicht spontan (ΔG° > 0) — Energiezufuhr oder Katalysator nötig.")
+            warnings.append(
+                "Reaktion ist unter Normalbedingungen nicht spontan (ΔG° > 0) — Energiezufuhr oder Katalysator nötig."
+            )
 
         # Equation string
         react_str = " + ".join(f"{int(c) if c == int(c) else c} {s}" for s, c in reactants.items())
@@ -285,7 +595,7 @@ class CanteraThermodynamicsEngine:
             rate_constant_k=rate_k,
             adiabatic_temperature_rise_c=round(delta_t_ad, 1),
             half_life_seconds=round(half_life, 3) if half_life else None,
-            warnings=warnings
+            warnings=warnings,
         )
 
     def calculate_titration_curve(
@@ -295,7 +605,7 @@ class CanteraThermodynamicsEngine:
         titrant_conc_m: float,
         pka: float = 4.76,
         points: int = 50,
-    ) -> List[Tuple[float, float]]:
+    ) -> list[tuple[float, float]]:
         v_equiv_ml = (analyte_conc_m * analyte_vol_ml) / titrant_conc_m
         curve = []
 
@@ -330,13 +640,13 @@ class CanteraThermodynamicsEngine:
 # SIDE REACTIONS & IMPURITY ENGINE
 # =============================================================================
 
-from enum import Enum
 
 class ImpuritySeverity(str, Enum):
     NEGLIGIBLE = "negligible"
     MINOR = "minor"
     MODERATE = "moderate"
     CRITICAL = "critical"
+
 
 @dataclass(frozen=True)
 class ImpurityProduct:
@@ -345,6 +655,7 @@ class ImpurityProduct:
     mass_fraction: float
     severity: ImpuritySeverity
     description: str
+
 
 @dataclass
 class ReactionConditionParameters:
@@ -355,6 +666,7 @@ class ReactionConditionParameters:
     stirring_rpm: int = 400
     reaction_time_s: float = 60.0
 
+
 @dataclass
 class SideReactionReport:
     is_successful: bool
@@ -363,9 +675,10 @@ class SideReactionReport:
     unreacted_fraction: float = 0.0
     violent_exotherm: bool = False
     aerosol_splashing: bool = False
-    impurities: List[ImpurityProduct] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    color_discoloration_rgb: Tuple[float, float, float] = (1.0, 1.0, 1.0)
+    impurities: list[ImpurityProduct] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    color_discoloration_rgb: tuple[float, float, float] = (1.0, 1.0, 1.0)
+
 
 class SideReactionAnalyzer:
     def evaluate_conditions(self, params: ReactionConditionParameters) -> SideReactionReport:
@@ -386,14 +699,14 @@ class SideReactionAnalyzer:
                         formula="H2SO4 (aq, aerosol)",
                         mass_fraction=0.15,
                         severity=ImpuritySeverity.CRITICAL,
-                        description="Siedeverzug durch extreme Hydratationswärme."
+                        description="Siedeverzug durch extreme Hydratationswärme.",
                     )
                 ],
                 warnings=[
                     "GEFAHR: Erst das Wasser, dann die Säure, sonst geschieht das Ungeheure!",
-                    "Plötzliches Sieden und Verspritzen von ätzender Säure durch unzureichende Wärmeabfuhr."
+                    "Plötzliches Sieden und Verspritzen von ätzender Säure durch unzureichende Wärmeabfuhr.",
                 ],
-                color_discoloration_rgb=(0.95, 0.95, 0.95)
+                color_discoloration_rgb=(0.95, 0.95, 0.95),
             )
 
         if "aspirin" in rid:
@@ -416,22 +729,34 @@ class SideReactionAnalyzer:
 
         if not p.has_catalyst:
             unreacted = 0.72
-            warnings.append("Fehlender Katalysator (H2SO4): Reaktion verlaeuft unvollstaendig. Hoher Eduktanteil.")
-            impurities.append(ImpurityProduct(
-                name="Unreagierte Salicylsäure", formula="C7H6O3", mass_fraction=unreacted,
-                severity=ImpuritySeverity.CRITICAL,
-                description="Ausgangsmaterial verunreinigt den Kristallkuchen."
-            ))
+            warnings.append(
+                "Fehlender Katalysator (H2SO4): Reaktion verlaeuft unvollstaendig. Hoher Eduktanteil."
+            )
+            impurities.append(
+                ImpurityProduct(
+                    name="Unreagierte Salicylsäure",
+                    formula="C7H6O3",
+                    mass_fraction=unreacted,
+                    severity=ImpuritySeverity.CRITICAL,
+                    description="Ausgangsmaterial verunreinigt den Kristallkuchen.",
+                )
+            )
 
         if delta_t > 20.0:
             tarring = min(1.0, 0.15 + (delta_t - 20.0) * 0.015)
             poly_fraction = min(0.45, 0.1 + (delta_t - 20.0) * 0.012)
-            impurities.append(ImpurityProduct(
-                name="Polysalicylate & Braune Verharzung (Teer)", formula="[-C7H4O2-]n",
-                mass_fraction=poly_fraction, severity=ImpuritySeverity.CRITICAL,
-                description="Selbstkondensation der Salicylsäure durch extreme Überhitzung."
-            ))
-            warnings.append(f"Kritische Überhitzung ({p.temperature_c:.1f} °C > 85 °C): Zersetzung und Verharzung.")
+            impurities.append(
+                ImpurityProduct(
+                    name="Polysalicylate & Braune Verharzung (Teer)",
+                    formula="[-C7H4O2-]n",
+                    mass_fraction=poly_fraction,
+                    severity=ImpuritySeverity.CRITICAL,
+                    description="Selbstkondensation der Salicylsäure durch extreme Überhitzung.",
+                )
+            )
+            warnings.append(
+                f"Kritische Überhitzung ({p.temperature_c:.1f} °C > 85 °C): Zersetzung und Verharzung."
+            )
             color = (0.45, 0.28, 0.12)
 
         loss = unreacted + tarring + sum(imp.mass_fraction for imp in impurities)
@@ -439,9 +764,13 @@ class SideReactionAnalyzer:
         is_success = purity >= 80.0 and tarring < 0.15 and unreacted < 0.2
 
         return SideReactionReport(
-            is_successful=is_success, purity_percentage=round(purity, 2),
-            tarring_extent=round(tarring, 3), unreacted_fraction=round(unreacted, 3),
-            impurities=impurities, warnings=warnings, color_discoloration_rgb=color
+            is_successful=is_success,
+            purity_percentage=round(purity, 2),
+            tarring_extent=round(tarring, 3),
+            unreacted_fraction=round(unreacted, 3),
+            impurities=impurities,
+            warnings=warnings,
+            color_discoloration_rgb=color,
         )
 
     def _evaluate_paracetamol(self, p: ReactionConditionParameters) -> SideReactionReport:
@@ -454,17 +783,27 @@ class SideReactionAnalyzer:
         if p.temperature_c > 80.0:
             ox_fraction = min(0.35, (p.temperature_c - 80.0) * 0.015)
             diacetyl_fraction = min(0.20, (p.temperature_c - 80.0) * 0.008)
-            impurities.append(ImpurityProduct(
-                name="N-Acetyl-p-benzochinonimin (NAPQI-Derivate)", formula="C8H7NO2",
-                mass_fraction=round(ox_fraction, 3), severity=ImpuritySeverity.CRITICAL,
-                description="Oxidatives Nebenprodukt. Stark verfärbend und zelltoxisch."
-            ))
-            impurities.append(ImpurityProduct(
-                name="N,O-Diacetyl-4-aminophenol", formula="C10H11NO3",
-                mass_fraction=round(diacetyl_fraction, 3), severity=ImpuritySeverity.MODERATE,
-                description="Zweifache Acylierung an Hydroxyl- und Aminogruppe."
-            ))
-            warnings.append("Thermische Überhitzung begünstigt chinoiden Abbau und doppelte Acylierung.")
+            impurities.append(
+                ImpurityProduct(
+                    name="N-Acetyl-p-benzochinonimin (NAPQI-Derivate)",
+                    formula="C8H7NO2",
+                    mass_fraction=round(ox_fraction, 3),
+                    severity=ImpuritySeverity.CRITICAL,
+                    description="Oxidatives Nebenprodukt. Stark verfärbend und zelltoxisch.",
+                )
+            )
+            impurities.append(
+                ImpurityProduct(
+                    name="N,O-Diacetyl-4-aminophenol",
+                    formula="C10H11NO3",
+                    mass_fraction=round(diacetyl_fraction, 3),
+                    severity=ImpuritySeverity.MODERATE,
+                    description="Zweifache Acylierung an Hydroxyl- und Aminogruppe.",
+                )
+            )
+            warnings.append(
+                "Thermische Überhitzung begünstigt chinoiden Abbau und doppelte Acylierung."
+            )
             color = (0.35, 0.18, 0.42)
             tarring = min(0.5, (p.temperature_c - 80.0) * 0.01)
 
@@ -473,9 +812,13 @@ class SideReactionAnalyzer:
         is_success = purity >= 80.0 and tarring < 0.1
 
         return SideReactionReport(
-            is_successful=is_success, purity_percentage=round(purity, 2),
-            tarring_extent=round(tarring, 3), unreacted_fraction=round(unreacted, 3),
-            impurities=impurities, warnings=warnings, color_discoloration_rgb=color
+            is_successful=is_success,
+            purity_percentage=round(purity, 2),
+            tarring_extent=round(tarring, 3),
+            unreacted_fraction=round(unreacted, 3),
+            impurities=impurities,
+            warnings=warnings,
+            color_discoloration_rgb=color,
         )
 
     def _evaluate_acetanilide(self, p: ReactionConditionParameters) -> SideReactionReport:
@@ -487,23 +830,35 @@ class SideReactionAnalyzer:
 
         if p.temperature_c < 45.0:
             unreacted = min(0.65, 0.20 + (45.0 - p.temperature_c) * 0.015)
-            warnings.append("Niedrige Temperatur: Unvollständige Acetylierung, unreagiertes Anilin verbleibt.")
-            impurities.append(ImpurityProduct(
-                name="Unreagiertes Anilin", formula="C6H7N", mass_fraction=round(unreacted, 3),
-                severity=ImpuritySeverity.MODERATE,
-                description="Flüssiges aromatisches Amin mindert Kristallinität."
-            ))
+            warnings.append(
+                "Niedrige Temperatur: Unvollständige Acetylierung, unreagiertes Anilin verbleibt."
+            )
+            impurities.append(
+                ImpurityProduct(
+                    name="Unreagiertes Anilin",
+                    formula="C6H7N",
+                    mass_fraction=round(unreacted, 3),
+                    severity=ImpuritySeverity.MODERATE,
+                    description="Flüssiges aromatisches Amin mindert Kristallinität.",
+                )
+            )
 
         if p.temperature_c > 105.0:
             ox_delta = p.temperature_c - 105.0
             tarring = min(0.60, 0.12 + ox_delta * 0.018)
             azo_fraction = min(0.30, 0.05 + ox_delta * 0.01)
-            impurities.append(ImpurityProduct(
-                name="Azobenzol & dunkelbraune Oxidationsharze", formula="C12H10N2",
-                mass_fraction=round(azo_fraction, 3), severity=ImpuritySeverity.CRITICAL,
-                description="Thermisch-oxidative Dimerisierung des Anilins."
-            ))
-            warnings.append(f"Thermische Überhitzung ({p.temperature_c:.1f}°C): Oxidation zu Azobenzol und Verharzung.")
+            impurities.append(
+                ImpurityProduct(
+                    name="Azobenzol & dunkelbraune Oxidationsharze",
+                    formula="C12H10N2",
+                    mass_fraction=round(azo_fraction, 3),
+                    severity=ImpuritySeverity.CRITICAL,
+                    description="Thermisch-oxidative Dimerisierung des Anilins.",
+                )
+            )
+            warnings.append(
+                f"Thermische Überhitzung ({p.temperature_c:.1f}°C): Oxidation zu Azobenzol und Verharzung."
+            )
             color = (0.42, 0.22, 0.08)
 
         loss = unreacted + tarring + sum(imp.mass_fraction for imp in impurities)
@@ -511,22 +866,31 @@ class SideReactionAnalyzer:
         is_success = purity >= 80.0 and tarring < 0.12 and unreacted < 0.25
 
         return SideReactionReport(
-            is_successful=is_success, purity_percentage=round(purity, 2),
-            tarring_extent=round(tarring, 3), unreacted_fraction=round(unreacted, 3),
-            impurities=impurities, warnings=warnings, color_discoloration_rgb=color
+            is_successful=is_success,
+            purity_percentage=round(purity, 2),
+            tarring_extent=round(tarring, 3),
+            unreacted_fraction=round(unreacted, 3),
+            impurities=impurities,
+            warnings=warnings,
+            color_discoloration_rgb=color,
         )
 
     def _evaluate_generic(self, p: ReactionConditionParameters) -> SideReactionReport:
         return SideReactionReport(
-            is_successful=True, purity_percentage=96.0,
-            tarring_extent=0.0, unreacted_fraction=0.04,
-            impurities=[], warnings=[], color_discoloration_rgb=(1.0, 1.0, 1.0)
+            is_successful=True,
+            purity_percentage=96.0,
+            tarring_extent=0.0,
+            unreacted_fraction=0.04,
+            impurities=[],
+            warnings=[],
+            color_discoloration_rgb=(1.0, 1.0, 1.0),
         )
 
 
 # =============================================================================
 # IPC SERVER (Python Core)
 # =============================================================================
+
 
 class IPCCommand(str, Enum):
     HANDSHAKE = "HANDSHAKE"
@@ -535,15 +899,16 @@ class IPCCommand(str, Enum):
     CALCULATE_THERMODYNAMICS = "CALCULATE_THERMODYNAMICS"
     RDKIT_CONFORMER = "RDKIT_CONFORMER"
 
+
 class IPCServer:
     def __init__(self, host: str = "127.0.0.1", port: int = 8765):
         self.host = host
         self.port = port
         self.engine = CanteraThermodynamicsEngine()
         self.side_analyzer = SideReactionAnalyzer()
-        self.vessels: Dict[str, Dict] = {}
+        self.vessels: dict[str, dict] = {}
         self.running = False
-        self.server_socket: Optional[socket.socket] = None
+        self.server_socket: socket.socket | None = None
 
     def start(self):
         self.running = True
@@ -573,7 +938,7 @@ class IPCServer:
         buffer = ""
         try:
             while self.running:
-                data = client.recv(4096).decode('utf-8')
+                data = client.recv(4096).decode("utf-8")
                 if not data:
                     break
                 buffer += data
@@ -588,7 +953,7 @@ class IPCServer:
                         request = json.loads(line)
                         response = self._process_request(request)
                         if response:
-                            client.send((json.dumps(response) + "\n").encode('utf-8'))
+                            client.send((json.dumps(response) + "\n").encode("utf-8"))
                     except json.JSONDecodeError:
                         pass
         except Exception as e:
@@ -596,14 +961,18 @@ class IPCServer:
         finally:
             client.close()
 
-    def _process_request(self, request: Dict) -> Optional[Dict]:
+    def _process_request(self, request: dict) -> dict | None:
         command = request.get("command", "")
         payload = request.get("payload", {})
         req_id = request.get("request_id", "")
 
         try:
             if command == IPCCommand.HANDSHAKE:
-                return {"request_id": req_id, "status": "SUCCESS", "data": {"server": "chemlab_core", "version": "1.0"}}
+                return {
+                    "request_id": req_id,
+                    "status": "SUCCESS",
+                    "data": {"server": "chemlab_core", "version": "1.0"},
+                }
 
             elif command == IPCCommand.MIX_REAGENTS:
                 return self._handle_mix_reagents(payload, req_id)
@@ -622,7 +991,7 @@ class IPCServer:
 
         return {"request_id": req_id, "status": "ERROR", "error": f"Unknown command: {command}"}
 
-    def _handle_mix_reagents(self, payload: Dict, req_id: str) -> Dict:
+    def _handle_mix_reagents(self, payload: dict, req_id: str) -> dict:
         vessel_id = payload.get("vessel_id", "")
         reagents = payload.get("reagents", [])
         catalyst = payload.get("catalyst", "")
@@ -633,15 +1002,24 @@ class IPCServer:
         # Create or get vessel
         if vessel_id not in self.vessels:
             self.vessels[vessel_id] = {
-                "volume_ml": 0.0, "temperature_c": temperature_c, "ph": 7.0,
-                "species_moles": {}, "species_concentrations": {},
-                "color_rgba": [1.0, 1.0, 1.0, 1.0], "turbidity": 0.0,
-                "bubble_rate": 0.0, "foam_volume_ml": 0.0,
-                "indicator_present": False, "indicator_type": "phenolphthalein",
-                "pressure_kpa": 101.325, "headspace_volume_ml": 50.0,
-                "is_stirring": False, "stir_rate_rpm": 0.0,
-                "last_reaction_type": "NONE", "reaction_progress": 0.0,
-                "safety_flags": []
+                "volume_ml": 0.0,
+                "temperature_c": temperature_c,
+                "ph": 7.0,
+                "species_moles": {},
+                "species_concentrations": {},
+                "color_rgba": [1.0, 1.0, 1.0, 1.0],
+                "turbidity": 0.0,
+                "bubble_rate": 0.0,
+                "foam_volume_ml": 0.0,
+                "indicator_present": False,
+                "indicator_type": "phenolphthalein",
+                "pressure_kpa": 101.325,
+                "headspace_volume_ml": 50.0,
+                "is_stirring": False,
+                "stir_rate_rpm": 0.0,
+                "last_reaction_type": "NONE",
+                "reaction_progress": 0.0,
+                "safety_flags": [],
             }
 
         vessel = self.vessels[vessel_id]
@@ -652,7 +1030,9 @@ class IPCServer:
             species_id = reagent.get("id", "")
             moles = reagent.get("moles", 0.0)
             if species_id in THERMO_DB and moles > 0:
-                vessel["species_moles"][species_id] = vessel["species_moles"].get(species_id, 0.0) + moles
+                vessel["species_moles"][species_id] = (
+                    vessel["species_moles"].get(species_id, 0.0) + moles
+                )
                 total_moles += moles
 
         # Estimate volume if not set
@@ -692,11 +1072,11 @@ class IPCServer:
                 "precipitate_name": reaction_result.get("precipitate_name", ""),
                 "bubbles_per_second": vessel["bubble_rate"],
                 "side_products": reaction_result.get("side_products", []),
-                "safety_warnings": vessel["safety_flags"]
-            }
+                "safety_warnings": vessel["safety_flags"],
+            },
         }
 
-    def _handle_step_simulation(self, payload: Dict, req_id: str) -> Dict:
+    def _handle_step_simulation(self, payload: dict, req_id: str) -> dict:
         vessel_id = payload.get("vessel_id", "")
         dt = payload.get("dt", 1.0)
 
@@ -748,17 +1128,15 @@ class IPCServer:
             "vessel": self._vessel_to_dict(vessel),
             "reactions": [reaction_result] if reaction_result.get("reaction_occurred") else [],
             "temperature_change": vessel["temperature_c"] - old_temp,
-            "ph_change": vessel["ph"] - old_ph
+            "ph_change": vessel["ph"] - old_ph,
         }
 
-    def _handle_thermodynamics(self, payload: Dict, req_id: str) -> Dict:
+    def _handle_thermodynamics(self, payload: dict, req_id: str) -> dict:
         reactants = payload.get("reactants", {})
         products = payload.get("products", {})
         temperature_c = payload.get("temperature_c", 25.0)
 
-        result = self.engine.calculate_reaction_thermodynamics(
-            reactants, products, temperature_c
-        )
+        result = self.engine.calculate_reaction_thermodynamics(reactants, products, temperature_c)
 
         return {
             "request_id": req_id,
@@ -775,11 +1153,11 @@ class IPCServer:
                 "rate_constant_k": result.rate_constant_k,
                 "adiabatic_temperature_rise_c": result.adiabatic_temperature_rise_c,
                 "half_life_seconds": result.half_life_seconds,
-                "warnings": result.warnings
-            }
+                "warnings": result.warnings,
+            },
         }
 
-    def _handle_rdkit(self, payload: Dict, req_id: str) -> Dict:
+    def _handle_rdkit(self, payload: dict, req_id: str) -> dict:
         # Placeholder for RDKit conformer generation
         smiles = payload.get("smiles", "")
         compound_name = payload.get("compound_name", "")
@@ -796,8 +1174,8 @@ class IPCServer:
                     "formula": sp.formula,
                     "molecular_weight_g_mol": sp.molecular_weight_g_mol,
                     "cas_number": sp.cas_number,
-                    "ghs_pictograms": sp.ghs_pictograms
-                }
+                    "ghs_pictograms": sp.ghs_pictograms,
+                },
             }
 
         return {"request_id": req_id, "status": "ERROR", "error": "Species not found"}
@@ -806,15 +1184,17 @@ class IPCServer:
     # HELPER METHODS (same as Godot bridge)
     # =============================================================================
 
-    def _recalculate_concentrations(self, vessel: Dict) -> None:
+    def _recalculate_concentrations(self, vessel: dict) -> None:
         vessel["species_concentrations"].clear()
         if vessel["volume_ml"] <= 0.0:
             return
         vol_l = vessel["volume_ml"] / 1000.0
         for species_id in vessel["species_moles"]:
-            vessel["species_concentrations"][species_id] = vessel["species_moles"][species_id] / vol_l
+            vessel["species_concentrations"][species_id] = (
+                vessel["species_moles"][species_id] / vol_l
+            )
 
-    def _calculate_ph(self, vessel: Dict) -> float:
+    def _calculate_ph(self, vessel: dict) -> float:
         strong_acid_moles = 0.0
         strong_base_moles = 0.0
         weak_acids = {}
@@ -875,7 +1255,7 @@ class IPCServer:
                     return max(0.0, min(14.0, 14.0 - poh))
         return 7.0
 
-    def _phenolphthalein_color(self, ph: float) -> List[float]:
+    def _phenolphthalein_color(self, ph: float) -> list[float]:
         if ph < 8.2:
             return [1.0, 1.0, 1.0, 0.0]
         elif ph < 9.0:
@@ -887,7 +1267,7 @@ class IPCServer:
         else:
             return [0.92, 0.08, 0.55, 1.0]
 
-    def _execute_reactions(self, vessel: Dict) -> Dict:
+    def _execute_reactions(self, vessel: dict) -> dict:
         result = {
             "reaction_occurred": False,
             "reaction_name": "",
@@ -900,7 +1280,7 @@ class IPCServer:
             "precipitate_formed": False,
             "precipitate_name": "",
             "side_products": [],
-            "safety_flags": []
+            "safety_flags": [],
         }
 
         has_strong_acid = False
@@ -934,7 +1314,9 @@ class IPCServer:
                 salt_id = "NaCl_aq"
                 if acid_id == "HCl_aq" and base_id == "NaOH_aq":
                     salt_id = "NaCl_aq"
-                vessel["species_moles"][salt_id] = vessel["species_moles"].get(salt_id, 0.0) + reacted
+                vessel["species_moles"][salt_id] = (
+                    vessel["species_moles"].get(salt_id, 0.0) + reacted
+                )
 
                 result["reaction_occurred"] = True
                 result["reaction_name"] = "acid_base_neutralization"
@@ -961,7 +1343,7 @@ class IPCServer:
         self._recalculate_concentrations(vessel)
         return result
 
-    def _execute_reaction_kinetics(self, vessel: Dict, dt: float) -> Dict:
+    def _execute_reaction_kinetics(self, vessel: dict, dt: float) -> dict:
         result = {"reaction_occurred": False}
 
         # H2O2 decomposition catalyzed by KI
@@ -982,8 +1364,12 @@ class IPCServer:
                 reacted_moles = min(reacted_moles, h2o2_moles)
 
                 vessel["species_moles"]["H2O2_aq"] -= reacted_moles
-                vessel["species_moles"]["H2O"] = vessel["species_moles"].get("H2O", 0.0) + reacted_moles
-                vessel["species_moles"]["O2_gas"] = vessel["species_moles"].get("O2_gas", 0.0) + reacted_moles / 2.0
+                vessel["species_moles"]["H2O"] = (
+                    vessel["species_moles"].get("H2O", 0.0) + reacted_moles
+                )
+                vessel["species_moles"]["O2_gas"] = (
+                    vessel["species_moles"].get("O2_gas", 0.0) + reacted_moles / 2.0
+                )
                 vessel["bubble_rate"] = min(1.0, vessel["bubble_rate"] + reacted_moles * 10.0)
 
                 heat_kj = reacted_moles * 98.0
@@ -1000,13 +1386,15 @@ class IPCServer:
         self._recalculate_concentrations(vessel)
         return result
 
-    def _has_oscillator_conditions(self, vessel: Dict) -> bool:
-        return (vessel["species_concentrations"].get("H2O2_aq", 0) > 0 and
-                vessel["species_concentrations"].get("KI_aq", 0) > 0 and
-                vessel["species_concentrations"].get("malonic_acid", 0) > 0 and
-                vessel["species_concentrations"].get("MnSO4_aq", 0) > 0)
+    def _has_oscillator_conditions(self, vessel: dict) -> bool:
+        return (
+            vessel["species_concentrations"].get("H2O2_aq", 0) > 0
+            and vessel["species_concentrations"].get("KI_aq", 0) > 0
+            and vessel["species_concentrations"].get("malonic_acid", 0) > 0
+            and vessel["species_concentrations"].get("MnSO4_aq", 0) > 0
+        )
 
-    def _step_oscillator(self, vessel: Dict, dt: float) -> Dict:
+    def _step_oscillator(self, vessel: dict, dt: float) -> dict:
         result = {"phase_changed": False}
         ma_conc = vessel["species_concentrations"].get("malonic_acid", 0)
         if ma_conc <= 0:
@@ -1036,7 +1424,7 @@ class IPCServer:
 
         return result
 
-    def _check_precipitation(self, vessel: Dict) -> Dict:
+    def _check_precipitation(self, vessel: dict) -> dict:
         result = {"precipitated": False}
 
         ksp_table = {
@@ -1073,11 +1461,24 @@ class IPCServer:
                     elif precip_name == "Cu(OH)2":
                         max_precip = min(conc_a, conc_b / 2.0) * (vessel["volume_ml"] / 1000.0)
 
-                    vessel["species_moles"][ion_a] = max(0, vessel["species_moles"].get(ion_a, 0) - max_precip)
-                    vessel["species_moles"][ion_b] = max(0, vessel["species_moles"].get(ion_b, 0) - max_precip * (2 if precip_name in ["PbCl2", "Cu(OH)2"] else (3 if precip_name == "Fe(OH)3" else 1)))
+                    vessel["species_moles"][ion_a] = max(
+                        0, vessel["species_moles"].get(ion_a, 0) - max_precip
+                    )
+                    vessel["species_moles"][ion_b] = max(
+                        0,
+                        vessel["species_moles"].get(ion_b, 0)
+                        - max_precip
+                        * (
+                            2
+                            if precip_name in ["PbCl2", "Cu(OH)2"]
+                            else (3 if precip_name == "Fe(OH)3" else 1)
+                        ),
+                    )
 
                     precip_id = precip_name.lower() + "_s"
-                    vessel["species_moles"][precip_id] = vessel["species_moles"].get(precip_id, 0.0) + max_precip
+                    vessel["species_moles"][precip_id] = (
+                        vessel["species_moles"].get(precip_id, 0.0) + max_precip
+                    )
                     vessel["turbidity"] = min(1.0, vessel["turbidity"] + 0.1)
 
                     result["precipitated"] = True
@@ -1091,7 +1492,7 @@ class IPCServer:
 
         return result
 
-    def _check_safety_limits(self, vessel: Dict) -> None:
+    def _check_safety_limits(self, vessel: dict) -> None:
         if vessel["temperature_c"] > 100.0:
             vessel["safety_flags"].append("BOILING")
         elif vessel["temperature_c"] > 80.0:
@@ -1113,7 +1514,7 @@ class IPCServer:
             if vessel["pressure_kpa"] > 200.0:
                 vessel["safety_flags"].append("OVERPRESSURE")
 
-    def _vessel_to_dict(self, vessel: Dict) -> Dict:
+    def _vessel_to_dict(self, vessel: dict) -> dict:
         return {
             "volume_ml": vessel["volume_ml"],
             "temperature_c": vessel["temperature_c"],
@@ -1132,7 +1533,7 @@ class IPCServer:
             "stir_rate_rpm": vessel["stir_rate_rpm"],
             "last_reaction_type": vessel.get("last_reaction_type", "NONE"),
             "reaction_progress": vessel.get("reaction_progress", 0.0),
-            "safety_flags": vessel["safety_flags"]
+            "safety_flags": vessel["safety_flags"],
         }
 
 

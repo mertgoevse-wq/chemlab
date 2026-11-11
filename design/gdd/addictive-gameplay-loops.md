@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary & Psychological Foundation
 
-This document translates the core engagement loops of **classic RPG skill progression**, **World of Warcraft**, **Factorio**, **Subnautica**, and **Stardew Valley** into ChemLab's chemistry simulation context. Every loop is grounded in behavioral psychology: **variable-ratio reinforcement**, **goal-gradient effect**, **completionist drive**, **mastery motivation**, and **social identity signaling**.
+This document translates the core engagement loops of **classic RPG skill progression**, **large-scale MMORPG questing**, **Factorio**, **Subnautica**, and **Stardew Valley** into ChemLab's chemistry simulation context. Every loop is grounded in behavioral psychology: **variable-ratio reinforcement**, **goal-gradient effect**, **completionist drive**, **mastery motivation**, and **social identity signaling**.
 
 **Design Principle:** The chemistry IS the gameplay. No abstracted "crafting bars" — every drop titrated, every crystal filtered, every spectrum interpreted is a real player action with verifiable scientific consequence.
 

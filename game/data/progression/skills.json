@@ -1432,6 +1432,42 @@
           "prism_finch"
         ]
       }
+    },
+    {
+      "id": "engineering",
+      "name": "Process Engineering",
+      "category": "Engineering",
+      "icon": "res://assets/ui/skills/engineering.png",
+      "description": "Chemical process engineering, pilot plant design, scale-up, reactor fluidics, and plant instrumentation.",
+      "milestones": {
+        "10": "Process flow diagrams, piping & instrumentation, fluid dynamics",
+        "20": "Continuous flow reactors, microfluidics, static mixers",
+        "30": "Heat exchanger networks, pinch analysis, thermal integration",
+        "40": "Distillation columns, sieve trays, packed beds, mass transfer",
+        "50": "Supercritical fluid extraction, high-pressure autoclaves",
+        "60": "Automated DCS process control, SCADA integration, safety valves",
+        "70": "Multiphase slurry reactors, fluidized bed catalytic units",
+        "80": "Pilot plant modular design, HAZOP analysis, SIL 3 trip loops",
+        "90": "Continuous crystallization, pneumatic solids transport",
+        "100": "Master Process Engineer — automated continuous giga-plant"
+      },
+      "unlocks": {
+        "reagents": [],
+        "equipment": [
+          "pilot_reactor",
+          "fluidized_bed",
+          "scada_terminal",
+          "autoclave_high_pressure"
+        ],
+        "labs": [
+          "pilot_plant",
+          "all"
+        ],
+        "companions": [
+          "scintilla",
+          "prism_finch"
+        ]
+      }
     }
   ],
   "intelligence_points": {

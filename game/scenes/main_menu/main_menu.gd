@@ -258,7 +258,7 @@ func _build_campaign_modal() -> void:
 		spec_hbox.add_child(btn)
 		_spec_buttons.append(btn)
 
-	# Name LineEdit
+	# Name LineEdit & Customization
 	var name_hbox = HBoxContainer.new()
 	name_hbox.add_theme_constant_override("separation", 16)
 	vbox.add_child(name_hbox)
@@ -268,9 +268,36 @@ func _build_campaign_modal() -> void:
 	name_hbox.add_child(name_lbl)
 
 	_name_line_edit = LineEdit.new()
-	_name_line_edit.text = "Dr. Valerius Athanor"
-	_name_line_edit.custom_minimum_size = Vector2(320, 36)
+	_name_line_edit.placeholder_text = "Dr. Aris Thorne (Default)"
+	_name_line_edit.text = ""
+	_name_line_edit.custom_minimum_size = Vector2(280, 36)
 	name_hbox.add_child(_name_line_edit)
+
+	var pronoun_lbl = Label.new()
+	pronoun_lbl.text = "Pronouns:"
+	name_hbox.add_child(pronoun_lbl)
+
+	var opt_pronouns = OptionButton.new()
+	opt_pronouns.name = "OptPronouns"
+	opt_pronouns.add_item("they/them")
+	opt_pronouns.add_item("she/her")
+	opt_pronouns.add_item("he/him")
+	opt_pronouns.custom_minimum_size = Vector2(110, 36)
+	name_hbox.add_child(opt_pronouns)
+
+	var coat_lbl = Label.new()
+	coat_lbl.text = "Lab Attire:"
+	name_hbox.add_child(coat_lbl)
+
+	var opt_coat = OptionButton.new()
+	opt_coat.name = "OptCoat"
+	opt_coat.add_item("Academic White", 0)
+	opt_coat.add_item("Alchemical Charcoal", 1)
+	opt_coat.add_item("Pilot Hazard Orange", 2)
+	opt_coat.add_item("Cleanroom Cyan", 3)
+	opt_coat.add_item("Viton Acid Yellow", 4)
+	opt_coat.custom_minimum_size = Vector2(170, 36)
+	name_hbox.add_child(opt_coat)
 
 	# Footer Actions
 	var action_hbox = HBoxContainer.new()
@@ -288,7 +315,12 @@ func _build_campaign_modal() -> void:
 	var launch_btn = Button.new()
 	launch_btn.text = "🚀 Initiate Research Journey"
 	launch_btn.custom_minimum_size = Vector2(240, 44)
-	launch_btn.pressed.connect(_launch_campaign_journey)
+	launch_btn.pressed.connect(func():
+		var chosen_pronoun = opt_pronouns.get_item_text(opt_pronouns.selected)
+		var coat_styles = ["academic_white", "alchemical_dark", "hazard_orange", "cleanroom_cyan", "viton_yellow"]
+		var chosen_coat = coat_styles[clampi(opt_coat.selected, 0, coat_styles.size() - 1)]
+		_launch_campaign_journey(chosen_pronoun, chosen_coat)
+	)
 	_hook_button_sounds(launch_btn)
 	action_hbox.add_child(launch_btn)
 
@@ -300,28 +332,41 @@ func _on_background_button_pressed(bg_id: String) -> void:
 							(btn.text.begins_with("Hobbyist") and bg_id == "hobbyist") or \
 							(btn.text.begins_with("Ex-Pharma") and bg_id == "ex_pharma")
 	_update_bg_description(bg_id)
+	if _name_line_edit:
+		var def_name = "Dr. Aris Thorne"
+		match bg_id:
+			"academic": def_name = "Dr. Aris Thorne"
+			"hobbyist": def_name = "Vesper Finch"
+			"ex_pharma": def_name = "Kaelen Voss"
+		_name_line_edit.placeholder_text = "%s (Default)" % def_name
 
 func _update_bg_description(bg_id: String) -> void:
 	match bg_id:
 		"academic":
-			_bg_desc_label.text = "Academic: Rigorous institutional training under Prof. Sterling. Starts at the State University Analytical Laboratory with analytical balances, high-precision titrators, and spectrophotometers."
+			_bg_desc_label.text = "Academic (Dr. Aris Thorne): Rigorous institutional training in Analytical Chemistry & NMR spectroscopy. Starting strengths in high-precision metrology, but open to mastering all 20 skill tracks."
 		"hobbyist":
-			_bg_desc_label.text = "Hobbyist: Unorthodox self-taught researcher. Operates from an improvised basement facility with customized borosilicate glassware, DIY magnetic stirrers, and esoteric alchemical texts."
+			_bg_desc_label.text = "Hobbyist (Vesper Finch): Unorthodox self-taught researcher in Organic Synthesis and Aetherkin biomimicry. Starting strengths in live reaction kinetics, but open to mastering all 20 skill tracks."
 		"ex_pharma":
-			_bg_desc_label.text = "Ex-Pharma: Senior industrial synthesis specialist. Escaped corporate surveillance with high-yield pilot notebooks (including multi-step PiHKAL/TiHKAL pathways). Starts in a Clandestine Pilot Facility."
+			_bg_desc_label.text = "Ex-Pharma (Kaelen Voss): Senior industrial engineer in Continuous Flow & Pilot Plant operations. Starting strengths in toxicology & process safety, but open to mastering all 20 skill tracks."
 
 func _on_spec_button_pressed(spec_id: String) -> void:
 	_selected_spec_id = spec_id
 	for btn in _spec_buttons:
 		btn.button_pressed = (btn.text.to_lower().contains(spec_id.replace("_", " ").substr(0, 5)))
 
-func _launch_campaign_journey() -> void:
+func _launch_campaign_journey(chosen_pronouns: String = "they/them", chosen_coat: String = "academic_white") -> void:
 	if _character_creator:
 		_character_creator.select_background(_selected_bg_id)
 		_character_creator.select_specialization(_selected_spec_id)
-		var char_name = _name_line_edit.text.strip_edges()
+		_character_creator.set_pronouns(chosen_pronouns)
+		_character_creator.set_lab_coat_style(chosen_coat)
+		var char_name = _name_line_edit.text.strip_edges() if _name_line_edit else ""
 		if char_name == "":
-			char_name = "Dr. Valerius Athanor"
+			match _selected_bg_id:
+				"academic": char_name = "Dr. Aris Thorne"
+				"hobbyist": char_name = "Vesper Finch"
+				"ex_pharma": char_name = "Kaelen Voss"
+				_: char_name = "Dr. Aris Thorne"
 		_character_creator.set_character_name(char_name)
 
 		var res = _character_creator.create_character()
@@ -421,6 +466,102 @@ func _setup_settings_modal() -> void:
 	if _btn_settings_close:
 		_btn_settings_close.pressed.connect(func(): _settings_modal.visible = false)
 		_hook_button_sounds(_btn_settings_close)
+
+	# Setup Local AI & Free Reaction Model Controls
+	var grid = _settings_modal.get_node_or_null("MarginContainer/VBox/SettingsGrid")
+	if grid:
+		_setup_ai_advisor_settings(grid)
+
+func _setup_ai_advisor_settings(grid: GridContainer) -> void:
+	var advisor = get_node_or_null("/root/LocalAIReactionAdvisor")
+
+	# Row 1: AI Provider selection
+	var lbl_provider = Label.new()
+	lbl_provider.text = "AI Reaction Advisor:"
+	grid.add_child(lbl_provider)
+
+	var opt_provider = OptionButton.new()
+	opt_provider.custom_minimum_size = Vector2(280, 36)
+	opt_provider.add_item("Omniroute Local Free Router (:20128)", 0)
+	opt_provider.add_item("Ollama Local Instance (:11434)", 1)
+	opt_provider.add_item("LM Studio / OpenAI-Compatible (:1234)", 2)
+	opt_provider.add_item("Custom Model Endpoint", 3)
+	opt_provider.add_item("Offline Deterministic Engine (100% Offline)", 4)
+	opt_provider.select(0)
+	grid.add_child(opt_provider)
+
+	# Row 2: AI Endpoint URL
+	var lbl_url = Label.new()
+	lbl_url.text = "Endpoint URL:"
+	grid.add_child(lbl_url)
+
+	var edit_url = LineEdit.new()
+	edit_url.text = "http://127.0.0.1:20128/v1/chat/completions"
+	edit_url.custom_minimum_size = Vector2(280, 34)
+	grid.add_child(edit_url)
+
+	# Row 3: Model & Ping test
+	var lbl_model = Label.new()
+	lbl_model.text = "Model & Ping Test:"
+	grid.add_child(lbl_model)
+
+	var model_hbox = HBoxContainer.new()
+	model_hbox.add_theme_constant_override("separation", 8)
+	grid.add_child(model_hbox)
+
+	var edit_model = LineEdit.new()
+	edit_model.text = "kc/kilo-auto/free"
+	edit_model.custom_minimum_size = Vector2(140, 34)
+	model_hbox.add_child(edit_model)
+
+	var btn_ping = Button.new()
+	btn_ping.text = "Test Ping"
+	btn_ping.custom_minimum_size = Vector2(85, 34)
+	_hook_button_sounds(btn_ping)
+	model_hbox.add_child(btn_ping)
+
+	var lbl_status = Label.new()
+	lbl_status.text = "⚪ Fallback Ready"
+	model_hbox.add_child(lbl_status)
+
+	# Hook events
+	opt_provider.item_selected.connect(func(idx: int):
+		match idx:
+			0:
+				edit_url.text = "http://127.0.0.1:20128/v1/chat/completions"
+				edit_model.text = "kc/kilo-auto/free"
+				if advisor: advisor.set_provider("omniroute", edit_url.text, edit_model.text)
+			1:
+				edit_url.text = "http://127.0.0.1:11434/api/generate"
+				edit_model.text = "llama3.2"
+				if advisor: advisor.set_provider("ollama", edit_url.text, edit_model.text)
+			2:
+				edit_url.text = "http://127.0.0.1:1234/v1/chat/completions"
+				edit_model.text = "local-model"
+				if advisor: advisor.set_provider("lm_studio", edit_url.text, edit_model.text)
+			3:
+				if advisor: advisor.set_provider("custom", edit_url.text, edit_model.text)
+			4:
+				if advisor: advisor.set_provider("offline")
+				lbl_status.text = "⚪ Offline Engine"
+	)
+
+	btn_ping.pressed.connect(func():
+		lbl_status.text = "⏳ Testing..."
+		if advisor:
+			advisor.probe_endpoint(edit_url.text)
+		else:
+			lbl_status.text = "⚪ Heuristic Ready"
+	)
+
+	if advisor and advisor.has_signal("connection_status_changed"):
+		advisor.connection_status_changed.connect(func(is_conn: bool, endpoint: String):
+			if is_conn:
+				var lat = advisor.get_last_latency_ms()
+				lbl_status.text = "🟢 Active (%.0fms)" % lat
+			else:
+				lbl_status.text = "⚪ Offline Heuristics"
+		)
 
 func _on_input_mode_selected(index: int) -> void:
 	var input_mgr = get_node_or_null("/root/InputManager")

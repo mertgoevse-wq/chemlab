@@ -7,12 +7,13 @@ and other repetitive genomic sequences.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 
 class RepeatClass(str, Enum):
     """Repeat class (Wicker classification)."""
+
     RETROTRANSPOSON = "Retrotransposon"
     DNA_TRANSPOSON = "DNA transposon"
     LTR = "LTR"
@@ -28,19 +29,20 @@ class RepeatClass(str, Enum):
 
 class RepeatFamily(str, Enum):
     """Common repeat families."""
+
     # Human/mammal repeats
-    ALU = "Alu"                    # SINE
-    L1 = "L1"                      # LINE
-    L2 = "L2"                      # LINE
-    MIR = "MIR"                    # SINE
-    ERV1 = "ERV1"                  # LTR
-    ERVK = "ERVK"                  # LTR
-    ERVL = "ERVL"                  # LTR
-    MAVERICK = "Maverick"          # DNA transposon
-    PIGGYBAC = "PiggyBac"          # DNA transposon
-    TcMAR = "TcMar"                # DNA transposon
-    HAT = "hAT"                    # DNA transposon
-    MUDR = "MuDR"                  # DNA transposon
+    ALU = "Alu"  # SINE
+    L1 = "L1"  # LINE
+    L2 = "L2"  # LINE
+    MIR = "MIR"  # SINE
+    ERV1 = "ERV1"  # LTR
+    ERVK = "ERVK"  # LTR
+    ERVL = "ERVL"  # LTR
+    MAVERICK = "Maverick"  # DNA transposon
+    PIGGYBAC = "PiggyBac"  # DNA transposon
+    TcMAR = "TcMar"  # DNA transposon
+    HAT = "hAT"  # DNA transposon
+    MUDR = "MuDR"  # DNA transposon
     # Satellite repeats
     ALPHA_SATELLITE = "Alpha_satellite"
     BETA_SATELLITE = "Beta_satellite"
@@ -67,6 +69,7 @@ class RepeatElement:
 
     Represents a repetitive genomic element from RepeatMasker or similar.
     """
+
     repeat_id: str
     chromosome: str
     start_bp: int

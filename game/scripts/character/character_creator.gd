@@ -20,10 +20,23 @@ func _get_data() -> Dictionary:
 	return _cached_data
 
 # Character creation state
-var selected_background: String = ""
-var selected_specialization: String = ""
+var selected_background: String = "academic"
+var selected_specialization: String = "organic_synthesis"
 var appearance: Dictionary = {}
 var character_name: String = ""
+var pronouns: String = "they/them"
+var lab_coat_style: String = "academic_white"
+
+static func get_default_name_for_background(bg_id: String) -> String:
+	match bg_id:
+		"academic":
+			return "Dr. Aris Thorne"
+		"hobbyist":
+			return "Vesper Finch"
+		"ex_pharma":
+			return "Kaelen Voss"
+		_:
+			return "Dr. Aris Thorne"
 
 func _ready() -> void:
 	_reset_appearance()
@@ -34,7 +47,8 @@ func _reset_appearance() -> void:
 		"hair": { "style": 0, "color": "natural_brown", "facial_hair": "clean" },
 		"eyes": { "color": "brown", "detail": "normal" },
 		"body": { "type": "average", "skin_tone": 0, "markings": [] },
-		"voice": { "preset": "calm_male", "pitch": 0, "speed": 0 }
+		"voice": { "preset": "calm_neutral", "pitch": 0, "speed": 0 },
+		"attire": { "coat_style": "academic_white", "goggles": "standard_ansi", "gloves": "nitrile_cyan" }
 	}
 
 # =============================================================================
@@ -162,22 +176,34 @@ func get_current_appearance() -> Dictionary:
 
 func set_character_name(name: String) -> bool:
 	var trimmed = name.strip_edges()
+	if trimmed.is_empty():
+		character_name = ""
+		return true
 	if trimmed.length() < 2 or trimmed.length() > 24:
 		return false
 	var regex = RegEx.new()
-	regex.compile("^[a-zA-Z0-9\\s\\-']+$")
+	regex.compile("^[a-zA-Z0-9\\s\\-'.]+$")
 	if not regex.search(trimmed):
 		return false
 	character_name = trimmed
 	return true
 
+func set_pronouns(p: String) -> void:
+	pronouns = p
+
+func set_lab_coat_style(style: String) -> void:
+	lab_coat_style = style
+	if appearance.has("attire"):
+		appearance["attire"]["coat_style"] = style
+
 func create_character() -> Dictionary:
 	if selected_background == "":
-		return { "success": false, "error": "No background selected" }
+		selected_background = "academic"
 	if selected_specialization == "":
-		return { "success": false, "error": "No specialization selected" }
-	if character_name == "":
-		return { "success": false, "error": "No name entered" }
+		selected_specialization = "organic_synthesis"
+	var final_name = character_name.strip_edges()
+	if final_name == "":
+		final_name = get_default_name_for_background(selected_background)
 
 	var bg_data = get_background_data(selected_background)
 	var spec_data = get_specialization_data(selected_specialization)
@@ -187,7 +213,9 @@ func create_character() -> Dictionary:
 		prologue_vid = cinematics[selected_background].get("video", "")
 
 	var character_data = {
-		"name": character_name,
+		"name": final_name,
+		"pronouns": pronouns,
+		"lab_coat_style": lab_coat_style,
 		"background": selected_background,
 		"specialization": selected_specialization,
 		"appearance": appearance.duplicate(true),
@@ -199,6 +227,7 @@ func create_character() -> Dictionary:
 		"unlocks_lab": spec_data.get("unlocks_lab", ""),
 		"companion_affinity": spec_data.get("companion_affinity", {}).duplicate(true),
 		"prologue_video": prologue_vid,
+		"open_progression": true, # Open-ended: all 20 skill tracks can be leveled to 120
 		"created_at": Time.get_unix_time_from_system()
 	}
 
@@ -241,6 +270,8 @@ func apply_character_to_game(character_data: Dictionary) -> void:
 	# Set background for quest manager
 	if quest_manager:
 		quest_manager.set_background(character_data.background)
+		if quest_manager.has_method("set_player_name"):
+			quest_manager.set_player_name(character_data.name)
 
 	# Set prologue video
 	if save_manager:
@@ -253,6 +284,8 @@ func apply_character_to_game(character_data: Dictionary) -> void:
 func to_dict() -> Dictionary:
 	return {
 		"name": character_name,
+		"pronouns": pronouns,
+		"lab_coat_style": lab_coat_style,
 		"background": selected_background,
 		"specialization": selected_specialization,
 		"appearance": appearance.duplicate(true)
@@ -260,8 +293,10 @@ func to_dict() -> Dictionary:
 
 func from_dict(data: Dictionary) -> void:
 	character_name = data.get("name", "")
-	selected_background = data.get("background", "")
-	selected_specialization = data.get("specialization", "")
+	pronouns = data.get("pronouns", "they/them")
+	lab_coat_style = data.get("lab_coat_style", "academic_white")
+	selected_background = data.get("background", "academic")
+	selected_specialization = data.get("specialization", "organic_synthesis")
 	appearance = data.get("appearance", appearance)
 
 func _get_equip_definition(equip_id: String) -> Dictionary:

@@ -9,7 +9,6 @@ energies in kJ/mol.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass, field
 
 
@@ -165,9 +164,7 @@ def rk4_step(
         volume_l=state.volume_l,
     )
     # Append snapshot to history (bounded)
-    new_state.history = state.history + [
-        {"t": new_state.time_s, **new_conc}
-    ]
+    new_state.history = state.history + [{"t": new_state.time_s, **new_conc}]
     if len(new_state.history) > 1000:
         new_state.history = new_state.history[-1000:]
     return new_state
@@ -202,8 +199,24 @@ GLYCOLYSIS = Pathway(
     id="glycolysis",
     name="Glycolysis (10 reactions)",
     species=[
-        "Glc", "G6P", "F6P", "F16BP", "DHAP", "GAP", "13BPG", "3PG", "2PG", "PEP",
-        "Pyr", "ATP", "ADP", "NAD+", "NADH", "Pi", "H2O", "H+",
+        "Glc",
+        "G6P",
+        "F6P",
+        "F16BP",
+        "DHAP",
+        "GAP",
+        "13BPG",
+        "3PG",
+        "2PG",
+        "PEP",
+        "Pyr",
+        "ATP",
+        "ADP",
+        "NAD+",
+        "NADH",
+        "Pi",
+        "H2O",
+        "H+",
     ],
     reactions=[
         PathwayReaction(
@@ -327,9 +340,26 @@ KREBS = Pathway(
     id="krebs",
     name="Krebs / TCA cycle (8 reactions)",
     species=[
-        "Acetyl-CoA", "Oxaloacetate", "Citrate", "Isocitrate", "alpha-KG",
-        "Succinyl-CoA", "Succinate", "Fumarate", "Malate", "CoA",
-        "NAD+", "NADH", "FAD", "FADH2", "GDP", "GTP", "CO2", "H2O", "H+", "Pi",
+        "Acetyl-CoA",
+        "Oxaloacetate",
+        "Citrate",
+        "Isocitrate",
+        "alpha-KG",
+        "Succinyl-CoA",
+        "Succinate",
+        "Fumarate",
+        "Malate",
+        "CoA",
+        "NAD+",
+        "NADH",
+        "FAD",
+        "FADH2",
+        "GDP",
+        "GTP",
+        "CO2",
+        "H2O",
+        "H+",
+        "Pi",
     ],
     reactions=[
         PathwayReaction(

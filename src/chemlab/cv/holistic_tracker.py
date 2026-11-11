@@ -9,8 +9,8 @@ and high arm reaches into reagent shelf selection.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from chemlab.compat import StrEnum, UTC
 
+from chemlab.compat import StrEnum
 from chemlab.cv.one_euro_filter import OneEuroFilter
 
 

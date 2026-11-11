@@ -7,6 +7,7 @@ and graceful fallback when physical camera hardware is absent.
 import json
 import socket
 import time
+
 import pytest
 
 from chemlab.cv.hand_tracker_server import HandTrackerServer

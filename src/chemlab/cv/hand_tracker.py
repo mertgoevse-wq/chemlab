@@ -15,20 +15,18 @@ Gesture mapping:
 from __future__ import annotations
 
 import math
-import time
 import threading
+import time
 from dataclasses import dataclass, field
-from chemlab.compat import StrEnum, UTC
-from queue import Queue, Empty
-from typing import Optional
+from queue import Empty, Queue
 
+from chemlab.compat import StrEnum
 from chemlab.cv.one_euro_filter import Point3DOneEuroFilter
 from chemlab_core.models import (
     Handedness,
     HandLandmarkFrame,
     NormalizedLandmark,
 )
-
 
 # =============================================================================
 # PERFORMANCE CONSTANTS (tuned for Intel Iris Xe, Dell Latitude 5530)
@@ -61,14 +59,14 @@ class OptimizedGesture(StrEnum):
     """Optimized gesture set for chemistry lab interactions."""
 
     IDLE = "IDLE"
-    PINCH = "PINCH"           # Pickup small apparatus (test tubes, pipettes)
-    PINCH_DRAG = "PINCH_DRAG" # Pinch + move = pour
-    POUR = "PINCH_DRAG"       # Backward compatibility alias
-    SWIRL = "SWIRL"           # Backward compatibility alias
-    GRAB = "GRAB"             # Move vessel (beakers, flasks)
-    FIST = "FIST"             # Firm lock on vessel
-    SWIPE = "SWIPE"           # Turn knob (stir plate, valve)
-    POINT = "POINT"           # Raycast select (UI, balances)
+    PINCH = "PINCH"  # Pickup small apparatus (test tubes, pipettes)
+    PINCH_DRAG = "PINCH_DRAG"  # Pinch + move = pour
+    POUR = "PINCH_DRAG"  # Backward compatibility alias
+    SWIRL = "SWIRL"  # Backward compatibility alias
+    GRAB = "GRAB"  # Move vessel (beakers, flasks)
+    FIST = "FIST"  # Firm lock on vessel
+    SWIPE = "SWIPE"  # Turn knob (stir plate, valve)
+    POINT = "POINT"  # Raycast select (UI, balances)
     RELEASE = "RELEASE"
 
 
@@ -153,7 +151,11 @@ class OptimizedGestureEngine:
 
         # 1. PINCH (Thumb tip to Index tip) - for pickup
         pinch_dist = _dist_3d(thumb_tip, index_tip)
-        is_pinching = pinch_dist < self.pinch_enter if not self._prev_is_pinching else pinch_dist < self.pinch_exit
+        is_pinching = (
+            pinch_dist < self.pinch_enter
+            if not self._prev_is_pinching
+            else pinch_dist < self.pinch_exit
+        )
 
         # 2. GRAB (Mean fingertip to wrist distance) - for move vessel
         fingertip_dists = [
@@ -163,7 +165,11 @@ class OptimizedGestureEngine:
             _dist_3d(pinky_tip, wrist),
         ]
         avg_finger_dist = sum(fingertip_dists) / 4.0
-        is_grabbing = avg_finger_dist < self.grab_enter if not self._prev_is_grabbing else avg_finger_dist < self.grab_exit
+        is_grabbing = (
+            avg_finger_dist < self.grab_enter
+            if not self._prev_is_grabbing
+            else avg_finger_dist < self.grab_exit
+        )
         grab_strength = max(0.0, min(1.0, 1.0 - (avg_finger_dist / (self.grab_exit * 1.2))))
 
         # 3. HAND TILT (Pinky MCP to Index MCP vector) - for pour
@@ -212,10 +218,18 @@ class OptimizedGestureEngine:
             gesture = OptimizedGesture.PINCH
             is_pouring = False
         elif is_grabbing:
-            gesture = OptimizedGesture.FIST if avg_finger_dist < self.grab_enter * 0.7 else OptimizedGesture.GRAB
+            gesture = (
+                OptimizedGesture.FIST
+                if avg_finger_dist < self.grab_enter * 0.7
+                else OptimizedGesture.GRAB
+            )
         elif is_pointing:
             gesture = OptimizedGesture.POINT
-        elif (self._prev_is_pinching or self._prev_is_grabbing) and not is_pinching and not is_grabbing:
+        elif (
+            (self._prev_is_pinching or self._prev_is_grabbing)
+            and not is_pinching
+            and not is_grabbing
+        ):
             gesture = OptimizedGesture.RELEASE
 
         # Update state memory
@@ -288,10 +302,10 @@ class AsyncHandTracker:
 
         # Async pipeline queues
         self._capture_queue: Queue = Queue(maxsize=2)  # Latest frame only
-        self._result_queue: Queue = Queue(maxsize=4)   # Processed results
+        self._result_queue: Queue = Queue(maxsize=4)  # Processed results
         self._running = False
-        self._capture_thread: Optional[threading.Thread] = None
-        self._process_thread: Optional[threading.Thread] = None
+        self._capture_thread: threading.Thread | None = None
+        self._process_thread: threading.Thread | None = None
         self._frame_counter = 0
         self._process_every_n = FRAME_SKIP_INTERVAL
 
@@ -306,6 +320,7 @@ class AsyncHandTracker:
     def _init_mediapipe(self) -> None:
         """Lazy init MediaPipe Hands only (not Holistic)."""
         import mediapipe as mp
+
         self._mp_hands = mp.solutions.hands
         self._hands = self._mp_hands.Hands(
             model_complexity=MODEL_COMPLEXITY,
@@ -344,6 +359,7 @@ class AsyncHandTracker:
     def _capture_loop(self) -> None:
         """Camera capture thread - runs at 30 FPS, pushes to queue."""
         import cv2
+
         cap = cv2.VideoCapture(self.camera_index)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, TARGET_INPUT_WIDTH)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, TARGET_INPUT_HEIGHT)
@@ -371,6 +387,7 @@ class AsyncHandTracker:
     def _process_loop(self) -> None:
         """MediaPipe inference + gesture thread - runs at ~15 FPS (frame skip)."""
         import cv2
+
         frame_skip_counter = 0
 
         while self._running:
@@ -404,9 +421,9 @@ class AsyncHandTracker:
             # Extract normalized landmarks
             raw_landmarks = []
             for lm in hand_landmarks.landmark:
-                raw_landmarks.append(NormalizedLandmark(
-                    x=lm.x, y=lm.y, z=lm.z, visibility=lm.visibility
-                ))
+                raw_landmarks.append(
+                    NormalizedLandmark(x=lm.x, y=lm.y, z=lm.z, visibility=lm.visibility)
+                )
 
             # 1-Euro smoothing
             process_start = time.perf_counter()
@@ -443,9 +460,9 @@ class AsyncHandTracker:
     def _synthetic_loop(self) -> None:
         """Synthetic mode for testing without camera."""
         while self._running:
-            time.sleep(1/30)  # Simulate 30 FPS
+            time.sleep(1 / 30)  # Simulate 30 FPS
 
-    def get_latest_result(self) -> Optional[OptimizedHandResult]:
+    def get_latest_result(self) -> OptimizedHandResult | None:
         """Non-blocking get latest tracking result. Returns None if no new data."""
         try:
             return self._result_queue.get_nowait()
@@ -456,7 +473,7 @@ class AsyncHandTracker:
         self,
         landmarks: list[NormalizedLandmark],
         handedness: Handedness = Handedness.RIGHT,
-        timestamp: Optional[float] = None,
+        timestamp: float | None = None,
     ) -> OptimizedHandResult:
         """Synchronous processing for synthetic/testing mode."""
         t = timestamp if timestamp is not None else time.time()

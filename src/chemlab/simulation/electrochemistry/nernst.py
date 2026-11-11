@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import math
 
-from chemlab.simulation.electrochemistry.constants import F, R, T0, NERNST_SLOPE_V_DECADE
-from chemlab.simulation.electrochemistry.half_reactions import HALF_REACTION_REGISTRY, HalfReaction
+from chemlab.simulation.electrochemistry.constants import T0, F, R
+from chemlab.simulation.electrochemistry.half_reactions import HalfReaction
 
 
 class NernstSolver:

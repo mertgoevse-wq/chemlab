@@ -1,60 +1,60 @@
 """Tests for the Genetics/PCR Simulation Engine."""
 
-import pytest
 import math
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+import pytest
 
 from chemlab.simulation.genetics_engine import (
-    # PCR Thermal Cycling
-    PCRStep,
+    GENETICS_ENGINE,
+    # CRISPR-Cas9
+    CRISPRResult,
+    # Restriction Digestion
+    DigestionResult,
+    GelBand,
+    # Gel Electrophoresis
+    GelElectrophoresisResult,
+    # Engine
+    GeneticsEngine,
     PCRCycle,
     PCRProtocol,
     PCRResult,
-    simulate_pcr_cycle,
-    simulate_pcr,
+    # PCR Thermal Cycling
+    PCRStep,
     # Primer Design
     Primer,
-    calculate_tm,
-    calculate_gc_content,
-    check_hairpin,
-    check_dimer,
-    check_specificity,
-    design_primers,
-    # Gel Electrophoresis
-    GelElectrophoresisResult,
-    GelBand,
-    simulate_gel_electrophoresis,
-    # Restriction Digestion
-    DigestionResult,
     RestrictionSite,
-    digest_dna,
     # Sanger Sequencing
     SangerResult,
-    simulate_sanger_sequencing,
-    # CRISPR-Cas9
-    CRISPRResult,
     SgRNA,
-    design_sgrna,
-    check_pam,
-    predict_off_targets,
-    simulate_indels,
-    # qPCR
-    qPCRResult,
-    simulate_qpcr,
-    calculate_ct,
-    generate_melt_curve,
-    # Genomic Data
-    load_genomic_data,
-    get_chromosome_sequence,
     # Trisomy 21
     Trisomy21Result,
-    simulate_trisomy_21,
+    calculate_ct,
+    calculate_gc_content,
+    calculate_tm,
+    check_dimer,
+    check_hairpin,
+    check_pam,
+    check_specificity,
+    design_primers,
+    design_sgrna,
+    digest_dna,
+    generate_melt_curve,
+    get_chromosome_sequence,
+    # Genomic Data
+    load_genomic_data,
+    predict_off_targets,
+    # qPCR
+    qPCRResult,
+    simulate_gel_electrophoresis,
     simulate_gene_dosage,
-    # Engine
-    GeneticsEngine,
-    GENETICS_ENGINE,
+    simulate_indels,
+    simulate_pcr,
+    simulate_pcr_cycle,
+    simulate_qpcr,
+    simulate_sanger_sequencing,
+    simulate_trisomy_21,
 )
-
 
 # Test sequences
 TEST_TEMPLATE = "ATGCGTACGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC"
@@ -68,10 +68,7 @@ class TestPCRThermalCycling:
     def test_pcr_step_creation(self):
         """Test PCR step creation with all parameters."""
         step = PCRStep(
-            name="denaturation",
-            temperature_c=98.0,
-            hold_time_s=10.0,
-            ramp_rate_c_per_s=4.0
+            name="denaturation", temperature_c=98.0, hold_time_s=10.0, ramp_rate_c_per_s=4.0
         )
         assert step.name == "denaturation"
         assert step.temperature_c == 98.0
@@ -138,9 +135,9 @@ class TestPCRThermalCycling:
         assert result.amplification_efficiency > 0
         # Ct may be None if threshold not reached
         # Just verify the structure is correct
-        assert hasattr(result, 'ct_value')
-        assert hasattr(result, 'melt_curve')
-        assert hasattr(result, 'gel_bands')
+        assert hasattr(result, "ct_value")
+        assert hasattr(result, "melt_curve")
+        assert hasattr(result, "gel_bands")
         assert len(result.gel_bands) > 0
 
 
@@ -198,10 +195,18 @@ class TestPrimerDesign:
 
     def test_design_primers(self):
         """Test primer design for target region."""
-        fwd, rev = design_primers(TEST_TEMPLATE, TARGET_START, TARGET_END,
-                                  opt_tm=55.0, min_tm=40.0, max_tm=80.0,
-                                  min_gc=20.0, max_gc=80.0,
-                                  min_len=12, max_len=35)
+        fwd, rev = design_primers(
+            TEST_TEMPLATE,
+            TARGET_START,
+            TARGET_END,
+            opt_tm=55.0,
+            min_tm=40.0,
+            max_tm=80.0,
+            min_gc=20.0,
+            max_gc=80.0,
+            min_len=12,
+            max_len=35,
+        )
 
         # At least one primer should be found, but function should not crash
         # The function should handle cases where no suitable primers are found
@@ -218,7 +223,7 @@ class TestPrimerDesign:
             length=12,
             hairpin_dg=-1.5,
             dimer_dg=-0.5,
-            specificity_score=0.95
+            specificity_score=0.95,
         )
         assert primer.sequence == "ATGCATGCATGC"
         assert primer.tm_c == 60.0
@@ -233,7 +238,9 @@ class TestGelElectrophoresis:
             {"size_bp": 500, "intensity": 1.0, "label": "Product"},
             {"size_bp": 100, "intensity": 0.1, "label": "Primer dimer"},
         ]
-        result = simulate_gel_electrophoresis(fragments, gel_percent=1.0, voltage_v=100, run_time_min=45)
+        result = simulate_gel_electrophoresis(
+            fragments, gel_percent=1.0, voltage_v=100, run_time_min=45
+        )
 
         assert isinstance(result, GelElectrophoresisResult)
         assert len(result.bands) == 2
@@ -297,10 +304,7 @@ class TestRestrictionDigestion:
     def test_restriction_site_structure(self):
         """Test RestrictionSite structure."""
         site = RestrictionSite(
-            enzyme_name="EcoRI",
-            position=5,
-            sequence="GAATTC",
-            is_palindromic=True
+            enzyme_name="EcoRI", position=5, sequence="GAATTC", is_palindromic=True
         )
         assert site.enzyme_name == "EcoRI"
         assert site.position == 5
@@ -544,10 +548,18 @@ class TestGeneticsEngine:
     def test_engine_primer_design(self):
         """Test primer design through engine."""
         engine = GeneticsEngine()
-        fwd, rev = engine.design_primers(TEST_TEMPLATE, TARGET_START, TARGET_END,
-                                        opt_tm=55.0, min_tm=40.0, max_tm=80.0,
-                                        min_gc=20.0, max_gc=80.0,
-                                        min_len=12, max_len=35)
+        fwd, rev = engine.design_primers(
+            TEST_TEMPLATE,
+            TARGET_START,
+            TARGET_END,
+            opt_tm=55.0,
+            min_tm=40.0,
+            max_tm=80.0,
+            min_gc=20.0,
+            max_gc=80.0,
+            min_len=12,
+            max_len=35,
+        )
         assert fwd is None or isinstance(fwd, Primer)
         assert rev is None or isinstance(rev, Primer)
 

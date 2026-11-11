@@ -8,7 +8,7 @@ two-electrode galvanic cell under an external resistive load.
 from __future__ import annotations
 
 from chemlab.simulation.electrochemistry.constants import T0
-from chemlab.simulation.electrochemistry.half_reactions import HALF_REACTION_REGISTRY, HalfReaction
+from chemlab.simulation.electrochemistry.half_reactions import HALF_REACTION_REGISTRY
 from chemlab.simulation.electrochemistry.nernst import NernstSolver
 
 # Map common electrode material names to half-reaction registry keys.

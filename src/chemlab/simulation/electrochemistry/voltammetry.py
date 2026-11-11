@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import math
 
-from chemlab.simulation.electrochemistry.constants import F, R, T0
+from chemlab.simulation.electrochemistry.constants import T0, F, R
 
 
 class VoltammetryResult:
@@ -99,11 +99,15 @@ class VoltammetrySimulator:
         if waveform == "cyclic":
             # Triangle wave: start -> end -> start
             n_half = num_points // 2
-            v_forward = [v_start + (v_end - v_start) * i / max(n_half - 1, 1) for i in range(n_half)]
+            v_forward = [
+                v_start + (v_end - v_start) * i / max(n_half - 1, 1) for i in range(n_half)
+            ]
             v_reverse = [v_end + (v_start - v_end) * i / max(n_half - 1, 1) for i in range(n_half)]
             potentials = v_forward + v_reverse[1:]
         else:
-            potentials = [v_start + (v_end - v_start) * i / max(num_points - 1, 1) for i in range(num_points)]
+            potentials = [
+                v_start + (v_end - v_start) * i / max(num_points - 1, 1) for i in range(num_points)
+            ]
 
         i_peak = self.peak_current_randles_sevcik(
             n, area_cm2, concentration_mol_l, scan_rate_v_s, diffusion_coeff_m2_s, temperature_k

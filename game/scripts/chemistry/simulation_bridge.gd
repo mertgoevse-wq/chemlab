@@ -273,7 +273,8 @@ func _send_ipc_request(command: String, payload: Dictionary, callback = null) ->
 	var sent: bool = false
 
 	if IPC_TRANSPORT_MODE == IPCTransportMode.NAMED_PIPE and _pipe_file != null and _pipe_file.file_open:
-		var err = _pipe_file.store_string(json_str)
+		_pipe_file.store_string(json_str)
+		var err = _pipe_file.get_error()
 		sent = (err == OK)
 		if err != OK:
 			print("[SimulationBridge] Failed to write to named pipe: %s" % err)

@@ -51,6 +51,7 @@ class StorageGroup(str, Enum):
 @dataclass(frozen=True)
 class GHSHazard:
     """A single GHS hazard classification with code, text, pictogram, signal word, category."""
+
     code: str
     text: str
     pictogram: str
