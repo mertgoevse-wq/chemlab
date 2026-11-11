@@ -115,6 +115,48 @@ func _init() -> void:
 	assert(player.is_mouse_captured == true, "Mouse should be captured")
 	print("  * Mouse capture toggle verified")
 
+	# 7. Test External InputManager Gesture Integration
+	var im: Node = root.get_node_or_null("InputManager")
+	if im == null:
+		var InputManagerScript = load("res://scripts/input/input_manager.gd")
+		if InputManagerScript:
+			im = InputManagerScript.new()
+			im.name = "InputManager"
+			root.add_child(im)
+
+	if im != null:
+		player.set_input_manager(im)
+
+		var test_beaker = RigidBody3D.new()
+		test_beaker.name = "TestBeaker"
+		test_beaker.add_to_group("interactive_apparatus")
+		root.add_child(test_beaker)
+
+		# Test grab via signal
+		im.apparatus_grabbed.emit(test_beaker)
+		assert(player.carried_item == test_beaker, "Apparatus must be carried via apparatus_grabbed signal")
+		print("  * Signal apparatus_grabbed verified")
+
+		# Test tilt via signal
+		im.tilt_angle_updated.emit(45.0)
+		assert(player.manual_tilt_angle == 45.0, "manual_tilt_angle must match signal")
+		assert(player.is_pouring == true, "is_pouring must be true when tilt exceeds threshold")
+		print("  * Signal tilt_angle_updated verified")
+
+		# Test swirl via signal
+		var prev_swirl = player.swirl_timer
+		im.apparatus_swirled.emit(120.0)
+		assert(player.is_swirling == true, "is_swirling must be true on apparatus_swirled")
+		assert(player.swirl_timer > prev_swirl, "swirl_timer must advance on apparatus_swirled")
+		print("  * Signal apparatus_swirled verified")
+
+		# Test release via signal
+		im.apparatus_released.emit(test_beaker)
+		assert(player.carried_item == null, "Apparatus must be dropped via apparatus_released signal")
+		print("  * Signal apparatus_released verified")
+
+		test_beaker.queue_free()
+
 	player.queue_free()
 	print("--- ALL PLAYER CONTROLLER VALIDATION TESTS PASSED ---")
 	quit(0)

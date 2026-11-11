@@ -104,6 +104,7 @@ var _was_sprinting: bool = false
 
 # Cached InputManager singleton
 var _cached_input_manager: Node = null
+var _input_signals_connected: bool = false
 
 # =============================================================================
 # LIFECYCLE
@@ -138,6 +139,8 @@ func _physics_process(delta: float) -> void:
 	if not is_inside_tree():
 		return
 	_ensure_references()
+	if not _input_signals_connected:
+		_connect_input_manager_signals()
 	_process_locomotion(delta)
 	_process_camera_motion(delta)
 	_process_interaction_detection()
@@ -415,7 +418,7 @@ func drop_carried_apparatus(apply_impulse: bool = true) -> void:
 		rb.freeze = carried_item_freeze
 		rb.freeze_mode = carried_item_freeze_mode
 		if apply_impulse:
-			var toss_dir = -camera.global_transform.basis.z if camera else Vector3(0, 0, -1)
+			var toss_dir = -camera.global_transform.basis.z if (camera and camera.is_inside_tree()) else Vector3(0, 0, -1)
 			rb.linear_velocity = velocity + toss_dir * 2.5 + Vector3(0, 0.5, 0)
 			rb.angular_velocity = Vector3(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * 1.5
 
@@ -746,23 +749,41 @@ func _update_hud_display() -> void:
 # INPUT MANAGER INTEGRATION
 # =============================================================================
 
+func set_input_manager(mgr: Node) -> void:
+	_cached_input_manager = mgr
+	_input_signals_connected = false
+	_connect_input_manager_signals()
+
+
 func _get_input_manager() -> Node:
-	if _cached_input_manager == null and is_inside_tree():
-		_cached_input_manager = get_node_or_null("/root/InputManager")
+	if _cached_input_manager != null and is_instance_valid(_cached_input_manager):
+		return _cached_input_manager
+	if is_inside_tree() and get_tree() and get_tree().root:
+		_cached_input_manager = get_tree().root.get_node_or_null("InputManager")
+	elif get_parent() and get_parent().has_node("InputManager"):
+		_cached_input_manager = get_parent().get_node_or_null("InputManager")
 	return _cached_input_manager
 
 
 func _connect_input_manager_signals() -> void:
+	if _input_signals_connected:
+		return
 	var im = _get_input_manager()
 	if not im:
 		return
 
-	if im.has_signal("apparatus_grabbed"):
+	if im.has_signal("apparatus_grabbed") and not im.apparatus_grabbed.is_connected(_on_external_apparatus_grabbed):
 		im.apparatus_grabbed.connect(_on_external_apparatus_grabbed)
-	if im.has_signal("apparatus_released"):
+	if im.has_signal("apparatus_released") and not im.apparatus_released.is_connected(_on_external_apparatus_released):
 		im.apparatus_released.connect(_on_external_apparatus_released)
-	if im.has_signal("tilt_angle_updated"):
+	if im.has_signal("tilt_angle_updated") and not im.tilt_angle_updated.is_connected(_on_external_tilt_updated):
 		im.tilt_angle_updated.connect(_on_external_tilt_updated)
+	if im.has_signal("apparatus_swirled") and not im.apparatus_swirled.is_connected(_on_external_apparatus_swirled):
+		im.apparatus_swirled.connect(_on_external_apparatus_swirled)
+	if im.has_signal("gesture_detected") and not im.gesture_detected.is_connected(_on_external_gesture_detected):
+		im.gesture_detected.connect(_on_external_gesture_detected)
+
+	_input_signals_connected = true
 
 
 func _notify_input_manager_hover(apparatus: Node, is_hovering: bool) -> void:
@@ -776,15 +797,43 @@ func _notify_input_manager_hover(apparatus: Node, is_hovering: bool) -> void:
 
 
 func _on_external_apparatus_grabbed(apparatus: Variant) -> void:
-	if apparatus is Node and carried_item != apparatus:
-		pickup_apparatus(apparatus as Node)
+	var target: Node = apparatus as Node if apparatus is Node else hovered_apparatus
+	if target != null and is_instance_valid(target) and carried_item != target:
+		pickup_apparatus(target)
 
 
 func _on_external_apparatus_released(_apparatus: Variant) -> void:
 	if carried_item != null:
-		drop_carried_apparatus(true)
+		# If pointing at a surface, place it nicely; otherwise drop
+		if interaction_ray and interaction_ray.is_colliding():
+			var hit_pos = interaction_ray.get_collision_point()
+			var hit_norm = interaction_ray.get_collision_normal()
+			var hit_collider = interaction_ray.get_collider() as Node
+			place_carried_apparatus(hit_collider, hit_pos, hit_norm)
+		else:
+			drop_carried_apparatus(true)
 
 
 func _on_external_tilt_updated(angle_deg: float) -> void:
 	if carried_item != null:
 		manual_tilt_angle = clampf(angle_deg, 0.0, max_pour_angle)
+		if manual_tilt_angle > POUR_THRESHOLD_ANGLE:
+			is_pouring = true
+		elif not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			is_pouring = false
+
+
+func _on_external_apparatus_swirled(_rpm: float) -> void:
+	if carried_item != null:
+		is_swirling = true
+		swirl_timer += 0.25
+
+
+func _on_external_gesture_detected(gesture: String, _data: Dictionary) -> void:
+	match gesture:
+		"SWIRL":
+			if carried_item != null:
+				is_swirling = true
+		"IDLE", "RELEASE":
+			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+				is_swirling = false
