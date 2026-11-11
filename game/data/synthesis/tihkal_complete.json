@@ -30,10 +30,34 @@
               "name": "Indole-3-glyoxylamide Formation",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "indole", "name": "Indole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride (COCl)2", "amount": 8.0, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "dimethylamine_gas", "name": "Dimethylamine in dry ether (40%)", "amount": 25.0, "unit": "mL", "equivalents": 2.2},
-                {"reagent_id": "anhydrous_ether", "name": "Anhydrous diethyl ether", "amount": 100.0, "unit": "mL", "equivalents": 0.0}
+                {
+                  "reagent_id": "indole",
+                  "name": "Indole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride (COCl)2",
+                  "amount": 8.0,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "dimethylamine_gas",
+                  "name": "Dimethylamine in dry ether (40%)",
+                  "amount": 25.0,
+                  "unit": "mL",
+                  "equivalents": 2.2
+                },
+                {
+                  "reagent_id": "anhydrous_ether",
+                  "name": "Anhydrous diethyl ether",
+                  "amount": 100.0,
+                  "unit": "mL",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -53,9 +77,27 @@
               "name": "Exhaustive Hydride Reduction to Tryptamine",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "dmt_glyoxylamide", "name": "N,N-Dimethylindole-3-glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 5.2, "unit": "g", "equivalents": 3.0},
-                {"reagent_id": "anhydrous_thf", "name": "Anhydrous THF", "amount": 120.0, "unit": "mL", "equivalents": 0.0}
+                {
+                  "reagent_id": "dmt_glyoxylamide",
+                  "name": "N,N-Dimethylindole-3-glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 5.2,
+                  "unit": "g",
+                  "equivalents": 3.0
+                },
+                {
+                  "reagent_id": "anhydrous_thf",
+                  "name": "Anhydrous THF",
+                  "amount": 120.0,
+                  "unit": "mL",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -81,13 +123,13 @@
       "name": "5-MeO-DMT",
       "chemical_name": "5-Methoxy-N,N-dimethyltryptamine",
       "formula": "C13H18N2O",
-      "molecular_weight": 218.30,
+      "molecular_weight": 218.3,
       "cas_number": "1019-45-3",
       "smiles": "COC1=CC2=C(C=C1)NC=C2CCN(C)C",
       "salt_form": "freebase",
-      "salt_mw": 218.30,
+      "salt_mw": 218.3,
       "mp_c": 69.5,
-      "tlc_rf": 0.30,
+      "tlc_rf": 0.3,
       "class": "tryptamine",
       "subclass": "5_substituted",
       "description": "High-potency 5-methoxy substituted tryptamine found naturally in the parotoid secretions of Incilius alvarius and species of Virola.",
@@ -101,9 +143,27 @@
               "name": "Acylation with Oxalyl Chloride & Amidation",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "5_methoxyindole", "name": "5-Methoxyindole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 6.5, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "dimethylamine", "name": "Dimethylamine", "amount": 20.0, "unit": "mL", "equivalents": 2.2}
+                {
+                  "reagent_id": "5_methoxyindole",
+                  "name": "5-Methoxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 6.5,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "dimethylamine",
+                  "name": "Dimethylamine",
+                  "amount": 20.0,
+                  "unit": "mL",
+                  "equivalents": 2.2
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -122,8 +182,20 @@
               "name": "LiAlH4 Reduction to 5-MeO-DMT Freebase",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "5_meo_dmt_glyoxylamide", "name": "5-Methoxyindole-3-(N,N-dimethyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.6, "unit": "g", "equivalents": 3.0}
+                {
+                  "reagent_id": "5_meo_dmt_glyoxylamide",
+                  "name": "5-Methoxyindole-3-(N,N-dimethyl)glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.6,
+                  "unit": "g",
+                  "equivalents": 3.0
+                }
               ],
               "conditions": {
                 "temperature_c": 65.0,
@@ -168,9 +240,27 @@
               "name": "Glyoxylamide Formation on 4-Benzyloxyindole",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "4_benzyloxyindole", "name": "4-Benzyloxyindole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 4.3, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "dimethylamine", "name": "Dimethylamine", "amount": 14.0, "unit": "mL", "equivalents": 2.2}
+                {
+                  "reagent_id": "4_benzyloxyindole",
+                  "name": "4-Benzyloxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 4.3,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "dimethylamine",
+                  "name": "Dimethylamine",
+                  "amount": 14.0,
+                  "unit": "mL",
+                  "equivalents": 2.2
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -188,8 +278,20 @@
               "name": "Reduction with LiAlH4 to 4-Benzyloxy-DMT",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "4_obn_glyoxylamide", "name": "4-Benzyloxyindole-3-(N,N-dimethyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 3.5, "unit": "g", "equivalents": 3.0}
+                {
+                  "reagent_id": "4_obn_glyoxylamide",
+                  "name": "4-Benzyloxyindole-3-(N,N-dimethyl)glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 3.5,
+                  "unit": "g",
+                  "equivalents": 3.0
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -207,9 +309,27 @@
               "name": "Catalytic Hydrogenolysis (Debenzylation)",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "4_benzyloxy_dmt", "name": "4-Benzyloxy-DMT", "amount": 8.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "pd_c_10", "name": "10% Palladium on activated carbon (Pd/C)", "amount": 0.8, "unit": "g", "equivalents": 0.0},
-                {"reagent_id": "hydrogen_gas", "name": "Hydrogen gas (1 atm H2)", "amount": 1.0, "unit": "atm", "equivalents": 1.0}
+                {
+                  "reagent_id": "4_benzyloxy_dmt",
+                  "name": "4-Benzyloxy-DMT",
+                  "amount": 8.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "pd_c_10",
+                  "name": "10% Palladium on activated carbon (Pd/C)",
+                  "amount": 0.8,
+                  "unit": "g",
+                  "equivalents": 0.0
+                },
+                {
+                  "reagent_id": "hydrogen_gas",
+                  "name": "Hydrogen gas (1 atm H2)",
+                  "amount": 1.0,
+                  "unit": "atm",
+                  "equivalents": 1.0
+                }
               ],
               "conditions": {
                 "temperature_c": 22.0,
@@ -235,7 +355,7 @@
       "name": "4-AcO-DMT (Psilacetin)",
       "chemical_name": "4-Acetoxy-N,N-dimethyltryptamine",
       "formula": "C14H18N2O2",
-      "molecular_weight": 246.30,
+      "molecular_weight": 246.3,
       "cas_number": "92728-24-4",
       "smiles": "CC(=O)OC1=CC=CC2=C1C(=CN2)CCN(C)C",
       "salt_form": "fumarate",
@@ -255,9 +375,27 @@
               "name": "Phenolic Esterification",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "psilocin_freebase", "name": "Psilocin freebase", "amount": 5.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "acetic_anhydride", "name": "Acetic anhydride", "amount": 3.0, "unit": "mL", "equivalents": 1.3},
-                {"reagent_id": "pyridine_catalyst", "name": "Dry pyridine", "amount": 10.0, "unit": "mL", "equivalents": 0.0}
+                {
+                  "reagent_id": "psilocin_freebase",
+                  "name": "Psilocin freebase",
+                  "amount": 5.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "acetic_anhydride",
+                  "name": "Acetic anhydride",
+                  "amount": 3.0,
+                  "unit": "mL",
+                  "equivalents": 1.3
+                },
+                {
+                  "reagent_id": "pyridine_catalyst",
+                  "name": "Dry pyridine",
+                  "amount": 10.0,
+                  "unit": "mL",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 22.0,
@@ -303,9 +441,27 @@
               "name": "Indole-3-glyoxylamide Formation with Dipropylamine",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "indole", "name": "Indole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 8.0, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "dipropylamine", "name": "Di-n-propylamine", "amount": 25.0, "unit": "mL", "equivalents": 2.1}
+                {
+                  "reagent_id": "indole",
+                  "name": "Indole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 8.0,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "dipropylamine",
+                  "name": "Di-n-propylamine",
+                  "amount": 25.0,
+                  "unit": "mL",
+                  "equivalents": 2.1
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -323,8 +479,20 @@
               "name": "LAH Reduction to DPT Freebase",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "dpt_glyoxylamide", "name": "Indole-3-(N,N-dipropyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.2, "unit": "g", "equivalents": 3.0}
+                {
+                  "reagent_id": "dpt_glyoxylamide",
+                  "name": "Indole-3-(N,N-dipropyl)glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.2,
+                  "unit": "g",
+                  "equivalents": 3.0
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -350,7 +518,7 @@
       "name": "5-MeO-DiPT (Foxy)",
       "chemical_name": "5-Methoxy-N,N-diisopropyltryptamine",
       "formula": "C17H26N2O",
-      "molecular_weight": 274.40,
+      "molecular_weight": 274.4,
       "cas_number": "4021-34-5",
       "smiles": "CC(C)N(CCC1=CNC2=C1C=C(C=C2)OC)C(C)C",
       "salt_form": "hydrochloride",
@@ -370,9 +538,27 @@
               "name": "Formation of 5-Methoxyindole-3-(N,N-diisopropyl)glyoxylamide",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "5_methoxyindole", "name": "5-Methoxyindole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 6.5, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "diisopropylamine", "name": "Diisopropylamine", "amount": 22.0, "unit": "mL", "equivalents": 2.3}
+                {
+                  "reagent_id": "5_methoxyindole",
+                  "name": "5-Methoxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 6.5,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "diisopropylamine",
+                  "name": "Diisopropylamine",
+                  "amount": 22.0,
+                  "unit": "mL",
+                  "equivalents": 2.3
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -390,8 +576,20 @@
               "name": "LAH Reduction to 5-MeO-DiPT Freebase",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "5_meo_dipt_glyoxylamide", "name": "5-Methoxyindole-3-(N,N-diisopropyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.0, "unit": "g", "equivalents": 3.0}
+                {
+                  "reagent_id": "5_meo_dipt_glyoxylamide",
+                  "name": "5-Methoxyindole-3-(N,N-diisopropyl)glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.0,
+                  "unit": "g",
+                  "equivalents": 3.0
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -437,9 +635,27 @@
               "name": "Regioselective Phosphorylation",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "psilocin", "name": "Psilocin (4-HO-DMT)", "amount": 5.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "dibenzyl_phosphorochloridate", "name": "Dibenzyl phosphorochloridate", "amount": 8.5, "unit": "g", "equivalents": 1.1},
-                {"reagent_id": "anhydrous_pyridine", "name": "Anhydrous pyridine", "amount": 25.0, "unit": "mL", "equivalents": 0.0}
+                {
+                  "reagent_id": "psilocin",
+                  "name": "Psilocin (4-HO-DMT)",
+                  "amount": 5.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "dibenzyl_phosphorochloridate",
+                  "name": "Dibenzyl phosphorochloridate",
+                  "amount": 8.5,
+                  "unit": "g",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "anhydrous_pyridine",
+                  "name": "Anhydrous pyridine",
+                  "amount": 25.0,
+                  "unit": "mL",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -459,8 +675,20 @@
               "name": "Catalytic Hydrogenolysis to Psilocybin",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "dibenzyl_psilocybin", "name": "Dibenzyl psilocybin ester", "amount": 6.5, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "palladium_on_carbon", "name": "10% Pd/C catalyst", "amount": 0.8, "unit": "g", "equivalents": 0.0}
+                {
+                  "reagent_id": "dibenzyl_psilocybin",
+                  "name": "Dibenzyl psilocybin ester",
+                  "amount": 6.5,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "palladium_on_carbon",
+                  "name": "10% Pd/C catalyst",
+                  "amount": 0.8,
+                  "unit": "g",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 25.0,
@@ -505,9 +733,27 @@
               "name": "Glyoxylamide Formation",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "5_methoxyindole", "name": "5-Methoxyindole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 6.6, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "methylisopropylamine", "name": "N-Methylisopropylamine", "amount": 14.5, "unit": "mL", "equivalents": 2.1}
+                {
+                  "reagent_id": "5_methoxyindole",
+                  "name": "5-Methoxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 6.6,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "methylisopropylamine",
+                  "name": "N-Methylisopropylamine",
+                  "amount": 14.5,
+                  "unit": "mL",
+                  "equivalents": 2.1
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -525,8 +771,20 @@
               "name": "LAH Reduction to 5-MeO-MiPT Freebase",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "moxy_glyoxylamide", "name": "5-Methoxyindole-3-(N-methyl-N-isopropyl)glyoxylamide", "amount": 9.5, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.1, "unit": "g", "equivalents": 3.0}
+                {
+                  "reagent_id": "moxy_glyoxylamide",
+                  "name": "5-Methoxyindole-3-(N-methyl-N-isopropyl)glyoxylamide",
+                  "amount": 9.5,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.1,
+                  "unit": "g",
+                  "equivalents": 3.0
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -558,7 +816,7 @@
       "salt_form": "hydrochloride",
       "salt_mw": 280.84,
       "mp_c": 198.0,
-      "tlc_rf": 0.40,
+      "tlc_rf": 0.4,
       "class": "tryptamine",
       "subclass": "simple_tryptamines",
       "description": "Renowned for its unique pharmacological selective distortion of auditory pitch perception.",
@@ -572,9 +830,27 @@
               "name": "Indole-3-glyoxylamide Formation",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "indole", "name": "Indole", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 8.0, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "diisopropylamine", "name": "Diisopropylamine", "amount": 25.0, "unit": "mL", "equivalents": 2.1}
+                {
+                  "reagent_id": "indole",
+                  "name": "Indole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 8.0,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "diisopropylamine",
+                  "name": "Diisopropylamine",
+                  "amount": 25.0,
+                  "unit": "mL",
+                  "equivalents": 2.1
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -592,8 +868,20 @@
               "name": "Hydride Reduction to DiPT",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "dipt_glyoxylamide", "name": "Indole-3-(N,N-diisopropyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "LiAlH4", "amount": 4.5, "unit": "g", "equivalents": 3.1}
+                {
+                  "reagent_id": "dipt_glyoxylamide",
+                  "name": "Indole-3-(N,N-diisopropyl)glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "LiAlH4",
+                  "amount": 4.5,
+                  "unit": "g",
+                  "equivalents": 3.1
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -639,9 +927,27 @@
               "name": "Indole-3-(N,N-diethyl)glyoxylamide Formation",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "indole", "name": "Indole", "amount": 11.7, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "oxalyl_chloride", "name": "Oxalyl chloride", "amount": 9.5, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "diethylamine", "name": "Diethylamine", "amount": 22.0, "unit": "mL", "equivalents": 2.1}
+                {
+                  "reagent_id": "indole",
+                  "name": "Indole",
+                  "amount": 11.7,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 9.5,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "diethylamine",
+                  "name": "Diethylamine",
+                  "amount": 22.0,
+                  "unit": "mL",
+                  "equivalents": 2.1
+                }
               ],
               "conditions": {
                 "temperature_c": 0.0,
@@ -659,8 +965,20 @@
               "name": "LAH Reduction to DET",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "det_glyoxylamide", "name": "Indole-3-(N,N-diethyl)glyoxylamide", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 4.6, "unit": "g", "equivalents": 3.0}
+                {
+                  "reagent_id": "det_glyoxylamide",
+                  "name": "Indole-3-(N,N-diethyl)glyoxylamide",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.6,
+                  "unit": "g",
+                  "equivalents": 3.0
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -690,7 +1008,7 @@
       "cas_number": "299-26-3",
       "smiles": "CC(CC1=CNC2=CC=CC=C12)N",
       "salt_form": "hydrochloride",
-      "salt_mw": 210.70,
+      "salt_mw": 210.7,
       "mp_c": 215.0,
       "tlc_rf": 0.33,
       "class": "tryptamine",
@@ -706,9 +1024,27 @@
               "name": "Condensation to 1-(indol-3-yl)-2-nitropropene",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "indole_3_carboxaldehyde", "name": "Indole-3-carboxaldehyde", "amount": 14.5, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 15.0, "unit": "mL", "equivalents": 2.1},
-                {"reagent_id": "ammonium_acetate", "name": "Ammonium acetate", "amount": 3.5, "unit": "g", "equivalents": 0.45}
+                {
+                  "reagent_id": "indole_3_carboxaldehyde",
+                  "name": "Indole-3-carboxaldehyde",
+                  "amount": 14.5,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "nitroethane",
+                  "name": "Nitroethane",
+                  "amount": 15.0,
+                  "unit": "mL",
+                  "equivalents": 2.1
+                },
+                {
+                  "reagent_id": "ammonium_acetate",
+                  "name": "Ammonium acetate",
+                  "amount": 3.5,
+                  "unit": "g",
+                  "equivalents": 0.45
+                }
               ],
               "conditions": {
                 "temperature_c": 105.0,
@@ -727,8 +1063,20 @@
               "name": "Hydride Reduction to alpha-MT",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "amt_nitropropene", "name": "1-(Indol-3-yl)-2-nitropropene", "amount": 10.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "lialh4", "name": "Lithium aluminium hydride", "amount": 5.0, "unit": "g", "equivalents": 2.7}
+                {
+                  "reagent_id": "amt_nitropropene",
+                  "name": "1-(Indol-3-yl)-2-nitropropene",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 5.0,
+                  "unit": "g",
+                  "equivalents": 2.7
+                }
               ],
               "conditions": {
                 "temperature_c": 66.0,
@@ -774,9 +1122,27 @@
               "name": "Pictet-Spengler Cyclization to Tetrahydroharmine",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "6_methoxytryptamine", "name": "6-Methoxytryptamine", "amount": 9.5, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "acetaldehyde", "name": "Acetaldehyde", "amount": 3.0, "unit": "mL", "equivalents": 1.1},
-                {"reagent_id": "dilute_sulfuric_acid", "name": "0.1N H2SO4 catalyst", "amount": 50.0, "unit": "mL", "equivalents": 0.0}
+                {
+                  "reagent_id": "6_methoxytryptamine",
+                  "name": "6-Methoxytryptamine",
+                  "amount": 9.5,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "acetaldehyde",
+                  "name": "Acetaldehyde",
+                  "amount": 3.0,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "dilute_sulfuric_acid",
+                  "name": "0.1N H2SO4 catalyst",
+                  "amount": 50.0,
+                  "unit": "mL",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 50.0,
@@ -795,8 +1161,20 @@
               "name": "Catalytic Dehydrogenation to Harmine",
               "type": "reaction",
               "reagents": [
-                {"reagent_id": "tetrahydroharmine", "name": "Tetrahydroharmine", "amount": 7.0, "unit": "g", "equivalents": 1.0},
-                {"reagent_id": "palladium_on_carbon", "name": "10% Pd/C catalyst", "amount": 0.7, "unit": "g", "equivalents": 0.0}
+                {
+                  "reagent_id": "tetrahydroharmine",
+                  "name": "Tetrahydroharmine",
+                  "amount": 7.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "palladium_on_carbon",
+                  "name": "10% Pd/C catalyst",
+                  "amount": 0.7,
+                  "unit": "g",
+                  "equivalents": 0.0
+                }
               ],
               "conditions": {
                 "temperature_c": 180.0,
@@ -810,6 +1188,341 @@
                 "recrystallization": "Ethanol"
               },
               "expected_yield_pct": 78.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "4_ho_met",
+      "number": 21,
+      "name": "4-HO-MET (Metocin)",
+      "chemical_name": "4-Hydroxy-N-methyl-N-ethyltryptamine",
+      "formula": "C13H18N2O",
+      "molecular_weight": 218.3,
+      "cas_number": "77872-41-4",
+      "smiles": "CCN(C)CCC1=CNC2=C1C(=CC=C2)O",
+      "salt_form": "fumarate",
+      "salt_mw": 276.33,
+      "mp_c": 168.0,
+      "tlc_rf": 0.42,
+      "class": "tryptamine",
+      "subclass": "4_substituted",
+      "description": "Widely studied 4-hydroxy tryptamine with high potency and vivid visual effects.",
+      "routes": [
+        {
+          "route_id": "speeter_anthony",
+          "name": "Speeter-Anthony synthesis via 4-benzyloxyindole and oxalyl chloride",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Oxalyl Chloride Acylation & Amidation",
+              "type": "acylation",
+              "reagents": [
+                {
+                  "reagent_id": "4_benzyloxyindole",
+                  "name": "4-Benzyloxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "oxalyl_chloride",
+                  "name": "Oxalyl chloride",
+                  "amount": 5.0,
+                  "unit": "mL",
+                  "equivalents": 1.3
+                },
+                {
+                  "reagent_id": "ethylmethylamine",
+                  "name": "N-Ethylmethylamine",
+                  "amount": 6.5,
+                  "unit": "mL",
+                  "equivalents": 1.7
+                }
+              ],
+              "conditions": {
+                "temperature_c": 0.0,
+                "duration_min": 60.0,
+                "solvent": "ether",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Filter crystalline glyoxylamide, wash with cold ether, dry under vacuum"
+              },
+              "expected_yield_pct": 85.0
+            },
+            {
+              "step_number": 2,
+              "name": "LAH Reduction & Catalytic Debenzylation",
+              "type": "reduction",
+              "reagents": [
+                {
+                  "reagent_id": "glyoxylamide_intermediate",
+                  "name": "4-Benzyloxy-N-ethyl-N-methylindole-3-glyoxylamide",
+                  "amount": 12.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.5,
+                  "unit": "g",
+                  "equivalents": 3.3
+                },
+                {
+                  "reagent_id": "pd_c",
+                  "name": "10% Palladium on carbon (Pd/C)",
+                  "amount": 1.0,
+                  "unit": "g",
+                  "equivalents": 0.0
+                }
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 240.0,
+                "atmosphere": "hydrogen",
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Filter catalyst over Celite, salt with fumaric acid in ethanol to give white crystals (mp 168 °C)"
+              },
+              "expected_yield_pct": 78.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "4_ho_mipt",
+      "number": 23,
+      "name": "4-HO-MiPT (Miprocin)",
+      "chemical_name": "4-Hydroxy-N-methyl-N-isopropyltryptamine",
+      "formula": "C14H20N2O",
+      "molecular_weight": 232.32,
+      "cas_number": "77872-43-6",
+      "smiles": "CC(C)N(C)CCC1=CNC2=C1C(=CC=C2)O",
+      "salt_form": "fumarate",
+      "salt_mw": 290.36,
+      "mp_c": 174.0,
+      "tlc_rf": 0.45,
+      "class": "tryptamine",
+      "subclass": "4_substituted",
+      "description": "Orally active psilocin analogue with rapid action and distinct cognitive clarity.",
+      "routes": [
+        {
+          "route_id": "speeter_anthony",
+          "name": "Reaction of 4-benzyloxyindole with oxalyl chloride and methylisopropylamine",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Amidation and Dual Hydrogenolysis",
+              "type": "acylation_reduction",
+              "reagents": [
+                {
+                  "reagent_id": "4_benzyloxyindole",
+                  "name": "4-Benzyloxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "methylisopropylamine",
+                  "name": "N-Methylisopropylamine",
+                  "amount": 8.0,
+                  "unit": "mL",
+                  "equivalents": 1.7
+                }
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 300.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Reduce glyoxylamide with LAH, deprotect O-benzyl with Pd/C and H2, precipitate fumarate (mp 173-174 °C)"
+              },
+              "expected_yield_pct": 74.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "ibogaine",
+      "number": 25,
+      "name": "Ibogaine",
+      "chemical_name": "12-Methoxyibogamine",
+      "formula": "C20H26N2O",
+      "molecular_weight": 310.43,
+      "cas_number": "83-74-9",
+      "smiles": "CCC1CC2CC3C1CC(C4=C3NC5=C4C=CC(=C5)OC)N2",
+      "salt_form": "hydrochloride",
+      "salt_mw": 346.9,
+      "mp_c": 152.0,
+      "tlc_rf": 0.35,
+      "class": "tryptamine",
+      "subclass": "iboga_alkaloid",
+      "description": "Complex monoterpene indole alkaloid from Tabernanthe iboga root bark. Intense addiction-interrupting neuropharmacology.",
+      "routes": [
+        {
+          "route_id": "root_bark_extraction",
+          "name": "Selective total alkaloid extraction and recrystallization from Tabernanthe iboga bark",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Acid Percolation & Precipitation",
+              "type": "extraction",
+              "reagents": [
+                {
+                  "reagent_id": "iboga_bark_powder",
+                  "name": "Pulverized Tabernanthe iboga root bark",
+                  "amount": 100.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "vinegar_acetic_acid",
+                  "name": "0.2 M Acetic Acid",
+                  "amount": 800.0,
+                  "unit": "mL",
+                  "equivalents": 0.0
+                }
+              ],
+              "conditions": {
+                "temperature_c": 60.0,
+                "duration_min": 180.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Basify extract to pH 10.5 with NH4OH, extract with ethyl acetate, precipitate hydrochloride salt (mp 299 °C decomp)"
+              },
+              "expected_yield_pct": 82.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "5_meo_dalt",
+      "number": 11,
+      "name": "5-MeO-DALT",
+      "chemical_name": "N,N-Diallyl-5-methoxytryptamine",
+      "formula": "C17H22N2O",
+      "molecular_weight": 270.37,
+      "cas_number": "928822-98-4",
+      "smiles": "COC1=CC2=C(C=C1)NC=C2CCN(CC=C)CC=C",
+      "salt_form": "hydrochloride",
+      "salt_mw": 306.83,
+      "mp_c": 181.0,
+      "tlc_rf": 0.51,
+      "class": "tryptamine",
+      "subclass": "5_substituted",
+      "description": "Diallylated 5-methoxytryptamine derivative synthesized by Alexander Shulgin in 2004.",
+      "routes": [
+        {
+          "route_id": "speeter_anthony_diallyl",
+          "name": "Reaction of 5-methoxyindole with oxalyl chloride and diallylamine followed by LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Acylation and LAH Reduction",
+              "type": "acylation_reduction",
+              "reagents": [
+                {
+                  "reagent_id": "5_methoxyindole",
+                  "name": "5-Methoxyindole",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "diallylamine",
+                  "name": "Diallylamine",
+                  "amount": 9.5,
+                  "unit": "mL",
+                  "equivalents": 1.2
+                },
+                {
+                  "reagent_id": "lialh4",
+                  "name": "Lithium aluminium hydride",
+                  "amount": 4.5,
+                  "unit": "g",
+                  "equivalents": 2.5
+                }
+              ],
+              "conditions": {
+                "temperature_c": 66.0,
+                "duration_min": 240.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Standard LAH quench, precipitate hydrochloride salt from anhydrous ether (mp 180-181 °C)"
+              },
+              "expected_yield_pct": 80.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "melatonin",
+      "number": 35,
+      "name": "Melatonin",
+      "chemical_name": "N-Acetyl-5-methoxytryptamine",
+      "formula": "C13H16N2O2",
+      "molecular_weight": 232.28,
+      "cas_number": "73-31-4",
+      "smiles": "CC(=O)NCCC1=CNC2=C1C=C(C=C2)OC",
+      "salt_form": "free_base",
+      "salt_mw": 232.28,
+      "mp_c": 117.0,
+      "tlc_rf": 0.48,
+      "class": "tryptamine",
+      "subclass": "biogenic_amine",
+      "description": "Endogenous circadian pineal hormone synthesized from serotonin via serotonin N-acetyltransferase and ASMT.",
+      "routes": [
+        {
+          "route_id": "acetylation_5mt",
+          "name": "Direct N-acetylation of 5-methoxytryptamine with acetic anhydride",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "N-Acylation",
+              "type": "acylation",
+              "reagents": [
+                {
+                  "reagent_id": "5_methoxytryptamine",
+                  "name": "5-Methoxytryptamine",
+                  "amount": 10.0,
+                  "unit": "g",
+                  "equivalents": 1.0
+                },
+                {
+                  "reagent_id": "acetic_anhydride",
+                  "name": "Acetic anhydride",
+                  "amount": 5.5,
+                  "unit": "mL",
+                  "equivalents": 1.1
+                },
+                {
+                  "reagent_id": "pyridine",
+                  "name": "Pyridine catalyst",
+                  "amount": 2.0,
+                  "unit": "mL",
+                  "equivalents": 0.4
+                }
+              ],
+              "conditions": {
+                "temperature_c": 40.0,
+                "duration_min": 60.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Pour into ice water, collect crystalline plates, recrystallize from ethanol/water (mp 116-118 °C)"
+              },
+              "expected_yield_pct": 91.0
             }
           ]
         }

@@ -18,9 +18,58 @@ from chemlab.simulation.total_syntheses import (
 def test_synthesis_registry_contains_pharmaceuticals() -> None:
     registry = SynthesisRegistry()
     recipes = registry.list_available_protocols()
-    expected = ["aspirin", "paracetamol", "caffeine_extraction", "indigo_dye", "benzocaine"]
+    expected = [
+        "aspirin",
+        "paracetamol",
+        "caffeine_extraction",
+        "indigo_dye",
+        "benzocaine",
+        "robinson_tropinone",
+        "atropine",
+        "triphenylmethanol_grignard",
+        "anthracene_diels_alder",
+    ]
     for exp in expected:
         assert exp in recipes, f"Missing expected recipe: {exp}"
+
+
+def test_robinson_tropinone_biomimetic_protocol() -> None:
+    registry = SynthesisRegistry()
+    tropinone = registry.get_protocol("robinson_tropinone")
+    assert tropinone.target_molecule == "Tropinon"
+    assert tropinone.cas_number == "532-24-1"
+    assert tropinone.molar_mass_g_mol == pytest.approx(139.19, rel=1e-3)
+    assert "succindialdehyde" in tropinone.initial_reagents
+    assert "methylamine_hcl" in tropinone.initial_reagents
+    assert "acetonedicarboxylic_acid" in tropinone.initial_reagents
+    assert tropinone.theoretical_yield_g(moles_limiting=0.1) == pytest.approx(13.919, rel=1e-2)
+
+
+def test_atropine_total_synthesis_protocol() -> None:
+    registry = SynthesisRegistry()
+    atropine = registry.get_protocol("atropine")
+    assert atropine.molar_mass_g_mol == pytest.approx(289.37, rel=1e-3)
+    assert len(atropine.stages) == 2  # Reduction to Tropine + Esterification
+    assert atropine.stages[0].technique == "ice_bath_quenching"
+    assert atropine.stages[1].technique == "reflux_heating"
+
+
+def test_triphenylmethanol_grignard_protocol() -> None:
+    registry = SynthesisRegistry()
+    grignard = registry.get_protocol("triphenylmethanol_grignard")
+    assert grignard.cas_number == "76-84-6"
+    assert "bromobenzene" in grignard.initial_reagents
+    assert "magnesium_turnings" in grignard.initial_reagents
+    assert "benzophenone" in grignard.initial_reagents
+
+
+def test_anthracene_diels_alder_cycloaddition() -> None:
+    registry = SynthesisRegistry()
+    da = registry.get_protocol("anthracene_diels_alder")
+    assert da.cas_number == "5443-49-2"
+    assert "anthracene" in da.initial_reagents
+    assert "maleic_anhydride" in da.initial_reagents
+    assert da.stages[0].temperature_target_c == pytest.approx(140.0, abs=5.0)
 
 
 def test_aspirin_synthesis_protocol_structure() -> None:

@@ -1,0 +1,565 @@
+{
+  "version": "1.0.0",
+  "source": "Vogel's Practical Organic Chemistry & Classic Natural Product Literature",
+  "description": "Comprehensive authentic laboratory synthesis protocols for tropane alkaloids, classical organic transformations (Grignard, Diels-Alder, Fischer indole, Sandmeyer, Cannizzaro), and natural alkaloid extractions.",
+  "syntheses": [
+    {
+      "id": "robinson_tropinone",
+      "target_molecule": "Tropinone",
+      "chemical_name": "8-Methyl-8-azabicyclo[3.2.1]octan-3-one",
+      "cas_number": "532-24-1",
+      "formula": "C8H13NO",
+      "molecular_weight": 139.19,
+      "category": "Tropane Alkaloids & Classic Syntheses",
+      "description": "Sir Robert Robinson's landmark 1917 biomimetic one-pot double-Mannich condensation forming the bicyclic tropane alkaloid core.",
+      "literature_reference": "Robinson, R. (1917). J. Chem. Soc., Trans., 111, 762-768; Vogel 5th ed.",
+      "mp_c": 42.0,
+      "bp_c": 225.0,
+      "tlc_rf": 0.45,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Acetal Hydrolysis & Succindialdehyde Generation",
+          "technique": "acid_hydrolysis",
+          "reagents": [
+            {"reagent_id": "2_5_dimethoxytetrahydrofuran", "name": "2,5-Dimethoxytetrahydrofuran", "amount": 13.2, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "hydrochloric_acid", "name": "0.1 M Hydrochloric Acid", "amount": 50.0, "unit": "mL", "equivalents": 0.5}
+          ],
+          "conditions": {
+            "temperature_c": 75.0,
+            "duration_min": 25.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Cool to room temperature (20 °C) in water bath",
+            "notes": "Generates reactive succindialdehyde in situ."
+          },
+          "expected_yield_pct": 95.0
+        },
+        {
+          "step_number": 2,
+          "name": "One-Pot Biomimetic Double Mannich Condensation",
+          "technique": "mannich_condensation",
+          "reagents": [
+            {"reagent_id": "methylamine_hcl", "name": "Methylamine Hydrochloride", "amount": 6.8, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "acetonedicarboxylic_acid", "name": "1,3-Acetonedicarboxylic Acid", "amount": 14.6, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sodium_acetate", "name": "Sodium Acetate Trihydrate (Buffer)", "amount": 15.0, "unit": "g", "equivalents": 1.1}
+          ],
+          "conditions": {
+            "temperature_c": 25.0,
+            "duration_min": 180.0,
+            "ph": 5.5,
+            "atmosphere": "air",
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Spontaneous decarboxylation of intermediate tropinone dicarboxylic acid",
+            "basification": "Basify to pH 12 with 40% aqueous potassium hydroxide",
+            "extraction": "Extract 3x with 60 mL chloroform in separatory funnel",
+            "drying": "Dry organic extracts over anhydrous potassium carbonate (K2CO3)",
+            "evaporation": "Rotary evaporator at 45 °C and 50 mbar to yield crude orange oil",
+            "purification": "Vacuum distillation (bp 113 °C at 25 mmHg) or sublimation to give white crystalline needles"
+          },
+          "expected_yield_pct": 78.0
+        }
+      ]
+    },
+    {
+      "id": "atropine_total_synthesis",
+      "target_molecule": "(±)-Atropine",
+      "chemical_name": "(RS)-(8-Methyl-8-azabicyclo[3.2.1]oct-3-yl) 3-hydroxy-2-phenylpropanoate",
+      "cas_number": "51-55-8",
+      "formula": "C17H23NO3",
+      "molecular_weight": 289.37,
+      "category": "Tropane Alkaloids & Classic Syntheses",
+      "description": "Total chemical synthesis of the anticholinergic tropane alkaloid atropine via stereoselective reduction of tropinone followed by Fischer esterification with tropic acid.",
+      "literature_reference": "Willstätter, R. (1901). Ber. Dtsch. Chem. Ges., 34, 129; Vogel's Practical Organic Chemistry.",
+      "mp_c": 115.0,
+      "tlc_rf": 0.28,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Stereoselective Carbonyl Reduction to Tropine (endo)",
+          "technique": "reduction",
+          "reagents": [
+            {"reagent_id": "tropinone", "name": "Tropinone", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sodium_metal", "name": "Sodium Metal Pieces", "amount": 5.0, "unit": "g", "equivalents": 3.0},
+            {"reagent_id": "absolute_ethanol", "name": "Anhydrous Ethanol", "amount": 100.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 78.0,
+            "duration_min": 45.0,
+            "atmosphere": "inert_argon",
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Cautiously quench excess sodium with water, acidify with HCl",
+            "isolation": "Extract neutral impurities with ether, basify aqueous layer with KOH and extract tropine with chloroform",
+            "purification": "Vacuum sublimation to yield pure tropine (mp 63 °C)"
+          },
+          "expected_yield_pct": 82.0
+        },
+        {
+          "step_number": 2,
+          "name": "Fischer Acid-Catalyzed Esterification with Tropic Acid",
+          "technique": "esterification",
+          "reagents": [
+            {"reagent_id": "tropine", "name": "Tropine (endo)", "amount": 5.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "tropic_acid", "name": "(±)-Tropic Acid", "amount": 5.9, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "hydrogen_chloride_gas", "name": "Dry HCl Gas (Catalyst)", "amount": 1.0, "unit": "g", "equivalents": 0.8}
+          ],
+          "conditions": {
+            "temperature_c": 100.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "isolation": "Dissolve in dilute sulfuric acid, wash with ether, basify with ammonia to pH 9.5",
+            "extraction": "Extract atropine base with chloroform, dry over anhydrous sodium sulfate",
+            "recrystallization": "Recrystallize from acetone/petroleum ether to give colorless lustrous needles (mp 115 °C)"
+          },
+          "expected_yield_pct": 74.0
+        }
+      ]
+    },
+    {
+      "id": "belladonna_alkaloid_extraction",
+      "target_molecule": "Tropane Alkaloid Extract (Hyoscyamine / Scopolamine)",
+      "chemical_name": "Mixed Solanaceae Tropane Alkaloids",
+      "cas_number": "51-55-8",
+      "formula": "C17H23NO3",
+      "molecular_weight": 289.37,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Quantitative extraction and isolation of pharmaceutical-grade tropane alkaloids from Atropa belladonna (Deadly Nightshade) dried leaves using Soxhlet percolation and acid-base partitioning.",
+      "literature_reference": "WHO Pharmacopoeia / European Pharmacopoeia Monographs on Belladonnae folium.",
+      "mp_c": 108.0,
+      "tlc_rf": 0.30,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Continuous Soxhlet Solid-Liquid Extraction",
+          "technique": "soxhlet_extraction",
+          "reagents": [
+            {"reagent_id": "belladonna_powder", "name": "Pulverized Atropa belladonna Leaves (No. 40 mesh)", "amount": 100.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "ethanol_85", "name": "85% Aqueous Ethanol (Solvent)", "amount": 400.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 82.0,
+            "duration_min": 240.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "concentration": "Concentrate extract on rotary evaporator at 45 °C and 80 mbar to thick dark syrup",
+            "notes": "Exhaustive extraction verified by Meyer's reagent testing of siphon liquid."
+          },
+          "expected_yield_pct": 92.0
+        },
+        {
+          "step_number": 2,
+          "name": "Acid-Base Partition & Alkaloid Crystallization",
+          "technique": "liquid_liquid_extraction",
+          "reagents": [
+            {"reagent_id": "hydrochloric_acid", "name": "0.5 M Hydrochloric Acid", "amount": 80.0, "unit": "mL", "equivalents": 0.0},
+            {"reagent_id": "dichloromethane", "name": "Dichloromethane (DCM)", "amount": 150.0, "unit": "mL", "equivalents": 0.0},
+            {"reagent_id": "ammonia_solution", "name": "Concentrated Ammonium Hydroxide (28%)", "amount": 15.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 20.0,
+            "duration_min": 45.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "chlorophyll_removal": "Wash acidic solution twice with 40 mL DCM to remove non-alkaloidal lipids and chlorophyll",
+            "alkaloid_release": "Basify aqueous layer with NH4OH to pH 10.0 to liberate free amine bases",
+            "extraction": "Extract free alkaloids 3x with 50 mL DCM in separatory funnel",
+            "evaporation": "Evaporate DCM on rotovap to yield pale yellow crystalline alkaloid cake",
+            "purification": "Dissolve in ethanol, titrate with sulfuric acid to obtain pharmaceutical atropine sulfate monohydrate"
+          },
+          "expected_yield_pct": 85.0
+        }
+      ]
+    },
+    {
+      "id": "scopolamine_datura_isolation",
+      "target_molecule": "Scopolamine Hydrobromide",
+      "chemical_name": "(-)-(1S,2S,4R,5R,7s)-9-Methyl-3-oxa-9-azatricyclo[3.3.1.0^{2,4}]non-7-yl (2S)-3-hydroxy-2-phenylpropanoate hydrobromide",
+      "cas_number": "114-49-8",
+      "formula": "C17H21NO4 · HBr · 3H2O",
+      "molecular_weight": 438.31,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Isolation of the anti-emetic and anticholinergic epoxide alkaloid scopolamine from Datura stramonium / Duboisia leaves followed by hydrobromide salt precipitation.",
+      "literature_reference": "Evans, W. C. (1979). The Tropane Alkaloids. Trease & Evans Pharmacognosy.",
+      "mp_c": 195.0,
+      "tlc_rf": 0.38,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Ammoniacal Extraction & Solvent Percolation",
+          "technique": "maceration_percolation",
+          "reagents": [
+            {"reagent_id": "datura_leaves", "name": "Dried Datura stramonium Leaf Powder", "amount": 150.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "ammoniacal_chloroform", "name": "Chloroform with 1.5% v/v concentrated NH4OH", "amount": 600.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 22.0,
+            "duration_min": 360.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "filtration": "Suction filtration through sintered glass funnel to remove leaf marc",
+            "acid_transfer": "Extract chloroform solution with three 60 mL portions of 0.2 M sulfuric acid"
+          },
+          "expected_yield_pct": 88.0
+        },
+        {
+          "step_number": 2,
+          "name": "Fractional Salt Crystallization",
+          "technique": "salt_precipitation",
+          "reagents": [
+            {"reagent_id": "hydrobromic_acid", "name": "48% Aqueous Hydrobromic Acid (HBr)", "amount": 4.0, "unit": "mL", "equivalents": 1.05},
+            {"reagent_id": "acetone", "name": "Absolute Acetone", "amount": 100.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 4.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "precipitation": "Dropwise addition of HBr to acetone solution triggers rapid crystallization of white scopolamine hydrobromide trihydrate",
+            "filtration": "Collect crystals on Büchner funnel, wash with cold acetone, vacuum dry (mp 195-199 °C)"
+          },
+          "expected_yield_pct": 82.0
+        }
+      ]
+    },
+    {
+      "id": "triphenylmethanol_grignard",
+      "target_molecule": "Triphenylmethanol",
+      "chemical_name": "Triphenylcarbinol",
+      "cas_number": "76-83-5",
+      "formula": "C19H16O",
+      "molecular_weight": 260.33,
+      "category": "Vogel's Practical Organic Chemistry",
+      "description": "Preparation of phenylmagnesium bromide Grignard reagent from bromobenzene and magnesium turnings in anhydrous ether, followed by nucleophilic addition to methyl benzoate or benzophenone.",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Section 5.17, p. 540-542.",
+      "mp_c": 162.0,
+      "tlc_rf": 0.52,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Grignard Reagent Generation (Phenylmagnesium Bromide)",
+          "technique": "organometallic_formation",
+          "reagents": [
+            {"reagent_id": "bromobenzene", "name": "Dry Bromobenzene", "amount": 15.7, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "magnesium_turnings", "name": "Magnesium Turnings (Flame-Dried)", "amount": 2.45, "unit": "g", "equivalents": 1.01},
+            {"reagent_id": "iodine_crystal", "name": "Iodine Crystal (Initiator)", "amount": 0.05, "unit": "g", "equivalents": 0.002},
+            {"reagent_id": "anhydrous_ether", "name": "Anhydrous Diethyl Ether", "amount": 80.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 35.0,
+            "duration_min": 45.0,
+            "atmosphere": "inert_argon",
+            "fume_hood": true
+          },
+          "workup": {
+            "activation": "Crush Mg turnings under ether with glass rod, add iodine crystal to initiate exothermic reflux",
+            "addition": "Add bromobenzene in ether dropwise to sustain gentle reflux until all magnesium dissolves"
+          },
+          "expected_yield_pct": 92.0
+        },
+        {
+          "step_number": 2,
+          "name": "Nucleophilic Addition to Benzophenone & Hydrolysis",
+          "technique": "grignard_addition",
+          "reagents": [
+            {"reagent_id": "benzophenone", "name": "Benzophenone in 30 mL Ether", "amount": 18.2, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sulfuric_acid", "name": "10% Aqueous Sulfuric Acid (Quench)", "amount": 50.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 20.0,
+            "duration_min": 30.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Pour into crushed ice with 10% H2SO4 to dissolve basic magnesium salts",
+            "separation": "Separate ethereal layer, wash with aqueous NaHCO3 and brine, dry over MgSO4",
+            "crystallization": "Distill off ether, recrystallize residue from boiling ethanol to afford colorless prisms (mp 162 °C)"
+          },
+          "expected_yield_pct": 84.0
+        }
+      ]
+    },
+    {
+      "id": "anthracene_diels_alder",
+      "target_molecule": "9,10-Dihydroanthracene-9,10-endo-alpha,beta-succinic Anhydride",
+      "chemical_name": "Anthracene-Maleic Anhydride Diels-Alder Adduct",
+      "cas_number": "5443-49-2",
+      "formula": "C18H12O3",
+      "molecular_weight": 276.29,
+      "category": "Vogel's Practical Organic Chemistry",
+      "description": "Concerted [4+2] cycloaddition of maleic anhydride to the 9,10-positions of anthracene in boiling xylene.",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Section 7.5, p. 1115-1116.",
+      "mp_c": 262.0,
+      "tlc_rf": 0.41,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Thermal [4+2] Cycloaddition Reflux",
+          "technique": "reflux_heating",
+          "reagents": [
+            {"reagent_id": "anthracene", "name": "Pure Anthracene", "amount": 5.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "maleic_anhydride", "name": "Maleic Anhydride", "amount": 2.75, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "xylene", "name": "Dry Xylene (Solvent)", "amount": 40.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 140.0,
+            "duration_min": 30.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Cool reaction flask in ice bath; adduct separates as heavy colorless needles",
+            "filtration": "Suction filtration on Büchner funnel, wash with 10 mL cold xylene then 15 mL petroleum ether",
+            "purity_check": "Melting point sharp at 262-263 °C, insolubility in petroleum ether confirms absence of unreacted anthracene"
+          },
+          "expected_yield_pct": 91.0
+        }
+      ]
+    },
+    {
+      "id": "fischer_tetrahydrocarbazole",
+      "target_molecule": "1,2,3,4-Tetrahydrocarbazole",
+      "chemical_name": "2,3,4,9-Tetrahydro-1H-carbazole",
+      "cas_number": "942-01-8",
+      "formula": "C12H13N",
+      "molecular_weight": 171.24,
+      "category": "Vogel's Practical Organic Chemistry",
+      "description": "Fischer indole synthesis involving condensation of cyclohexanone with phenylhydrazine in glacial acetic acid followed by sigmatropic rearrangement and cyclization with ammonia expulsion.",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Section 8.4, p. 1161-1162.",
+      "mp_c": 119.0,
+      "tlc_rf": 0.65,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Hydrazone Formation & Acid-Catalyzed Cyclization",
+          "technique": "reflux_heating",
+          "reagents": [
+            {"reagent_id": "cyclohexanone", "name": "Cyclohexanone", "amount": 9.8, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "phenylhydrazine", "name": "Phenylhydrazine", "amount": 10.8, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "glacial_acetic_acid", "name": "Glacial Acetic Acid", "amount": 40.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 118.0,
+            "duration_min": 20.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "precipitation": "Pour hot reaction mixture with vigorous stirring into 150 mL crushed ice/water",
+            "filtration": "Filter solid greenish-yellow crude mass, wash thoroughly with cold water",
+            "recrystallization": "Recrystallize from boiling ethanol (with decolourising charcoal) to yield glistening leaf-like prisms (mp 119 °C)"
+          },
+          "expected_yield_pct": 86.0
+        }
+      ]
+    },
+    {
+      "id": "sandmeyer_chlorobenzene",
+      "target_molecule": "Chlorobenzene",
+      "chemical_name": "Monochlorobenzene",
+      "cas_number": "108-90-7",
+      "formula": "C6H5Cl",
+      "molecular_weight": 112.56,
+      "category": "Vogel's Practical Organic Chemistry",
+      "description": "Classical Sandmeyer reaction: Diazotization of aniline with sodium nitrite in aqueous hydrochloric acid, followed by copper(I) chloride catalyzed replacement of the diazonium group.",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Section 6.13, p. 938-940.",
+      "mp_c": -45.0,
+      "bp_c": 132.0,
+      "tlc_rf": 0.85,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Diazotization of Aniline Hydrochloride",
+          "technique": "diazotization",
+          "reagents": [
+            {"reagent_id": "aniline", "name": "Aniline", "amount": 18.6, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "hydrochloric_acid", "name": "Concentrated Hydrochloric Acid (37%)", "amount": 40.0, "unit": "mL", "equivalents": 2.4},
+            {"reagent_id": "sodium_nitrite", "name": "Sodium Nitrite in 40 mL Water", "amount": 14.5, "unit": "g", "equivalents": 1.05}
+          ],
+          "conditions": {
+            "temperature_c": 0.0,
+            "duration_min": 30.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "temperature_control": "Maintain strictly between 0 °C and 5 °C by internal addition of crushed ice",
+            "endpoint": "Confirm free nitrous acid with starch-iodide test paper (faint blue spot)"
+          },
+          "expected_yield_pct": 98.0
+        },
+        {
+          "step_number": 2,
+          "name": "Copper(I) Chloride Catalyzed Substitution & Steam Distillation",
+          "technique": "steam_distillation",
+          "reagents": [
+            {"reagent_id": "copper_i_chloride", "name": "Freshly Prepared Copper(I) Chloride", "amount": 10.0, "unit": "g", "equivalents": 0.5},
+            {"reagent_id": "hydrochloric_acid", "name": "Concentrated HCl", "amount": 20.0, "unit": "mL", "equivalents": 1.2}
+          ],
+          "conditions": {
+            "temperature_c": 60.0,
+            "duration_min": 45.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "nitrogen_evolution": "Slowly add cold diazonium solution to CuCl solution; nitrogen gas evolves briskly",
+            "steam_distillation": "Steam distill the mixture until no further oily droplets pass over",
+            "separation": "Separate lower organic chlorobenzene layer, wash with dilute NaOH then water, dry over anhydrous CaCl2",
+            "distillation": "Fractional distillation collecting pure fraction at 131-132 °C"
+          },
+          "expected_yield_pct": 76.0
+        }
+      ]
+    },
+    {
+      "id": "cannizzaro_benzaldehyde",
+      "target_molecule": "Benzyl Alcohol & Benzoic Acid",
+      "chemical_name": "Phenylmethanol & Benzenecarboxylic Acid",
+      "cas_number": "100-51-6",
+      "formula": "C7H8O / C7H6O2",
+      "molecular_weight": 108.14,
+      "category": "Vogel's Practical Organic Chemistry",
+      "description": "Base-catalyzed redox disproportionation of non-enolizable benzaldehyde yielding equal molar amounts of benzyl alcohol (reduced) and potassium benzoate (oxidized).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Section 6.25, p. 1029-1030.",
+      "mp_c": 122.0,
+      "bp_c": 205.0,
+      "tlc_rf": 0.48,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Alkaline Disproportionation & Separation",
+          "technique": "redox_disproportionation",
+          "reagents": [
+            {"reagent_id": "benzaldehyde", "name": "Freshly Distilled Benzaldehyde", "amount": 21.2, "unit": "g", "equivalents": 2.0},
+            {"reagent_id": "potassium_hydroxide", "name": "Potassium Hydroxide in 15 mL Water", "amount": 18.0, "unit": "g", "equivalents": 1.6}
+          ],
+          "conditions": {
+            "temperature_c": 25.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "emulsion": "Shake until stable emulsion forms, let stand overnight until solidified to potassium benzoate cake",
+            "alcohol_isolation": "Add 50 mL water, extract benzyl alcohol with three 25 mL portions of ether, dry over MgSO4 and distill (bp 205 °C)",
+            "acid_isolation": "Acidify remaining aqueous layer with conc. HCl to pH 1; pure benzoic acid precipitates as brilliant white plates (mp 122 °C)"
+          },
+          "expected_yield_pct": 89.0
+        }
+      ]
+    },
+    {
+      "id": "manske_harmala_extraction",
+      "target_molecule": "Harmine & Harmaline Hydrochloride",
+      "chemical_name": "7-Methoxy-1-methyl-9H-pyrido[3,4-b]indole",
+      "cas_number": "442-51-3",
+      "formula": "C13H12N2O",
+      "molecular_weight": 212.25,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "The classic Manske salt-fractionation protocol for the quantitative extraction and separation of beta-carboline alkaloids from Syrian Rue (Peganum harmala) seeds.",
+      "literature_reference": "Manske, R. H. F. (1927). J. Chem. Soc., 2496; Hasenfratz, V. (1927). Ann. Chim.",
+      "mp_c": 261.0,
+      "tlc_rf": 0.55,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Dilute Acid Decoction & Filtration",
+          "technique": "acid_decoction",
+          "reagents": [
+            {"reagent_id": "peganum_harmala_seeds", "name": "Whole Syrian Rue Seeds", "amount": 100.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "acetic_acid", "name": "3% Aqueous Acetic Acid", "amount": 600.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 95.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "filtration": "Hot vacuum filtration through coarse filter to separate spent seeds",
+            "concentration": "Boil down combined decoctions to approx. 300 mL"
+          },
+          "expected_yield_pct": 95.0
+        },
+        {
+          "step_number": 2,
+          "name": "Manske Salting-Out (NaCl Fractional Crystallization)",
+          "technique": "salting_out",
+          "reagents": [
+            {"reagent_id": "sodium_chloride", "name": "Non-Iodized Sodium Chloride (NaCl)", "amount": 30.0, "unit": "g", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 4.0,
+            "duration_min": 180.0,
+            "fume_hood": false
+          },
+          "workup": {
+            "precipitation": "Dissolve 100 g/L NaCl in boiling extract, cool slowly to 4 °C; harmine and harmaline hydrochlorides crystallize quantitatively as glowing yellow needles",
+            "separation": "Collect crystals, dissolve in water, adjust to pH 8.0 with NH4OH to precipitate pure harmine (mp 261 °C), then pH 10.5 to precipitate harmaline (mp 250 °C)"
+          },
+          "expected_yield_pct": 88.0
+        }
+      ]
+    },
+    {
+      "id": "quinine_cinchona_extraction",
+      "target_molecule": "Quinine Sulfate",
+      "chemical_name": "(R)-(6-Methoxyquinolin-4-yl)[(2S,4S,8R)-8-vinyl-1-azabicyclo[2.2.2]oct-2-yl]methanol sulfate",
+      "cas_number": "6119-70-6",
+      "formula": "(C20H24N2O2)2 · H2SO4 · 2H2O",
+      "molecular_weight": 782.94,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Industrial and classical alkaloid extraction from Cinchona succirubra bark with slaked lime, toluene extraction, and selective crystallization as sparingly soluble neutral sulfate.",
+      "literature_reference": "Pelletier & Caventou (1820); British Pharmacopoeia monograph on Quinine.",
+      "mp_c": 205.0,
+      "tlc_rf": 0.22,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Alkaline Digestion & Organic Extraction",
+          "technique": "liquid_extraction",
+          "reagents": [
+            {"reagent_id": "cinchona_bark", "name": "Fine Cinchona Bark Powder", "amount": 100.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "calcium_hydroxide", "name": "Slaked Lime (Ca(OH)2)", "amount": 30.0, "unit": "g", "equivalents": 0.0},
+            {"reagent_id": "toluene", "name": "Toluene (Hot Solvent)", "amount": 400.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 90.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "paste": "Mix bark with lime and water to break tannin-alkaloid complexes",
+            "extraction": "Extract paste with hot toluene 3 times in water bath",
+            "acid_transfer": "Extract toluene layers with boiling dilute sulfuric acid"
+          },
+          "expected_yield_pct": 85.0
+        },
+        {
+          "step_number": 2,
+          "name": "Selective Sulfate Crystallization",
+          "technique": "fractional_crystallization",
+          "reagents": [
+            {"reagent_id": "sodium_hydroxide", "name": "0.1 M NaOH (pH adjustment)", "amount": 5.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 10.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "neutralization": "Neutralize hot acidic solution to exactly pH 6.0; quinine sulfate is uniquely insoluble in cold water (1:800)",
+            "crystallization": "Chilling deposits brilliant silky white needles of quinine sulfate, leaving cinchonine and quinidine in mother liquor",
+            "fluorescence": "Dissolving crystals in dilute H2SO4 displays intense blue UV fluorescence under 365 nm excitation"
+          },
+          "expected_yield_pct": 79.0
+        }
+      ]
+    }
+  ]
+}

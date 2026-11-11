@@ -1208,6 +1208,252 @@ _register(
     )
 )
 
+# ── TROPANE ALKALOIDS & CLASSICAL SYNTHESIS REAGENTS ───────────────────────
+_register(
+    Reagent(
+        id="succindialdehyde",
+        name="Succindialdehyd (Butandial)",
+        formula="C4H6O2",
+        category=ReagentCategory.MISCELLANEOUS,
+        molar_mass_g_per_mol=86.09,
+        density_g_per_ml=1.06,
+        cas_number="638-37-9",
+        ph=5.5,
+        default_color_rgba=_rgba(0.95, 0.92, 0.75, 1.0),
+        particle_type=ParticleType.LIQUID_DROPLET,
+        ghs_hazards=(
+            _ghs("H302", "Gesundheitsschädlich bei Verschlucken.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H315", "Verursacht Hautreizungen.", "GHS07", SignalWord.WARNING, 2),
+        ),
+        storage_group=StorageGroup.GENERAL_STORAGE,
+        common_uses="Vorstufe für Robinson-Tropinon-Synthese",
+        description="Reaktiver Dialdehyd, in situ generiert aus 2,5-Dimethoxytetrahydrofuran.",
+    )
+)
+
+_register(
+    Reagent(
+        id="methylamine_hcl",
+        name="Methylamin-Hydrochlorid",
+        formula="CH5N.HCl",
+        category=ReagentCategory.NITROGEN_COMPOUND,
+        molar_mass_g_per_mol=67.52,
+        density_g_per_ml=1.42,
+        cas_number="593-51-1",
+        ph=5.0,
+        default_color_rgba=_rgba(0.98, 0.98, 0.98, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H302", "Gesundheitsschädlich bei Verschlucken.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H319", "Verursacht schwere Augenreizung.", "GHS07", SignalWord.WARNING, 2),
+        ),
+        storage_group=StorageGroup.GENERAL_STORAGE,
+        common_uses="Stickstoff-Quelle für Mannich-Kondensationen und Alkaloid-Synthesen",
+        description="Hygroskopisches weißes Salz.",
+    )
+)
+
+_register(
+    Reagent(
+        id="acetonedicarboxylic_acid",
+        name="1,3-Aceton-dicarbonsäure",
+        formula="C5H6O5",
+        category=ReagentCategory.ACID,
+        molar_mass_g_per_mol=146.10,
+        density_g_per_ml=1.46,
+        cas_number="542-05-2",
+        ph=2.5,
+        default_color_rgba=_rgba(0.96, 0.96, 0.94, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H315", "Verursacht Hautreizungen.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H319", "Verursacht schwere Augenreizung.", "GHS07", SignalWord.WARNING, 2),
+        ),
+        storage_group=StorageGroup.ACID_CABINET,
+        common_uses="Robinson-Tropinonsynthese, Decarboxylierungskomponente",
+        description="Beta-Ketosäure; decarboxyliert leicht.",
+    )
+)
+
+_register(
+    Reagent(
+        id="tropinone",
+        name="Tropinon",
+        formula="C8H13NO",
+        category=ReagentCategory.NITROGEN_COMPOUND,
+        molar_mass_g_per_mol=139.19,
+        density_g_per_ml=1.04,
+        cas_number="532-24-1",
+        ph=8.5,
+        default_color_rgba=_rgba(0.93, 0.88, 0.72, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H302", "Gesundheitsschädlich bei Verschlucken.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H312", "Gesundheitsschädlich bei Hautkontakt.", "GHS07", SignalWord.WARNING, 2),
+        ),
+        storage_group=StorageGroup.TOXIC_SECURE,
+        common_uses="Bicyclischer Tropan-Kern; Vorstufe für Atropin und Scopolamin",
+        description="Brückenstickstoff-Keton; bicyclisches Alkaloid-Zwischenprodukt.",
+    )
+)
+
+_register(
+    Reagent(
+        id="atropine",
+        name="(±)-Atropin",
+        formula="C17H23NO3",
+        category=ReagentCategory.BIOLOGICAL,
+        molar_mass_g_per_mol=289.37,
+        density_g_per_ml=1.19,
+        cas_number="51-55-8",
+        ph=9.2,
+        default_color_rgba=_rgba(0.98, 0.98, 0.97, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H300", "Lebensgefahr bei Verschlucken.", "GHS06", SignalWord.DANGER, 1),
+            _ghs("H330", "Lebensgefahr bei Einatmen.", "GHS06", SignalWord.DANGER, 1),
+        ),
+        storage_group=StorageGroup.TOXIC_SECURE,
+        common_uses="Anticholinergikum, Mydriatikum, Nervengift-Antidot",
+        description="Hochpotentes Tropanalkaloid aus Atropa belladonna.",
+    )
+)
+
+_register(
+    Reagent(
+        id="scopolamine",
+        name="(-)-Scopolamin (Hyoscin)",
+        formula="C17H21NO4",
+        category=ReagentCategory.BIOLOGICAL,
+        molar_mass_g_per_mol=303.35,
+        density_g_per_ml=1.20,
+        cas_number="51-34-3",
+        ph=9.0,
+        default_color_rgba=_rgba(0.97, 0.96, 0.94, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H300", "Lebensgefahr bei Verschlucken.", "GHS06", SignalWord.DANGER, 1),
+            _ghs("H310", "Lebensgefahr bei Hautkontakt.", "GHS06", SignalWord.DANGER, 1),
+            _ghs("H330", "Lebensgefahr bei Einatmen.", "GHS06", SignalWord.DANGER, 1),
+        ),
+        storage_group=StorageGroup.TOXIC_SECURE,
+        common_uses="ZNS-dämpfendes Tropanalkaloid, Kinetose-Prävention",
+        description="Epoxidiertes Tropanalkaloid aus Datura und Hyoscyamus.",
+    )
+)
+
+_register(
+    Reagent(
+        id="anthracene",
+        name="Anthracen",
+        formula="C14H10",
+        category=ReagentCategory.ORGANIC_SOLVENT,
+        molar_mass_g_per_mol=178.23,
+        density_g_per_ml=1.25,
+        cas_number="120-12-7",
+        ph=7.0,
+        default_color_rgba=_rgba(0.95, 0.95, 0.98, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H315", "Verursacht Hautreizungen.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H410", "Sehr giftig für Wasserorganismen mit langfristiger Wirkung.", "GHS09", SignalWord.WARNING, 1),
+        ),
+        storage_group=StorageGroup.GENERAL_STORAGE,
+        common_uses="Diels-Alder-Dien, Szintillationskristalle, Farbstoffchemie",
+        description="Tricyclischer aromatischer Kohlenwasserstoff mit blau-violetter Fluoreszenz.",
+    )
+)
+
+_register(
+    Reagent(
+        id="maleic_anhydride",
+        name="Maleinsäureanhydrid",
+        formula="C4H2O3",
+        category=ReagentCategory.ACID,
+        molar_mass_g_per_mol=98.06,
+        density_g_per_ml=1.48,
+        cas_number="108-31-6",
+        ph=2.0,
+        default_color_rgba=_rgba(0.98, 0.98, 0.98, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H302", "Gesundheitsschädlich bei Verschlucken.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H314", "Verursacht schwere Verätzungen der Haut und schwere Augenschäden.", "GHS05", SignalWord.DANGER, 1),
+            _ghs("H334", "Kann bei Einatmen Allergie, asthmaartige Symptome verursachen.", "GHS08", SignalWord.DANGER, 1),
+        ),
+        storage_group=StorageGroup.ACID_CABINET,
+        common_uses="Diels-Alder-Dienophil, Polyesterharze",
+        description="Reaktives cyclisches Säureanhydrid.",
+    )
+)
+
+_register(
+    Reagent(
+        id="bromobenzene",
+        name="Brombenzol",
+        formula="C6H5Br",
+        category=ReagentCategory.ORGANIC_SOLVENT,
+        molar_mass_g_per_mol=157.01,
+        density_g_per_ml=1.49,
+        cas_number="108-86-1",
+        ph=7.0,
+        default_color_rgba=_rgba(0.92, 0.92, 0.95, 1.0),
+        particle_type=ParticleType.LIQUID_DROPLET,
+        ghs_hazards=(
+            _ghs("H226", "Flüssigkeit und Dampf entzündbar.", "GHS02", SignalWord.WARNING, 3),
+            _ghs("H315", "Verursacht Hautreizungen.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H411", "Giftig für Wasserorganismen, mit langfristiger Wirkung.", "GHS09", SignalWord.WARNING, 2),
+        ),
+        storage_group=StorageGroup.FLAMMABLE_CABINET,
+        common_uses="Grignard-Reagenz-Synthese (Phenylmagnesiumbromid)",
+        description="Farblose, aromatisch riechende schwere Flüssigkeit.",
+    )
+)
+
+_register(
+    Reagent(
+        id="benzophenone",
+        name="Benzophenon (Diphenylketon)",
+        formula="C13H10O",
+        category=ReagentCategory.ORGANIC_SOLVENT,
+        molar_mass_g_per_mol=182.22,
+        density_g_per_ml=1.11,
+        cas_number="119-61-9",
+        ph=7.0,
+        default_color_rgba=_rgba(0.98, 0.98, 0.95, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H351", "Kann vermutlich Krebs erzeugen.", "GHS08", SignalWord.WARNING, 2),
+            _ghs("H412", "Schädlich für Wasserorganismen, mit langfristiger Wirkung.", "GHS09", SignalWord.WARNING, 3),
+        ),
+        storage_group=StorageGroup.GENERAL_STORAGE,
+        common_uses="Elektrophiles Substrat für Grignard-Reaktion; Ketyl-Radikal-Indikator",
+        description="Weißer aromatischer Feststoff mit blumigem Geruch.",
+    )
+)
+
+_register(
+    Reagent(
+        id="triphenylmethanol",
+        name="Triphenylmethanol (Tritylalkohol)",
+        formula="C19H16O",
+        category=ReagentCategory.ORGANIC_SOLVENT,
+        molar_mass_g_per_mol=260.33,
+        density_g_per_ml=1.19,
+        cas_number="76-84-6",
+        ph=7.0,
+        default_color_rgba=_rgba(0.97, 0.97, 0.98, 1.0),
+        particle_type=ParticleType.POWDER_CRYSTAL,
+        ghs_hazards=(
+            _ghs("H315", "Verursacht Hautreizungen.", "GHS07", SignalWord.WARNING, 2),
+            _ghs("H319", "Verursacht schwere Augenreizung.", "GHS07", SignalWord.WARNING, 2),
+        ),
+        storage_group=StorageGroup.GENERAL_STORAGE,
+        common_uses="Klassisches Grignard-Produkt; Trityl-Kation-Farbreaktion mit H2SO4 (intensiv gelb/orange)",
+        description="Weißer kristalliner Feststoff, bildet Halochromie mit starken Säuren.",
+    )
+)
+
 
 # ── REGISTRY CONSTRUCTION ──────────────────────────────────────────────────
 

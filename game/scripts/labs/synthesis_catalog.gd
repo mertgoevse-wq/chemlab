@@ -6,6 +6,7 @@ extends RefCounted
 
 const PIHKAL_PATH: String = "res://data/synthesis/pihkal_complete.json"
 const TIHKAL_PATH: String = "res://data/synthesis/tihkal_complete.json"
+const VOGEL_PATH: String = "res://data/synthesis/vogel_and_natural_products.json"
 
 static var _catalog_cache: Dictionary = {}
 static var _protocols_by_id: Dictionary = {}
@@ -53,6 +54,7 @@ static func _ensure_loaded() -> void:
 	_protocols_by_id = {}
 	_categories = [
 		"Industrial APIs",
+		"Tropane Alkaloids & Classic Syntheses",
 		"Classical Organic & Dyes (Vogel)",
 		"Natural Product Isolation & Extractions",
 		"PiHKAL Phenethylamines",
@@ -102,6 +104,159 @@ static func _ensure_loaded() -> void:
 	_catalog_cache["TiHKAL Tryptamines"] = tihkal_list
 	for p in tihkal_list:
 		_protocols_by_id[p["id"]] = p
+
+	# 6. Load Vogel, Tropane Alkaloids & Natural Products library
+	var vogel_list := _load_vogel_json_protocols(VOGEL_PATH)
+	for p in vogel_list:
+		var cat: String = str(p.get("category", "Classical Organic & Dyes (Vogel)"))
+		if not _catalog_cache.has(cat):
+			_catalog_cache[cat] = []
+		_catalog_cache[cat].append(p)
+		_protocols_by_id[p["id"]] = p
+
+
+static func _load_vogel_json_protocols(file_path: String) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	if not FileAccess.file_exists(file_path):
+		return list
+
+	var file := FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return list
+
+	var text := file.get_as_text()
+	file.close()
+
+	var test_json := JSON.new()
+	var err := test_json.parse(text)
+	if err != OK:
+		return list
+
+	var root_data = test_json.data
+	if not (root_data is Dictionary) or not root_data.has("syntheses"):
+		return list
+
+	var syntheses: Array = root_data.get("syntheses", [])
+	for s in syntheses:
+		if not (s is Dictionary):
+			continue
+		var proto := _convert_synthesis_to_protocol(s)
+		list.append(proto)
+
+	return list
+
+
+static func _convert_synthesis_to_protocol(s: Dictionary) -> Dictionary:
+	var sid: String = str(s.get("id", "unknown"))
+	var sname: String = str(s.get("target_molecule", "Unknown Compound"))
+	var chem_name: String = str(s.get("chemical_name", sname))
+	var cat: String = str(s.get("category", "Classical Organic & Dyes (Vogel)"))
+	var mw: float = float(s.get("molecular_weight", 200.0))
+	var mp: float = float(s.get("mp_c", 120.0))
+	var rf: float = float(s.get("tlc_rf", 0.40))
+	var cas: String = str(s.get("cas_number", "N/A"))
+	var formula: String = str(s.get("formula", ""))
+	var desc: String = str(s.get("description", ""))
+
+	var steps: Array = s.get("steps", [])
+	var first_step: Dictionary = steps[0] if not steps.is_empty() and steps[0] is Dictionary else {}
+	var reagents: Array = first_step.get("reagents", [])
+	var cond: Dictionary = first_step.get("conditions", {})
+
+	# Reagent A (limiting precursor)
+	var rA: Dictionary = reagents[0] if reagents.size() > 0 and reagents[0] is Dictionary else {}
+	var rA_name: String = str(rA.get("name", "Precursor A"))
+	var rA_amount: float = float(rA.get("amount", 10.0))
+	var rA_unit: String = str(rA.get("unit", "g"))
+	var rA_mw: float = mw * 0.70
+
+	# Reagent B
+	var rB: Dictionary = reagents[1] if reagents.size() > 1 and reagents[1] is Dictionary else {}
+	var rB_name: String = str(rB.get("name", "Reagent B"))
+	var rB_amount: float = float(rB.get("amount", 10.0))
+	var rB_unit: String = str(rB.get("unit", "mL"))
+	var rB_density: float = 1.05
+	var moles_A: float = rA_amount / maxf(1.0, rA_mw)
+	var rB_mw: float = (rB_amount * rB_density) / maxf(0.001, moles_A * 1.15)
+
+	var opt_temp: float = float(cond.get("temperature_c", 75.0))
+	var opt_dur: float = float(cond.get("duration_min", 30.0))
+
+	return {
+		"id": sid,
+		"name": sname,
+		"chemical_name": chem_name,
+		"category": cat,
+		"code": "LIT-%s" % sid.to_upper(),
+		"cas": cas,
+		"mw": mw,
+		"formula": formula,
+		"description": desc,
+		"reaction_title": "%s → %s" % [rA_name, sname],
+		"reagent_a": {
+			"id": str(rA.get("reagent_id", "reagent_a")),
+			"name": rA_name,
+			"unit": rA_unit,
+			"mw": rA_mw,
+			"default": rA_amount,
+			"min": maxf(1.0, rA_amount * 0.5),
+			"max": rA_amount * 2.0,
+			"step": 0.1,
+			"decimals": 1
+		},
+		"reagent_b": {
+			"id": str(rB.get("reagent_id", "reagent_b")),
+			"name": rB_name,
+			"unit": rB_unit,
+			"mw": rB_mw,
+			"density": rB_density,
+			"default": rB_amount,
+			"min": maxf(1.0, rB_amount * 0.5),
+			"max": rB_amount * 2.5,
+			"step": 0.1,
+			"decimals": 1
+		},
+		"catalyst": {
+			"name": "Buffer / Catalyst",
+			"unit": "drops",
+			"default": 5,
+			"min": 0,
+			"max": 10,
+			"optimal": 5
+		},
+		"reflux": {
+			"temp_optimal_low": maxf(0.0, opt_temp - 8.0),
+			"temp_optimal_high": opt_temp + 8.0,
+			"temp_degrade": opt_temp + 18.0,
+			"temp_polymerize": opt_temp + 35.0,
+			"default_temp": opt_temp,
+			"temp_min": maxf(0.0, opt_temp - 30.0),
+			"temp_max": opt_temp + 50.0,
+			"optimal_min": opt_dur,
+			"default_min": opt_dur,
+			"duration_min": maxf(5.0, opt_dur * 0.25),
+			"duration_max": opt_dur * 2.5
+		},
+		"workup": {
+			"ice_c": 2.0,
+			"water_ml": 50.0,
+			"ethanol_ml": 20.0,
+			"seeded": true
+		},
+		"analytical": {
+			"mp_pure": mp,
+			"mp_tolerance": 3.0,
+			"tlc_rf": rf,
+			"purity_pass": 95.0,
+			"yield_pass_g": rA_amount * (mw / rA_mw) * 0.65
+		},
+		"hazards": [
+			{"code": "GHS02", "text": "flammable / organic reaction"},
+			{"code": "GHS06", "text": "toxic alkaloid / reagent"},
+			{"code": "GHS07", "text": "irritant / skin contact"},
+			{"code": "GHS08", "text": "bioactive substance"}
+		]
+	}
 
 
 static func _load_json_protocols(file_path: String, category: String) -> Array[Dictionary]:
