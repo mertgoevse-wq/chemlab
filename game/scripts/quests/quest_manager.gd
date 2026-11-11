@@ -617,6 +617,433 @@ func _initialize_quest_catalog() -> void:
 					"osha_ref": "Athanor Master Seal 001"
 				}
 			]
+		},
+		# =========================================================================
+		# OPEN WORLD LABORATORY SIDE QUESTS (Skill Leveling & Equipment Unlocks)
+		# =========================================================================
+		"side_quest_tropane_belladonna": {
+			"id": "side_quest_tropane_belladonna",
+			"tier": 3,
+			"title": "The Nightshade Extraction (Atropa Belladonna)",
+			"category": "Natural Products & Pharmacology",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Phytochemistry Lab",
+			"briefing": "Execute a continuous Soxhlet extraction of powdered Atropa belladonna root. Monitor extraction siphoning, partition crude alkaloid extract between aqueous acid and chloroform, and isolate atropine free base.",
+			"description": "Extract tropane alkaloids using continuous Soxhlet percolation and acid-base partitioning.",
+			"xp_reward": 1800,
+			"skill_rewards": { "chemistry": 800, "biology": 500, "toxicology": 500 },
+			"item_rewards": [{ "id": "belladonna_botanical_cloak", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Soxhlet_Extractor", "Separatory_Funnel_500ml"],
+			"unlocked_reagents": ["Belladonna_Root_Powder", "Chloroform", "Sulfuric_Acid_0.5M"],
+			"objectives": [
+				{
+					"id": "charge_soxhlet_thimble",
+					"title": "Pack Soxhlet Cellulose Thimble",
+					"description": "Pack 25.0 g dried belladonna root into cellulose extraction thimble",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "thimbles",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "USP 561 Botanical Extraction Protocol"
+				},
+				{
+					"id": "run_reflux_cycles",
+					"title": "Execute Soxhlet Siphon Cycles",
+					"description": "Run continuous siphon-reflux cycles to exhaustion",
+					"current": 0.0,
+					"target": 6.0,
+					"unit": "cycles",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Standard Soxhlet SOP 3.1"
+				},
+				{
+					"id": "isolate_atropine",
+					"title": "Acid-Base Partition & Crystallize",
+					"description": "Extract into aqueous acid, basify with ammonia, and extract atropine into chloroform",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "isolations",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Pharmacopeial Assay 4.8"
+				}
+			]
+		},
+		"side_quest_robinson_tropinone": {
+			"id": "side_quest_robinson_tropinone",
+			"tier": 4,
+			"title": "Biomimetic Tropinone Condensation",
+			"category": "Advanced Organic Synthesis",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Sir Robert Robinson Laboratory",
+			"briefing": "Buffer succindialdehyde, methylamine hydrochloride, and acetonedicarboxylic acid at pH 5.5. Execute the double-Mannich biomimetic cascade at room temperature and isolate bicyclic tropinone.",
+			"description": "Synthesize bicyclic tropinone via biomimetic tandem double-Mannich condensation.",
+			"xp_reward": 2200,
+			"skill_rewards": { "chemistry": 1200, "mathematics": 500, "apparatus_building": 500 },
+			"item_rewards": [{ "id": "precision_gloves", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["pH_Meter_Digital", "Magnetic_Stirrer"],
+			"unlocked_reagents": ["Succindialdehyde", "Methylamine_HCl", "Acetonedicarboxylic_Acid"],
+			"objectives": [
+				{
+					"id": "buffer_reaction_ph",
+					"title": "Buffer Precursor Solution",
+					"description": "Adjust citrate-phosphate buffer to pH 5.5",
+					"current": 0.0,
+					"target": 5.5,
+					"unit": "pH",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Robinson Classical Synthesis J. Chem. Soc. 1917"
+				},
+				{
+					"id": "stir_mannich_cascade",
+					"title": "Room Temperature Tandem Condensation",
+					"description": "Stir double-Mannich cyclization reaction for 4 hours",
+					"current": 0.0,
+					"target": 4.0,
+					"unit": "hours",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Biomimetic Reaction Kinetic Control"
+				},
+				{
+					"id": "crystallize_tropinone",
+					"title": "Decarboxylation & Vacuum Distillation",
+					"description": "Decarboxylate intermediate dicarboxylic acid and vacuum distill pure tropinone",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "distillations",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Vacuum Distillation Standard SOP"
+				}
+			]
+		},
+		"side_quest_schlenk_pyrophoric": {
+			"id": "side_quest_schlenk_pyrophoric",
+			"tier": 5,
+			"title": "Air-Sensitive Cannula Transfer",
+			"category": "Inert Atmosphere Handling",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Organometallics Core",
+			"briefing": "Perform a triple vacuum-argon purge cycle on the dual manifold Schlenk line (< 1 ppm O2). Transfer pyrophoric tert-butyllithium via double-ended cannula under positive argon overpressure.",
+			"description": "Safely manipulate spontaneously pyrophoric reagents using dual-manifold Schlenk technique.",
+			"xp_reward": 2500,
+			"skill_rewards": { "apparatus_building": 1000, "lab_safety": 800, "physics": 700 },
+			"item_rewards": [{ "id": "pyrophoric_handling_gauntlets", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Schlenk_Line", "Double_Ended_Cannula", "Dewar_Flask"],
+			"unlocked_reagents": ["tert_Butyllithium", "Argon_Gas_99_999", "Liquid_Nitrogen"],
+			"objectives": [
+				{
+					"id": "cold_trap_ln2",
+					"title": "Charge Cryogenic LN2 Trap",
+					"description": "Fill Schlenk vacuum trap with liquid nitrogen (-196 °C)",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "traps",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "OSHA 1910.1200 Cryogenic Safety"
+				},
+				{
+					"id": "evacuate_refill_cycle",
+					"title": "Schlenk Vacuum-Argon Purge",
+					"description": "Execute 3 complete evacuate-argon refill cycles",
+					"current": 0.0,
+					"target": 3.0,
+					"unit": "cycles",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Inert Gas Protocol 7.2"
+				},
+				{
+					"id": "cannula_transfer",
+					"title": "Cannula Transfer Pyrophoric Reagent",
+					"description": "Positive pressure cannula transfer without ambient exposure",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "transfers",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Pyrophoric Handling Standards ACS"
+				}
+			]
+		},
+		"side_quest_hplc_resolution": {
+			"id": "side_quest_hplc_resolution",
+			"tier": 4,
+			"title": "HPLC C18 Diode-Array Profiling",
+			"category": "Analytical Metrology",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Chromatography Core Facility",
+			"briefing": "Equilibrate reverse-phase C18 HPLC column with acetonitrile/water mobile phase at 1.0 mL/min and 2,500 psi. Inject pharmaceutical library and resolve baseline peaks at 254 nm.",
+			"description": "Calibrate high-performance liquid chromatography retention times and peak resolution.",
+			"xp_reward": 2000,
+			"skill_rewards": { "forensics": 800, "computational_chemistry": 700, "mathematics": 500 },
+			"item_rewards": [{ "id": "diode_array_spectrometer_lens", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["HPLC_System", "C18_Column_250mm", "Autosampler_Vials"],
+			"unlocked_reagents": ["Acetonitrile_HPLC_Grade", "Methanol_HPLC_Grade", "MilliQ_Water"],
+			"objectives": [
+				{
+					"id": "equilibrate_column",
+					"title": "Equilibrate C18 Stationary Phase",
+					"description": "Purge column with degassed 60:40 Acetonitrile:Water mobile phase",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "purges",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "USP 621 Chromatography Standard"
+				},
+				{
+					"id": "autosampler_injection",
+					"title": "Autosampler Precision Injection",
+					"description": "Inject 10 uL calibration standard at 1.0 mL/min isocratic flow",
+					"current": 0.0,
+					"target": 10.0,
+					"unit": "uL",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "GLP Method Validation 4.1"
+				},
+				{
+					"id": "resolve_chromatogram",
+					"title": "Diode Array Peak Resolution",
+					"description": "Verify chromatographic peak resolution Rs >= 2.0 at 254 nm",
+					"current": 0.0,
+					"target": 2.0,
+					"unit": "Rs",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "ICH Q2(R1) Validation of Analytical Procedures"
+				}
+			]
+		},
+		"side_quest_centrifuge_density": {
+			"id": "side_quest_centrifuge_density",
+			"tier": 3,
+			"title": "Ultracentrifuge Isopycnic Separation",
+			"category": "Biophysics & Separation Science",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Biophysics Core",
+			"briefing": "Tare and balance counterweighted titanium buckets within 0.005 g. Spin cesium chloride density gradient at 15,000 RPM (25,000 x g) under high vacuum to separate plasmid DNA bands.",
+			"description": "Separate macromolecular density bands using high-speed refrigerated centrifugation.",
+			"xp_reward": 2100,
+			"skill_rewards": { "biology": 1000, "physics": 600, "engineering": 500 },
+			"item_rewards": [{ "id": "centrifugal_damping_boots", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["High_Speed_Centrifuge", "Titanium_Rotor", "CsCl_Tubes"],
+			"unlocked_reagents": ["Cesium_Chloride", "Ethidium_Bromide", "TE_Buffer"],
+			"objectives": [
+				{
+					"id": "balance_opposing_buckets",
+					"title": "Counterweight Analytical Balance",
+					"description": "Balance opposing centrifuge buckets within 0.005 g tolerance",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "balances",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Centrifuge Safety ISO 13485"
+				},
+				{
+					"id": "ramp_ultracentrifuge",
+					"title": "Ramp Rotor to 15,000 RPM",
+					"description": "Ramp refrigerated rotor to 15,000 RPM under chamber vacuum",
+					"current": 0.0,
+					"target": 15000.0,
+					"unit": "RPM",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "High RCF Operational Containment"
+				},
+				{
+					"id": "fractionate_bands",
+					"title": "Harvest Density Fractions",
+					"description": "Fractionate isopycnic bands with syringe needle illumination",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "extractions",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Molecular Biology Standard Methods"
+				}
+			]
+		},
+		"side_quest_crystallography_loupe": {
+			"id": "side_quest_crystallography_loupe",
+			"tier": 4,
+			"title": "Polymorph Seeding & Crystal Habit Tuning",
+			"category": "Crystallography & Solid-State Chemistry",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Solid State Characterization Lab",
+			"briefing": "Suppress needle dendrite nucleation by controlled supersaturation cooling in absolute ethanol. Add single Form I seed crystal and harvest high-density prismatic crystals.",
+			"description": "Control crystal polymorphism and habit through precision seeding and supersaturation cooling.",
+			"xp_reward": 2400,
+			"skill_rewards": { "materials_science": 1000, "chemistry": 800, "metrology": 600 },
+			"item_rewards": [{ "id": "crystallographer_magnifying_loupe", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Jacketed_Crystallizer", "Hot_Stage_Microscope", "Seed_Crystal_Carrier"],
+			"unlocked_reagents": ["Ethanol_Absolute", "Pure_Polymorph_Seed", "Heptane_Antisolvent"],
+			"objectives": [
+				{
+					"id": "prepare_supersaturated",
+					"title": "Prepare Saturated Solute at 75 °C",
+					"description": "Dissolve crude active pharmaceutical ingredient at 75 °C reflux",
+					"current": 0.0,
+					"target": 75.0,
+					"unit": "°C",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Crystallization Metastable Zone SOP"
+				},
+				{
+					"id": "controlled_seed",
+					"title": "Metastable Seeding at 45 °C",
+					"description": "Introduce monoclinic Form I seed crystals at 45 °C boundary",
+					"current": 0.0,
+					"target": 45.0,
+					"unit": "°C",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Polymorph Control Guidelines"
+				},
+				{
+					"id": "harvest_crystals",
+					"title": "Harvest Uniform Prismatic Habit",
+					"description": "Filter crystals under vacuum and verify sharp melting point",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "assays",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "USP 741 Melting Point Standard"
+				}
+			]
+		},
+		"side_quest_glovebox_argon": {
+			"id": "side_quest_glovebox_argon",
+			"tier": 3,
+			"title": "Glovebox Inert Atmosphere Maintenance",
+			"category": "Vacuum & Environmental Engineering",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Facility Engineering",
+			"briefing": "Regenerate copper catalyst and molecular sieve scrubbing column. Maintain glovebox atmosphere at < 0.1 ppm O2 and < 0.1 ppm H2O with continuous positive argon pressure.",
+			"description": "Maintain sub-ppm oxygen and moisture atmosphere in hermetic glovebox.",
+			"xp_reward": 2200,
+			"skill_rewards": { "environmental_science": 900, "engineering": 700, "lab_safety": 600 },
+			"item_rewards": [{ "id": "argon_regulator_belt", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Inert_Glovebox", "Antechamber", "Copper_Scrubber_Column"],
+			"unlocked_reagents": ["Ultra_High_Purity_Argon", "Catalyst_Regen_Gas"],
+			"objectives": [
+				{
+					"id": "antechamber_purge",
+					"title": "Execute 3x Antechamber Purge Cycles",
+					"description": "Automated vacuum evacuation and argon refill cycles",
+					"current": 0.0,
+					"target": 3.0,
+					"unit": "cycles",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Vacuum Interlock Standards"
+				},
+				{
+					"id": "verify_inert_ppm",
+					"title": "Sub-PPM Atmosphere Verification",
+					"description": "Confirm oxygen and moisture sensors read < 0.1 ppm",
+					"current": 5.0,
+					"target": 0.1,
+					"unit": "ppm",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "ISO 10648 Containment Enclosures"
+				},
+				{
+					"id": "transfer_sensitive_reagent",
+					"title": "Transfer Sensitive Reagent",
+					"description": "Open inner door and transfer pyrophoric catalyst safely",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "transfers",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Inert Material Storage Standard"
+				}
+			]
+		},
+		"side_quest_radiation_fusor": {
+			"id": "side_quest_radiation_fusor",
+			"tier": 5,
+			"title": "Inertial Electrostatic Confinement Survey",
+			"category": "Nuclear & Radiochemistry",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Radiation Safety Officer",
+			"briefing": "Survey deuterium-deuterium neutron flux around the fusor spherical chamber during 25 kV glow discharge. Ensure lead-cadmium shadow shielding keeps perimeter exposure below 0.05 mSv/hr.",
+			"description": "Monitor neutron flux and radiation shielding during IEC fusion plasma discharge.",
+			"xp_reward": 2800,
+			"skill_rewards": { "radiochemistry": 1400, "physics": 800, "lab_safety": 600 },
+			"item_rewards": [{ "id": "dosimeter_badge_cadmium", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["IEC_Fusor_Chamber", "Neutron_Survey_Meter", "High_Voltage_Supply_30kV"],
+			"unlocked_reagents": ["Deuterium_Gas_Research_Grade", "Lead_Shielding_Blocks"],
+			"objectives": [
+				{
+					"id": "fusor_chamber_vacuum",
+					"title": "Turbomolecular High Vacuum Check",
+					"description": "Pump chamber to 1e-6 Torr base vacuum",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "checks",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "High Vacuum Safety Guidelines"
+				},
+				{
+					"id": "deuterium_discharge",
+					"title": "Establish 25 kV Deuterium Plasma",
+					"description": "Strike star-mode plasma glow discharge at 25 kV",
+					"current": 0.0,
+					"target": 25.0,
+					"unit": "kV",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "IEEE 510 Recommended Practices for Electrical Safety"
+				},
+				{
+					"id": "dosimeter_verification",
+					"title": "Perimeter Radiation Dose Survey",
+					"description": "Confirm perimeter dose stays below 0.05 mSv/hr",
+					"current": 0.20,
+					"target": 0.05,
+					"unit": "mSv/hr",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "10 CFR Part 20 Standards for Protection Against Radiation"
+				}
+			]
 		}
 	}
 
@@ -781,18 +1208,37 @@ func _complete_active_quest() -> void:
 	fanfare_celebration_started.emit(title, xp, stars)
 	quest_completed.emit(active_quest_id, title, xp, current_safety_score)
 
-	# Grant XP through SkillManager
+	# Grant XP through SkillManager (Multi-skill distribution for open progression)
 	if is_inside_tree() and get_tree() and get_tree().root:
 		var root = get_tree().root
 		if root.has_node("SkillManager"):
 			var sm = root.get_node("SkillManager")
-			if sm.has_method("grant_skill_xp"):
-				sm.grant_skill_xp("chemistry", xp, "quest_completion")
-			elif sm.has_method("add_xp"):
-				sm.add_xp("chemistry", xp)
+			var skill_rewards: Dictionary = q.get("skill_rewards", {})
+			if not skill_rewards.is_empty():
+				for sk in skill_rewards.keys():
+					var sk_xp: int = int(skill_rewards[sk])
+					if sm.has_method("grant_skill_xp"):
+						sm.grant_skill_xp(str(sk), sk_xp, "quest_completion")
+					elif sm.has_method("add_xp"):
+						sm.add_xp(str(sk), sk_xp)
+			else:
+				if sm.has_method("grant_skill_xp"):
+					sm.grant_skill_xp("chemistry", xp, "quest_completion")
+				elif sm.has_method("add_xp"):
+					sm.add_xp("chemistry", xp)
+
+		# Grant item and garment rewards through InventoryManager
+		var item_rewards: Array = q.get("item_rewards", [])
+		if not item_rewards.is_empty() and root.has_node("InventoryManager"):
+			var inv = root.get_node("InventoryManager")
+			for it in item_rewards:
+				if it is Dictionary:
+					var item_id: String = str(it.get("id", ""))
+					var qty: int = int(it.get("quantity", 1))
+					if item_id != "" and inv.has_method("add_item"):
+						inv.add_item(item_id, qty)
 
 	_sync_with_save_manager(xp)
-
 
 func fail_quest(quest_id: String, reason: String) -> void:
 	if quest_id == active_quest_id:
@@ -1104,3 +1550,31 @@ func from_dict(data: Dictionary) -> void:
 	current_background = data.get("current_background", "academic")
 	if data.has("fate_resonance") and fate_resonance_manager:
 		fate_resonance_manager.from_dict(data["fate_resonance"])
+
+
+# =============================================================================
+# OPEN WORLD & SIDE QUEST QUERY API
+# =============================================================================
+
+func is_side_quest(quest_id: String) -> bool:
+	if quests.has(quest_id):
+		return bool(quests[quest_id].get("is_side_quest", false))
+	return false
+
+
+func get_all_side_quests() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for q_id in quests:
+		var q: Dictionary = quests[q_id]
+		if bool(q.get("is_side_quest", false)):
+			result.append(q)
+	return result
+
+
+func get_available_side_quests() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for q_id in quests:
+		var q: Dictionary = quests[q_id]
+		if bool(q.get("is_side_quest", false)) and int(q.get("status", QuestStatus.LOCKED)) == QuestStatus.AVAILABLE:
+			result.append(q)
+	return result

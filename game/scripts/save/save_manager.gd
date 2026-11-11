@@ -505,7 +505,7 @@ func to_dict() -> Dictionary:
 func from_dict(data: Dictionary) -> void:
 	save_data = data
 
-func record_quest_completion(quest_id: String) -> void:
+func record_quest_completion(quest_id: String, xp_awarded: int = 0, safety_score: float = 100.0) -> void:
 	if not save_data.has("completed_quests"):
 		save_data["completed_quests"] = []
 	if quest_id not in save_data["completed_quests"]:

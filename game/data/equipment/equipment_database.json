@@ -619,6 +619,76 @@
       "description": "Awarded for Level 99 Engineering mastery. Multiplies batch reactor volumes and thermal transfer efficiency."
     },
     {
+      "id": "belladonna_botanical_cloak",
+      "name": "Belladonna Phytochemist's Cloak",
+      "slot": "body",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/cloak_belladonna.glb",
+      "icon": "res://assets/ui/equipment/cloak_belladonna.png",
+      "stats": { "protection_chemical": 25, "purity_bonus": 15, "hazard_sense": true, "ip_gain": 10 },
+      "description": "Woven from extracted Solanaceae fibers. Natural alkaloid affinity and toxic vapor buffering."
+    },
+    {
+      "id": "pyrophoric_handling_gauntlets",
+      "name": "Pyrophoric Handling Gauntlets",
+      "slot": "hands",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/gauntlets_pyrophoric.glb",
+      "icon": "res://assets/ui/equipment/gauntlets_pyrophoric.png",
+      "stats": { "protection_thermal": 40, "protection_chemical": 35, "precision": 15 },
+      "description": "Argon-purged aramid gauntlets engineered for Schlenk cannula and pyrophoric transfers."
+    },
+    {
+      "id": "diode_array_spectrometer_lens",
+      "name": "Diode Array UV-Vis Spectrometer Lens",
+      "slot": "head",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/lens_spectrometer.glb",
+      "icon": "res://assets/ui/equipment/lens_spectrometer.png",
+      "stats": { "precision": 30, "purity_bonus": 20, "hazard_sense": true },
+      "description": "Calibrated optical quartz filter tuned to 190-800 nm chromophores and chromatographic peak resolution."
+    },
+    {
+      "id": "centrifugal_damping_boots",
+      "name": "Centrifugal Resonance Damping Boots",
+      "slot": "feet",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/boots_centrifugal.glb",
+      "icon": "res://assets/ui/equipment/boots_centrifugal.png",
+      "stats": { "mobility": 25, "speed_bonus": 20, "protection_physical": 15 },
+      "description": "Carbon fiber boots isolating the wearer from high-speed 15,000 RPM harmonic centrifuge vibrations."
+    },
+    {
+      "id": "crystallographer_magnifying_loupe",
+      "name": "Crystallographer's Aplanatic Loupe",
+      "slot": "neck",
+      "tier": "epic",
+      "model": "res://assets/models/equipment/loupe_crystallographer.glb",
+      "icon": "res://assets/ui/equipment/loupe_crystallographer.png",
+      "stats": { "precision": 35, "yield_bonus": 20, "xp_gain": 20 },
+      "description": "Doublet optical loupe for analyzing monoclinic and orthorhombic crystal habits during seeding."
+    },
+    {
+      "id": "dosimeter_badge_cadmium",
+      "name": "Cadmium Thermal-Neutron Dosimeter Badge",
+      "slot": "neck",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/badge_cadmium.glb",
+      "icon": "res://assets/ui/equipment/badge_cadmium.png",
+      "stats": { "protection_radiation": 40, "hazard_sense": true, "ip_gain": 15 },
+      "description": "Solid-state cadmium foil dosimeter measuring instantaneous mSv dose in accelerator and fusor vaults."
+    },
+    {
+      "id": "argon_regulator_belt",
+      "name": "Inert Gas Micro-Regulator Harness",
+      "slot": "backpack",
+      "tier": "rare",
+      "model": "res://assets/models/equipment/belt_argon.glb",
+      "icon": "res://assets/ui/equipment/belt_argon.png",
+      "stats": { "utility": 30, "protection_chemical": 20, "speed_bonus": 15 },
+      "description": "Feeds continuous positive argon overpressure to glovebox sleeves and transfer antechambers."
+    },
+    {
       "id": "regalia_omniscient_alchemist",
       "name": "Omniscient Alchemical Regalia",
       "slot": "body",
