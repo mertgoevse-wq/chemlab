@@ -543,3 +543,451 @@ class BuchnerFiltrationController extends RefCounted:
 			"filtrate_volume_ml": filtrate_volume_ml,
 			"filtration_efficiency_pct": 99.2
 		}
+
+# =============================================================================
+# 9. SEPARATORY FUNNEL EXTRACTION CONTROLLER (500 mL)
+# =============================================================================
+class SeparatoryFunnelController extends RefCounted:
+	enum PhaseType { AQUEOUS, ORGANIC_CHLORINATED, ORGANIC_ETHEREAL }
+	var stopper_on: bool = true
+	var stopcock_open: bool = false
+	var funnel_inverted: bool = false
+	var pressure_vented: bool = false
+	var settled: bool = true
+	var shake_count: int = 0
+	var organic_solvent: String = "Dichloromethane"
+	var aqueous_volume_ml: float = 150.0
+	var organic_volume_ml: float = 100.0
+	var target_solute_name: String = "Atropine Freebase"
+	var partition_coefficient_kd: float = 18.5
+	var extracted_mass_mg: float = 0.0
+	var total_solute_mg: float = 250.0
+
+	var tutorial_step: int = 0
+	const TUTORIAL_STEPS: Array[String] = [
+		"1. Support separatory funnel in iron ring with receiving flask underneath",
+		"2. Ensure PTFE stopcock is closed prior to pouring liquid layers",
+		"3. Charge aqueous solution and organic extracting solvent (DCM / Et2O)",
+		"4. Firmly insert glass stopper, invert funnel, and VENT STOPCOCK immediately away from face",
+		"5. Shake gently with periodic venting until pressure equilibration is achieved",
+		"6. Return funnel to ring clamp, REMOVE STOPPER, and allow biphasic emulsion to separate",
+		"7. Drain dense lower organic layer through stopcock into Erlenmeyer flask",
+		"8. Decant top aqueous layer through upper neck to avoid cross-contamination"
+	]
+
+	func shake_and_vent() -> Dictionary:
+		if not stopper_on:
+			return { "success": false, "error": "Cannot shake funnel: Stopper is not seated! Liquid spilled." }
+		funnel_inverted = true
+		pressure_vented = true
+		shake_count += 1
+		settled = false
+		if tutorial_step in [3, 4]:
+			tutorial_step = 5
+		return { "success": true, "shaked": shake_count, "vented": true }
+
+	func settle_phases() -> Dictionary:
+		funnel_inverted = false
+		settled = true
+		var fraction = (partition_coefficient_kd * organic_volume_ml) / ((partition_coefficient_kd * organic_volume_ml) + aqueous_volume_ml)
+		extracted_mass_mg = total_solute_mg * fraction
+		if tutorial_step == 5:
+			tutorial_step = 6
+		return {
+			"success": true,
+			"settled": true,
+			"efficiency_pct": fraction * 100.0,
+			"extracted_mg": extracted_mass_mg
+		}
+
+	func remove_stopper(removed: bool) -> void:
+		stopper_on = not removed
+		if removed and tutorial_step == 6:
+			tutorial_step = 7
+
+	func drain_lower_phase(open_valve: bool) -> Dictionary:
+		stopcock_open = open_valve
+		if stopcock_open:
+			if stopper_on:
+				return {
+					"success": false,
+					"error": "VACUUM LOCK: Funnel cannot drain with stopper on! Atmospheric pressure holds liquid."
+				}
+			if not settled:
+				return {
+					"success": false,
+					"warning": "Emulsion draining! Allow biphasic boundary to sharpen before opening stopcock."
+				}
+			var drained = organic_volume_ml
+			organic_volume_ml = 0.0
+			if tutorial_step == 7:
+				tutorial_step = 8
+			return {
+				"success": true,
+				"drained_ml": drained,
+				"collected_solute_mg": extracted_mass_mg
+			}
+		return { "success": true, "drained_ml": 0.0 }
+
+	func get_status() -> Dictionary:
+		return {
+			"stopper_on": stopper_on,
+			"stopcock_open": stopcock_open,
+			"settled": settled,
+			"shake_count": shake_count,
+			"aqueous_ml": aqueous_volume_ml,
+			"organic_ml": organic_volume_ml,
+			"extracted_mg": extracted_mass_mg,
+			"kd": partition_coefficient_kd
+		}
+
+# =============================================================================
+# 10. SUPERCONDUCTING NMR SPECTROMETER CONTROLLER (500 MHz Cryomagnet)
+# =============================================================================
+class NMRSpectrometerController extends RefCounted:
+	var magnet_field_tesla: float = 11.744
+	var proton_frequency_mhz: float = 500.13
+	var liquid_helium_level_pct: float = 88.5
+	var liquid_nitrogen_level_pct: float = 94.0
+	var sample_inserted: bool = false
+	var lift_air_active: bool = false
+	var spinner_spinning: bool = false
+	var spinner_rpm: float = 0.0
+	var target_spinner_rpm: float = 1200.0
+	var deuterated_solvent: String = "CDCl3"
+	var lock_established: bool = false
+	var shimmed_z1_z2: bool = false
+	var line_width_hz: float = 1.8
+	var scans_completed: int = 0
+	var fid_acquired: bool = false
+
+	var tutorial_step: int = 0
+	const TUTORIAL_STEPS: Array[String] = [
+		"1. Dissolve 10-15 mg pure analyte in 0.6 mL CDCl3 and transfer to 5 mm NMR tube",
+		"2. Inspect tube for particulate matter and wipe exterior with Kimwipe",
+		"3. Mount tube in POM spinner turbine and adjust depth using acrylic depth gauge",
+		"4. Engage pneumatic lift air, position tube over magnet bore, and lower gently",
+		"5. Turn on sample spinning (20 Hz) to average out radial magnetic field inhomogeneities",
+		"6. Engage deuterium field-frequency lock on CDCl3 solvent resonance",
+		"7. Execute automated gradient shimming to minimize linewidth (line < 0.55 Hz)",
+		"8. Transmit 90° RF pulse sequence, acquire FID (Free Induction Decay), and perform Fourier Transform"
+	]
+
+	func toggle_lift_air(active: bool) -> Dictionary:
+		lift_air_active = active
+		if lift_air_active:
+			return { "success": true, "status": "Lift airflow active. Ready for sample tube placement." }
+		else:
+			if sample_inserted:
+				return { "success": true, "status": "Sample tube gently seated into probe stator." }
+			return { "success": true, "status": "Bore idle." }
+
+	func insert_sample(inserted: bool) -> Dictionary:
+		sample_inserted = inserted
+		if sample_inserted and not lift_air_active:
+			return { "success": false, "error": "WARNING: Never drop tube without pneumatic air cushion! Tube shattered." }
+		if sample_inserted and tutorial_step in [2, 3]:
+			tutorial_step = 4
+		return { "success": true, "sample_inserted": sample_inserted }
+
+	func toggle_spinning(spin: bool) -> Dictionary:
+		if not sample_inserted:
+			return { "success": false, "error": "Cannot spin: No sample tube in stator." }
+		spinner_spinning = spin
+		spinner_rpm = target_spinner_rpm if spinner_spinning else 0.0
+		if spinner_spinning and tutorial_step == 4:
+			tutorial_step = 5
+		return { "success": true, "rpm": spinner_rpm }
+
+	func engage_lock() -> Dictionary:
+		if not sample_inserted:
+			return { "success": false, "error": "No deuterated solvent present in probe." }
+		lock_established = true
+		if tutorial_step == 5:
+			tutorial_step = 6
+		return { "success": true, "lock": deuterated_solvent, "lock_level_pct": 98.4 }
+
+	func execute_autoshim() -> Dictionary:
+		if not lock_established:
+			return { "success": false, "error": "Establish deuterium lock prior to gradient shimming." }
+		shimmed_z1_z2 = true
+		line_width_hz = 0.42
+		if tutorial_step == 6:
+			tutorial_step = 7
+		return { "success": true, "linewidth_hz": line_width_hz, "resolution": "Optimal (Lorentzian line)" }
+
+	func acquire_1h_spectrum(compound_name: String, peaks: Array[Dictionary]) -> Dictionary:
+		if not sample_inserted or not lock_established or not shimmed_z1_z2:
+			return { "success": false, "error": "Complete sample lock and shimming before RF acquisition." }
+		scans_completed = 16
+		fid_acquired = true
+		if tutorial_step == 7:
+			tutorial_step = 8
+		return {
+			"success": true,
+			"compound": compound_name,
+			"nucleus": "1H",
+			"frequency_mhz": proton_frequency_mhz,
+			"scans": scans_completed,
+			"linewidth_hz": line_width_hz,
+			"peaks": peaks
+		}
+
+	func get_status() -> Dictionary:
+		return {
+			"field_tesla": magnet_field_tesla,
+			"he_level": liquid_helium_level_pct,
+			"n2_level": liquid_nitrogen_level_pct,
+			"sample_in": sample_inserted,
+			"spinning": spinner_spinning,
+			"spinner_rpm": spinner_rpm,
+			"locked": lock_established,
+			"shimmed": shimmed_z1_z2,
+			"linewidth": line_width_hz,
+			"scans": scans_completed
+		}
+
+# =============================================================================
+# 11. DIGITAL MAGNETIC STIRRER & CERAMIC HOTPLATE CONTROLLER
+# =============================================================================
+class MagneticStirrerController extends RefCounted:
+	var plate_temp_c: float = 22.0
+	var plate_target_temp_c: float = 22.0
+	var solution_temp_c: float = 22.0
+	var pt1000_probe_connected: bool = true
+	var stirring_rpm: float = 0.0
+	var target_stirring_rpm: float = 0.0
+	var stir_bar_in_flask: bool = true
+	var stir_bar_decoupled: bool = false
+	var heating_enabled: bool = false
+	var safety_cutoff_c: float = 350.0
+
+	var tutorial_step: int = 0
+	const TUTORIAL_STEPS: Array[String] = [
+		"1. Place reaction vessel with PTFE magnetic stirring flea centrally on ceramic plate",
+		"2. Connect PT1000 external temperature probe and immerse tip into solution (not touching glass)",
+		"3. Slowly increase magnetic stirrer RPM to establish steady, quiet central vortex",
+		"4. Set target heating temperature on PID controller (observe heating rate limit)",
+		"5. Monitor solution reflux and vortex depth without splashing reaction walls"
+	]
+
+	func update(delta: float) -> void:
+		if heating_enabled:
+			plate_temp_c = move_toward(plate_temp_c, plate_target_temp_c, delta * 3.5)
+			if pt1000_probe_connected:
+				solution_temp_c = move_toward(solution_temp_c, plate_target_temp_c, delta * 1.5)
+			else:
+				solution_temp_c = move_toward(solution_temp_c, plate_temp_c * 0.85, delta * 0.9)
+		else:
+			plate_temp_c = move_toward(plate_temp_c, 22.0, delta * 1.8)
+			solution_temp_c = move_toward(solution_temp_c, 22.0, delta * 1.0)
+
+		if target_stirring_rpm > stirring_rpm:
+			var ramp_rate = 60.0 * delta
+			stirring_rpm = move_toward(stirring_rpm, target_stirring_rpm, ramp_rate)
+		else:
+			stirring_rpm = move_toward(stirring_rpm, target_stirring_rpm, 120.0 * delta)
+
+		if target_stirring_rpm - stirring_rpm > 450.0 and stir_bar_in_flask:
+			stir_bar_decoupled = true
+			stirring_rpm = 0.0
+
+	func set_heat(target_c: float, enable: bool) -> Dictionary:
+		if target_c > safety_cutoff_c:
+			return { "success": false, "error": "Temperature exceeds thermal safety cutoff (350°C)." }
+		plate_target_temp_c = target_c
+		heating_enabled = enable
+		if heating_enabled and tutorial_step in [2, 3]:
+			tutorial_step = 4
+		return { "success": true, "target_c": plate_target_temp_c, "enabled": heating_enabled }
+
+	func set_stir_speed(rpm: float) -> Dictionary:
+		if not stir_bar_in_flask:
+			return { "success": false, "warning": "Motor spinning, but no magnetic flea inside vessel!" }
+		if stir_bar_decoupled:
+			return { "success": false, "error": "Stir bar decoupled and rattling! Reduce RPM to 0 to re-couple." }
+		target_stirring_rpm = clampf(rpm, 0.0, 1500.0)
+		if target_stirring_rpm > 100.0 and tutorial_step == 1:
+			tutorial_step = 2
+		return { "success": true, "target_rpm": target_stirring_rpm }
+
+	func reset_decoupled_flea() -> void:
+		target_stirring_rpm = 0.0
+		stirring_rpm = 0.0
+		stir_bar_decoupled = false
+
+	func get_status() -> Dictionary:
+		return {
+			"plate_temp": plate_temp_c,
+			"target_plate_temp": plate_target_temp_c,
+			"solution_temp": solution_temp_c,
+			"probe_connected": pt1000_probe_connected,
+			"stirring_rpm": stirring_rpm,
+			"target_rpm": target_stirring_rpm,
+			"decoupled": stir_bar_decoupled,
+			"heating": heating_enabled
+		}
+
+# =============================================================================
+# 12. DUCTED CLASS II AERODYNAMIC FUME HOOD CONTROLLER
+# =============================================================================
+class FumeHoodController extends RefCounted:
+	var blower_active: bool = true
+	var face_velocity_fpm: float = 100.0
+	var sash_height_inches: float = 18.0
+	var max_sash_inches: float = 34.0
+	var sash_alarm_active: bool = false
+	var task_light_active: bool = true
+	var utilities_argon_active: bool = false
+	var utilities_vacuum_active: bool = false
+	var baffle_position: String = "Normal"
+
+	var tutorial_step: int = 0
+	const TUTORIAL_STEPS: Array[String] = [
+		"1. Verify hood blower is running and digital velocity monitor displays 90-110 FPM",
+		"2. Maintain sash height at or below the 18-inch certified operating limit (green marker)",
+		"3. Position apparatus at least 6 inches (15 cm) inside the hood face to prevent eddy currents",
+		"4. Avoid rapid arm motions or excessive clutter that disrupt laminar aerodynamic airflow",
+		"5. Close sash completely when hazardous syntheses, distillations, or refluxes run unattended"
+	]
+
+	func set_sash_height(height_in: float) -> Dictionary:
+		sash_height_inches = clampf(height_in, 0.0, max_sash_inches)
+		if sash_height_inches > 0.5:
+			face_velocity_fpm = 100.0 * (18.0 / sash_height_inches)
+		else:
+			face_velocity_fpm = 250.0
+
+		sash_alarm_active = (sash_height_inches > 18.5)
+		if sash_height_inches <= 18.0 and tutorial_step == 1:
+			tutorial_step = 2
+		return {
+			"sash_height": sash_height_inches,
+			"velocity_fpm": face_velocity_fpm,
+			"alarm": sash_alarm_active
+		}
+
+	func toggle_blower(active: bool) -> Dictionary:
+		blower_active = active
+		if not blower_active:
+			face_velocity_fpm = 0.0
+			sash_alarm_active = true
+			return { "success": false, "warning": "DANGER: Exhaust blower offline! Fumes accumulating in room." }
+		face_velocity_fpm = 100.0 * (18.0 / maxf(1.0, sash_height_inches))
+		sash_alarm_active = (sash_height_inches > 18.5)
+		return { "success": true, "velocity_fpm": face_velocity_fpm }
+
+	func get_status() -> Dictionary:
+		return {
+			"blower": blower_active,
+			"velocity_fpm": face_velocity_fpm,
+			"sash_inches": sash_height_inches,
+			"alarm": sash_alarm_active,
+			"light": task_light_active,
+			"argon": utilities_argon_active,
+			"vacuum": utilities_vacuum_active
+		}
+
+# =============================================================================
+# 13. PRECISION MICROPIPETTE SET & TIP CAROUSEL CONTROLLER
+# =============================================================================
+class MicropipetteSetController extends RefCounted:
+	enum PipetteModel { P1000, P200, P20 }
+	var current_model: PipetteModel = PipetteModel.P200
+	var selected_volume_ul: float = 100.0
+	var tip_attached: bool = false
+	var aspirated_volume_ul: float = 0.0
+	var plunger_stop_level: int = 0
+	var liquid_viscous: bool = false
+	var calibration_factor: float = 1.0
+
+	var tutorial_step: int = 0
+	const TUTORIAL_STEPS: Array[String] = [
+		"1. Select micropipette size suited to target volume (P1000: 100-1000 µL, P200: 20-200 µL, P20: 2-20 µL)",
+		"2. Rotate volume adjustment micrometer dial to desired volume (never exceed range limits)",
+		"3. Firmly seat disposable polypropylene tip from rack using gentle downward push and twist",
+		"4. Depress plunger button to FIRST STOP before immersing tip 2-3 mm into liquid",
+		"5. Slowly release plunger over 1-2 seconds to aspirate liquid without forming bubbles",
+		"6. Transfer tip to receiving tube wall, depress to first stop, then SECOND STOP to blow out residual drop",
+		"7. Eject contaminated tip into sharps/hazard waste container using tip ejector button"
+	]
+
+	func select_model(model: PipetteModel) -> void:
+		current_model = model
+		match current_model:
+			PipetteModel.P1000: selected_volume_ul = 500.0
+			PipetteModel.P200: selected_volume_ul = 100.0
+			PipetteModel.P20: selected_volume_ul = 10.0
+		tip_attached = false
+		aspirated_volume_ul = 0.0
+
+	func set_volume(ul: float) -> Dictionary:
+		var min_ul = 0.0
+		var max_ul = 0.0
+		match current_model:
+			PipetteModel.P1000: min_ul = 100.0; max_ul = 1000.0
+			PipetteModel.P200: min_ul = 20.0; max_ul = 200.0
+			PipetteModel.P20: min_ul = 2.0; max_ul = 20.0
+
+		if ul < min_ul or ul > max_ul:
+			return {
+				"success": false,
+				"error": "Out of calibrated range (%.0f - %.0f µL). Forcing spring breaks piston lead screw." % [min_ul, max_ul]
+			}
+		selected_volume_ul = ul
+		if tutorial_step in [0, 1]:
+			tutorial_step = 2
+		return { "success": true, "volume_ul": selected_volume_ul }
+
+	func attach_tip() -> Dictionary:
+		tip_attached = true
+		if tutorial_step == 2:
+			tutorial_step = 3
+		return { "success": true, "tip": true }
+
+	func aspirate(plunger_pre_depressed: bool) -> Dictionary:
+		if not tip_attached:
+			return { "success": false, "error": "CORROSION HAZARD: Never aspirate without tip! Liquid drawn directly into internal piston." }
+		if not plunger_pre_depressed:
+			return { "success": false, "error": "Bubbles aspirated! Depress to first stop BEFORE immersing tip into liquid." }
+
+		aspirated_volume_ul = selected_volume_ul * calibration_factor
+		plunger_stop_level = 0
+		if tutorial_step in [3, 4]:
+			tutorial_step = 5
+		return { "success": true, "aspirated_ul": aspirated_volume_ul }
+
+	func dispense(blowout_second_stop: bool) -> Dictionary:
+		if aspirated_volume_ul <= 0.0:
+			return { "success": false, "dispensed_ul": 0.0 }
+		var delivered = aspirated_volume_ul
+		if not blowout_second_stop:
+			delivered *= 0.97
+		aspirated_volume_ul = 0.0
+		plunger_stop_level = 2 if blowout_second_stop else 1
+		if tutorial_step == 5:
+			tutorial_step = 6
+		return {
+			"success": true,
+			"dispensed_ul": delivered,
+			"blowout": blowout_second_stop,
+			"accuracy_pct": (delivered / selected_volume_ul) * 100.0
+		}
+
+	func eject_tip() -> Dictionary:
+		if not tip_attached:
+			return { "success": false, "warning": "No tip to eject." }
+		tip_attached = false
+		aspirated_volume_ul = 0.0
+		if tutorial_step == 6:
+			tutorial_step = 7
+		return { "success": true, "tip_ejected": true }
+
+	func get_status() -> Dictionary:
+		return {
+			"model": str(PipetteModel.keys()[current_model]),
+			"volume_ul": selected_volume_ul,
+			"tip_attached": tip_attached,
+			"aspirated_ul": aspirated_volume_ul
+		}
+

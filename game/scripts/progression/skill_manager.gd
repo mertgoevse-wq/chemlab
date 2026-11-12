@@ -28,6 +28,8 @@ const TRACK_ORDER: Array[String] = [
 	"environmental_science", "materials_science", "computational_chemistry", "engineering"
 ]
 const RANK_FLOORS: Array[int] = [1, 10, 20, 30, 40, 55, 70, 85, 95, 100]
+const MASTERY_LEVEL: int = 99
+const MAX_SKILL_LEVEL: int = 99
 
 var _tracks: Dictionary = {}
 var _rank_titles: Array = []

@@ -1430,6 +1430,19 @@ func _handle_nmr_event(event_type: String, data: Dictionary) -> void:
 # BACKGROUND & INVESTIGATION MODE
 # =============================================================================
 
+var player_name: String = "Dr. Aris Thorne"
+
+
+func set_player_name(p_name: String) -> void:
+	var trimmed := p_name.strip_edges()
+	if not trimmed.is_empty():
+		player_name = trimmed
+
+
+func get_player_name() -> String:
+	return player_name
+
+
 func set_background(background: String) -> void:
 	if background in ["academic", "hobbyist", "ex_pharma"]:
 		current_background = background
@@ -1538,6 +1551,7 @@ func to_dict() -> Dictionary:
 		"completed_quests": completed_quests,
 		"failed_quests": failed_quests,
 		"current_background": current_background,
+		"player_name": player_name,
 		"fate_resonance": fate_resonance_manager.to_dict() if fate_resonance_manager else {}
 	}
 
@@ -1548,6 +1562,7 @@ func from_dict(data: Dictionary) -> void:
 	completed_quests.assign(data.get("completed_quests", []))
 	failed_quests.assign(data.get("failed_quests", []))
 	current_background = data.get("current_background", "academic")
+	player_name = data.get("player_name", "Dr. Aris Thorne")
 	if data.has("fate_resonance") and fate_resonance_manager:
 		fate_resonance_manager.from_dict(data["fate_resonance"])
 

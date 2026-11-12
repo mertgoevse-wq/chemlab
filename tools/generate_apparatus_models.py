@@ -78,6 +78,12 @@ def setup_materials():
         "accent_amber": create_pbr_material("M_AccentAmber", (0.95, 0.55, 0.1, 1.0), metallic=0.2, roughness=0.3),
         "liquid_blue": create_pbr_material("M_SolventBlue", (0.2, 0.45, 0.85, 1.0), metallic=0.0, roughness=0.12, transmission=0.7),
         "liquid_gold": create_pbr_material("M_ExtractGold", (0.85, 0.65, 0.15, 1.0), metallic=0.0, roughness=0.15, transmission=0.65),
+        "ptfe_white": create_pbr_material("M_PTFE_White", (0.95, 0.95, 0.95, 1.0), metallic=0.0, roughness=0.25),
+        "liquid_biphasic_organic": create_pbr_material("M_BiphasicOrganic", (0.90, 0.72, 0.22, 1.0), metallic=0.0, roughness=0.1, transmission=0.75),
+        "liquid_biphasic_aqueous": create_pbr_material("M_BiphasicAqueous", (0.82, 0.92, 0.98, 1.0), metallic=0.0, roughness=0.1, transmission=0.85),
+        "superconductor_cryo": create_pbr_material("M_SuperconductorCryo", (0.88, 0.91, 0.94, 1.0), metallic=0.95, roughness=0.12),
+        "ceramic_white": create_pbr_material("M_CeramicWhite", (0.96, 0.96, 0.95, 1.0), metallic=0.0, roughness=0.18),
+        "epoxy_black": create_pbr_material("M_EpoxyResinBlack", (0.08, 0.08, 0.09, 1.0), metallic=0.1, roughness=0.35),
     }
 
 
@@ -649,6 +655,461 @@ def build_analytical_balance(mats):
 
 
 # -----------------------------------------------------------------------------
+# 9. Separatory Funnel Extraction Station (500 mL)
+# -----------------------------------------------------------------------------
+def build_separatory_funnel(mats):
+    clean_scene()
+
+    # Retort Stand Base Plate (Heavy Cast Iron)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.015))
+    base = bpy.context.active_object
+    base.name = "SepFunnel_StandBase"
+    base.scale = (0.30, 0.22, 0.03)
+    base.data.materials.append(mats["chassis_dark"])
+
+    # Vertical Stainless Steel Support Rod
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.008, depth=0.75, location=(-0.10, 0.05, 0.38))
+    rod = bpy.context.active_object
+    rod.name = "SepFunnel_SupportRod"
+    rod.data.materials.append(mats["stainless"])
+
+    # Bosshead Clamp on Rod
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-0.10, 0.05, 0.42))
+    boss = bpy.context.active_object
+    boss.name = "SepFunnel_Bosshead"
+    boss.scale = (0.035, 0.035, 0.04)
+    boss.data.materials.append(mats["chassis_dark"])
+
+    # Extension Arm & Ring Clamp with Cork Lining
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.006, depth=0.12, location=(-0.04, 0.03, 0.42))
+    arm = bpy.context.active_object
+    arm.name = "SepFunnel_ClampArm"
+    arm.rotation_euler = (0, math.radians(90), math.radians(20))
+    arm.data.materials.append(mats["stainless"])
+
+    # Cast Iron Ring Collar
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.065, depth=0.012, location=(0.02, 0.0, 0.42))
+    ring = bpy.context.active_object
+    ring.name = "SepFunnel_SupportRing"
+    ring.data.materials.append(mats["chassis_dark"])
+
+    # Pear-Shaped Funnel Upper Bulb (Spherical/Oval Top)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.062, location=(0.02, 0.0, 0.44))
+    bulb = bpy.context.active_object
+    bulb.name = "SepFunnel_GlassBulb"
+    bulb.scale = (1.0, 1.0, 1.25)
+    bulb.data.materials.append(mats["glass"])
+
+    # Funnel Conical Lower Body Tapering Downwards
+    bpy.ops.mesh.primitive_cone_add(radius1=0.058, radius2=0.012, depth=0.14, location=(0.02, 0.0, 0.30))
+    cone = bpy.context.active_object
+    cone.name = "SepFunnel_GlassCone"
+    cone.rotation_euler = (math.radians(180), 0, 0)
+    cone.data.materials.append(mats["glass"])
+
+    # Upper Ground Glass Joint Neck
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.016, depth=0.05, location=(0.02, 0.0, 0.54))
+    neck = bpy.context.active_object
+    neck.name = "SepFunnel_Neck"
+    neck.data.materials.append(mats["glass"])
+
+    # Hexagonal Glass Stopper with Penny Head
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.015, depth=0.03, location=(0.02, 0.0, 0.56))
+    stopper_plug = bpy.context.active_object
+    stopper_plug.name = "SepFunnel_StopperPlug"
+    stopper_plug.data.materials.append(mats["glass"])
+
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.02, 0.0, 0.585))
+    stopper_head = bpy.context.active_object
+    stopper_head.name = "SepFunnel_StopperHead"
+    stopper_head.scale = (0.032, 0.008, 0.022)
+    stopper_head.data.materials.append(mats["glass"])
+
+    # Liquid Phase 1: Dense Chlorinated Organic Layer (Bottom, Gold/Alkaloid extract)
+    bpy.ops.mesh.primitive_cone_add(radius1=0.038, radius2=0.010, depth=0.07, location=(0.02, 0.0, 0.265))
+    org_phase = bpy.context.active_object
+    org_phase.name = "SepFunnel_OrganicLayer"
+    org_phase.rotation_euler = (math.radians(180), 0, 0)
+    org_phase.data.materials.append(mats["liquid_biphasic_organic"])
+
+    # Liquid Phase 2: Lighter Aqueous Layer (Top, Clear/Aqueous blue tint)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.055, depth=0.08, location=(0.02, 0.0, 0.36))
+    aq_phase = bpy.context.active_object
+    aq_phase.name = "SepFunnel_AqueousLayer"
+    aq_phase.data.materials.append(mats["liquid_biphasic_aqueous"])
+
+    # PTFE Precision Stopcock Bore Barrel
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.014, depth=0.05, location=(0.02, 0.0, 0.20))
+    barrel = bpy.context.active_object
+    barrel.name = "SepFunnel_StopcockBarrel"
+    barrel.data.materials.append(mats["glass"])
+
+    # PTFE Stopcock Plug & Cross-Handle (White fluoropolymer)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.008, depth=0.065, location=(0.02, 0.0, 0.20))
+    plug = bpy.context.active_object
+    plug.name = "SepFunnel_PTFEPlug"
+    plug.rotation_euler = (math.radians(90), 0, 0)
+    plug.data.materials.append(mats["ptfe_white"])
+
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.02, 0.035, 0.20))
+    handle = bpy.context.active_object
+    handle.name = "SepFunnel_PTFEHandle"
+    handle.scale = (0.035, 0.008, 0.012)
+    handle.data.materials.append(mats["ptfe_white"])
+
+    # Narrow Glass Delivery Stem below Stopcock
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.005, depth=0.08, location=(0.02, 0.0, 0.14))
+    stem = bpy.context.active_object
+    stem.name = "SepFunnel_DeliveryStem"
+    stem.data.materials.append(mats["glass"])
+
+    # Receiving Erlenmeyer Flask (250 mL) on Stand Base
+    bpy.ops.mesh.primitive_cone_add(radius1=0.045, radius2=0.016, depth=0.085, location=(0.02, 0.0, 0.055))
+    flask = bpy.context.active_object
+    flask.name = "SepFunnel_ReceivingFlask"
+    flask.data.materials.append(mats["glass"])
+
+    export_glb(OUTPUT_DIR / "SM_SeparatoryFunnel_500ml.glb")
+
+
+# -----------------------------------------------------------------------------
+# 10. Superconducting NMR Spectrometer (500 MHz Cryomagnet & Console)
+# -----------------------------------------------------------------------------
+def build_nmr_spectrometer(mats):
+    clean_scene()
+
+    # Main Cryostat Magnet Cylinder (Liquid Helium / Nitrogen Dewar)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.48, depth=1.10, location=(0, 0, 0.95))
+    dewar = bpy.context.active_object
+    dewar.name = "NMR_CryomagnetDewar"
+    dewar.data.materials.append(mats["superconductor_cryo"])
+
+    # Dewar Upper Annular Cap Ring
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.50, depth=0.06, location=(0, 0, 1.52))
+    cap = bpy.context.active_object
+    cap.name = "NMR_TopCap"
+    cap.data.materials.append(mats["chassis_light"])
+
+    # Cryogen Fill & Exhaust Ports (Liquid N2 / Liquid He Cryo Towers)
+    for px, py, label in [(-0.25, 0.15, "LiquidHe_Port"), (0.25, 0.15, "LiquidN2_Port"), (0.0, -0.28, "QuenchExhaust")]:
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=0.22, location=(px, py, 1.63))
+        tower = bpy.context.active_object
+        tower.name = f"NMR_{label}"
+        tower.data.materials.append(mats["stainless"])
+
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.022, depth=0.05, location=(px, py, 1.75))
+        valve = bpy.context.active_object
+        valve.name = f"NMR_{label}_Valve"
+        valve.data.materials.append(mats["brass"])
+
+    # 3 Vibration-Isolated Damped Support Legs (Triangular base)
+    for angle_deg in [0, 120, 240]:
+        rad = math.radians(angle_deg)
+        lx = math.cos(rad) * 0.46
+        ly = math.sin(rad) * 0.46
+        # Leg Cylinder
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.055, depth=0.48, location=(lx, ly, 0.24))
+        leg = bpy.context.active_object
+        leg.name = f"NMR_SupportLeg_{angle_deg}"
+        leg.data.materials.append(mats["chassis_dark"])
+        # Pneumatic Isolation Damping Foot
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.09, depth=0.04, location=(lx, ly, 0.02))
+        foot = bpy.context.active_object
+        foot.name = f"NMR_IsolatorFoot_{angle_deg}"
+        foot.data.materials.append(mats["rubber_black"])
+
+    # Central Vertical Bore Chamber & Sample Insertion Funnel
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.07, depth=0.20, location=(0, 0, 1.60))
+    funnel = bpy.context.active_object
+    funnel.name = "NMR_BoreFunnel"
+    funnel.data.materials.append(mats["chassis_dark"])
+
+    # 24-Position Sample Autosampler Ring
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.22, depth=0.025, location=(0, 0, 1.56))
+    carousel = bpy.context.active_object
+    carousel.name = "NMR_AutosamplerCarousel"
+    carousel.data.materials.append(mats["acrylic_clear"])
+
+    # Sample Tube with Turbine Spinner in Central Position
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.005, depth=0.18, location=(0, 0, 1.68))
+    tube = bpy.context.active_object
+    tube.name = "NMR_SampleTube_5mm"
+    tube.data.materials.append(mats["glass"])
+
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.012, depth=0.02, location=(0, 0, 1.66))
+    spinner = bpy.context.active_object
+    spinner.name = "NMR_SpinnerTurbine"
+    spinner.data.materials.append(mats["accent_cyan"])
+
+    # RF Acquisition Console Tower adjacent to magnet
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.85, 0.0, 0.70))
+    console = bpy.context.active_object
+    console.name = "NMR_RFConsoleCabinet"
+    console.scale = (0.50, 0.55, 1.40)
+    console.data.materials.append(mats["chassis_dark"])
+
+    # Spectrum Acquisition Monitor Display
+    bpy.ops.mesh.primitive_plane_add(size=0.42, location=(0.59, 0.0, 1.15))
+    screen = bpy.context.active_object
+    screen.name = "NMR_SpectrumMonitor"
+    screen.scale = (1.0, 0.65, 1.0)
+    screen.rotation_euler = (math.radians(90), 0, math.radians(-90))
+    screen.data.materials.append(mats["display_screen"])
+
+    # Status LED Strip on Console
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.60, -0.18, 1.35))
+    led = bpy.context.active_object
+    led.name = "NMR_StatusIndicator"
+    led.scale = (0.02, 0.12, 0.03)
+    led.data.materials.append(mats["accent_cyan"])
+
+    export_glb(OUTPUT_DIR / "SM_NMR_Spectrometer.glb")
+
+
+# -----------------------------------------------------------------------------
+# 11. Digital Magnetic Stirrer & Ceramic Hotplate
+# -----------------------------------------------------------------------------
+def build_magnetic_stirrer(mats):
+    clean_scene()
+
+    # Die-Cast Aluminum Lower Chassis with Sloped Control Bezel
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.045))
+    body = bpy.context.active_object
+    body.name = "Stirrer_Chassis"
+    body.scale = (0.24, 0.28, 0.09)
+    body.data.materials.append(mats["chassis_dark"])
+
+    # Anti-Spill Fluid Perimeter Gutter Rim
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0.04, 0.092))
+    rim = bpy.context.active_object
+    rim.name = "Stirrer_PlateRim"
+    rim.scale = (0.21, 0.21, 0.015)
+    rim.data.materials.append(mats["chassis_light"])
+
+    # Pure White Solid Ceramic Heating Plate Top
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0.04, 0.102))
+    plate = bpy.context.active_object
+    plate.name = "Stirrer_CeramicPlate"
+    plate.scale = (0.19, 0.19, 0.012)
+    plate.data.materials.append(mats["ceramic_white"])
+
+    # PTFE Magnetic Stirring Flea (Pivot-Ring Bar)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.005, depth=0.035, location=(0, 0.04, 0.113))
+    stir_bar = bpy.context.active_object
+    stir_bar.name = "Stirrer_MagneticBar"
+    stir_bar.rotation_euler = (0, math.radians(90), math.radians(35))
+    stir_bar.data.materials.append(mats["ptfe_white"])
+
+    # Dual Digital LED Displays (Temperature °C in Amber, Stirrer RPM in Cyan)
+    bpy.ops.mesh.primitive_plane_add(size=0.065, location=(-0.05, -0.095, 0.075))
+    temp_disp = bpy.context.active_object
+    temp_disp.name = "Stirrer_TempDisplay"
+    temp_disp.scale = (1.0, 0.45, 1.0)
+    temp_disp.rotation_euler = (math.radians(35), 0, 0)
+    temp_disp.data.materials.append(mats["accent_amber"])
+
+    bpy.ops.mesh.primitive_plane_add(size=0.065, location=(0.05, -0.095, 0.075))
+    rpm_disp = bpy.context.active_object
+    rpm_disp.name = "Stirrer_RPMDisplay"
+    rpm_disp.scale = (1.0, 0.45, 1.0)
+    rpm_disp.rotation_euler = (math.radians(35), 0, 0)
+    rpm_disp.data.materials.append(mats["display_screen"])
+
+    # Knurled Optical Encoder Rotary Control Dials
+    for dx, label in [(-0.05, "TempKnob"), (0.05, "SpeedKnob")]:
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.020, depth=0.018, location=(dx, -0.125, 0.055))
+        knob = bpy.context.active_object
+        knob.name = f"Stirrer_{label}"
+        knob.rotation_euler = (math.radians(35), 0, 0)
+        knob.data.materials.append(mats["stainless"])
+
+    # External PT1000 Temperature Sensor Support Boss & Rod
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.006, depth=0.35, location=(0.095, 0.12, 0.22))
+    probe_rod = bpy.context.active_object
+    probe_rod.name = "Stirrer_ProbeSupportRod"
+    probe_rod.data.materials.append(mats["stainless"])
+
+    # PT1000 Stainless Steel Probe Arm & Tip
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.003, depth=0.15, location=(0.03, 0.08, 0.22))
+    probe = bpy.context.active_object
+    probe.name = "Stirrer_PT1000SensorProbe"
+    probe.data.materials.append(mats["stainless"])
+
+    export_glb(OUTPUT_DIR / "SM_MagneticStirrer_Hotplate.glb")
+
+
+# -----------------------------------------------------------------------------
+# 12. Aerodynamic Fume Hood Enclosure (Ducted Class II)
+# -----------------------------------------------------------------------------
+def build_fume_hood(mats):
+    clean_scene()
+
+    # Outer Hood Structural Cabinet
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.90))
+    cabinet = bpy.context.active_object
+    cabinet.name = "FumeHood_OuterCabinet"
+    cabinet.scale = (1.20, 0.85, 1.50)
+    cabinet.data.materials.append(mats["chassis_light"])
+
+    # Solid Epoxy Resin Worktop Floor (Dished with spill containment)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.02, 0.22))
+    worktop = bpy.context.active_object
+    worktop.name = "FumeHood_Worktop"
+    worktop.scale = (1.14, 0.78, 0.04)
+    worktop.data.materials.append(mats["epoxy_black"])
+
+    # Aerodynamic Front Airfoil Sill
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.025, depth=1.14, location=(0, -0.40, 0.23))
+    airfoil = bpy.context.active_object
+    airfoil.name = "FumeHood_AirfoilSill"
+    airfoil.rotation_euler = (0, math.radians(90), 0)
+    airfoil.data.materials.append(mats["stainless"])
+
+    # Interior Rear Exhaust Baffle Plates (3-Tier Air Slots)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0.38, 0.90))
+    baffle = bpy.context.active_object
+    baffle.name = "FumeHood_ExhaustBaffle"
+    baffle.scale = (1.12, 0.03, 1.25)
+    baffle.data.materials.append(mats["chassis_dark"])
+
+    # Top Cylindrical Exhaust Duct Collar
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.18, depth=0.25, location=(0, 0.15, 1.75))
+    duct = bpy.context.active_object
+    duct.name = "FumeHood_ExhaustDuct"
+    duct.data.materials.append(mats["stainless"])
+
+    # Vertical Sliding Tempered Glass Sash
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.40, 0.95))
+    sash = bpy.context.active_object
+    sash.name = "FumeHood_GlassSash"
+    sash.scale = (1.12, 0.015, 0.85)
+    sash.data.materials.append(mats["acrylic_clear"])
+
+    # Sash Full-Width Extruded Aluminum Grip Handle
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.41, 0.53))
+    sash_handle = bpy.context.active_object
+    sash_handle.name = "FumeHood_SashHandle"
+    sash_handle.scale = (1.12, 0.035, 0.025)
+    sash_handle.data.materials.append(mats["stainless"])
+
+    # Ceiling Vapor-Proof LED Task Luminaire Light
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.05, 1.58))
+    light = bpy.context.active_object
+    light.name = "FumeHood_TaskLuminaire"
+    light.scale = (0.90, 0.14, 0.03)
+    light.data.materials.append(mats["display_screen"])
+
+    # Utility Service Fixtures on Side Stanchions (Argon, Vacuum, Chilled Water)
+    for fy, color_key, label in [(-0.15, "accent_cyan", "ArgonValve"), (0.0, "accent_amber", "VacuumValve"), (0.15, "stainless", "WaterTap")]:
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=0.04, location=(-0.55, fy, 0.35))
+        turret = bpy.context.active_object
+        turret.name = f"FumeHood_{label}"
+        turret.rotation_euler = (0, 0, math.radians(90))
+        turret.data.materials.append(mats[color_key])
+
+    # Airflow Face Velocity Monitor (Digital FPM/Safety Status)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.58, -0.40, 0.75))
+    monitor = bpy.context.active_object
+    monitor.name = "FumeHood_VelocityMonitor"
+    monitor.scale = (0.03, 0.08, 0.12)
+    monitor.data.materials.append(mats["display_screen"])
+
+    export_glb(OUTPUT_DIR / "SM_FumeHood_Ducted.glb")
+
+
+# -----------------------------------------------------------------------------
+# 13. Laboratory Micropipette Set & Tip Box Carousel
+# -----------------------------------------------------------------------------
+def build_micropipette_set(mats):
+    clean_scene()
+
+    # Curved Acrylic Desktop Pipette Carousel Stand
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.10, depth=0.025, location=(0, 0, 0.012))
+    base = bpy.context.active_object
+    base.name = "PipetteStand_Base"
+    base.data.materials.append(mats["acrylic_clear"])
+
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.015, depth=0.32, location=(0, 0, 0.17))
+    shaft = bpy.context.active_object
+    shaft.name = "PipetteStand_CentralShaft"
+    shaft.data.materials.append(mats["stainless"])
+
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.09, depth=0.015, location=(0, 0, 0.31))
+    hanger = bpy.context.active_object
+    hanger.name = "PipetteStand_HangerHead"
+    hanger.data.materials.append(mats["acrylic_clear"])
+
+    # 3 Ergonomic Air-Displacement Micropipettes (P1000 Blue, P200 Yellow, P20 Grey)
+    pipette_specs = [
+        (-0.065, "P1000", mats["accent_cyan"]),
+        (0.0, "P200", mats["accent_amber"]),
+        (0.065, "P20", mats["chassis_dark"])
+    ]
+
+    for px, model, col_mat in pipette_specs:
+        # Pipette Handle Body
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.014, depth=0.16, location=(px, -0.02, 0.23))
+        body = bpy.context.active_object
+        body.name = f"Pipette_{model}_Handle"
+        body.data.materials.append(mats["chassis_light"])
+
+        # Ergonomic Finger Rest Hook
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(px, -0.035, 0.28))
+        hook = bpy.context.active_object
+        hook.name = f"Pipette_{model}_Hook"
+        hook.scale = (0.018, 0.020, 0.012)
+        hook.data.materials.append(mats["chassis_dark"])
+
+        # Color-Coded Plunger Push Button
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.009, depth=0.025, location=(px, -0.02, 0.32))
+        btn = bpy.context.active_object
+        btn.name = f"Pipette_{model}_Plunger"
+        btn.data.materials.append(col_mat)
+
+        # 3-Digit Microliter Volume Counter Window
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(px, -0.006, 0.24))
+        vol = bpy.context.active_object
+        vol.name = f"Pipette_{model}_VolumeDisplay"
+        vol.scale = (0.012, 0.004, 0.035)
+        vol.data.materials.append(mats["display_screen"])
+
+        # Tapered PVDF Shaft with Tip Ejector Collar
+        bpy.ops.mesh.primitive_cone_add(radius1=0.008, radius2=0.0025, depth=0.09, location=(px, -0.02, 0.105))
+        tip_cone = bpy.context.active_object
+        tip_cone.name = f"Pipette_{model}_Shaft"
+        tip_cone.rotation_euler = (math.radians(180), 0, 0)
+        tip_cone.data.materials.append(mats["ptfe_white"])
+
+        # Stainless Steel Ejector Arm
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.0018, depth=0.08, location=(px, -0.028, 0.115))
+        ejector = bpy.context.active_object
+        ejector.name = f"Pipette_{model}_EjectorArm"
+        ejector.data.materials.append(mats["stainless"])
+
+    # Polypropylene Pipette Tip Box (96-Well Rack)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.14, 0.10, 0.035))
+    box = bpy.context.active_object
+    box.name = "TipBox_Housing"
+    box.scale = (0.12, 0.085, 0.05)
+    box.data.materials.append(mats["chassis_light"])
+
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.14, 0.10, 0.065))
+    lid = bpy.context.active_object
+    lid.name = "TipBox_TransparentLid"
+    lid.scale = (0.122, 0.087, 0.025)
+    lid.data.materials.append(mats["acrylic_clear"])
+
+    # Perforated Tip Plate Deck
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0.14, 0.10, 0.055))
+    deck = bpy.context.active_object
+    deck.name = "TipBox_TipDeck"
+    deck.scale = (0.11, 0.075, 0.006)
+    deck.data.materials.append(mats["accent_cyan"])
+
+    export_glb(OUTPUT_DIR / "SM_Micropipette_Set.glb")
+
+
+# -----------------------------------------------------------------------------
 # Main Execution Pipeline
 # -----------------------------------------------------------------------------
 def main():
@@ -668,6 +1129,11 @@ def main():
         ("UV-Vis Spectrophotometer", build_uv_vis),
         ("Inert Atmosphere Glovebox", build_glovebox),
         ("Precision Analytical Balance", build_analytical_balance),
+        ("Separatory Funnel 500mL", build_separatory_funnel),
+        ("NMR Spectrometer 500MHz", build_nmr_spectrometer),
+        ("Magnetic Stirrer Hotplate", build_magnetic_stirrer),
+        ("Ducted Class II Fume Hood", build_fume_hood),
+        ("Micropipette Set & Carousel", build_micropipette_set),
     ]
 
     for title, gen_func in generators:
@@ -675,7 +1141,7 @@ def main():
         gen_func(mats)
 
     print("\n" + "=" * 60)
-    print("SUCCESS: All 8 Laboratory Apparatus GLB models generated!")
+    print("SUCCESS: All 13 Laboratory Apparatus GLB models generated!")
     print("=" * 60)
 
 

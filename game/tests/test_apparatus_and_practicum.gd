@@ -1,5 +1,5 @@
 # Athanor Ascension — Test Apparatus Suite & Interactive Practicum
-# Headless verification of all 8 laboratory instruments and practicum UI
+# Headless verification of all 13 laboratory instruments and practicum UI
 # Run: tools/bin/godot --headless --path game --script res://tests/test_apparatus_and_practicum.gd
 
 extends SceneTree
@@ -7,7 +7,7 @@ extends SceneTree
 const Suite = preload("res://scripts/labs/apparatus_suite.gd")
 
 func _init() -> void:
-	print("--- Running Test Apparatus Suite & Interactive Practicum ---")
+	print("--- Running Test Apparatus Suite & Interactive Practicum (13 Instruments) ---")
 	var failures: int = 0
 
 	failures += _test_rotary_evaporator()
@@ -18,10 +18,15 @@ func _init() -> void:
 	failures += _test_uvvis_spectrophotometer()
 	failures += _test_glovebox()
 	failures += _test_centrifuge()
+	failures += _test_separatory_funnel()
+	failures += _test_nmr_spectrometer()
+	failures += _test_magnetic_stirrer()
+	failures += _test_fume_hood()
+	failures += _test_micropipette_set()
 	failures += _test_practicum_ui()
 
 	if failures == 0:
-		print("SUCCESS: All apparatus suite tests passed (0 failures).")
+		print("SUCCESS: All 13 apparatus suite tests passed (0 failures).")
 		quit(0)
 	else:
 		printerr("FAILED: %d apparatus tests failed." % failures)
@@ -189,6 +194,140 @@ func _test_centrifuge() -> int:
 	f += _assert(float(run_res.get("rcf_g_force", 0.0)) > 5000.0, "Relative Centrifugal Force (RCF) generated > 5,000 x g")
 	return f
 
+func _test_separatory_funnel() -> int:
+	print("\nTesting Separatory Funnel (Liquid-Liquid Extraction)...")
+	var f: int = 0
+	var sep = Suite.SeparatoryFunnelController.new()
+
+	# Shaking without venting should eventually trigger pressure warning/error
+	var shake1 = sep.shake_and_vent()
+	f += _assert(bool(shake1.get("vented", false)), "Shake and inverted vent step executed")
+	f += _assert(int(shake1.get("shaked", 0)) == 1, "Shake count incremented")
+
+	var settle = sep.settle_phases()
+	f += _assert(float(settle.get("efficiency_pct", 0.0)) > 50.0, "Nernst partition yield > 50% for high Kd alkaloid")
+
+	# Drain lower phase (DCM) with stopper ON -> should error about vacuum lock
+	var drain_locked = sep.drain_lower_phase(true)
+	f += _assert(drain_locked.has("error"), "Error/lock issued when draining with stopper on")
+
+	# Remove stopper and drain
+	sep.remove_stopper(true)
+	var drain_ok = sep.drain_lower_phase(true)
+	f += _assert(bool(drain_ok.get("success", false)), "Lower layer drained cleanly into collection flask")
+	f += _assert(float(drain_ok.get("collected_solute_mg", 0.0)) > 0.0, "Target solute isolated in organic aliquot")
+	return f
+
+func _test_nmr_spectrometer() -> int:
+	print("\nTesting Superconducting NMR Spectrometer (500 MHz)...")
+	var f: int = 0
+	var nmr = Suite.NMRSpectrometerController.new()
+
+	var st = nmr.get_status()
+	f += _assert(float(st.get("field_tesla", 0.0)) > 11.0, "Magnetic field corresponds to ~500 MHz (11.74 T)")
+	f += _assert(float(st.get("he_level", 0.0)) > 80.0, "Liquid helium cryostat level safe")
+
+	# Try inserting sample without lift air
+	var ins_err = nmr.insert_sample(true)
+	f += _assert(ins_err.has("error"), "Sample insertion requires pneumatic lift air buffer")
+
+	# Enable lift air, insert sample, turn off lift air to lower gently
+	nmr.toggle_lift_air(true)
+	var ins_ok = nmr.insert_sample(true)
+	f += _assert(bool(ins_ok.get("success", false)), "Sample inserted on pneumatic air cushion")
+	nmr.toggle_lift_air(false)
+
+	# Engage lock & shim
+	var lock_res = nmr.engage_lock()
+	f += _assert(bool(lock_res.get("success", false)), "Deuterium lock established")
+	var shim_res = nmr.execute_autoshim()
+	f += _assert(float(shim_res.get("linewidth_hz", 10.0)) < 1.0, "Gradient autoshim achieved sharp linewidth (< 1.0 Hz)")
+
+	# Acquire 1H spectrum
+	var spec = nmr.acquire_1h_spectrum("Atropine Pure", [
+		{"shift_ppm": 7.30, "multiplicity": "m", "integral": 5, "label": "Ar-H"},
+		{"shift_ppm": 2.22, "multiplicity": "s", "integral": 3, "label": "N-CH3"}
+	])
+	f += _assert(bool(spec.get("success", false)), "1H-NMR spectrum acquired with FID Fourier transform")
+	f += _assert(Array(spec.get("peaks", [])).size() == 2, "Assigned chemical shifts cataloged")
+	return f
+
+func _test_magnetic_stirrer() -> int:
+	print("\nTesting Digital Magnetic Stirrer & Hotplate...")
+	var f: int = 0
+	var stirrer = Suite.MagneticStirrerController.new()
+
+	stirrer.set_heat(80.0, true)
+	# Gradual acceleration to prevent magnetic decoupling (>450 RPM differential)
+	stirrer.set_stir_speed(300.0)
+	for i in range(50):
+		stirrer.update(0.1)
+
+	stirrer.set_stir_speed(600.0)
+	for i in range(50):
+		stirrer.update(0.1)
+
+	var st = stirrer.get_status()
+	f += _assert(float(st.get("plate_temp", 20.0)) > 30.0, "Ceramic plate heated towards target temp")
+	f += _assert(float(st.get("stirring_rpm", 0.0)) > 400.0, "Magnetic stir flea rotating smoothly")
+	f += _assert(not bool(st.get("decoupled", false)), "Stir bar maintains magnetic coupling during gradual ramp")
+
+	# Test decoupling at excessive abrupt speed jump (0 -> 800 RPM jump)
+	stirrer.reset_decoupled_flea()
+	stirrer.set_stir_speed(800.0)
+	stirrer.update(0.1)
+	var st_decoupled = stirrer.get_status()
+	f += _assert(bool(st_decoupled.get("decoupled", false)), "Decoupled rattle state triggered on >450 RPM jump")
+
+	stirrer.reset_decoupled_flea()
+	f += _assert(not stirrer.stir_bar_decoupled, "Decoupled flea successfully re-centered")
+	return f
+
+func _test_fume_hood() -> int:
+	print("\nTesting Ducted Class II Fume Hood...")
+	var f: int = 0
+	var hood = Suite.FumeHoodController.new()
+
+	var st_init = hood.get_status()
+	f += _assert(bool(st_init.get("blower", false)), "Exhaust blower is operational")
+	f += _assert(float(st_init.get("velocity_fpm", 0.0)) >= 80.0, "Face inflow velocity meets OSHA 80-120 FPM standard")
+
+	# Raise sash dangerously high (e.g. 28 inches)
+	var high_sash = hood.set_sash_height(28.0)
+	f += _assert(bool(high_sash.get("alarm", false)), "Sash height alarm triggered when exceeding 18 inch working limit")
+
+	# Return sash to safe working height (18 inches)
+	var safe_sash = hood.set_sash_height(18.0)
+	f += _assert(not bool(safe_sash.get("alarm", true)), "Alarm silenced when returned to 18 inch safety height")
+	return f
+
+func _test_micropipette_set() -> int:
+	print("\nTesting Precision Micropipette Set...")
+	var f: int = 0
+	var pip = Suite.MicropipetteSetController.new()
+
+	pip.select_model(Suite.MicropipetteSetController.PipetteModel.P200)
+	pip.set_volume(100.0)
+
+	# Aspirate without tip should fail
+	var asp_notip = pip.aspirate(true)
+	f += _assert(asp_notip.has("error"), "Aspiration blocked without disposable polypropylene tip")
+
+	# Attach tip and aspirate
+	pip.attach_tip()
+	var asp_ok = pip.aspirate(true)
+	f += _assert(bool(asp_ok.get("success", false)), "Aspirated 100 µL with tip attached")
+	f += _assert(abs(float(asp_ok.get("aspirated_ul", 0.0)) - 100.0) < 0.1, "Calibrated volume matches dialed setting")
+
+	# Dispense with blowout
+	var disp_ok = pip.dispense(true)
+	f += _assert(bool(disp_ok.get("success", false)), "Dispensed with secondary blowout stop")
+	f += _assert(float(disp_ok.get("accuracy_pct", 0.0)) > 98.0, "Dispense accuracy exceeds 98%")
+
+	pip.eject_tip()
+	f += _assert(not pip.tip_attached, "Tip ejected cleanly into biohazard sharps bin")
+	return f
+
 func _test_practicum_ui() -> int:
 	print("\nTesting ApparatusPracticum UI Scene...")
 	var f: int = 0
@@ -202,12 +341,12 @@ func _test_practicum_ui() -> int:
 	root.add_child(instance)
 	instance._ready()
 
-	# Test switching through all 8 apparatuses
-	for i in range(8):
+	# Test switching through all 13 apparatuses
+	for i in range(13):
 		instance._switch_apparatus(i)
 		instance._process(0.1)
 
-	f += _assert(instance._current_type == 7, "Successfully cycled through all 8 apparatus views in UI")
+	f += _assert(instance._current_type == 12, "Successfully cycled through all 13 apparatus views in UI")
 
 	instance.queue_free()
 	return f

@@ -151,6 +151,9 @@ func get_specialization_data(spec_id: String) -> Dictionary:
 func get_appearance_options() -> Dictionary:
 	return _get_data().get("appearance", {})
 
+func set_appearance(category: String, option: String, value: Variant) -> bool:
+	return set_appearance_option(category, option, value)
+
 func set_appearance_option(category: String, option: String, value: Variant) -> bool:
 	if not appearance.has(category):
 		return false
@@ -195,6 +198,9 @@ func set_lab_coat_style(style: String) -> void:
 	lab_coat_style = style
 	if appearance.has("attire"):
 		appearance["attire"]["coat_style"] = style
+
+func finalize_character() -> Dictionary:
+	return create_character()
 
 func create_character() -> Dictionary:
 	if selected_background == "":
