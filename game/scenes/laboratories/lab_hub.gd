@@ -40,6 +40,7 @@ func _ready() -> void:
 	_create_practicum_kiosk()
 	_create_pneumatic_transit_station()
 	_create_ai_advisor_kiosk()
+	_create_photorealistic_bench_kiosk()
 	_create_interaction_hud()
 	_setup_player()
 
@@ -434,6 +435,60 @@ func _create_ai_advisor_kiosk() -> void:
 
 
 # =============================================================================
+# PHOTOREALISTIC BENCH KIOSK (Fractional Distillation & Precision Metrology)
+# =============================================================================
+
+func _create_photorealistic_bench_kiosk() -> void:
+	var kiosk := Node3D.new()
+	kiosk.name = "PhotorealisticBenchKiosk"
+	kiosk.position = Vector3(0.0, 0.0, -8.5)
+
+	# Obsidian Pedestal Base
+	var base := MeshInstance3D.new()
+	var base_mesh := BoxMesh.new()
+	base_mesh.size = Vector3(2.2, 1.1, 1.4)
+	base.mesh = base_mesh
+	base.material_override = _mat_terminal
+	base.position = Vector3(0.0, 0.55, 0.0)
+	kiosk.add_child(base)
+
+	# Glowing Cyan Glass Display Terminal
+	var screen := MeshInstance3D.new()
+	var screen_mesh := BoxMesh.new()
+	screen_mesh.size = Vector3(1.8, 1.0, 0.08)
+	screen.mesh = screen_mesh
+	screen.material_override = _mat_cyan_glow
+	screen.position = Vector3(0.0, 1.35, -0.2)
+	screen.rotation.x = PI / 5.0
+	kiosk.add_child(screen)
+
+	# 3D Sign
+	var sign := Label3D.new()
+	sign.text = "PHOTOREALISTIC SYNTHESIS BENCH\n[E] Enter High-Fidelity 3D Laboratory (PiHKAL / TiHKAL / Vogel)"
+	sign.position = Vector3(0.0, 2.2, -0.2)
+	sign.rotation.y = 0.0
+	sign.font_size = 20
+	sign.modulate = Color(0.3, 0.92, 1.0)
+	sign.outline_size = 4
+	kiosk.add_child(sign)
+
+	# Interaction Area
+	var area := Area3D.new()
+	area.name = "Area"
+	var col := CollisionShape3D.new()
+	var sphere := SphereShape3D.new()
+	sphere.radius = 2.6
+	col.shape = sphere
+	area.add_child(col)
+	area.position = Vector3(0.0, 1.0, 0.0)
+	area.body_entered.connect(func(_b): _set_interaction_prompt("photorealistic_bench", true))
+	area.body_exited.connect(func(_b): _set_interaction_prompt("photorealistic_bench", false))
+	kiosk.add_child(area)
+
+	add_child(kiosk)
+
+
+# =============================================================================
 # INTERACTION HUD & INPUT HANDLING
 # =============================================================================
 
@@ -480,6 +535,8 @@ func _set_interaction_prompt(type: String, active: bool) -> void:
 				label.text = "Press [E] to Access Pneumatic Transit Network (Fast Travel)"
 			"ai_advisor":
 				label.text = "Press [E] to Consult Local AI Research Advisor"
+			"photorealistic_bench":
+				label.text = "Press [E] to Enter Photorealistic Synthesis Bench"
 			_:
 				label.text = "Press [E] to Interact"
 	else:
@@ -496,6 +553,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _execute_active_interaction() -> void:
 	match _active_interaction_type:
+		"photorealistic_bench":
+			print("Launching Photorealistic Synthesis Bench...")
+			get_tree().change_scene_to_file("res://scenes/laboratories/photorealistic_bench.tscn")
 		"practicum":
 			print("Launching Apparatus Practicum scene...")
 			get_tree().change_scene_to_file("res://scenes/laboratories/apparatus_practicum.tscn")

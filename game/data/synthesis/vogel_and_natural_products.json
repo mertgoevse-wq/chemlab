@@ -560,6 +560,951 @@
           "expected_yield_pct": 79.0
         }
       ]
+    },
+    {
+      "id": "cocaine_semisynthesis",
+      "target_molecule": "(-)-Cocaine Freebase",
+      "chemical_name": "Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate",
+      "cas_number": "50-36-2",
+      "formula": "C17H21NO4",
+      "molecular_weight": 303.35,
+      "category": "Tropane Alkaloids & Classic Syntheses",
+      "description": "Total semisynthetic protocol from Robinson tropinone via C-carbomethoxylation with dimethyl carbonate, stereoselective reduction to ecgonine methyl ester, and benzoylation.",
+      "literature_reference": "Findlay, S. P. (1954). J. Am. Chem. Soc., 76(11), 2855-2862; Casale, J. F. (1987). Forensic Sci. Int., 33(4), 275-298.",
+      "mp_c": 98.0,
+      "tlc_rf": 0.38,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Enolization & Carbomethoxylation of Tropinone",
+          "technique": "enolate_acylation",
+          "reagents": [
+            {"reagent_id": "tropinone", "name": "Tropinone", "amount": 13.9, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "dimethyl_carbonate", "name": "Dimethyl Carbonate", "amount": 18.0, "unit": "mL", "equivalents": 2.0},
+            {"reagent_id": "sodium_hydride", "name": "Sodium Hydride (60% dispersion in mineral oil)", "amount": 4.8, "unit": "g", "equivalents": 1.2}
+          ],
+          "conditions": {
+            "temperature_c": 80.0,
+            "duration_min": 120.0,
+            "fume_hood": true,
+            "atmosphere": "dry_argon"
+          },
+          "workup": {
+            "quench": "Carefully quench excess NaH with dry methanol at 0 °C",
+            "extraction": "Extract 2-carbomethoxytropinone sodium salt into ice-cold water, wash with pentane to remove oil, acidify to pH 4"
+          },
+          "expected_yield_pct": 74.0
+        },
+        {
+          "step_number": 2,
+          "name": "Stereospecific Reduction to Ecgonine Methyl Ester",
+          "technique": "amalgam_reduction",
+          "reagents": [
+            {"reagent_id": "sodium_amalgam", "name": "Sodium Amalgam (1.5% Na in Hg) or NaBH4/CeCl3", "amount": 50.0, "unit": "g", "equivalents": 2.5},
+            {"reagent_id": "hydrochloric_acid", "name": "2 M HCl (pH 3-4 control)", "amount": 40.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 5.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "basification": "Basify to pH 10 with ammonium hydroxide at 0 °C",
+            "extraction": "Exhaustively extract with chloroform (5 x 50 mL), dry over anhydrous Na2SO4, evaporate to viscous ecgonine methyl ester oil"
+          },
+          "expected_yield_pct": 68.0
+        },
+        {
+          "step_number": 3,
+          "name": "Benzoylation to Cocaine Base",
+          "technique": "esterification",
+          "reagents": [
+            {"reagent_id": "benzoyl_chloride", "name": "Benzoyl Chloride", "amount": 14.1, "unit": "g", "equivalents": 1.1},
+            {"reagent_id": "pyridine", "name": "Dry Pyridine", "amount": 25.0, "unit": "mL", "equivalents": 3.0}
+          ],
+          "conditions": {
+            "temperature_c": 60.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Pour into 100 mL cold water, basify with aqueous ammonia to pH 9",
+            "crystallization": "Extract with diethyl ether, wash with water, dry over K2CO3, evaporate and recrystallize from diethyl ether/petroleum ether to give white monoclinic prisms (mp 98 °C)"
+          },
+          "expected_yield_pct": 82.0
+        }
+      ]
+    },
+    {
+      "id": "scopolamine_total_synthesis",
+      "target_molecule": "(-)-Scopolamine",
+      "chemical_name": "(S)-(8-Methyl-6,7-epoxytropan-3-yl) 3-hydroxy-2-phenylpropanoate",
+      "cas_number": "51-34-3",
+      "formula": "C17H21NO4",
+      "molecular_weight": 303.35,
+      "category": "Tropane Alkaloids & Classic Syntheses",
+      "description": "Total organic chemical synthesis of the anticholinergic tropane alkaloid scopolamine from 6,7-dehydrotropinone via stereospecific epoxidation, carbonyl reduction, and esterification.",
+      "literature_reference": "Fodor, G. et al. (1959). J. Chem. Soc., 3461-3465; Vogel's Practical Organic Chemistry.",
+      "mp_c": 59.0,
+      "tlc_rf": 0.32,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Epoxidation to 6,7-Epoxytropinone",
+          "technique": "peracid_epoxidation",
+          "reagents": [
+            {"reagent_id": "dehydrotropinone", "name": "6,7-Dehydrotropinone", "amount": 13.7, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "mcpba", "name": "meta-Chloroperbenzoic Acid (mCPBA 77%)", "amount": 22.4, "unit": "g", "equivalents": 1.0}
+          ],
+          "conditions": {
+            "temperature_c": 0.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Wash organic layer with 10% sodium sulfite and saturated NaHCO3",
+            "drying": "Dry over anhydrous MgSO4 and concentrate under vacuum"
+          },
+          "expected_yield_pct": 79.0
+        },
+        {
+          "step_number": 2,
+          "name": "Stereoselective Carbonyl Reduction to Scopine",
+          "technique": "borohydride_reduction",
+          "reagents": [
+            {"reagent_id": "sodium_borohydride", "name": "Sodium Borohydride (NaBH4)", "amount": 3.8, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "methanol", "name": "Methanol", "amount": 60.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": -10.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "hydrolysis": "Acidify with 2 M HCl to decompose boron complexes, basify with KOH to pH 11, extract with chloroform"
+          },
+          "expected_yield_pct": 72.0
+        },
+        {
+          "step_number": 3,
+          "name": "Esterification with Acetyltropic Acid Chloride",
+          "technique": "fischer_esterification",
+          "reagents": [
+            {"reagent_id": "acetyltropoyl_chloride", "name": "(S)-Acetyltropoyl Chloride", "amount": 22.6, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "pyridine", "name": "Anhydrous Pyridine", "amount": 20.0, "unit": "mL", "equivalents": 2.5}
+          ],
+          "conditions": {
+            "temperature_c": 50.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "deacetylation": "Mild alkaline hydrolysis (cold 1 M NaOH) of the phenolic acetate, followed by ether extraction to yield viscous crystalline scopolamine base"
+          },
+          "expected_yield_pct": 65.0
+        }
+      ]
+    },
+    {
+      "id": "acetanilide",
+      "target_molecule": "Acetanilide",
+      "chemical_name": "N-Phenylacetamide",
+      "cas_number": "103-84-4",
+      "formula": "C8H9NO",
+      "molecular_weight": 135.17,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Acetylation of aniline with acetic anhydride in sodium acetate buffer (Vogel 5th ed. p. 917).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 917.",
+      "mp_c": 114.0,
+      "tlc_rf": 0.42,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Aqueous N-Acetylation",
+          "technique": "acylation",
+          "reagents": [
+            {"reagent_id": "aniline", "name": "Aniline", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "acetic_anhydride", "name": "Acetic Anhydride", "amount": 12.0, "unit": "mL", "equivalents": 1.18},
+            {"reagent_id": "sodium_acetate", "name": "Sodium Acetate Trihydrate", "amount": 15.0, "unit": "g", "equivalents": 1.0}
+          ],
+          "conditions": {
+            "temperature_c": 50.0,
+            "duration_min": 30.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Pour into 100 mL ice water; suction-filter lustrous white flakes; recrystallize from boiling water (mp 114 °C)"
+          },
+          "expected_yield_pct": 89.0
+        }
+      ]
+    },
+    {
+      "id": "benzoic_acid_oxidation",
+      "target_molecule": "Benzoic Acid",
+      "chemical_name": "Benzenecarboxylic Acid",
+      "cas_number": "65-85-0",
+      "formula": "C7H6O2",
+      "molecular_weight": 122.12,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Alkaline potassium permanganate oxidation of toluene to benzoic acid (Vogel 5th ed. p. 1029).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 1029.",
+      "mp_c": 122.0,
+      "tlc_rf": 0.48,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Permanganate Reflux Oxidation",
+          "technique": "redox_oxidation",
+          "reagents": [
+            {"reagent_id": "toluene", "name": "Toluene", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "potassium_permanganate", "name": "Potassium Permanganate (KMnO4)", "amount": 25.0, "unit": "g", "equivalents": 1.45},
+            {"reagent_id": "sodium_carbonate", "name": "Sodium Carbonate", "amount": 5.0, "unit": "g", "equivalents": 0.4}
+          ],
+          "conditions": {
+            "temperature_c": 100.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "acidification": "Filter precipitated MnO2, acidify clear filtrate with concentrated HCl to pH 1; brilliant needle crystals of benzoic acid precipitate (mp 122 °C)"
+          },
+          "expected_yield_pct": 84.0
+        }
+      ]
+    },
+    {
+      "id": "aniline_reduction",
+      "target_molecule": "Aniline",
+      "chemical_name": "Benzenamine",
+      "cas_number": "62-53-3",
+      "formula": "C6H7N",
+      "molecular_weight": 93.13,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Tin and hydrochloric acid reduction of nitrobenzene followed by steam distillation (Vogel 5th ed. p. 892).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 892.",
+      "mp_c": -6.0,
+      "bp_c": 184.0,
+      "tlc_rf": 0.55,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Exothermic Acidic Reduction & Steam Distillation",
+          "technique": "tin_reduction",
+          "reagents": [
+            {"reagent_id": "nitrobenzene", "name": "Nitrobenzene", "amount": 25.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "tin_granules", "name": "Granulated Tin", "amount": 45.0, "unit": "g", "equivalents": 1.8},
+            {"reagent_id": "hydrochloric_acid", "name": "Concentrated Hydrochloric Acid (37%)", "amount": 90.0, "unit": "mL", "equivalents": 5.0}
+          ],
+          "conditions": {
+            "temperature_c": 90.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "distillation": "Cool, basify with 40% aqueous NaOH to dissolve stannate, steam-distill aniline, saturate distillate with NaCl, extract with ether, dry over KOH pellets, and distill (bp 184 °C)"
+          },
+          "expected_yield_pct": 86.0
+        }
+      ]
+    },
+    {
+      "id": "adipic_acid_oxidation",
+      "target_molecule": "Adipic Acid",
+      "chemical_name": "Hexanedioic Acid",
+      "cas_number": "124-04-9",
+      "formula": "C6H10O4",
+      "molecular_weight": 146.14,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Vanadate-catalyzed nitric acid oxidation and ring cleavage of cyclohexanol (Vogel 5th ed. p. 668).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 668.",
+      "mp_c": 152.0,
+      "tlc_rf": 0.35,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Controlled Nitric Ring Cleavage",
+          "technique": "catalytic_oxidation",
+          "reagents": [
+            {"reagent_id": "cyclohexanol", "name": "Cyclohexanol", "amount": 20.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "nitric_acid_50", "name": "50% Nitric Acid", "amount": 100.0, "unit": "mL", "equivalents": 5.5},
+            {"reagent_id": "ammonium_vanadate", "name": "Ammonium Metavanadate Catalyst", "amount": 0.2, "unit": "g", "equivalents": 0.01}
+          ],
+          "conditions": {
+            "temperature_c": 58.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Maintain reaction temperature strictly between 55-60 °C with external ice bath; upon completion, chill in ice bath to deposit pure white crystals of adipic acid (mp 152 °C)"
+          },
+          "expected_yield_pct": 78.0
+        }
+      ]
+    },
+    {
+      "id": "dibenzalacetone_aldol",
+      "target_molecule": "Dibenzalacetone",
+      "chemical_name": "(1E,4E)-1,5-Diphenylpenta-1,4-dien-3-one",
+      "cas_number": "538-58-9",
+      "formula": "C17H14O",
+      "molecular_weight": 234.29,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Double Claisen-Schmidt aldol condensation of benzaldehyde with acetone in ethanolic sodium hydroxide (Vogel 5th ed. p. 1033).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 1033.",
+      "mp_c": 111.0,
+      "tlc_rf": 0.62,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Room Temperature Double Condensation",
+          "technique": "aldol_condensation",
+          "reagents": [
+            {"reagent_id": "benzaldehyde", "name": "Benzaldehyde", "amount": 21.2, "unit": "g", "equivalents": 2.0},
+            {"reagent_id": "acetone", "name": "Acetone", "amount": 5.8, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sodium_hydroxide", "name": "Sodium Hydroxide (10% aq)", "amount": 20.0, "unit": "mL", "equivalents": 0.5}
+          ],
+          "conditions": {
+            "temperature_c": 22.0,
+            "duration_min": 45.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Suction-filter yellow precipitate, wash with ice water and cold ethanol, recrystallize from ethyl acetate to yield bright yellow spangles (mp 111 °C)"
+          },
+          "expected_yield_pct": 88.0
+        }
+      ]
+    },
+    {
+      "id": "benzoin_condensation",
+      "target_molecule": "Benzoin",
+      "chemical_name": "2-Hydroxy-1,2-diphenylethan-1-one",
+      "cas_number": "119-53-9",
+      "formula": "C14H12O2",
+      "molecular_weight": 212.24,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Cyanide- or thiamine-catalyzed umpolung condensation of two molecules of benzaldehyde (Vogel 5th ed. p. 1045).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 1045.",
+      "mp_c": 133.0,
+      "tlc_rf": 0.44,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Umpolung Benzoin Coupling",
+          "technique": "catalytic_coupling",
+          "reagents": [
+            {"reagent_id": "benzaldehyde", "name": "Pure Benzaldehyde (chlorine-free)", "amount": 20.0, "unit": "g", "equivalents": 2.0},
+            {"reagent_id": "thiamine_hydrochloride", "name": "Thiamine Hydrochloride (Vitamin B1)", "amount": 3.5, "unit": "g", "equivalents": 0.1},
+            {"reagent_id": "sodium_hydroxide", "name": "Sodium Hydroxide (2 M)", "amount": 8.0, "unit": "mL", "equivalents": 0.15}
+          ],
+          "conditions": {
+            "temperature_c": 65.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Cool in ice bath; benzoin crystallizes as brilliant prisms; recrystallize from 95% ethanol (mp 133 °C)"
+          },
+          "expected_yield_pct": 82.0
+        }
+      ]
+    },
+    {
+      "id": "benzil_oxidation",
+      "target_molecule": "Benzil",
+      "chemical_name": "Diphenylethanedione",
+      "cas_number": "134-81-6",
+      "formula": "C14H10O2",
+      "molecular_weight": 210.23,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Nitric acid oxidation of alpha-hydroxyketone benzoin to alpha-diketone benzil (Vogel 5th ed. p. 1046).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 1046.",
+      "mp_c": 95.0,
+      "tlc_rf": 0.68,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Nitric Acid Oxidation of Benzoin",
+          "technique": "acid_oxidation",
+          "reagents": [
+            {"reagent_id": "benzoin", "name": "Benzoin", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "nitric_acid_conc", "name": "Concentrated Nitric Acid (68%)", "amount": 25.0, "unit": "mL", "equivalents": 8.0}
+          ],
+          "conditions": {
+            "temperature_c": 95.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Pour onto crushed ice; filter bright yellow oil which solidifies into crystals; recrystallize from ethanol (mp 95 °C)"
+          },
+          "expected_yield_pct": 89.0
+        }
+      ]
+    },
+    {
+      "id": "benzilic_acid_rearrangement",
+      "target_molecule": "Benzilic Acid",
+      "chemical_name": "2,2-Diphenyl-2-hydroxyacetic Acid",
+      "cas_number": "76-93-7",
+      "formula": "C14H12O3",
+      "molecular_weight": 228.24,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Base-catalyzed 1,2-phenyl migration (benzilic acid rearrangement) of benzil with potassium hydroxide (Vogel 5th ed. p. 1047).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 1047.",
+      "mp_c": 150.0,
+      "tlc_rf": 0.30,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Alkaline 1,2-Shift & Acid Precipitation",
+          "technique": "base_rearrangement",
+          "reagents": [
+            {"reagent_id": "benzil", "name": "Benzil", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "potassium_hydroxide", "name": "Potassium Hydroxide Pellets", "amount": 10.0, "unit": "g", "equivalents": 3.7},
+            {"reagent_id": "ethanol", "name": "95% Ethanol", "amount": 25.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 80.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Dilute with water, acidify with concentrated HCl; pure white benzilic acid precipitates as dense crystals (mp 150 °C)"
+          },
+          "expected_yield_pct": 91.0
+        }
+      ]
+    },
+    {
+      "id": "cinnamic_acid_perkin",
+      "target_molecule": "(E)-Cinnamic Acid",
+      "chemical_name": "(2E)-3-Phenylacrylic Acid",
+      "cas_number": "140-10-3",
+      "formula": "C9H8O2",
+      "molecular_weight": 148.16,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Classic Perkin reaction of benzaldehyde with acetic anhydride in the presence of anhydrous potassium acetate (Vogel 5th ed. p. 1037).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 1037.",
+      "mp_c": 133.0,
+      "tlc_rf": 0.52,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "High-Temperature Perkin Condensation",
+          "technique": "perkin_condensation",
+          "reagents": [
+            {"reagent_id": "benzaldehyde", "name": "Benzaldehyde", "amount": 20.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "acetic_anhydride", "name": "Acetic Anhydride", "amount": 30.0, "unit": "g", "equivalents": 1.55},
+            {"reagent_id": "potassium_acetate", "name": "Anhydrous Potassium Acetate", "amount": 10.0, "unit": "g", "equivalents": 0.54}
+          ],
+          "conditions": {
+            "temperature_c": 175.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "isolation": "Steam-distill residual benzaldehyde, decolorize hot solution with active charcoal, acidify with HCl; cinnamic acid crystallizes as glistening needles (mp 133 °C)"
+          },
+          "expected_yield_pct": 76.0
+        }
+      ]
+    },
+    {
+      "id": "luminol",
+      "target_molecule": "Luminol",
+      "chemical_name": "5-Amino-2,3-dihydrophthalazine-1,4-dione",
+      "cas_number": "521-31-3",
+      "formula": "C8H7N3O2",
+      "molecular_weight": 177.16,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Synthesis of the chemiluminescent reagent from 3-nitrophthalic acid via hydrazine cyclization and sodium dithionite reduction (Vogel 5th ed. p. 924).",
+      "literature_reference": "Huntress, E. H. et al. (1934). J. Am. Chem. Soc., 56(1), 241-242; Vogel's Practical Organic Chemistry.",
+      "mp_c": 319.0,
+      "tlc_rf": 0.25,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Thermal Hydrazine Cyclization",
+          "technique": "high_temp_cyclization",
+          "reagents": [
+            {"reagent_id": "3_nitrophthalic_acid", "name": "3-Nitrophthalic Acid", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "hydrazine_hydrate", "name": "Hydrazine Hydrate (80%)", "amount": 5.0, "unit": "mL", "equivalents": 1.7},
+            {"reagent_id": "triethylene_glycol", "name": "Triethylene Glycol", "amount": 25.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 215.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Heat to 215 °C to flash-boil water, cool to 100 °C, pour into 50 mL hot water; filter 3-nitrophthalhydrazide cake"
+          },
+          "expected_yield_pct": 85.0
+        },
+        {
+          "step_number": 2,
+          "name": "Sodium Dithionite Reduction",
+          "technique": "dithionite_reduction",
+          "reagents": [
+            {"reagent_id": "sodium_dithionite", "name": "Sodium Dithionite (Na2S2O4)", "amount": 15.0, "unit": "g", "equivalents": 2.2},
+            {"reagent_id": "sodium_hydroxide", "name": "Sodium Hydroxide (10% aq)", "amount": 30.0, "unit": "mL", "equivalents": 1.5}
+          ],
+          "conditions": {
+            "temperature_c": 80.0,
+            "duration_min": 45.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "precipitation": "Boil 5 min, acidify with glacial acetic acid to pH 5; luminol separates as pale yellow microcrystalline powder displaying bright blue chemiluminescence when oxidized with H2O2/K3[Fe(CN)6]"
+          },
+          "expected_yield_pct": 82.0
+        }
+      ]
+    },
+    {
+      "id": "fluorescein",
+      "target_molecule": "Fluorescein",
+      "chemical_name": "3',6'-Dihydroxyspiro[isobenzofuran-1(3H),9'-[9H]xanthen]-3-one",
+      "cas_number": "2321-07-5",
+      "formula": "C20H12O5",
+      "molecular_weight": 332.31,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Zinc chloride catalyzed melt condensation of phthalic anhydride with resorcinol at 180 °C (Vogel 5th ed. p. 986).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 986.",
+      "mp_c": 314.0,
+      "tlc_rf": 0.40,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Zinc Chloride Melt Condensation",
+          "technique": "melt_condensation",
+          "reagents": [
+            {"reagent_id": "phthalic_anhydride", "name": "Phthalic Anhydride", "amount": 14.8, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "resorcinol", "name": "Resorcinol", "amount": 22.0, "unit": "g", "equivalents": 2.0},
+            {"reagent_id": "zinc_chloride", "name": "Anhydrous Zinc Chloride", "amount": 7.0, "unit": "g", "equivalents": 0.5}
+          ],
+          "conditions": {
+            "temperature_c": 185.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crushing": "Heat in oil bath until viscous red melt solidifies; cool, crush cake, boil with dilute HCl to remove zinc salts; collect reddish-brown fluorescein powder (mp 314 °C)"
+          },
+          "expected_yield_pct": 89.0
+        }
+      ]
+    },
+    {
+      "id": "eosin_y",
+      "target_molecule": "Eosin Y",
+      "chemical_name": "Disodium 2-(2,4,5,7-tetrabromo-6-oxido-3-oxoxanthen-9-yl)benzoate",
+      "cas_number": "17372-87-1",
+      "formula": "C20H6Br4Na2O5",
+      "molecular_weight": 691.85,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Tetrabromination of fluorescein with elemental bromine in ethanol followed by disodium salt formation (Vogel 5th ed. p. 988).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 988.",
+      "mp_c": 295.0,
+      "tlc_rf": 0.30,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Electrophilic Tetrabromination & Disodium Salt",
+          "technique": "bromination",
+          "reagents": [
+            {"reagent_id": "fluorescein", "name": "Fluorescein", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "bromine", "name": "Elemental Bromine", "amount": 21.0, "unit": "g", "equivalents": 4.3},
+            {"reagent_id": "ethanol", "name": "Absolute Ethanol", "amount": 50.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 25.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "neutralization": "Drop bromine slowly into stirred fluorescein suspension; filter tetrabromofluorescein, convert to disodium salt with Na2CO3; precipitates as bronze-colored crystals with green sheen"
+          },
+          "expected_yield_pct": 85.0
+        }
+      ]
+    },
+    {
+      "id": "methyl_orange",
+      "target_molecule": "Methyl Orange",
+      "chemical_name": "Sodium 4-{[4-(dimethylamino)phenyl]diazenyl}benzenesulfonate",
+      "cas_number": "547-58-0",
+      "formula": "C14H14N3NaO3S",
+      "molecular_weight": 327.33,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Diazotization of sulfanilic acid and azo coupling with N,N-dimethylaniline (Vogel 5th ed. p. 951).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 951.",
+      "mp_c": 300.0,
+      "tlc_rf": 0.35,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Diazotization & Azo Coupling",
+          "technique": "azo_coupling",
+          "reagents": [
+            {"reagent_id": "sulfanilic_acid", "name": "Sulfanilic Acid", "amount": 10.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sodium_nitrite", "name": "Sodium Nitrite (NaNO2)", "amount": 4.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "dimethylaniline", "name": "N,N-Dimethylaniline", "amount": 7.0, "unit": "g", "equivalents": 1.0}
+          ],
+          "conditions": {
+            "temperature_c": 3.0,
+            "duration_min": 45.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Diazotize at 0-5 °C, add dimethylaniline in dilute acetic acid, basify with 10% NaOH to precipitate orange-gold plates of methyl orange; recrystallize from water"
+          },
+          "expected_yield_pct": 87.0
+        }
+      ]
+    },
+    {
+      "id": "sudan_i",
+      "target_molecule": "Sudan I",
+      "chemical_name": "1-(Phenyldiazenyl)naphthalen-2-ol",
+      "cas_number": "842-07-9",
+      "formula": "C16H12N2O",
+      "molecular_weight": 248.28,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Diazotization of aniline and azo coupling with alkaline 2-naphthol (Vogel 5th ed. p. 949).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 949.",
+      "mp_c": 134.0,
+      "tlc_rf": 0.72,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Azo Coupling with 2-Naphthol",
+          "technique": "azo_coupling",
+          "reagents": [
+            {"reagent_id": "aniline", "name": "Aniline", "amount": 9.3, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sodium_nitrite", "name": "Sodium Nitrite", "amount": 7.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "2_naphthol", "name": "2-Naphthol", "amount": 14.4, "unit": "g", "equivalents": 1.0}
+          ],
+          "conditions": {
+            "temperature_c": 2.0,
+            "duration_min": 40.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "precipitation": "Pour cold benzenediazonium chloride into alkaline 2-naphthol solution; brick-red dye separates immediately; suction-filter and recrystallize from glacial acetic acid (mp 134 °C)"
+          },
+          "expected_yield_pct": 92.0
+        }
+      ]
+    },
+    {
+      "id": "sulfanilamide",
+      "target_molecule": "Sulfanilamide",
+      "chemical_name": "4-Aminobenzenesulfonamide",
+      "cas_number": "63-74-1",
+      "formula": "C6H8N2O2S",
+      "molecular_weight": 172.20,
+      "category": "Classical Organic & Dyes (Vogel)",
+      "description": "Three-step synthesis from acetanilide via chlorosulfonation, ammonolysis, and selective acid deacetylation (Vogel 5th ed. p. 883).",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman, p. 883.",
+      "mp_c": 165.0,
+      "tlc_rf": 0.38,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Chlorosulfonation to p-Acetamidobenzenesulfonyl Chloride",
+          "technique": "chlorosulfonation",
+          "reagents": [
+            {"reagent_id": "acetanilide", "name": "Dry Acetanilide", "amount": 20.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "chlorosulfonic_acid", "name": "Chlorosulfonic Acid (ClSO3H)", "amount": 50.0, "unit": "mL", "equivalents": 5.0}
+          ],
+          "conditions": {
+            "temperature_c": 60.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "quench": "Pour onto crushed ice; collect sulfonyl chloride cake"
+          },
+          "expected_yield_pct": 84.0
+        },
+        {
+          "step_number": 2,
+          "name": "Ammonolysis & Selective Acid Deacetylation",
+          "technique": "ammonolysis_hydrolysis",
+          "reagents": [
+            {"reagent_id": "ammonia_aqueous", "name": "Concentrated Aqueous Ammonia (28%)", "amount": 60.0, "unit": "mL", "equivalents": 6.0},
+            {"reagent_id": "hydrochloric_acid", "name": "Dilute Hydrochloric Acid (3 M)", "amount": 50.0, "unit": "mL", "equivalents": 2.0}
+          ],
+          "conditions": {
+            "temperature_c": 100.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "neutralization": "Heat with ammonia to form sulfonamide, boil with 3 M HCl to hydrolyze acetyl group, neutralize hot with NaHCO3; sulfanilamide crystallizes as pure white needles (mp 165 °C)"
+          },
+          "expected_yield_pct": 79.0
+        }
+      ]
+    },
+    {
+      "id": "piperine_black_pepper_soxhlet",
+      "target_molecule": "Piperine",
+      "chemical_name": "(2E,4E)-5-(1,3-Benzodioxol-5-yl)-1-(piperidin-1-yl)penta-2,4-dien-1-one",
+      "cas_number": "94-62-2",
+      "formula": "C17H19NO3",
+      "molecular_weight": 285.34,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Exhaustive Soxhlet extraction of powdered black pepper (Piper nigrum) with 95% ethanol, resin precipitation with KOH, and recrystallization.",
+      "literature_reference": "Ikan, R. (1991). Natural Products: A Laboratory Guide, 2nd ed., Academic Press; Vogel 5th ed.",
+      "mp_c": 130.0,
+      "tlc_rf": 0.46,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Ethanolic Soxhlet Extraction & Resin Removal",
+          "technique": "soxhlet_extraction",
+          "reagents": [
+            {"reagent_id": "black_pepper", "name": "Finely Ground Black Pepper", "amount": 50.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "ethanol", "name": "95% Ethanol", "amount": 250.0, "unit": "mL", "equivalents": 0.0},
+            {"reagent_id": "potassium_hydroxide", "name": "Ethanolic Potassium Hydroxide (10%)", "amount": 25.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 78.0,
+            "duration_min": 180.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Soxhlet-extract for 3 h, concentrate to 30 mL, add 10% alcoholic KOH, filter resinous precipitate; dilute filtrate with water, chill overnight to obtain yellow monoclinic needles of piperine (mp 130 °C)"
+          },
+          "expected_yield_pct": 82.0
+        }
+      ]
+    },
+    {
+      "id": "limonene_citrus_steam_distillation",
+      "target_molecule": "(R)-(+)-Limonene",
+      "chemical_name": "(4R)-1-Methyl-4-(prop-1-en-2-yl)cyclohex-1-ene",
+      "cas_number": "5989-27-5",
+      "formula": "C10H16",
+      "molecular_weight": 136.23,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Direct atmospheric steam distillation of orange peel (Citrus sinensis) flavedo with optical purity verification.",
+      "literature_reference": "Pavia, D. L. et al. (2012). Introduction to Organic Laboratory Techniques, Brooks/Cole.",
+      "mp_c": -74.0,
+      "bp_c": 176.0,
+      "tlc_rf": 0.85,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Azeotropic Steam Distillation",
+          "technique": "steam_distillation",
+          "reagents": [
+            {"reagent_id": "orange_peel", "name": "Fresh Orange Peel Grated Flavedo", "amount": 100.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "distilled_water", "name": "Distilled Water", "amount": 200.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 100.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "separation": "Distill until 100 mL distillate is collected; separate top terpene layer in separatory funnel, extract aqueous phase with 20 mL pentane, combine and dry over anhydrous MgSO4, evaporate pentane to give optically pure (+)-limonene ([alpha]D = +115°)"
+          },
+          "expected_yield_pct": 86.0
+        }
+      ]
+    },
+    {
+      "id": "eugenol_clove_acid_base",
+      "target_molecule": "Eugenol",
+      "chemical_name": "4-Allyl-2-methoxyphenol",
+      "cas_number": "97-53-0",
+      "formula": "C10H12O2",
+      "molecular_weight": 164.20,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Steam distillation of cloves (Syzygium aromaticum) followed by selective acid-base extraction separating phenol from caryophyllene.",
+      "literature_reference": "Vogel's Textbook of Practical Organic Chemistry, 5th Ed., Longman.",
+      "mp_c": -9.0,
+      "bp_c": 254.0,
+      "tlc_rf": 0.58,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Steam Distillation & Acid-Base Partition",
+          "technique": "acid_base_extraction",
+          "reagents": [
+            {"reagent_id": "whole_cloves", "name": "Whole Cloves (ground)", "amount": 50.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "potassium_hydroxide", "name": "Potassium Hydroxide (5% aq)", "amount": 60.0, "unit": "mL", "equivalents": 0.0},
+            {"reagent_id": "hydrochloric_acid", "name": "6 M Hydrochloric Acid", "amount": 25.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 100.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "partition": "Steam-distill 150 mL milky clove oil distillate; extract into ether; deprotonate eugenol with 5% KOH into aqueous layer; separate and wash neutral terpenes; re-acidify aqueous layer with 6 M HCl to liberate pure eugenol; extract with ether, dry over MgSO4, evaporate"
+          },
+          "expected_yield_pct": 88.0
+        }
+      ]
+    },
+    {
+      "id": "capsaicin_chili_extraction",
+      "target_molecule": "Capsaicin",
+      "chemical_name": "(6E)-N-[(4-Hydroxy-3-methoxyphenyl)methyl]-8-methylnon-6-enamide",
+      "cas_number": "404-86-4",
+      "formula": "C18H27NO3",
+      "molecular_weight": 305.41,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Ethanolic Soxhlet extraction of dried chili peppers (Capsicum frutescens), defatting against hexane, and silica gel column chromatography.",
+      "literature_reference": "Govindarajan, V. S. (1986). Capsicum — production, technology, chemistry, and quality. Part III. CRC Crit. Rev. Food Sci. Nutr., 24(3), 207-288.",
+      "mp_c": 65.0,
+      "tlc_rf": 0.42,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Soxhlet Extraction & Hexane Defatting",
+          "technique": "soxhlet_extraction",
+          "reagents": [
+            {"reagent_id": "chili_powder", "name": "Habanero / Cayenne Pepper Powder", "amount": 50.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "ethanol", "name": "Absolute Ethanol", "amount": 250.0, "unit": "mL", "equivalents": 0.0},
+            {"reagent_id": "hexane", "name": "Hexane", "amount": 100.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 78.0,
+            "duration_min": 120.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "column": "Evaporate ethanol extract, partition against hexane/water to remove carotenes and fats; flash-chromatograph on silica gel (EtOAc/Hexane 1:1) to yield crystalline capsaicin (mp 65 °C, extreme irritant)"
+          },
+          "expected_yield_pct": 74.0
+        }
+      ]
+    },
+    {
+      "id": "nicotine_tobacco_steam_distillation",
+      "target_molecule": "(-)-Nicotine",
+      "chemical_name": "3-[(2S)-1-Methylpyrrolidin-2-yl]pyridine",
+      "cas_number": "54-11-5",
+      "formula": "C10H14N2",
+      "molecular_weight": 162.23,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Alkaline steam distillation of tobacco leaves (Nicotiana tabacum), extraction into ether, and picrate salt crystallization.",
+      "literature_reference": "Vogel's Practical Organic Chemistry; Pictet & Rotschy (1904). Ber. Dtsch. Chem. Ges., 37, 1225.",
+      "mp_c": -79.0,
+      "bp_c": 247.0,
+      "tlc_rf": 0.35,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Alkaline Digestion & Steam Distillation",
+          "technique": "steam_distillation",
+          "reagents": [
+            {"reagent_id": "tobacco_leaves", "name": "Cured Tobacco Leaf Shreds", "amount": 50.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "sodium_hydroxide", "name": "Sodium Hydroxide (20% aq)", "amount": 100.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 100.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Distill with steam until distillate no longer gives alkaloid precipitate with Mayer's reagent; extract with ether, dry over KOH pellets, and treat with saturated ethanolic picric acid to form yellow needles of nicotine dipicrate (mp 218 °C)"
+          },
+          "expected_yield_pct": 84.0
+        }
+      ]
+    },
+    {
+      "id": "morphine_opium_gregory_isolation",
+      "target_molecule": "Morphine",
+      "chemical_name": "(5alpha,6alpha)-7,8-Didehydro-4,5-epoxy-17-methylmorphinan-3,6-diol",
+      "cas_number": "57-27-2",
+      "formula": "C17H19NO3",
+      "molecular_weight": 285.34,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Historical Gregory water process: hot aqueous extraction of opium latex, meconate removal with calcium chloride, and selective base precipitation at pH 9.1.",
+      "literature_reference": "Gregory, W. (1831). Edinb. Med. Surg. J., 35, 331; Barbier, A. (1947). Bull. Narc., 2(3), 22-29.",
+      "mp_c": 255.0,
+      "tlc_rf": 0.28,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Meconate Precipitation & Gregory Salt Formation",
+          "technique": "salt_precipitation",
+          "reagents": [
+            {"reagent_id": "opium_powder", "name": "Opium Latex Powder (Papaver somniferum)", "amount": 50.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "calcium_chloride", "name": "Calcium Chloride (CaCl2)", "amount": 10.0, "unit": "g", "equivalents": 0.0},
+            {"reagent_id": "distilled_water", "name": "Distilled Water", "amount": 250.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 80.0,
+            "duration_min": 90.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "filtration": "Boil with water, add CaCl2 to quantitatively precipitate insoluble calcium meconate, filter, concentrate mother liquor to crystallize the double salt of morphine and codeine hydrochlorides (Gregory salt)"
+          },
+          "expected_yield_pct": 81.0
+        },
+        {
+          "step_number": 2,
+          "name": "Selective Isoelectric Precipitation at pH 9.1",
+          "technique": "isoelectric_precipitation",
+          "reagents": [
+            {"reagent_id": "ammonia_aqueous", "name": "Dilute Aqueous Ammonia (10%)", "amount": 15.0, "unit": "mL", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 15.0,
+            "duration_min": 60.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "isolation": "Redissolve Gregory salt, add dilute ammonia to exactly pH 9.1; amphoteric morphine base precipitates quantitatively while mono-phenolic codeine remains in solution; filter and dry (mp 255 °C dec)"
+          },
+          "expected_yield_pct": 85.0
+        }
+      ]
+    },
+    {
+      "id": "salvinorin_a_extraction",
+      "target_molecule": "Salvinorin A",
+      "chemical_name": "Methyl (2S,4aR,6aR,7R,9S,10aS,10bR)-9-(acetyloxy)-2-(furan-3-yl)-6a,10b-dimethyl-4,10-dioxododecahydro-2H-benzo[f]isochromene-7-carboxylate",
+      "cas_number": "83725-44-0",
+      "formula": "C23H28O8",
+      "molecular_weight": 432.46,
+      "category": "Natural Product Isolation & Extractions",
+      "description": "Selective quick acetone wash of Salvia divinorum leaves, active carbon decolorization, and recrystallization from isopropanol.",
+      "literature_reference": "Ortega, A. et al. (1982). J. Chem. Soc., Perkin Trans. 1, 2505-2508; Valdés, L. J. et al. (1984). J. Org. Chem., 49(24), 4716-4720.",
+      "mp_c": 242.0,
+      "tlc_rf": 0.51,
+      "steps": [
+        {
+          "step_number": 1,
+          "name": "Brief Acetone Wash & Charcoal Decolorization",
+          "technique": "solvent_maceration",
+          "reagents": [
+            {"reagent_id": "salvia_leaves", "name": "Dried Salvia divinorum Leaf Shreds", "amount": 100.0, "unit": "g", "equivalents": 1.0},
+            {"reagent_id": "acetone", "name": "Cold Acetone", "amount": 500.0, "unit": "mL", "equivalents": 0.0},
+            {"reagent_id": "activated_charcoal", "name": "Activated Charcoal", "amount": 5.0, "unit": "g", "equivalents": 0.0}
+          ],
+          "conditions": {
+            "temperature_c": 20.0,
+            "duration_min": 30.0,
+            "fume_hood": true
+          },
+          "workup": {
+            "crystallization": "Macerate leaves for only 2 min to selectively dissolve peltate glandular trichomes without leaching cellular chlorophyll; stir with charcoal, filter, evaporate acetone, recrystallize residue from boiling isopropanol to yield colorless rhombic prisms of pure Salvinorin A (mp 242 °C)"
+          },
+          "expected_yield_pct": 77.0
+        }
+      ]
     }
   ]
 }

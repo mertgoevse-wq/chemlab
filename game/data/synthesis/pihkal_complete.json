@@ -1857,6 +1857,524 @@
           ]
         }
       ]
+    },
+    {
+      "compound_id": "2c_p",
+      "number": 36,
+      "name": "2C-P",
+      "chemical_name": "2,5-Dimethoxy-4-propylphenethylamine",
+      "formula": "C13H21NO2",
+      "molecular_weight": 223.31,
+      "cas_number": "135970-41-1",
+      "smiles": "CCCC1=C(C=C(C(=C1)OC)CCN)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 259.77,
+      "mp_c": 204.0,
+      "tlc_rf": 0.36,
+      "class": "phenethylamine",
+      "subclass": "dimethoxy",
+      "description": "Potent 4-propyl substituted phenethylamine with long duration and rich visual geometry.",
+      "routes": [
+        {
+          "route_id": "nitrostyrene_route",
+          "name": "Henry condensation of 2,5-dimethoxy-4-propylbenzaldehyde with nitromethane and LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Henry Condensation & LiAlH4 Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "2_5_dimethoxy_4_propylbenzaldehyde", "name": "2,5-Dimethoxy-4-propylbenzaldehyde", "amount": 20.8, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitromethane", "name": "Nitromethane", "amount": 10.0, "unit": "mL", "equivalents": 1.8},
+                {"reagent_id": "ammonium_acetate", "name": "Ammonium acetate catalyst", "amount": 3.0, "unit": "g", "equivalents": 0.4}
+              ],
+              "conditions": {
+                "temperature_c": 105.0,
+                "duration_min": 120.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Filter crystalline orange nitrostyrene, reduce with LAH in refluxing THF, precipitate hydrochloride salt (mp 204-205 °C)"
+              },
+              "expected_yield_pct": 76.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "2c_t",
+      "number": 38,
+      "name": "2C-T",
+      "chemical_name": "2,5-Dimethoxy-4-methylthiophenethylamine",
+      "formula": "C11H17NO2S",
+      "molecular_weight": 227.32,
+      "cas_number": "61638-09-3",
+      "smiles": "CSC1=C(C=C(C(=C1)OC)CCN)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 263.78,
+      "mp_c": 238.0,
+      "tlc_rf": 0.34,
+      "class": "phenethylamine",
+      "subclass": "thioalkyl",
+      "description": "Parent member of the 2C-T sulfur-containing phenethylamine family.",
+      "routes": [
+        {
+          "route_id": "thio_nitrostyrene",
+          "name": "Condensation of 2,5-dimethoxy-4-(methylthio)benzaldehyde with nitromethane and LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Henry Condensation & LAH Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "2_5_dimethoxy_4_methylthiobenzaldehyde", "name": "2,5-Dimethoxy-4-(methylthio)benzaldehyde", "amount": 21.2, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitromethane", "name": "Nitromethane", "amount": 12.0, "unit": "mL", "equivalents": 2.0}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 90.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Recrystallize nitrostyrene from isopropanol, reduce with LAH in dry THF, bubble anhydrous HCl into ether solution to precipitate 2C-T hydrochloride (mp 238-239 °C)"
+              },
+              "expected_yield_pct": 78.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "2c_t_21",
+      "number": 45,
+      "name": "2C-T-21",
+      "chemical_name": "2,5-Dimethoxy-4-(2-fluoroethylthio)phenethylamine",
+      "formula": "C12H18FNO2S",
+      "molecular_weight": 259.34,
+      "cas_number": "207740-41-4",
+      "smiles": "COCCOC1=C(C=C(C(=C1)OC)CCN)SCCF",
+      "salt_form": "hydrochloride",
+      "salt_mw": 295.8,
+      "mp_c": 194.0,
+      "tlc_rf": 0.38,
+      "class": "phenethylamine",
+      "subclass": "thioalkyl",
+      "description": "Fluorinated thioethyl phenethylamine showing profound sensory enhancement.",
+      "routes": [
+        {
+          "route_id": "fluoroethyl_alkylation",
+          "name": "Alkylation of 4-mercapto-2,5-dimethoxybenzaldehyde with 1-bromo-2-fluoroethane and reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Thiol Alkylation & Amination",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "mercapto_dimethoxybenzaldehyde", "name": "2,5-Dimethoxy-4-mercaptobenzaldehyde", "amount": 19.8, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "bromo_fluoroethane", "name": "1-Bromo-2-fluoroethane", "amount": 13.5, "unit": "g", "equivalents": 1.1}
+              ],
+              "conditions": {
+                "temperature_c": 80.0,
+                "duration_min": 120.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Isolate fluoroethylthio benzaldehyde, condense with nitromethane, reduce with LAH, precipitate hydrochloride (mp 194-195 °C)"
+              },
+              "expected_yield_pct": 71.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "tma_2",
+      "number": 158,
+      "name": "TMA-2",
+      "chemical_name": "2,4,5-Trimethoxyamphetamine",
+      "formula": "C12H19NO3",
+      "molecular_weight": 225.28,
+      "cas_number": "1083-09-6",
+      "smiles": "CC(CC1=CC(=C(C=C1OC)OC)OC)N",
+      "salt_form": "hydrochloride",
+      "salt_mw": 261.74,
+      "mp_c": 188.0,
+      "tlc_rf": 0.40,
+      "class": "phenethylamine",
+      "subclass": "trimethoxy",
+      "description": "Positional isomer of TMA derived from asarone; active at low milligram dosage.",
+      "routes": [
+        {
+          "route_id": "nitropropene_route",
+          "name": "Condensation of 2,4,5-trimethoxybenzaldehyde with nitroethane followed by LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Knoevenagel-Henry Condensation & LAH Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "2_4_5_trimethoxybenzaldehyde", "name": "2,4,5-Trimethoxybenzaldehyde", "amount": 19.6, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 12.0, "unit": "mL", "equivalents": 1.7}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 120.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Filter canary-yellow nitropropene crystals, reduce in dry THF with LAH, precipitate hydrochloride salt (mp 188-189 °C)"
+              },
+              "expected_yield_pct": 80.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "tma_6",
+      "number": 162,
+      "name": "TMA-6",
+      "chemical_name": "2,4,6-Trimethoxyamphetamine",
+      "formula": "C12H19NO3",
+      "molecular_weight": 225.28,
+      "cas_number": "15402-79-6",
+      "smiles": "CC(CC1=C(C=C(C=C1OC)OC)OC)N",
+      "salt_form": "hydrochloride",
+      "salt_mw": 261.74,
+      "mp_c": 210.0,
+      "tlc_rf": 0.38,
+      "class": "phenethylamine",
+      "subclass": "trimethoxy",
+      "description": "Symmetrical 2,4,6-trimethoxy substitution pattern yielding high potency.",
+      "routes": [
+        {
+          "route_id": "nitropropene_route",
+          "name": "Condensation of 2,4,6-trimethoxybenzaldehyde with nitroethane and LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Nitropropene Formation & LAH Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "2_4_6_trimethoxybenzaldehyde", "name": "2,4,6-Trimethoxybenzaldehyde", "amount": 19.6, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 12.0, "unit": "mL", "equivalents": 1.7}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 90.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Filter crystalline nitropropene, reduce with LAH, precipitate hydrochloride (mp 210-211 °C)"
+              },
+              "expected_yield_pct": 77.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "mem",
+      "number": 94,
+      "name": "MEM",
+      "chemical_name": "2,5-Dimethoxy-4-ethoxyphenethylamine",
+      "formula": "C12H19NO3",
+      "molecular_weight": 225.28,
+      "cas_number": "53587-29-4",
+      "smiles": "CCOC1=C(C=C(C(=C1)OC)CCN)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 261.74,
+      "mp_c": 208.0,
+      "tlc_rf": 0.35,
+      "class": "phenethylamine",
+      "subclass": "dimethoxy",
+      "description": "4-Ethoxy analog of 2C-D and mescaline congeners with gentle empathogenic profile.",
+      "routes": [
+        {
+          "route_id": "ethylation_route",
+          "name": "O-Ethylation of 2,5-dimethoxy-4-hydroxybenzaldehyde, Henry reaction, LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Ethylation & Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "dimethoxy_hydroxybenzaldehyde", "name": "2,5-Dimethoxy-4-hydroxybenzaldehyde", "amount": 18.2, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "ethyl_iodide", "name": "Ethyl iodide", "amount": 16.0, "unit": "g", "equivalents": 1.05}
+              ],
+              "conditions": {
+                "temperature_c": 75.0,
+                "duration_min": 120.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Isolate 4-ethoxy aldehyde, form nitrostyrene with nitromethane, reduce with LAH, precipitate hydrochloride salt (mp 208-209 °C)"
+              },
+              "expected_yield_pct": 75.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "buscaline",
+      "number": 14,
+      "name": "Buscaline",
+      "chemical_name": "3,5-Dimethoxy-4-butoxyphenethylamine",
+      "formula": "C14H23NO3",
+      "molecular_weight": 253.34,
+      "cas_number": "39201-85-9",
+      "smiles": "CCCCOC1=C(C=C(C=C1OC)CCN)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 289.8,
+      "mp_c": 162.0,
+      "tlc_rf": 0.44,
+      "class": "phenethylamine",
+      "subclass": "trimethoxy",
+      "description": "4-Butoxy homolog of mescaline synthesized by Ann & Alexander Shulgin.",
+      "routes": [
+        {
+          "route_id": "butylation_route",
+          "name": "O-Butylation of syringaldehyde, Henry condensation, LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Butylation & Henry LAH Sequence",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "syringaldehyde", "name": "3,5-Dimethoxy-4-hydroxybenzaldehyde", "amount": 18.2, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "butyl_bromide", "name": "1-Bromobutane", "amount": 14.5, "unit": "g", "equivalents": 1.1}
+              ],
+              "conditions": {
+                "temperature_c": 85.0,
+                "duration_min": 180.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Isolate butoxybenzaldehyde, condense with nitromethane, reduce with LAH, precipitate hydrochloride (mp 162-163 °C)"
+              },
+              "expected_yield_pct": 74.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "aleph_2",
+      "number": 4,
+      "name": "Aleph-2",
+      "chemical_name": "2,5-Dimethoxy-4-ethylthioamphetamine",
+      "formula": "C13H21NO2S",
+      "molecular_weight": 255.38,
+      "cas_number": "123602-53-7",
+      "smiles": "CCSCSC1=C(C=C(C(=C1)OC)CC(C)N)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 291.84,
+      "mp_c": 196.0,
+      "tlc_rf": 0.42,
+      "class": "phenethylamine",
+      "subclass": "thioalkyl",
+      "description": "4-Ethylthio amphetamine congener with intense entheogenic acuity.",
+      "routes": [
+        {
+          "route_id": "nitropropene_route",
+          "name": "Condensation of 4-ethylthio-2,5-dimethoxybenzaldehyde with nitroethane and LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Knoevenagel Condensation & LAH Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "ethylthio_dimethoxybenzaldehyde", "name": "4-(Ethylthio)-2,5-dimethoxybenzaldehyde", "amount": 22.6, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 12.0, "unit": "mL", "equivalents": 1.7}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 90.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Filter yellow nitropropene, reduce with LAH in THF, precipitate hydrochloride salt (mp 196-197 °C)"
+              },
+              "expected_yield_pct": 78.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "aleph_4",
+      "number": 5,
+      "name": "Aleph-4",
+      "chemical_name": "2,5-Dimethoxy-4-isopropylthioamphetamine",
+      "formula": "C14H23NO2S",
+      "molecular_weight": 269.40,
+      "cas_number": "123602-54-8",
+      "smiles": "CC(C)SC1=C(C=C(C(=C1)OC)CC(C)N)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 305.86,
+      "mp_c": 182.0,
+      "tlc_rf": 0.45,
+      "class": "phenethylamine",
+      "subclass": "thioalkyl",
+      "description": "4-Isopropylthio derivative showing marked sensory and visual depth.",
+      "routes": [
+        {
+          "route_id": "nitropropene_route",
+          "name": "Nitroethane condensation with 4-isopropylthio-2,5-dimethoxybenzaldehyde and LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Nitropropene & LAH Sequence",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "isopropylthio_benzaldehyde", "name": "4-(Isopropylthio)-2,5-dimethoxybenzaldehyde", "amount": 24.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 12.0, "unit": "mL", "equivalents": 1.7}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 100.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Recrystallize nitropropene from isopropanol, reduce with LAH in dry ether, precipitate hydrochloride (mp 182-183 °C)"
+              },
+              "expected_yield_pct": 76.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "aleph_7",
+      "number": 6,
+      "name": "Aleph-7",
+      "chemical_name": "2,5-Dimethoxy-4-propylthioamphetamine",
+      "formula": "C14H23NO2S",
+      "molecular_weight": 269.40,
+      "cas_number": "207740-42-5",
+      "smiles": "CCCSC1=C(C=C(C(=C1)OC)CC(C)N)OC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 305.86,
+      "mp_c": 178.0,
+      "tlc_rf": 0.46,
+      "class": "phenethylamine",
+      "subclass": "thioalkyl",
+      "description": "4-Propylthio homolog of the Aleph series with balanced somatic and visual character.",
+      "routes": [
+        {
+          "route_id": "nitropropene_route",
+          "name": "Condensation of 4-propylthio-2,5-dimethoxybenzaldehyde with nitroethane and LAH reduction",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Nitropropene Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "propylthio_benzaldehyde", "name": "4-(Propylthio)-2,5-dimethoxybenzaldehyde", "amount": 24.0, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "nitroethane", "name": "Nitroethane", "amount": 12.0, "unit": "mL", "equivalents": 1.7}
+              ],
+              "conditions": {
+                "temperature_c": 100.0,
+                "duration_min": 100.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Isolate crystalline nitropropene, reduce with LAH, convert to hydrochloride salt (mp 178-179 °C)"
+              },
+              "expected_yield_pct": 75.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "mbdb",
+      "number": 107,
+      "name": "MBDB",
+      "chemical_name": "N-Methyl-1-(1,3-benzodioxol-5-yl)butan-2-amine",
+      "formula": "C12H17NO2",
+      "molecular_weight": 207.27,
+      "cas_number": "103818-46-8",
+      "smiles": "CCC(CC1=CC2=C(C=C1)OCO2)NC",
+      "salt_form": "hydrochloride",
+      "salt_mw": 243.73,
+      "mp_c": 156.0,
+      "tlc_rf": 0.38,
+      "class": "phenethylamine",
+      "subclass": "methylenedioxy",
+      "description": "Eden / Methyl-J: Alpha-ethyl homolog of MDMA displaying pure empathogenic entactogen properties without psychomotor stimulation.",
+      "routes": [
+        {
+          "route_id": "reductive_amination",
+          "name": "Reductive amination of 1-(1,3-benzodioxol-5-yl)butan-2-one with methylamine",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Sodium Cyanoborohydride Reductive Amination",
+              "type": "reductive_amination",
+              "reagents": [
+                {"reagent_id": "bdbp", "name": "1-(1,3-Benzodioxol-5-yl)butan-2-one (BDBP)", "amount": 19.2, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "methylamine_hcl", "name": "Methylamine hydrochloride", "amount": 10.0, "unit": "g", "equivalents": 1.5},
+                {"reagent_id": "sodium_cyanoborohydride", "name": "Sodium cyanoborohydride", "amount": 4.5, "unit": "g", "equivalents": 0.7}
+              ],
+              "conditions": {
+                "temperature_c": 25.0,
+                "duration_min": 180.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Basify, extract into ether, wash with brine, bubble anhydrous HCl to precipitate MBDB hydrochloride (mp 156 °C)"
+              },
+              "expected_yield_pct": 79.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compound_id": "pea",
+      "number": 142,
+      "name": "PEA",
+      "chemical_name": "2-Phenylethylamine",
+      "formula": "C8H11N",
+      "molecular_weight": 121.18,
+      "cas_number": "64-04-0",
+      "smiles": "C1=CC=C(C=C1)CCN",
+      "salt_form": "hydrochloride",
+      "salt_mw": 157.64,
+      "mp_c": 217.0,
+      "tlc_rf": 0.30,
+      "class": "phenethylamine",
+      "subclass": "unsubstituted",
+      "description": "Endogenous trace amine neurotransmitter and structural parent of all phenethylamines.",
+      "routes": [
+        {
+          "route_id": "nitrile_reduction",
+          "name": "Catalytic hydrogenation or LAH reduction of benzyl cyanide (phenylacetonitrile)",
+          "steps": [
+            {
+              "step_number": 1,
+              "name": "Benzyl Cyanide Reduction",
+              "type": "reduction",
+              "reagents": [
+                {"reagent_id": "benzyl_cyanide", "name": "Benzyl cyanide (phenylacetonitrile)", "amount": 11.7, "unit": "g", "equivalents": 1.0},
+                {"reagent_id": "lithium_aluminum_hydride", "name": "Lithium aluminum hydride", "amount": 4.2, "unit": "g", "equivalents": 1.1}
+              ],
+              "conditions": {
+                "temperature_c": 65.0,
+                "duration_min": 60.0,
+                "fume_hood": true
+              },
+              "workup": {
+                "quench": "Fieser workup (4.2 mL H2O, 4.2 mL 15% NaOH, 12.6 mL H2O), filter granular aluminum oxide salts, distill freebase (bp 197 °C), precipitate hydrochloride (mp 217 °C)"
+              },
+              "expected_yield_pct": 88.0
+            }
+          ]
+        }
+      ]
     }
   ]
 }

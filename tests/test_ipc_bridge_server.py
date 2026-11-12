@@ -319,6 +319,77 @@ class TestIPCBridgeServer:
         data = response["data"]
         assert "decay_chain" in data
 
+    def test_ai_get_providers_command(self, ipc_server):
+        """Test AI_GET_PROVIDERS command returns provider list and priority chain."""
+        server, port = ipc_server
+
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-ai-prov-1",
+                "command": "AI_GET_PROVIDERS",
+                "payload": {},
+            },
+        )
+
+        assert response["status"] == "SUCCESS"
+        data = response["data"]
+        assert "providers" in data
+        assert "provider_order" in data
+        assert "omniroute" in data["providers"]
+        assert "ollama" in data["providers"]
+        assert "lm_studio" in data["providers"]
+
+    def test_ai_register_provider_command(self, ipc_server):
+        """Test registering a custom local AI endpoint via AI_REGISTER_PROVIDER."""
+        server, port = ipc_server
+
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-ai-reg-1",
+                "command": "AI_REGISTER_PROVIDER",
+                "payload": {
+                    "name": "custom_local_llm",
+                    "endpoint": "http://127.0.0.1:11434/v1",
+                    "model": "qwen2.5:7b",
+                    "priority": 1,
+                },
+            },
+        )
+
+        assert response["status"] == "SUCCESS"
+        data = response["data"]
+        assert data["status"] == "registered"
+        assert data["provider"] == "custom_local_llm"
+        assert data["model"] == "qwen2.5:7b"
+
+    def test_ai_compute_reaction_command(self, ipc_server):
+        """Test AI reaction computation via AI_COMPUTE_REACTION with fallback."""
+        server, port = ipc_server
+
+        response = _send_request(
+            port,
+            {
+                "request_id": "test-ai-comp-1",
+                "command": "AI_COMPUTE_REACTION",
+                "payload": {
+                    "reagents": ["salicylic_acid", "acetic_anhydride"],
+                    "temperature_c": 65.0,
+                    "target_compound": "aspirin",
+                },
+            },
+        )
+
+        assert response["status"] == "SUCCESS"
+        data = response["data"]
+        assert data["success"] is True
+        assert "prediction" in data
+        pred = data["prediction"]
+        assert "reaction_name" in pred
+        assert "products" in pred
+        assert pred["enthalpy_kj_mol"] < 0
+
 
 class TestIPCServerLifecycle:
     """Test server start/stop lifecycle."""

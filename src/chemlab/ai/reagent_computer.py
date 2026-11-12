@@ -133,6 +133,34 @@ class AIReagentComputer:
                 None,
                 "gemini-2.5-pro",
             ),
+            (
+                "ollama",
+                4,
+                "http://127.0.0.1:11434/v1",
+                None,
+                os.environ.get("OLLAMA_MODEL", "llama3.2"),
+            ),
+            (
+                "lm_studio",
+                5,
+                "http://127.0.0.1:1234/v1",
+                None,
+                "local-model",
+            ),
+            (
+                "groq",
+                6,
+                "https://api.groq.com/openai/v1",
+                os.environ.get("GROQ_API_KEY"),
+                "llama-3.3-70b-versatile",
+            ),
+            (
+                "openrouter_free",
+                7,
+                "https://openrouter.ai/api/v1",
+                os.environ.get("OPENROUTER_API_KEY"),
+                "meta-llama/llama-3.3-70b-instruct:free",
+            ),
         ]
 
         for name, priority, endpoint, api_key, model in provider_configs:
@@ -141,6 +169,13 @@ class AIReagentComputer:
             self.api_keys[name] = api_key
             self.models[name] = model
             self.provider_order.append(name)
+
+    def configure_local_ai(
+        self, endpoint: str = "http://127.0.0.1:11434/v1", model: str = "llama3.2", priority: int = 1
+    ) -> None:
+        """Configures and prioritizes a local AI model provider (Ollama, LM Studio, vLLM, etc.)."""
+        self.add_provider("local_ai", priority, endpoint, None, model)
+        logger.info("Local AI provider configured: %s (model: %s, priority: %d)", endpoint, model, priority)
 
     def add_provider(
         self, name: str, priority: int, endpoint: str, api_key: str | None, model: str
@@ -220,58 +255,89 @@ class AIReagentComputer:
         self, name: str, request: ReagentComputationRequest
     ) -> ChemicalReactionPrediction | None:
         """Calls a specific AI provider and parses its response."""
-        if name == "omniroute":
-            return self._call_omniroute(request)
-        if name == "nvidia_nim":
-            return self._call_nvidia_nim(request)
         if name == "google_gemini":
             return self._call_google_gemini(request)
-        logger.warning("Unknown provider: %s", name)
-        return None
+        return self._call_openai_compatible(name, request)
+
+    def _call_openai_compatible(
+        self, name: str, request: ReagentComputationRequest
+    ) -> ChemicalReactionPrediction | None:
+        """Calls an OpenAI-compatible inference endpoint (Ollama, LM Studio, Groq, OpenRouter, Omniroute, NVIDIA NIM, etc.)."""
+        endpoint = self.endpoints.get(name)
+        if not endpoint:
+            logger.debug("Endpoint not configured for provider: %s", name)
+            return None
+
+        # Check API key requirement for cloud-hosted services
+        api_key = self.api_keys.get(name)
+        if name in ("nvidia_nim", "groq", "openrouter_free") and not api_key:
+            logger.debug("Provider %s requires an API key which is not configured", name)
+            return None
+
+        # Fast connection pre-check for local loopback endpoints (Ollama, LM Studio, Omniroute)
+        if "127.0.0.1" in endpoint or "localhost" in endpoint:
+            try:
+                import socket
+                import urllib.parse
+                parsed = urllib.parse.urlparse(endpoint)
+                host = parsed.hostname or "127.0.0.1"
+                port = parsed.port or (443 if parsed.scheme == "https" else 80)
+                with socket.create_connection((host, port), timeout=0.06):
+                    pass
+            except Exception:
+                # Local service not running or port closed — skip immediately without waiting for HTTP timeout
+                return None
+
+        headers = {"Content-Type": "application/json"}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+
+        model = self.models.get(name, "default")
+        prompt_data = {
+            "reagents": request.reagents,
+            "temperature_c": request.temperature_c,
+            "pressure_atm": request.pressure_atm,
+            "volume_ml": request.volume_ml,
+            "catalysts": request.catalysts,
+            "target_compound": request.target_compound,
+            "reaction_type": request.reaction_type,
+            "time_dilation": request.time_dilation,
+        }
+        system_instruction = (
+            "You are an expert chemical reaction simulation engine. "
+            "Predict the chemical reaction for the given reagents and conditions. "
+            "Respond ONLY with a valid JSON object with the following fields: "
+            "reaction_name (str), balanced_equation (str), products (dict with compound id: moles), "
+            "enthalpy_kj_mol (float, negative if exothermic), activation_energy_kj_mol (float), "
+            "rate_constant_k (float > 0), target_color_rgb (list of 3 floats between 0.0 and 1.0), "
+            "produces_gas (bool), precipitate_formed (bool), emission_glow (float between 0.0 and 1.0), "
+            "safety_warnings (list of strings)."
+        )
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": json.dumps(prompt_data)},
+            ],
+            "temperature": 0.1,
+            "max_tokens": 512,
+        }
+        url = endpoint.rstrip("/")
+        if not url.endswith("/chat/completions"):
+            url += "/chat/completions"
+        return self._json_post_with_headers(url, payload, headers)
 
     def _call_omniroute(
         self, request: ReagentComputationRequest
     ) -> ChemicalReactionPrediction | None:
         """Calls local Omniroute inference gateway."""
-        endpoint = self.endpoints["omniroute"]
-        payload = {
-            "model": self.models["omniroute"],
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "You are a chemistry reaction prediction engine. Respond only in JSON.",
-                },
-                {
-                    "role": "user",
-                    "content": json.dumps(
-                        {
-                            "reagents": request.reagents,
-                            "temperature_c": request.temperature_c,
-                            "pressure_atm": request.pressure_atm,
-                            "volume_ml": request.volume_ml,
-                            "catalysts": request.catalysts,
-                            "target_compound": request.target_compound,
-                            "time_dilation": request.time_dilation,
-                        }
-                    ),
-                },
-            ],
-            "temperature": 0.1,
-            "max_tokens": 512,
-        }
-        return self._json_post(endpoint + "/chat/completions", payload)
+        return self._call_openai_compatible("omniroute", request)
 
     def _call_nvidia_nim(
         self, request: ReagentComputationRequest
     ) -> ChemicalReactionPrediction | None:
         """Calls NVIDIA NIM inference endpoint."""
-        endpoint = self.endpoints["nvidia_nim"]
-        api_key = self.api_keys.get("nvidia_nim")
-        if not api_key:
-            logger.debug("NVIDIA NIM API key not configured")
-            return None
-
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        return self._call_openai_compatible("nvidia_nim", request)
         payload = {
             "model": self.models["nvidia_nim"],
             "messages": [

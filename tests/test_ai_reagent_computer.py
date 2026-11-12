@@ -282,6 +282,22 @@ def test_parse_gemini_markdown_response() -> None:
     assert "Irritant" in pred.safety_warnings
 
 
+def test_free_and_local_ai_providers_registered() -> None:
+    computer = AIReagentComputer()
+    for provider in ["ollama", "lm_studio", "groq", "openrouter_free"]:
+        assert provider in computer.providers
+        assert provider in computer.provider_order
+
+
+def test_configure_local_ai_registers_at_top_priority() -> None:
+    computer = AIReagentComputer()
+    computer.configure_local_ai(endpoint="http://127.0.0.1:11434/v1", model="qwen2.5:7b", priority=1)
+    assert "local_ai" in computer.providers
+    assert computer.provider_order[0] == "local_ai"
+    assert computer.endpoints["local_ai"] == "http://127.0.0.1:11434/v1"
+    assert computer.models["local_ai"] == "qwen2.5:7b"
+
+
 def test_get_reagent_computer_singleton() -> None:
     from chemlab.ai.reagent_computer import get_reagent_computer
 

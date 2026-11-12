@@ -60,6 +60,13 @@ func _test_tropane_alkaloid_entries() -> int:
 	var scopolamine := Catalog.get_protocol("scopolamine_datura_isolation")
 	f += _assert(not scopolamine.is_empty(), "Scopolamine protocol loaded")
 	f += _assert(str(scopolamine.get("name", "")).contains("Scopolamine"), "Name contains Scopolamine (got '%s')" % str(scopolamine.get("name", "")))
+
+	var cocaine := Catalog.get_protocol("cocaine_semisynthesis")
+	f += _assert(not cocaine.is_empty(), "Cocaine Semisynthesis protocol loaded")
+	f += _assert(float(cocaine.get("mw", 0.0)) > 300.0, "Cocaine MW ~303.35 g/mol")
+
+	var scopo_total := Catalog.get_protocol("scopolamine_total_synthesis")
+	f += _assert(not scopo_total.is_empty(), "Scopolamine Total Synthesis loaded")
 	return f
 
 func _test_vogel_classical_entries() -> int:
@@ -80,6 +87,21 @@ func _test_vogel_classical_entries() -> int:
 
 	var cannizzaro := Catalog.get_protocol("cannizzaro_benzaldehyde")
 	f += _assert(not cannizzaro.is_empty(), "Cannizzaro Benzaldehyde protocol loaded")
+
+	var acetanilide := Catalog.get_protocol("acetanilide")
+	f += _assert(not acetanilide.is_empty(), "Acetanilide protocol loaded")
+
+	var benzoic := Catalog.get_protocol("benzoic_acid_oxidation")
+	f += _assert(not benzoic.is_empty(), "Benzoic Acid oxidation protocol loaded")
+
+	var dba := Catalog.get_protocol("dibenzalacetone_aldol")
+	f += _assert(not dba.is_empty(), "Dibenzalacetone aldol protocol loaded")
+
+	var cinnamic := Catalog.get_protocol("cinnamic_acid_perkin")
+	f += _assert(not cinnamic.is_empty(), "Cinnamic Acid Perkin reaction loaded")
+
+	var eosin := Catalog.get_protocol("eosin_y")
+	f += _assert(not eosin.is_empty(), "Eosin Y dye protocol loaded")
 	return f
 
 func _test_natural_product_entries() -> int:
@@ -93,28 +115,64 @@ func _test_natural_product_entries() -> int:
 
 	var quinine := Catalog.get_protocol("quinine_cinchona_extraction")
 	f += _assert(not quinine.is_empty(), "Cinchona Bark Quinine Extraction loaded")
+
+	var piperine := Catalog.get_protocol("piperine_black_pepper_soxhlet")
+	f += _assert(not piperine.is_empty(), "Piperine Soxhlet Extraction loaded")
+
+	var limonene := Catalog.get_protocol("limonene_citrus_steam_distillation")
+	f += _assert(not limonene.is_empty(), "Limonene Steam Distillation loaded")
+
+	var capsaicin := Catalog.get_protocol("capsaicin_chili_extraction")
+	f += _assert(not capsaicin.is_empty(), "Capsaicin Chili Extraction loaded")
+
+	var nicotine := Catalog.get_protocol("nicotine_tobacco_steam_distillation")
+	f += _assert(not nicotine.is_empty(), "Nicotine Steam Distillation loaded")
+
+	var morphine := Catalog.get_protocol("morphine_opium_gregory_isolation")
+	f += _assert(not morphine.is_empty(), "Morphine Gregory Process loaded")
+
+	var salvinorin := Catalog.get_protocol("salvinorin_a_extraction")
+	f += _assert(not salvinorin.is_empty(), "Salvinorin A Extraction loaded")
 	return f
 
 func _test_expanded_pihkal_tihkal() -> int:
 	print("\nTesting Expanded PiHKAL & TiHKAL Catalogs...")
 	var f: int = 0
 	var pihkal_prots := Catalog.get_protocols_in_category("PiHKAL Phenethylamines")
-	f += _assert(pihkal_prots.size() >= 20, "PiHKAL catalog has >= 20 compounds (found %d)" % pihkal_prots.size())
+	f += _assert(pihkal_prots.size() >= 30, "PiHKAL catalog has >= 30 compounds (found %d)" % pihkal_prots.size())
 
 	var two_c_c := Catalog.get_protocol("2c-c")
 	f += _assert(not two_c_c.is_empty(), "2C-C protocol loaded")
 
-	var doi := Catalog.get_protocol("doi")
-	f += _assert(not doi.is_empty(), "DOI protocol loaded")
+	var two_c_p := Catalog.get_protocol("2c_p")
+	f += _assert(not two_c_p.is_empty(), "2C-P protocol loaded")
+
+	var two_c_t := Catalog.get_protocol("2c_t")
+	f += _assert(not two_c_t.is_empty(), "2C-T protocol loaded")
+
+	var mbdb := Catalog.get_protocol("mbdb")
+	f += _assert(not mbdb.is_empty(), "MBDB protocol loaded")
+
+	var pea := Catalog.get_protocol("pea")
+	f += _assert(not pea.is_empty(), "PEA protocol loaded")
 
 	var tihkal_prots := Catalog.get_protocols_in_category("TiHKAL Tryptamines")
-	f += _assert(tihkal_prots.size() >= 15, "TiHKAL catalog has >= 15 compounds (found %d)" % tihkal_prots.size())
+	f += _assert(tihkal_prots.size() >= 20, "TiHKAL catalog has >= 20 compounds (found %d)" % tihkal_prots.size())
 
 	var four_ho_met := Catalog.get_protocol("4-ho-met")
 	f += _assert(not four_ho_met.is_empty(), "4-HO-MET protocol loaded")
 
 	var ibogaine := Catalog.get_protocol("ibogaine")
 	f += _assert(not ibogaine.is_empty(), "Ibogaine protocol loaded")
+
+	var bufotenin := Catalog.get_protocol("bufotenin")
+	f += _assert(not bufotenin.is_empty(), "Bufotenin protocol loaded")
+
+	var five_htp := Catalog.get_protocol("5_htp")
+	f += _assert(not five_htp.is_empty(), "5-HTP protocol loaded")
+
+	var baeocystin := Catalog.get_protocol("baeocystin")
+	f += _assert(not baeocystin.is_empty(), "Baeocystin protocol loaded")
 	return f
 
 func _test_synthesis_chemistry_evaluation() -> int:

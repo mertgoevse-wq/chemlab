@@ -100,6 +100,7 @@ class ScientificEngineBridge:
         self._analytical_engine = None
         self._genetics_engine = None
         self._nuclear_engine = None
+        self._ai_computer = None
         self._initialized = False
 
     def _lazy_init(self):
@@ -110,10 +111,12 @@ class ScientificEngineBridge:
         from chemlab.simulation.analytical_engine import AnalyticalEngine
         from chemlab.simulation.genetics_engine import GeneticsEngine
         from chemlab.simulation.nuclear_engine import NuclearEngine
+        from chemlab.ai.reagent_computer import get_reagent_computer
 
         self._analytical_engine = AnalyticalEngine()
         self._genetics_engine = GeneticsEngine()
         self._nuclear_engine = NuclearEngine()
+        self._ai_computer = get_reagent_computer()
         self._initialized = True
         logger.info("Scientific engines initialized")
 
@@ -753,6 +756,84 @@ class ScientificEngineBridge:
             return {"error": str(e)}
 
     # -------------------------------------------------------------------------
+    # AI Reagent Computer Commands
+    # -------------------------------------------------------------------------
+
+    def handle_ai_compute_reaction(self, payload: dict) -> dict:
+        """
+        Handle AI_COMPUTE_REACTION command.
+        Uses AIReagentComputer with multi-provider fallback (Ollama, LM Studio, Groq, Gemini, NIM, Local).
+        """
+        self._lazy_init()
+        from chemlab.ai.reagent_computer import ReagentComputationRequest
+
+        req = ReagentComputationRequest(
+            reagents=payload.get("reagents", []),
+            temperature_c=float(payload.get("temperature_c", 22.0)),
+            pressure_atm=float(payload.get("pressure_atm", 1.0)),
+            volume_ml=float(payload.get("volume_ml", 100.0)),
+            catalysts=payload.get("catalysts", []),
+            target_compound=payload.get("target_compound"),
+            reaction_type=payload.get("reaction_type"),
+            time_dilation=float(payload.get("time_dilation", 1.0)),
+        )
+
+        result = self._ai_computer.compute_reaction(req)
+        resp = {
+            "success": result.success,
+            "provider_used": result.provider_used,
+            "latency_ms": result.latency_ms,
+            "fallback_used": result.fallback_used,
+            "error_message": result.error_message,
+        }
+        if result.prediction:
+            pred = result.prediction
+            resp["prediction"] = {
+                "reaction_name": pred.reaction_name,
+                "balanced_equation": pred.balanced_equation,
+                "products": pred.products,
+                "enthalpy_kj_mol": pred.enthalpy_kj_mol,
+                "activation_energy_kj_mol": pred.activation_energy_kj_mol,
+                "rate_constant_k": pred.rate_constant_k,
+                "target_color_rgb": list(pred.target_color_rgb),
+                "produces_gas": pred.produces_gas,
+                "precipitate_formed": pred.precipitate_formed,
+                "emission_glow": pred.emission_glow,
+                "safety_warnings": pred.safety_warnings,
+            }
+        return resp
+
+    def handle_ai_register_provider(self, payload: dict) -> dict:
+        """
+        Handle AI_REGISTER_PROVIDER command to configure local AI or free cloud providers.
+        """
+        self._lazy_init()
+        name = payload.get("name", "local_ai")
+        endpoint = payload.get("endpoint", "http://127.0.0.1:11434/v1")
+        model = payload.get("model", "llama3.2")
+        priority = int(payload.get("priority", 1))
+        api_key = payload.get("api_key")
+
+        self._ai_computer.add_provider(name, priority, endpoint, api_key, model)
+        return {
+            "status": "registered",
+            "provider": name,
+            "endpoint": endpoint,
+            "model": model,
+            "priority": priority,
+        }
+
+    def handle_ai_get_providers(self, payload: dict) -> dict:
+        """
+        Handle AI_GET_PROVIDERS command.
+        """
+        self._lazy_init()
+        return {
+            "providers": self._ai_computer.get_provider_status(),
+            "provider_order": self._ai_computer.provider_order,
+        }
+
+    # -------------------------------------------------------------------------
     # Unified Commands (matching Godot SimulationBridge contract)
     # -------------------------------------------------------------------------
 
@@ -1024,6 +1105,9 @@ class ScientificEngineBridge:
                 "GAMMA_SPECTRUM",
                 "DOSIMETRY",
                 "REPROCESSING",
+                "AI_COMPUTE_REACTION",
+                "AI_REGISTER_PROVIDER",
+                "AI_GET_PROVIDERS",
             ],
         }
 
@@ -1100,6 +1184,11 @@ class ThreadedIPCServer:
         self._registry.register("GAMMA_SPECTRUM", self._bridge.handle_gamma_spectrum)
         self._registry.register("DOSIMETRY", self._bridge.handle_dosimetry)
         self._registry.register("REPROCESSING", self._bridge.handle_reprocessing)
+
+        # AI reaction computing
+        self._registry.register("AI_COMPUTE_REACTION", self._bridge.handle_ai_compute_reaction)
+        self._registry.register("AI_REGISTER_PROVIDER", self._bridge.handle_ai_register_provider)
+        self._registry.register("AI_GET_PROVIDERS", self._bridge.handle_ai_get_providers)
 
     def __enter__(self):
         self.start()
