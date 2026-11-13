@@ -83,6 +83,14 @@ def test_socket_ipc_connection_refused(test_settings: ChemLabSettings) -> None:
 def test_socket_ipc_timeout_handling() -> None:
     """Verify SocketTimeoutError is raised when server fails to respond within timeout."""
 
+    import socket
+
+    def get_free_port() -> int:
+        """Find an ephemeral free port for testing."""
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(("127.0.0.1", 0))
+            return int(s.getsockname()[1])
+
     # Create server with a stalling custom handler
     def stalling_handler(req: IPCRequest) -> IPCResponse:
         time.sleep(1.5)
