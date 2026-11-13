@@ -315,3 +315,63 @@ def test_shulgin_pihkal_and_tihkal_registry_entries() -> None:
     assert psilocin.cas_number == "520-53-6"
 
 
+def test_albert_hofmann_ergot_and_psilocybin_suite() -> None:
+    registry = SynthesisRegistry()
+
+    # 1. Ergot extraction
+    ergot = registry.get_protocol("ergot_alkaloid_mutterkorn_extraction")
+    assert ergot.cas_number == "113-15-5"
+    assert ergot.molar_mass_g_mol == pytest.approx(581.66, rel=1e-3)
+    assert "ergot_sclerotia" in ergot.initial_reagents
+
+    # 2. Lysergic acid cleavage
+    la = registry.get_protocol("lysergic_acid_alkaline_cleavage")
+    assert la.cas_number == "82-58-6"
+    assert la.molar_mass_g_mol == pytest.approx(268.31, rel=1e-3)
+    assert "ergotamine_tartrate" in la.initial_reagents
+
+    # 3. LSD-25 semisynthesis
+    lsd = registry.get_protocol("lsd_25_semisynthesis")
+    assert lsd.cas_number == "50-37-3"
+    assert lsd.molar_mass_g_mol == pytest.approx(323.43, rel=1e-3)
+    assert "diethylamine" in lsd.initial_reagents
+    assert len(lsd.stages) == 3
+
+    # 4. LSD diastereomer isomerization & tartrate
+    iso = registry.get_protocol("lsd_iso_isomerization_purification")
+    assert iso.cas_number == "50-37-3"
+    assert iso.molar_mass_g_mol == pytest.approx(398.48, rel=1e-3)
+
+    # 5. Methergine
+    methergine = registry.get_protocol("methergine_semisynthesis")
+    assert methergine.cas_number == "113-42-8"
+    assert methergine.molar_mass_g_mol == pytest.approx(339.43, rel=1e-3)
+
+    # 6. Hydergine
+    hydergine = registry.get_protocol("hydergine_dihydroergot_hydrogenation")
+    assert hydergine.cas_number == "11032-41-0"
+    assert "palladium_carbon" in hydergine.catalysts
+
+    # 7. ALD-52
+    ald52 = registry.get_protocol("ald_52_acetylation")
+    assert ald52.cas_number == "3270-02-8"
+    assert ald52.molar_mass_g_mol == pytest.approx(365.47, rel=1e-3)
+
+    # 8. LSA / Ergine
+    lsa = registry.get_protocol("lsa_ergine_morning_glory_extraction")
+    assert lsa.cas_number == "478-95-5"
+    assert lsa.molar_mass_g_mol == pytest.approx(267.33, rel=1e-3)
+
+    # 9. Psilocybin total synthesis
+    psilocybin = registry.get_protocol("psilocybin_total_synthesis_hofmann")
+    assert psilocybin.cas_number == "520-52-5"
+    assert psilocybin.molar_mass_g_mol == pytest.approx(284.25, rel=1e-3)
+    assert len(psilocybin.stages) == 3
+
+    # 10. Psilocybe mexicana isolation
+    mexicana = registry.get_protocol("psilocybe_mexicana_hofmann_isolation")
+    assert mexicana.cas_number == "520-52-5"
+    assert "psilocybe_mexicana_powder" in mexicana.initial_reagents
+
+
+

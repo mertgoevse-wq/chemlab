@@ -1,0 +1,568 @@
+{
+  "version": "1.0.0",
+  "author": "Albert Hofmann Sandoz Archive & Athanor Ascension ChemLab",
+  "description": "Complete chemical suite of Albert Hofmann's historic Sandoz Basel laboratory research (1938–1971): Ergot alkaloid isolation, alkaline hydrolysis to D-lysergic acid, LSD-25 semisynthesis and diastereomer isomerization, Methergine, Hydergine, ALD-52, 1P-LSD, LSA/Ergine, and Psilocybin/Psilocin isolation and total chemical synthesis.",
+  "category": "Hofmann Ergot Alkaloids & Lysergamides",
+  "protocols": [
+    {
+      "id": "ergot_alkaloid_mutterkorn_extraction",
+      "name": "Ergot Alkaloid Extraction (Claviceps purpurea)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 581.66,
+      "formula": "C33H35N5O5",
+      "cas": "113-15-5",
+      "technique": "LIQUID_EXTRACTION",
+      "description": "Extraction and isolation of ergotamine and ergometrine from Claviceps purpurea rye sclerotia (Mutterkorn) using tartaric acid extraction, basification with ammonia, and chloroform liquid-liquid partition (Albert Hofmann, Sandoz Basel, 1930s).",
+      "reagent_a": {
+        "name": "Defatted pulverized ergot sclerotia",
+        "default": 100.0,
+        "unit": "g",
+        "cas": "N/A"
+      },
+      "reagent_b": {
+        "name": "Tartaric acid (2% aq. solution)",
+        "default": 250.0,
+        "unit": "mL",
+        "cas": "87-69-4"
+      },
+      "catalyst": {
+        "name": "Ammonium hydroxide (conc. NH4OH to pH 9.2)",
+        "drops": 40,
+        "description": "Basifying agent to liberate free-base ergot peptide alkaloids"
+      },
+      "reflux": {
+        "default_temp": 35.0,
+        "default_min": 60.0,
+        "optimal_temp": 30.0,
+        "optimal_min": 90.0,
+        "solvent": "Chloroform / Methanol 9:1"
+      },
+      "quench": {
+        "water_ml": 50.0,
+        "ice_c": 5.0,
+        "ph_target": 9.2
+      },
+      "recrystallization": {
+        "solvent": "Benzene / Petroleum Ether",
+        "solvent_ml": 40.0,
+        "seed_crystal": true,
+        "target_yield_pct": 78.5
+      },
+      "sop_steps": [
+        "Defat pulverized ergot rye sclerotia with petroleum ether in a Soxhlet extractor.",
+        "Macerate defatted cake with 2% aqueous tartaric acid solution at 30 °C under dim yellow light (protect from UV photodecomposition).",
+        "Filter marc under vacuum through Buchner funnel.",
+        "Cool acidic aqueous extract in ice bath and basify carefully with concentrated NH4OH to pH 9.2.",
+        "Extract aqueous suspension 4x with equal volumes of chloroform.",
+        "Combine chloroform extracts, dry over anhydrous sodium sulfate (Na2SO4), and evaporate under reduced pressure on rotovap.",
+        "Recrystallize crude ergotamine tartrate from aqueous acetone."
+      ],
+      "hazard_ghs": ["GHS06 (Toxic)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood", "Amber Glassware"]
+    },
+    {
+      "id": "lysergic_acid_alkaline_cleavage",
+      "name": "D-Lysergic Acid (Alkaline Ergotamine Cleavage)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 268.31,
+      "formula": "C16H16N2O2",
+      "cas": "82-58-6",
+      "technique": "REFLUX_HEATING",
+      "description": "Alkaline saponification of ergotamine or ergonovine with aqueous methanolic potassium hydroxide to hydrolyze the peptide moiety, followed by isoelectric precipitation of pure D-lysergic acid at pH 5.5 (Albert Hofmann, 1938).",
+      "reagent_a": {
+        "name": "Ergotamine tartrate",
+        "default": 20.0,
+        "unit": "g",
+        "cas": "379-79-3"
+      },
+      "reagent_b": {
+        "name": "Potassium hydroxide (KOH, 4M in MeOH/H2O)",
+        "default": 120.0,
+        "unit": "mL",
+        "cas": "1310-58-3"
+      },
+      "catalyst": {
+        "name": "Nitrogen atmosphere purge",
+        "drops": 0,
+        "description": "Inert gas blanket to prevent atmospheric oxidation to lumilysergic acids"
+      },
+      "reflux": {
+        "default_temp": 78.0,
+        "default_min": 60.0,
+        "optimal_temp": 75.0,
+        "optimal_min": 75.0,
+        "solvent": "Methanol / Water 3:1"
+      },
+      "quench": {
+        "water_ml": 80.0,
+        "ice_c": 2.0,
+        "ph_target": 5.5
+      },
+      "recrystallization": {
+        "solvent": "Boiling distilled water",
+        "solvent_ml": 100.0,
+        "seed_crystal": true,
+        "target_yield_pct": 84.0
+      },
+      "sop_steps": [
+        "Charge 20.0 g ergotamine tartrate into a 250 mL round-bottom flask equipped with reflux condenser and nitrogen inlet.",
+        "Add 120 mL of 4M methanolic potassium hydroxide solution.",
+        "Heat mixture to reflux (75 °C) under dry nitrogen purge in darkness for 75 minutes.",
+        "Cool reaction flask in ice bath to 10 °C and dilute with 80 mL cold degassed water.",
+        "Adjust pH carefully to 5.5 (isoelectric point of lysergic acid) using cold concentrated hydrochloric acid.",
+        "D-lysergic acid precipitates immediately as fine gray-white hexagonal microcrystals.",
+        "Collect crystals by vacuum filtration on sintered glass funnel, wash with cold water and diethyl ether, and dry in vacuum desiccator."
+      ],
+      "hazard_ghs": ["GHS07 (Harmful)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood", "Nitrogen Blanket"]
+    },
+    {
+      "id": "lsd_25_semisynthesis",
+      "name": "LSD-25 (D-Lysergic Acid Diethylamide)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 323.43,
+      "formula": "C20H25N3O",
+      "cas": "50-37-3",
+      "technique": "REFLUX_HEATING",
+      "description": "Semisynthetic peptide coupling of anhydrous D-lysergic acid with diethylamine via trifluoroacetic anhydride (TFAA) mixed anhydride activation under amber safety lighting and nitrogen atmosphere (Albert Hofmann, Sandoz Basel, November 1938; resynthesized April 16/19, 1943).",
+      "reagent_a": {
+        "name": "Anhydrous D-lysergic acid",
+        "default": 10.73,
+        "unit": "g",
+        "cas": "82-58-6"
+      },
+      "reagent_b": {
+        "name": "Anhydrous diethylamine",
+        "default": 8.78,
+        "unit": "g",
+        "cas": "109-89-7"
+      },
+      "catalyst": {
+        "name": "Trifluoroacetic anhydride (TFAA in acetonitrile)",
+        "drops": 24,
+        "description": "Mixed anhydride activating agent forming lysergic-trifluoroacetic mixed anhydride"
+      },
+      "reflux": {
+        "default_temp": 25.0,
+        "default_min": 120.0,
+        "optimal_temp": 20.0,
+        "optimal_min": 180.0,
+        "solvent": "Anhydrous 1,2-dimethoxyethane (DME) / Acetonitrile"
+      },
+      "quench": {
+        "water_ml": 150.0,
+        "ice_c": 1.0,
+        "ph_target": 9.5
+      },
+      "recrystallization": {
+        "solvent": "Benzene / Hexane",
+        "solvent_ml": 35.0,
+        "seed_crystal": true,
+        "target_yield_pct": 82.5
+      },
+      "sop_steps": [
+        "Suspend 10.73 g (40 mmol) finely ground anhydrous D-lysergic acid in 100 mL dry acetonitrile at -15 °C under argon.",
+        "Add dropwise 10.5 mL (75 mmol) trifluoroacetic anhydride over 15 minutes with vigorous magnetic stirring. The acid dissolves completely as amber mixed anhydride.",
+        "Stir at -10 °C for 30 minutes, then warm to 0 °C.",
+        "Add dropwise a solution of 8.78 g (120 mmol) distilled anhydrous diethylamine in 40 mL acetonitrile over 20 minutes.",
+        "Allow reaction mixture to warm to room temperature (20 °C) and stir for 3 hours protected from light.",
+        "Pour into 250 mL ice-cold water, basify with 20% sodium hydroxide to pH 9.5, and extract 4x with 75 mL dichloromethane.",
+        "Wash organic extracts with saturated sodium chloride, dry over anhydrous Na2SO4, and evaporate solvent below 30 °C under vacuum.",
+        "Crude product contains ~65% D-LSD and ~35% D-iso-LSD."
+      ],
+      "hazard_ghs": ["GHS06 (Toxic)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood", "Inert Atmosphere", "Amber Safety Lamp"]
+    },
+    {
+      "id": "lsd_iso_isomerization_purification",
+      "name": "D-LSD Tartrate & Iso-LSD Isomerization",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 398.48,
+      "formula": "C20H25N3O · 0.5 C4H6O6",
+      "cas": "50-37-3",
+      "technique": "RECRYSTALLIZATION",
+      "description": "Chromatographic separation of active D-LSD ([α]D = +17°) from inactive D-iso-LSD ([α]D = +281°) over neutral alumina, followed by basic isomerization of D-iso-LSD back to D-LSD with dilute methanolic KOH, and crystallization as D-LSD (+)-tartrate (Albert Hofmann, 1943).",
+      "reagent_a": {
+        "name": "Crude LSD/iso-LSD diastereomer mixture",
+        "default": 10.0,
+        "unit": "g",
+        "cas": "50-37-3"
+      },
+      "reagent_b": {
+        "name": "L-(+)-Tartaric acid (anhydrous in methanol)",
+        "default": 2.32,
+        "unit": "g",
+        "cas": "87-69-4"
+      },
+      "catalyst": {
+        "name": "Methanolic potassium hydroxide (0.1M KOH)",
+        "drops": 15,
+        "description": "Base catalyst for C8 epimerization of D-iso-LSD to D-LSD"
+      },
+      "reflux": {
+        "default_temp": 45.0,
+        "default_min": 30.0,
+        "optimal_temp": 40.0,
+        "optimal_min": 45.0,
+        "solvent": "Methanol"
+      },
+      "quench": {
+        "water_ml": 20.0,
+        "ice_c": 4.0,
+        "ph_target": 7.0
+      },
+      "recrystallization": {
+        "solvent": "Absolute Methanol / Diethyl ether",
+        "solvent_ml": 45.0,
+        "seed_crystal": true,
+        "target_yield_pct": 91.0
+      },
+      "sop_steps": [
+        "Dissolve crude diastereomeric mixture in 25 mL chloroform and load onto neutral alumina column (Brockmann grade I).",
+        "Elute with chloroform: D-iso-LSD elutes first (fluoresces intense blue under 366 nm UV).",
+        "Elute D-LSD with chloroform containing 0.5% methanol. Combine pure D-LSD fractions and concentrate under vacuum.",
+        "Take isolated D-iso-LSD fractions, dissolve in 50 mL 0.1M methanolic KOH, and heat at 40 °C under nitrogen for 45 minutes to re-equilibrate (yields 65:35 D-LSD:D-iso-LSD).",
+        "Evaporate, wash, and re-chromatograph to recover recycled D-LSD.",
+        "Dissolve pure D-LSD base in 20 mL warm absolute methanol and add stoichiometric L-(+)-tartaric acid (1 mole tartaric acid per 2 moles LSD).",
+        "Add dry diethyl ether until faint cloudiness forms, seed, and cool at -10 °C overnight.",
+        "Collect pure white needles of D-lysergic acid diethylamide (+)-tartrate, mp 198-200 °C (dec)."
+      ],
+      "hazard_ghs": ["GHS06 (Toxic)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood", "UV Wood's Lamp"]
+    },
+    {
+      "id": "methergine_semisynthesis",
+      "name": "Methergine (Methylergonovine)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 339.43,
+      "formula": "C20H25N3O2",
+      "cas": "113-42-8",
+      "technique": "REFLUX_HEATING",
+      "description": "Albert Hofmann's celebrated synthetic uterotonic medicine developed at Sandoz Basel for obstetrics: coupling of D-lysergic acid azide or mixed anhydride with optically active (+)-2-aminobutanol (1940s).",
+      "reagent_a": {
+        "name": "D-Lysergic acid mixed anhydride",
+        "default": 13.42,
+        "unit": "g",
+        "cas": "82-58-6"
+      },
+      "reagent_b": {
+        "name": "(+)-2-Amino-1-butanol (D-aminobutanol)",
+        "default": 5.35,
+        "unit": "g",
+        "cas": "5856-62-2"
+      },
+      "catalyst": {
+        "name": "Triethylamine (anhydrous)",
+        "drops": 10,
+        "description": "Proton scavenger in peptide coupling"
+      },
+      "reflux": {
+        "default_temp": 25.0,
+        "default_min": 90.0,
+        "optimal_temp": 20.0,
+        "optimal_min": 120.0,
+        "solvent": "Tetrahydrofuran (THF)"
+      },
+      "quench": {
+        "water_ml": 80.0,
+        "ice_c": 3.0,
+        "ph_target": 9.0
+      },
+      "recrystallization": {
+        "solvent": "Acetone / Ethyl Acetate",
+        "solvent_ml": 50.0,
+        "seed_crystal": true,
+        "target_yield_pct": 86.0
+      },
+      "sop_steps": [
+        "Prepare D-lysergic acid chloride or mixed anhydride at -15 °C in dry THF under nitrogen.",
+        "Add 5.35 g (+)-2-amino-1-butanol and 5.5 mL triethylamine in dry THF dropwise over 20 minutes.",
+        "Stir at 20 °C for 2 hours protected from light.",
+        "Quench in cold water, extract with chloroform, and wash with dilute sodium carbonate.",
+        "Isolate methylergonovine free base and convert to maleate salt with maleic acid in absolute ethanol.",
+        "Recrystallize pure methylergonovine maleate (Methergine), essential medicine for postpartum hemorrhage control."
+      ],
+      "hazard_ghs": ["GHS07 (Harmful)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood"]
+    },
+    {
+      "id": "hydergine_dihydroergot_hydrogenation",
+      "name": "Hydergine (Ergoloid Mesylates Hydrogenation)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 583.68,
+      "formula": "C33H37N5O5",
+      "cas": "11032-41-0",
+      "technique": "REFLUX_HEATING",
+      "description": "Catalytic hydrogenation of the 9,10-double bond of natural ergot peptide alkaloids (ergocristine, ergocornine, ergocryptine) over palladium on charcoal to eliminate peripheral vasoconstriction while preserving central metabolic activity (Albert Hofmann, Sandoz 1940s).",
+      "reagent_a": {
+        "name": "Natural ergotoxine alkaloid mixture",
+        "default": 15.0,
+        "unit": "g",
+        "cas": "8006-25-5"
+      },
+      "reagent_b": {
+        "name": "Hydrogen gas (H2, 2.5 atm in Parr shaker)",
+        "default": 3.0,
+        "unit": "L",
+        "cas": "1333-74-0"
+      },
+      "catalyst": {
+        "name": "Palladium on carbon (10% Pd/C)",
+        "drops": 0,
+        "description": "1.5 g 10% Pd/C heterogeneous hydrogenation catalyst"
+      },
+      "reflux": {
+        "default_temp": 45.0,
+        "default_min": 180.0,
+        "optimal_temp": 40.0,
+        "optimal_min": 240.0,
+        "solvent": "Glacial acetic acid / Ethanol 1:2"
+      },
+      "quench": {
+        "water_ml": 100.0,
+        "ice_c": 5.0,
+        "ph_target": 8.5
+      },
+      "recrystallization": {
+        "solvent": "Methanol / Methanesulfonic acid",
+        "solvent_ml": 40.0,
+        "seed_crystal": true,
+        "target_yield_pct": 89.0
+      },
+      "sop_steps": [
+        "Dissolve 15.0 g natural ergotoxine base mixture in 120 mL ethanol containing 20 mL glacial acetic acid.",
+        "Add 1.5 g 10% Pd/C catalyst to a Parr hydrogenation pressure vessel under nitrogen purge.",
+        "Pressurize vessel with hydrogen gas to 2.5 atm and agitate at 40 °C until hydrogen uptake ceases (approx. 4 hours).",
+        "Filter catalyst carefully through Celite pad under nitrogen (pyrophoric!).",
+        "Concentrate filtrate, neutralize with aqueous ammonia, and extract with ethyl acetate.",
+        "Convert to mesylate salt with methanesulfonic acid in methanol to yield Hydergine (ergoloid mesylates)."
+      ],
+      "hazard_ghs": ["GHS02 (Flammable H2)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Pressure Blast Shield", "Nitrogen Purge"]
+    },
+    {
+      "id": "ald_52_acetylation",
+      "name": "ALD-52 (1-Acetyl-LSD)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 365.47,
+      "formula": "C22H27N3O2",
+      "cas": "3270-02-8",
+      "technique": "REFLUX_HEATING",
+      "description": "Acetylation of the indole N1 position of D-lysergic acid diethylamide using acetic anhydride in anhydrous pyridine or trifluoroacetic anhydride catalyzed acetylation (Albert Hofmann & Franz Troxler, Sandoz, 1957).",
+      "reagent_a": {
+        "name": "Pure D-LSD free base",
+        "default": 3.23,
+        "unit": "g",
+        "cas": "50-37-3"
+      },
+      "reagent_b": {
+        "name": "Acetic anhydride (freshly distilled)",
+        "default": 4.5,
+        "unit": "mL",
+        "cas": "108-24-7"
+      },
+      "catalyst": {
+        "name": "Anhydrous pyridine / DMAP",
+        "drops": 8,
+        "description": "Base catalyst for indole nitrogen nucleophilic acylation"
+      },
+      "reflux": {
+        "default_temp": 55.0,
+        "default_min": 90.0,
+        "optimal_temp": 50.0,
+        "optimal_min": 120.0,
+        "solvent": "Anhydrous Pyridine"
+      },
+      "quench": {
+        "water_ml": 50.0,
+        "ice_c": 2.0,
+        "ph_target": 8.0
+      },
+      "recrystallization": {
+        "solvent": "Diethyl Ether / Petroleum Ether",
+        "solvent_ml": 25.0,
+        "seed_crystal": true,
+        "target_yield_pct": 74.0
+      },
+      "sop_steps": [
+        "Dissolve 3.23 g D-LSD free base in 15 mL anhydrous pyridine under argon.",
+        "Add 4.5 mL freshly distilled acetic anhydride and a catalytic crystal of 4-dimethylaminopyridine (DMAP).",
+        "Heat at 50 °C for 2 hours in darkness under inert atmosphere.",
+        "Evaporate excess pyridine and acetic anhydride under high vacuum below 40 °C.",
+        "Dissolve residue in dichloromethane, wash with cold 5% sodium bicarbonate solution and water.",
+        "Dry over Na2SO4, evaporate, and recrystallize ALD-52 from diethyl ether."
+      ],
+      "hazard_ghs": ["GHS06 (Toxic)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood", "Inert Gas"]
+    },
+    {
+      "id": "lsa_ergine_morning_glory_extraction",
+      "name": "LSA / Ergine (Ipomoea tricolor Seed Isolation)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 267.33,
+      "formula": "C16H17N3O",
+      "cas": "478-95-5",
+      "technique": "LIQUID_EXTRACTION",
+      "description": "Extraction and isolation of D-lysergic acid amide (ergine) and isoergine from the sacred Mexican seeds Ololiuqui (Rivea corymbosa) and Badoh Negro (Ipomoea tricolor) via petroleum ether defatting and cold methanol extraction (Albert Hofmann, 1960).",
+      "reagent_a": {
+        "name": "Finely pulverized Ipomoea tricolor seeds",
+        "default": 100.0,
+        "unit": "g",
+        "cas": "N/A"
+      },
+      "reagent_b": {
+        "name": "Cold anhydrous methanol (HPLC grade)",
+        "default": 300.0,
+        "unit": "mL",
+        "cas": "67-56-1"
+      },
+      "catalyst": {
+        "name": "Tartaric acid (0.5% in methanol)",
+        "drops": 12,
+        "description": "Acid stabilizer preventing photo-oxidation of clavine alkaloids"
+      },
+      "reflux": {
+        "default_temp": 20.0,
+        "default_min": 120.0,
+        "optimal_temp": 18.0,
+        "optimal_min": 180.0,
+        "solvent": "Methanol / Chloroform"
+      },
+      "quench": {
+        "water_ml": 40.0,
+        "ice_c": 3.0,
+        "ph_target": 8.8
+      },
+      "recrystallization": {
+        "solvent": "Methanol / Ethyl Acetate",
+        "solvent_ml": 30.0,
+        "seed_crystal": true,
+        "target_yield_pct": 81.0
+      },
+      "sop_steps": [
+        "Grind 100 g Ipomoea tricolor seeds to a fine meal in darkness.",
+        "Defat seed meal 3x with 150 mL petroleum ether to remove nausea-inducing glycosides and fatty oils.",
+        "Dry the defatted seed cake in vacuum desiccator.",
+        "Macerate defatted meal with 300 mL cold methanol containing 0.5% tartaric acid for 3 hours in darkness.",
+        "Filter and concentrate methanolic extract to 50 mL under vacuum at 25 °C.",
+        "Dilute with water, basify with ammonium hydroxide to pH 8.8, and extract 3x with chloroform.",
+        "Evaporate chloroform and crystallize pure Ergine (LSA) as colorless prisms."
+      ],
+      "hazard_ghs": ["GHS07 (Harmful)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Dark Room / Amber Glassware"]
+    },
+    {
+      "id": "psilocybin_total_synthesis_hofmann",
+      "name": "Psilocybin Total Chemical Synthesis (Hofmann 1958)",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 284.25,
+      "formula": "C12H17N2O4P",
+      "cas": "520-52-5",
+      "technique": "REFLUX_HEATING",
+      "description": "Total chemical synthesis of 4-phosphoryloxy-N,N-dimethyltryptamine (psilocybin) from 4-benzyloxyindole via Speeter-Anthony oxalyl chloride acylation, LiAlH4 reduction to 4-benzyloxy-DMT, catalytic hydrogenolysis to psilocin, and phosphorylation with dibenzyl phosphorochloridate (Albert Hofmann, Sandoz Basel, 1958).",
+      "reagent_a": {
+        "name": "4-Benzyloxyindole",
+        "default": 11.16,
+        "unit": "g",
+        "cas": "20289-26-3"
+      },
+      "reagent_b": {
+        "name": "Oxalyl chloride in anhydrous diethyl ether",
+        "default": 7.0,
+        "unit": "g",
+        "cas": "79-37-8"
+      },
+      "catalyst": {
+        "name": "Anhydrous dimethylamine (40% in ether)",
+        "drops": 30,
+        "description": "Amine nucleophile forming 4-benzyloxyindol-3-yl-glyoxylamide"
+      },
+      "reflux": {
+        "default_temp": 35.0,
+        "default_min": 90.0,
+        "optimal_temp": 30.0,
+        "optimal_min": 120.0,
+        "solvent": "Anhydrous Diethyl Ether / THF"
+      },
+      "quench": {
+        "water_ml": 60.0,
+        "ice_c": 2.0,
+        "ph_target": 7.0
+      },
+      "recrystallization": {
+        "solvent": "Boiling Water / Absolute Ethanol",
+        "solvent_ml": 50.0,
+        "seed_crystal": true,
+        "target_yield_pct": 85.0
+      },
+      "sop_steps": [
+        "Dissolve 11.16 g (50 mmol) 4-benzyloxyindole in 150 mL anhydrous diethyl ether at 0 °C.",
+        "Add dropwise 7.0 g (55 mmol) oxalyl chloride in ether with stirring. Orange crystals of 4-benzyloxyindol-3-yl-glyoxylyl chloride separate.",
+        "Add excess cold anhydrous dimethylamine solution in ether. Filter the resulting glyoxylamide and wash with water.",
+        "Reduce the glyoxylamide with 8.0 g LiAlH4 in boiling dry THF for 4 hours to yield 4-benzyloxy-DMT.",
+        "Cleave the benzyl ether protecting group via catalytic hydrogenation over 10% Pd/C in methanol to yield pure crystalline Psilocin (4-HO-DMT, mp 173-176 °C).",
+        "Phosphorylate psilocin free base at -20 °C using dibenzyl phosphorochloridate in pyridine.",
+        "Remove benzyl phosphate esters by catalytic hydrogenolysis over Pd/C in methanol.",
+        "Recrystallize pure Psilocybin from boiling water/ethanol as white sparkling needles, mp 220-228 °C."
+      ],
+      "hazard_ghs": ["GHS06 (Toxic)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood", "Inert Gas Atmosphere"]
+    },
+    {
+      "id": "psilocybe_mexicana_hofmann_isolation",
+      "name": "Psilocybin & Psilocin Mushroom Isolation",
+      "category": "Hofmann Ergot Alkaloids & Lysergamides",
+      "mw": 284.25,
+      "formula": "C12H17N2O4P",
+      "cas": "520-52-5",
+      "technique": "LIQUID_EXTRACTION",
+      "description": "First chemical isolation and crystallization of pure psilocybin and psilocin from laboratory-cultivated mycelium and carpophores of Psilocybe mexicana Heim collected in Huautla de Jiménez, Oaxaca, Mexico (Albert Hofmann, Roger Heim, Arthur Brack, Hans Kobel, Sandoz Basel, 1958).",
+      "reagent_a": {
+        "name": "Dried powdered Psilocybe mexicana carpophores",
+        "default": 50.0,
+        "unit": "g",
+        "cas": "N/A"
+      },
+      "reagent_b": {
+        "name": "Anhydrous methanol (HPLC grade)",
+        "default": 250.0,
+        "unit": "mL",
+        "cas": "67-56-1"
+      },
+      "catalyst": {
+        "name": "Cellulose chromatography powder",
+        "drops": 0,
+        "description": "Partition chromatography stationary phase"
+      },
+      "reflux": {
+        "default_temp": 45.0,
+        "default_min": 60.0,
+        "optimal_temp": 40.0,
+        "optimal_min": 90.0,
+        "solvent": "Methanol"
+      },
+      "quench": {
+        "water_ml": 25.0,
+        "ice_c": 5.0,
+        "ph_target": 6.8
+      },
+      "recrystallization": {
+        "solvent": "Boiling distilled water / Methanol",
+        "solvent_ml": 35.0,
+        "seed_crystal": true,
+        "target_yield_pct": 88.0
+      },
+      "sop_steps": [
+        "Macerate 50 g dried powdered Psilocybe mexicana carpophores 3x with 200 mL methanol at 40 °C for 90 minutes.",
+        "Filter extracts and concentrate under vacuum on rotovap below 35 °C to a dark syrup.",
+        "Dissolve syrup in water, defat with petroleum ether and diethyl ether.",
+        "Chromatograph aqueous solution over cellulose powder column eluted with water-saturated n-butanol.",
+        "Monitor fractions with Keller's reagent (iron(III) chloride in glacial acetic acid + sulfuric acid -> deep blue-violet).",
+        "Crystallize pure Psilocybin from boiling water as colorless fine needles.",
+        "Psilocin is obtained from subsequent butanol fractions as prismatic crystals from benzene."
+      ],
+      "hazard_ghs": ["GHS07 (Harmful)", "GHS08 (Health Hazard)"],
+      "safety_ppe": ["Goggles", "Nitrile Gloves", "Fume Hood"]
+    }
+  ]
+}

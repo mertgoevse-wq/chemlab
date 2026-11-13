@@ -1044,6 +1044,179 @@ func _initialize_quest_catalog() -> void:
 					"osha_ref": "10 CFR Part 20 Standards for Protection Against Radiation"
 				}
 			]
+		},
+		# =========================================================================
+		# ALBERT HOFMANN SANDOZ BASEL HISTORICAL QUESTS (1938 - 1971)
+		# =========================================================================
+		"side_quest_sandoz_ergot_subfractionation": {
+			"id": "side_quest_sandoz_ergot_subfractionation",
+			"tier": 4,
+			"title": "Sandoz Basel 1938: Ergot Subfractionation & Cleavage",
+			"category": "Alkaloid Chemistry & Pharmacognosy",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Dr. Albert Hofmann",
+			"briefing": "Macerate defatted Claviceps purpurea sclerotia in ammoniacal solvent. Isolate crude ergotamine and ergometrine, conduct alkaline ester cleavage with methanolic KOH to liberate pure D-lysergic acid (MW 268.31 g/mol).",
+			"description": "Isolate ergot alkaloids from Claviceps purpurea and perform alkaline cleavage to yield crystalline D-lysergic acid.",
+			"xp_reward": 2500,
+			"skill_rewards": { "chemistry": 1200, "pharmacology": 800, "metrology": 500 },
+			"item_rewards": [{ "id": "hofmann_basel_vintage_pipette", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "side_quest_hofmann_lsd25_resynthesis",
+			"unlocked_apparatus": ["Soxhlet_Extractor", "Rotary_Evaporator", "Büchner_Funnel"],
+			"unlocked_reagents": ["Ergot_Sclerotia", "Methanolic_KOH_1M", "Sulfuric_Acid_2M", "Diethyl_Ether"],
+			"objectives": [
+				{
+					"id": "defat_ergot_powder",
+					"title": "Petroleum Ether Defatting",
+					"description": "Defat 100 g powdered ergot sclerotia with petroleum ether in Soxhlet apparatus",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "batch",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Sandoz Basel Archive 1938 Protocol A-1"
+				},
+				{
+					"id": "alkaline_ester_cleavage",
+					"title": "Methanolic Alkaline Hydrolysis",
+					"description": "Cleave isolated ergotamine with 1.0 M methanolic KOH under inert nitrogen at 70 °C",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "cleavage",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Helvetica Chimica Acta 1943"
+				},
+				{
+					"id": "isolate_d_lysergic_acid",
+					"title": "Isoelectric Precipitation (pH 5.4)",
+					"description": "Neutralize with dilute H2SO4 to pH 5.4 and filter pure crystalline D-lysergic acid",
+					"current": 0.0,
+					"target": 10.73,
+					"unit": "g",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "USP Ergoline Monograph"
+				}
+			]
+		},
+		"side_quest_hofmann_lsd25_resynthesis": {
+			"id": "side_quest_hofmann_lsd25_resynthesis",
+			"tier": 5,
+			"title": "April 1943: Bicycle Day Resynthesis (LSD-25 Semisynthesis)",
+			"category": "Lysergamides & Mixed Anhydrides",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Dr. Albert Hofmann",
+			"briefing": "Resynthesize the 25th compound in the lysergic acid amide series. Form the reactive mixed anhydride with trifluoroacetic anhydride at -15 °C. Couple with pure anhydrous diethylamine, resolve diastereomers on neutral alumina, and crystallize D-lysergic acid diethylamide L-(+)-tartrate.",
+			"description": "Perform mixed anhydride peptide coupling and diastereomeric resolution of D-LSD and D-iso-LSD.",
+			"xp_reward": 3500,
+			"skill_rewards": { "chemistry": 1800, "synthesis": 1000, "safety": 700 },
+			"item_rewards": [{ "id": "bicycle_day_1943_chronometer", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "side_quest_psilocybin_mexicana_total_synthesis",
+			"unlocked_apparatus": ["Cryogenic_Bath", "Chromatography_Column_Alumina", "Inert_N2_Schlenk_Line"],
+			"unlocked_reagents": ["D_Lysergic_Acid", "Trifluoroacetic_Anhydride", "Diethylamine_Anhydrous", "L_Tartaric_Acid"],
+			"objectives": [
+				{
+					"id": "mixed_anhydride_activation",
+					"title": "Mixed Anhydride Activation (-15 °C)",
+					"description": "Slurry 10.73 g D-lysergic acid in acetonitrile, cool to -15 °C, and add TFAA dropwise",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "activation",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Hofmann Mixed Anhydride Coupling SOP"
+				},
+				{
+					"id": "diethylamine_peptide_coupling",
+					"title": "Diethylamine Amidation",
+					"description": "Add 8.78 g anhydrous diethylamine under dry nitrogen and stir at room temperature for 2 hours",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "coupling",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "GLP Peptide Coupling Standards"
+				},
+				{
+					"id": "alumina_chromatographic_resolution",
+					"title": "Alumina Chromatographic Resolution",
+					"description": "Separate active D-LSD from inactive D-iso-LSD on neutral alumina column (benzene/chloroform)",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "column",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Analytical Resolution Protocol"
+				},
+				{
+					"id": "crystallize_tartrate_salt",
+					"title": "L-(+)-Tartrate Salt Crystallization",
+					"description": "Dissolve in methanol, treat with L-(+)-tartaric acid, and filter pure prism crystals (MP 198 °C)",
+					"current": 0.0,
+					"target": 12.5,
+					"unit": "g",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Sandoz Patent CH 280711"
+				}
+			]
+		},
+		"side_quest_psilocybin_mexicana_total_synthesis": {
+			"id": "side_quest_psilocybin_mexicana_total_synthesis",
+			"tier": 5,
+			"title": "1958: Psilocybe mexicana Isolation & Total Synthesis",
+			"category": "Indole Phosphorylation & Natural Products",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Dr. Albert Hofmann",
+			"briefing": "Reproduce Albert Hofmann's 1958 landmark indole synthesis: Glyoxylation of 4-benzyloxyindole with oxalyl chloride, amidation with dimethylamine, reduction to 4-benzyloxy-DMT, catalytic debenzylation with 10% Pd/C, and phosphorylation with dibenzyl phosphorochloridate to yield pure psilocybin.",
+			"description": "Synthesize psilocybin via Speeter-Anthony indole glyoxylation, hydrogenolysis, and phosphorylation.",
+			"xp_reward": 4000,
+			"skill_rewards": { "chemistry": 2000, "organic_synthesis": 1200, "crystallography": 800 },
+			"item_rewards": [{ "id": "hofmann_indole_crystallography_prism", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Parr_Hydrogenator", "Dry_Box_Nitrogen_Chamber", "Crystallization_Dish"],
+			"unlocked_reagents": ["4_Benzyloxyindole", "Oxalyl_Chloride", "Dimethylamine_Gas", "LiAlH4", "Pd_C_10_percent", "Dibenzyl_Phosphorochloridate"],
+			"objectives": [
+				{
+					"id": "speeter_anthony_glyoxylation",
+					"title": "Speeter-Anthony Indole Glyoxylation",
+					"description": "React 4-benzyloxyindole with oxalyl chloride in anhydrous ether at 0 °C",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "step",
+					"is_completed": false,
+					"is_active": true,
+					"osha_ref": "Hofmann & Troxler Total Synthesis 1958"
+				},
+				{
+					"id": "hydrogenolysis_debenzylation",
+					"title": "Catalytic Debenzylation (10% Pd/C)",
+					"description": "Hydrogenate 4-benzyloxy-DMT in methanol over 10% Pd/C to liberate pure psilocin",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "hydrogenolysis",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Heterogeneous Catalysis SOP"
+				},
+				{
+					"id": "phosphorylation_to_psilocybin",
+					"title": "Phosphorylation to Psilocybin",
+					"description": "Phosphorylate with dibenzyl phosphorochloridate and hydrogenolyze benzyl esters to pure psilocybin",
+					"current": 0.0,
+					"target": 1.0,
+					"unit": "step",
+					"is_completed": false,
+					"is_active": false,
+					"osha_ref": "Helvetica Chimica Acta 1959"
+				}
+			]
 		}
 	}
 

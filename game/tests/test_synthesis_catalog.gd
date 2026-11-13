@@ -169,6 +169,52 @@ func _run() -> void:
 	if quinine_proto.is_empty() or str(quinine_proto.get("id", "")) != "quinine_cinchona_extraction":
 		failures.append("Quinine Cinchona extraction protocol failed to load")
 
+	# 7. Verify Albert Hofmann Ergot Alkaloids & Lysergamides
+	if not categories.has("Hofmann Ergot Alkaloids & Lysergamides"):
+		failures.append("Missing category 'Hofmann Ergot Alkaloids & Lysergamides'")
+
+	var hofmann_list: Array[Dictionary] = Catalog.get_protocols_in_category("Hofmann Ergot Alkaloids & Lysergamides")
+	if hofmann_list.size() < 8:
+		failures.append("Expected >= 8 Hofmann protocols, found %d" % hofmann_list.size())
+
+	var lsd_proto: Dictionary = Catalog.get_protocol("lsd_25_semisynthesis")
+	if lsd_proto.is_empty() or str(lsd_proto.get("id", "")) != "lsd_25_semisynthesis":
+		failures.append("LSD-25 semisynthesis protocol failed to load")
+	else:
+		var lsd_res: Dictionary = Chem.evaluate({
+			"protocol": lsd_proto,
+			"reagent_a_mass": float(lsd_proto["reagent_a"]["default"]),
+			"reagent_b_amount": float(lsd_proto["reagent_b"]["default"]),
+			"catalyst_drops": int(lsd_proto["catalyst"]["default_drops"]),
+			"reflux_temp_c": float(lsd_proto["reflux"]["default_temp"]),
+			"reflux_min": float(lsd_proto["reflux"]["default_min"]),
+			"stir_rpm": 450.0,
+			"fume_hood": true,
+			"ice_bath_c": 1.0,
+			"quench_water_ml": 50.0,
+			"recryst_ethanol_ml": 25.0,
+			"seed_crystal": true,
+			"ppe": true
+		})
+		if not bool(lsd_res.get("ok", false)):
+			failures.append("LSD-25 evaluation failed: %s" % str(lsd_res.get("error", "")))
+		print("Albert Hofmann LSD-25 evaluation: purity=%.1f%% yield=%.2fg" % [
+			float(lsd_res.get("purity", 0.0)),
+			float(lsd_res.get("yield_g", 0.0))
+		])
+
+	var la_proto: Dictionary = Catalog.get_protocol("lysergic_acid_alkaline_cleavage")
+	if la_proto.is_empty() or str(la_proto.get("id", "")) != "lysergic_acid_alkaline_cleavage":
+		failures.append("Lysergic acid cleavage protocol failed to load")
+
+	var psilocybin_proto: Dictionary = Catalog.get_protocol("psilocybin_total_synthesis_hofmann")
+	if psilocybin_proto.is_empty() or str(psilocybin_proto.get("id", "")) != "psilocybin_total_synthesis_hofmann":
+		failures.append("Psilocybin total synthesis protocol failed to load")
+
+	var methergine_proto: Dictionary = Catalog.get_protocol("methergine_semisynthesis")
+	if methergine_proto.is_empty() or str(methergine_proto.get("id", "")) != "methergine_semisynthesis":
+		failures.append("Methergine protocol failed to load")
+
 	if failures.is_empty():
 		print("PASS  synthesis catalog and multi-protocol evaluation")
 		quit(0)

@@ -7,6 +7,7 @@ extends RefCounted
 const PIHKAL_PATH: String = "res://data/synthesis/pihkal_complete.json"
 const TIHKAL_PATH: String = "res://data/synthesis/tihkal_complete.json"
 const VOGEL_PATH: String = "res://data/synthesis/vogel_and_natural_products.json"
+const HOFMANN_PATH: String = "res://data/synthesis/hofmann_ergot_and_lysergamides.json"
 
 static var _catalog_cache: Dictionary = {}
 static var _protocols_by_id: Dictionary = {}
@@ -54,6 +55,7 @@ static func _ensure_loaded() -> void:
 	_protocols_by_id = {}
 	_categories = [
 		"Industrial APIs",
+		"Hofmann Ergot Alkaloids & Lysergamides",
 		"Tropane Alkaloids & Classic Syntheses",
 		"Classical Organic & Dyes (Vogel)",
 		"Natural Product Isolation & Extractions",
@@ -113,6 +115,161 @@ static func _ensure_loaded() -> void:
 			_catalog_cache[cat] = []
 		_catalog_cache[cat].append(p)
 		_protocols_by_id[p["id"]] = p
+
+	# 7. Load Albert Hofmann Ergot Alkaloids & Lysergamides
+	var hofmann_list := _load_hofmann_json_protocols(HOFMANN_PATH)
+	_catalog_cache["Hofmann Ergot Alkaloids & Lysergamides"] = hofmann_list
+	for p in hofmann_list:
+		_protocols_by_id[p["id"]] = p
+
+
+static func _load_hofmann_json_protocols(file_path: String) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	if not FileAccess.file_exists(file_path):
+		return list
+
+	var file := FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return list
+
+	var text := file.get_as_text()
+	file.close()
+
+	var test_json := JSON.new()
+	var err := test_json.parse(text)
+	if err != OK:
+		return list
+
+	var root_data = test_json.data
+	if not (root_data is Dictionary) or not root_data.has("protocols"):
+		return list
+
+	var protos: Array = root_data.get("protocols", [])
+	for item in protos:
+		if not (item is Dictionary):
+			continue
+		var proto := _convert_hofmann_protocol(item)
+		list.append(proto)
+
+	return list
+
+
+static func _convert_hofmann_protocol(p: Dictionary) -> Dictionary:
+	var pid: String = str(p.get("id", "hofmann_compound"))
+	var pname: String = str(p.get("name", "Albert Hofmann Compound"))
+	var chem_name: String = pname
+	var cat: String = str(p.get("category", "Hofmann Ergot Alkaloids & Lysergamides"))
+	var mw: float = float(p.get("mw", 300.0))
+	var cas: String = str(p.get("cas", "N/A"))
+	var formula: String = str(p.get("formula", ""))
+	var desc: String = str(p.get("description", ""))
+
+	var rA: Dictionary = p.get("reagent_a", {})
+	var rB: Dictionary = p.get("reagent_b", {})
+	var cat_info: Dictionary = p.get("catalyst", {})
+	var reflux_info: Dictionary = p.get("reflux", {})
+	var quench_info: Dictionary = p.get("quench", {})
+	var recryst_info: Dictionary = p.get("recrystallization", {})
+
+	var rA_name: String = str(rA.get("name", "Precursor A"))
+	var rA_default: float = float(rA.get("default", 10.0))
+	var rA_unit: String = str(rA.get("unit", "g"))
+	var rA_mw: float = mw * 0.75
+
+	var rB_name: String = str(rB.get("name", "Reagent B"))
+	var rB_default: float = float(rB.get("default", 10.0))
+	var rB_unit: String = str(rB.get("unit", "mL"))
+	var rB_density: float = 1.0
+
+	var cat_name: String = str(cat_info.get("name", "Inert Catalyst"))
+	var cat_drops: int = int(cat_info.get("drops", 10))
+
+	var opt_temp: float = float(reflux_info.get("optimal_temp", 50.0))
+	var opt_dur: float = float(reflux_info.get("optimal_min", 60.0))
+
+	var sop_steps_raw: Array = p.get("sop_steps", [])
+	var sop_steps: Array[String] = []
+	for s in sop_steps_raw:
+		sop_steps.append(str(s))
+
+	return {
+		"id": pid,
+		"name": pname,
+		"chemical_name": chem_name,
+		"category": cat,
+		"code": cas,
+		"cas": cas,
+		"mw": mw,
+		"formula": formula,
+		"literature_reference": "Albert Hofmann, Sandoz Laboratories Basel (1938-1971)",
+		"source": "Hofmann Ergot & Lysergamide Suite",
+		"description": desc,
+		"reaction_title": "%s + %s → %s" % [rA_name, rB_name, pname],
+		"sop_steps": sop_steps,
+		"reagent_a": {
+			"id": pid + "_reagent_a",
+			"name": rA_name,
+			"unit": rA_unit,
+			"mw": rA_mw,
+			"default": rA_default,
+			"min": maxf(1.0, rA_default * 0.5),
+			"max": rA_default * 2.0,
+			"step": 0.1,
+			"decimals": 2
+		},
+		"reagent_b": {
+			"id": pid + "_reagent_b",
+			"name": rB_name,
+			"unit": rB_unit,
+			"mw": 100.0,
+			"density": rB_density,
+			"default": rB_default,
+			"min": maxf(1.0, rB_default * 0.5),
+			"max": rB_default * 2.5,
+			"step": 0.1,
+			"decimals": 2
+		},
+		"catalyst": {
+			"id": pid + "_catalyst",
+			"name": cat_name,
+			"default_drops": cat_drops,
+			"min_drops": 0,
+			"max_drops": cat_drops * 2 + 5,
+			"description": str(cat_info.get("description", "Reaction catalyst"))
+		},
+		"reflux": {
+			"temp_optimal_low": maxf(0.0, opt_temp - 5.0),
+			"temp_optimal_high": opt_temp + 5.0,
+			"temp_degrade": opt_temp + 15.0,
+			"temp_polymerize": opt_temp + 30.0,
+			"default_temp": opt_temp,
+			"temp_min": maxf(0.0, opt_temp - 25.0),
+			"temp_max": opt_temp + 40.0,
+			"optimal_min": opt_dur,
+			"default_min": opt_dur,
+			"duration_min": maxf(5.0, opt_dur * 0.25),
+			"duration_max": opt_dur * 2.5
+		},
+		"workup": {
+			"ice_c": float(quench_info.get("ice_c", 2.0)),
+			"water_ml": float(quench_info.get("water_ml", 50.0)),
+			"ethanol_ml": float(recryst_info.get("solvent_ml", 30.0)),
+			"seeded": bool(recryst_info.get("seed_crystal", true)),
+			"ph_target": float(quench_info.get("ph_target", 7.0))
+		},
+		"analytical": {
+			"mp_pure": 180.0,
+			"mp_tolerance": 3.0,
+			"tlc_rf": 0.52,
+			"purity_pass": 95.0,
+			"yield_pass_g": rA_default * (mw / rA_mw) * (float(recryst_info.get("target_yield_pct", 80.0)) / 100.0)
+		},
+		"hazards": [
+			{"code": "GHS06", "text": "toxic alkaloid / ergot derivative"},
+			{"code": "GHS08", "text": "potent biological activity / indole"},
+			{"code": "GHS02", "text": "organic solvents / inert gas required"}
+		]
+	}
 
 
 static func _load_vogel_json_protocols(file_path: String) -> Array[Dictionary]:
