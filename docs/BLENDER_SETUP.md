@@ -251,14 +251,14 @@ Outputs: `docs/screenshots/cine_establish.png`, `cine_bench.png`, `cine_hood.png
 The ChemLab repository includes an MCP (Model Context Protocol) integration for bidirectional communication between Claude Code and the Blender GUI:
 - `blender_client.py`: Python CLI client utilizing socket IPC.
 - `blender_live_bridge.py`: Python server and queue handler running inside Blender's embedded runtime (port 8765).
-- `blender_mcp_server.mjs`: Node.js Stdio MCP server bridging Claude Code tool calls to Blender socket commands (port 9876).
+- `blender_mcp_server.mjs`: Node.js Stdio MCP server bridging Claude Code tool calls to Blender socket commands (port 9877).
 
 ### 5.1 Current Connection Status: verified live
-With Blender open and `chemlab_startup.py` initialised, the addon listens on `9876` and accepts JSON-line RPC (`execute_code`, `get_scene_info`). `.mcp.json` in the repository root registers it for MCP clients:
+With Blender open and `chemlab_startup.py` initialised, the addon listens on `9877` and accepts JSON-line RPC (`execute_code`, `get_scene_info`). `.mcp.json` in the repository root registers it for MCP clients:
 
 ```json
 {"mcpServers": {"blender-live": {"command": "node", "args": ["blender_mcp_server.mjs"],
-  "env": {"BLENDER_HOST": "127.0.0.1", "BLENDER_PORT": "9876"}}}}
+  "env": {"BLENDER_HOST": "127.0.0.1", "BLENDER_PORT": "9877"}}}}
 ```
 
 A verified round trip ran scene edits, an EEVEE still, and `save_as_mainfile` inside the running GUI session.

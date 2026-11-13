@@ -914,7 +914,7 @@ signtool sign /sha1 <THUMBPRINT> /tr http://timestamp.sectigo.com /td sha256 /fd
 | **Embedded Python** | Use official `python-3.12-embed-amd64.zip` (verified hash) |
 | **RDKit/Cantera DLLs** | Vendored from conda-forge (reproducible, signed by CF) |
 | **Godot engine** | Export with `--export-pack` encryption (AES-256) |
-| **Network sockets** | Localhost-only (127.0.0.1:8765, 9876); no outbound |
+| **Network sockets** | Localhost-only (127.0.0.1:8765, 9877); no outbound |
 | **Webcam access** | Explicit MediaPipe usage; declare in manifest |
 | **Self-modifying code** | None — all .pyc bytecode, no JIT |
 | **Packer/Protector** | **DO NOT USE** (UPX, Themida, VMProtect trigger AV) |

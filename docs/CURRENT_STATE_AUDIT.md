@@ -18,7 +18,7 @@ The ChemLab codebase contains approximately 35 production Python source files, 3
   - *Tab 1 (World Laboratories):* Dynamic laboratory explorer browsing 11 international archetypes, safety containment levels, ventilation specifications, equipment inventories, and hazard profiles.
   - *Tab 2 (Kinetics & Thermodynamics):* Real-time calculation interface connected to `CanteraThermodynamicsEngine`, plus a custom `QPainter` widget (`TitrationCanvasWidget`) rendering analytical pH titration curves based on Henderson-Hasselbalch equations.
   - *Tab 3 (RDKit Cheminformatics & 3D):* Interactive SMILES input, 3D conformation generation via Distance Geometry (ETKDGv3), Universal Force Field (UFF) energy minimization, Lipinski Rule of 5 validation, and PDB/SDF structural block inspection.
-  - *Tab 4 (Blender Live Bridge):* TCP socket interface (`127.0.0.1:9876`) to query Blender MCP status and switch active viewport cameras (`Cam_Lab_Overview`, `Cam_Workbench_Detail`, `Cam_FumeHood_View`).
+  - *Tab 4 (Blender Live Bridge):* TCP socket interface (`127.0.0.1:9877`) to query Blender MCP status and switch active viewport cameras (`Cam_Lab_Overview`, `Cam_Workbench_Detail`, `Cam_FumeHood_View`).
 
 ### 1.2 Scientific Thermodynamics & Kinetics Engine (`src/chemlab/simulation/cantera_engine.py`)
 - **Standard Thermodynamic Database:** 40+ pure compounds (inorganics, acids, bases, organic solvents, APIs) with authentic NIST and CRC Handbook standard enthalpies of formation ($\Delta H^\circ_f$), standard molar entropies ($S^\circ$), constant-pressure heat capacities ($C_p$), and densities.

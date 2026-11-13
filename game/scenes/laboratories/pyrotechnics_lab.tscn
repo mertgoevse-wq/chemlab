@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://chemlab_pyrotechnics_lab_01"]
+
+[ext_resource type="Script" path="res://scenes/laboratories/pyrotechnics_lab.gd" id="1_pyro"]
+
+[node name="PyrotechnicsLab" type="Node3D"]
+script = ExtResource("1_pyro")

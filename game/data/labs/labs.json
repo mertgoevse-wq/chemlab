@@ -209,6 +209,19 @@
       "suit_requirements": ["cotton_lab_coat", "safety_goggles", "nitrile_gloves", "lab_boots"],
       "capacity": 8,
       "unlock_requirements": {}
+    },
+    {
+      "id": "pyrotechnics",
+      "name": "Licensed Pyrotechnics Test Bay",
+      "archetype": "pyrotechnics",
+      "description": "Class 1.4 test bay for composition arithmetic, burn-rate measurement and flame-colour development. Blast shield, sand tray and a Type D magazine.",
+      "unlock_level": 18,
+      "scene_path": "res://scenes/laboratories/pyrotechnics_lab.tscn",
+      "equipment": ["composition_bench", "blast_shield", "burn_pad", "sand_tray", "magazine_type_d", "chronometer", "spectroscope", "static_meter"],
+      "hazards": ["flash_fire", "friction_ignition", "toxic_metal_oxides", "noise", "confined_deflagration"],
+      "suit_requirements": ["flame_resistant_coat", "face_shield", "leather_gloves", "hearing_protection"],
+      "capacity": 2,
+      "unlock_requirements": { "skills": { "pyrotechnics": 10, "lab_safety": 20 }, "lab_access": ["pyrotechnics"] }
     }
   ]
 }

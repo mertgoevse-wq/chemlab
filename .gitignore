@@ -51,3 +51,9 @@ HANDOFF.md
 
 # Vendored third-party skill checkout (fetch on demand)
 tools/vendor/game-dev/
+
+# Vendored prompt library (nested git checkout, indexed in docs/ai)
+tools/vendor/awesome-prompts/
+
+# Local Godot binary (126 MB, exceeds GitHub limit)
+tools/godot/*.exe

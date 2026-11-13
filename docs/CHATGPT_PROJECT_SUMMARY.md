@@ -165,7 +165,7 @@ chemlab/
 
 | Module | Purpose |
 |--------|---------|
-| `src/chemlab/desktop/main_window.py` | PySide6 (Qt6) dark high-tech cleanroom GUI. Tabs: World Laboratories (11 archetypes), Kinetics & Thermodynamics (Cantera + QPainter titration canvas), RDKit 3D (SMILES→3D, PDB/SDF), Blender Live Bridge (TCP 127.0.0.1:9876). |
+| `src/chemlab/desktop/main_window.py` | PySide6 (Qt6) dark high-tech cleanroom GUI. Tabs: World Laboratories (11 archetypes), Kinetics & Thermodynamics (Cantera + QPainter titration canvas), RDKit 3D (SMILES→3D, PDB/SDF), Blender Live Bridge (TCP 127.0.0.1:9877). |
 | `src/chemlab/companion/remote_server.py` | `CompanionRemoteServer` (port 8766) — WebSocket/FastAPI mobile companion. Streams telemetry (temp, pH, stir RPM, workstation, safety score), remote actions (heat/cool/stir/switch_station/emergency_wash), NMS planetary env params, rendered HTML PWA in German. |
 | `chemlab_core/transport/` | Threaded TCP server/client with JSON IPCRequest/IPCResponse framing. |
 

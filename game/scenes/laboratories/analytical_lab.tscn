@@ -285,7 +285,7 @@ top_radius = 0.032
 bottom_radius = 0.032
 height = 0.12
 
-[node name="AnalyticalLab" type="Node3D" node_paths=PackedStringArray("player_spawn_point", "fume_hood_sash", "fume_hood_interaction_area", "fume_hood_interior_light", "bench_spotlight", "ambient_light", "spawn_erlenmeyer", "spawn_beaker", "spawn_bunsen_burner", "spawn_magnetic_stirrer", "spawn_analytical_balance", "spawn_reagent_hcl", "spawn_reagent_naoh", "spawn_reagent_phenolphthalein", "spawn_fume_hood_apparatus")]
+[node name="AnalyticalLab" type="Node3D"]
 script = ExtResource("1_lab_script")
 player_spawn_point = NodePath("SpawnPoints/Spawn_Player")
 fume_hood_sash = NodePath("Furniture/FumeHoodStation/FumeHood_SashAssembly")

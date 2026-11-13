@@ -24,7 +24,7 @@ import traceback
 import bpy
 
 HOST = os.environ.get("BLENDER_MCP_HOST", "127.0.0.1")
-PORT = int(os.environ.get("BLENDER_MCP_PORT", "8765"))
+PORT = int(os.environ.get("BLENDER_MCP_PORT", "9877"))
 WORKSPACE = os.environ.get("BLENDER_MCP_WORKSPACE", os.getcwd())
 
 

@@ -3,7 +3,7 @@ ChemLab Native Desktop Application (PySide6 / Qt6).
 Cross-platform native GUI for Windows & Linux:
   • Standalone operation without web dependencies or browser runtimes
   • Direct integration with Cantera Thermodynamics & RDKit Cheminformatics
-  • Real-time Socket IPC Bridge to Blender 3D Engine (Port 9876)
+  • Real-time Socket IPC Bridge to Blender 3D Engine (Port 9877)
   • Worldwide Laboratory Archetypes & Hazard Level Explorer
   • Interactive Reaction Kinetics & Titration Curve Visualizer
 """
@@ -215,7 +215,7 @@ class ChemLabMainWindow(QMainWindow):
 
         header_layout.addStretch()
 
-        self.lbl_engine_status = QLabel("● Blender IPC Bridge: 127.0.0.1:9876 [Offline]", self)
+        self.lbl_engine_status = QLabel("● Blender IPC Bridge: 127.0.0.1:9877 [Offline]", self)
         self.lbl_engine_status.setStyleSheet("color: #f43f5e; font-weight: bold;")
         header_layout.addWidget(self.lbl_engine_status)
 
@@ -497,7 +497,7 @@ class ChemLabMainWindow(QMainWindow):
 
         self.txt_bridge_log = QTextEdit(self)
         self.txt_bridge_log.setReadOnly(True)
-        self.txt_bridge_log.append("Blender Bridge Client bereit. Port 9876.")
+        self.txt_bridge_log.append("Blender Bridge Client bereit. Port 9877.")
         layout.addWidget(self.txt_bridge_log)
 
         return widget
@@ -508,15 +508,15 @@ class ChemLabMainWindow(QMainWindow):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(1.5)
-            s.connect(("127.0.0.1", 9876))
+            s.connect(("127.0.0.1", 9877))
             s.close()
-            self.lbl_engine_status.setText("● Blender IPC Bridge: 127.0.0.1:9876 [ONLINE]")
+            self.lbl_engine_status.setText("● Blender IPC Bridge: 127.0.0.1:9877 [ONLINE]")
             self.lbl_engine_status.setStyleSheet("color: #10b981; font-weight: bold;")
             self.txt_bridge_log.append(
-                ">>> Ping erfolgreich: Blender MCP Addon ist online und lauscht auf Port 9876."
+                ">>> Ping erfolgreich: Blender MCP Addon ist online und lauscht auf Port 9877."
             )
         except Exception as e:
-            self.lbl_engine_status.setText("● Blender IPC Bridge: 127.0.0.1:9876 [OFFLINE]")
+            self.lbl_engine_status.setText("● Blender IPC Bridge: 127.0.0.1:9877 [OFFLINE]")
             self.lbl_engine_status.setStyleSheet("color: #f43f5e; font-weight: bold;")
             self.txt_bridge_log.append(
                 f">>> Verbindung fehlgeschlagen: {e}. Bitte Blender starten."

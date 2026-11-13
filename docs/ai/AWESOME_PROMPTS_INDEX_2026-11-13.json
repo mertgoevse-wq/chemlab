@@ -1,0 +1,307 @@
+{
+  "source": "ai-boost/awesome-prompts",
+  "commit": "f26786e",
+  "counts": {
+    "files_total": 458,
+    "markdown": 94,
+    "text": 364,
+    "library_en_files": 39,
+    "library_prompts_documented": 3030,
+    "games_prompts": 71
+  },
+  "agent_prompts_used": [
+    "Immersive_Narrative_Designer.txt",
+    "Game_Level_Designer.txt",
+    "Game_Economy_Designer.txt",
+    "game_designer.txt",
+    "game_ai_designer.txt",
+    "game_studio_multi_agent_orchestrator.txt",
+    "game_asset_sprite_forge.txt"
+  ],
+  "games_prompt_review": [
+    {
+      "title": "2046 Puzzle Game Challenge",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "3D Kinematics Character Controller",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "3D Kinetic Bounce Arena",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "3D Physics Sandbox Architect",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "3D Topology Puzzle Architect",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "AI Trying to Escape the Box",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Ancient Egyptians Using Modern Tech Comedy Montage",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Beginner Chess Opening Coach",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Chess Player",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Chess Strategy Coach Skill",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Critical Game Review",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Cyber-Pulse: 3D Neon Particle Swarm",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Cyberscam Survival Simulator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "D&D Dungeon Master",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Emoji Translator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Fantasy Console Simulator",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Football Commentator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Football Match Commentator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Fringe Ideology Quiz",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Game Efficiency Guide",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Game of Thrones Style Title",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Game Physics Architect",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Game System Design",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Gemi-Gotchi Virtual Pet",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Gomoku Player",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Gomoku Player",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Gravity Flux Flight Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Gravity Shift: Low-Poly Physics Platformer",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Guessing Game Master",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Gyroscopic Maze Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "High-Velocity Dogfight",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Home Escape Room Designer",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Horror Image Simulator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Imaginary Web Browser",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Joker: Tech Humor Master",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Kaomoji-Only Chatbot",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Life Simulation Text Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Logic-Flow Educational Puzzle",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Lunatic",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Magic Conch Shell",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Magic Conch Shell",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Magician",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Master Duel AI with YGO Agent",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Match-3 Chain Reaction Logic",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Moral Dilemma Personality Test",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Neon Grid Snake Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Novel Style Text Game",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Portuguese Slang Roast",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Procedural 3D Environment Designer",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Procedural Content Generator",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Quantum Entanglement Matching Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Question Quality Lab Game",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Real-Time Multiplayer Defense Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Red Light, Green Light Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Reply With GIFs",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Solo Indie Steam Game Feasibility Planner",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Star-Marshal: Raycast Tactical Shooter",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Surprise Point-and-Click Game Generator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Text Adventure Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Text Adventure Game Plus",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Text Based Adventure Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Tic-Tac-Toe Game",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Timed Quiz Game with Rope Timer",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Ultimate Slap Game Master",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Vector-Based Space Combat System",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "Virtual Game Console Simulator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "VR Headset Experience Simulator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "VR Horror Chatroom Simulator",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "WebGL Fluid Interaction VFX",
+      "status": "reviewed-applied-candidate"
+    },
+    {
+      "title": "Yes or No Answer",
+      "status": "reviewed-not-applicable"
+    },
+    {
+      "title": "You Probably Don't Know This Trivia Game",
+      "status": "reviewed-not-applicable"
+    }
+  ]
+}

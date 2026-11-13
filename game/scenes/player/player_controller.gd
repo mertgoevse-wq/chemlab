@@ -65,6 +65,8 @@ const BREATH_HEIGHT: float = 0.0024
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
+@onready var spring_arm: SpringArm3D = $Head/SpringArm3D
+@onready var third_person_camera: Camera3D = $Head/SpringArm3D/ThirdPersonCamera
 @onready var interaction_ray: RayCast3D = $Head/InteractionRay
 @onready var held_item_socket: Marker3D = $Head/HeldItemSocket
 
@@ -81,6 +83,8 @@ const BREATH_HEIGHT: float = 0.0024
 var is_mouse_captured: bool = true
 var hovered_apparatus: Node = null
 var _nmr_nearby: bool = false
+var camera_mode: int = 0  # 0 = first person, 1 = third person
+var _character_visual: Node3D
 
 # Held Item State
 var carried_item: Node = null
@@ -113,6 +117,8 @@ var _input_signals_connected: bool = false
 
 func _ready() -> void:
 	_ensure_references()
+	_ensure_character_visual()
+	_apply_camera_mode()
 	_setup_mouse_capture(true)
 	_setup_interaction_ray()
 	_connect_input_manager_signals()
@@ -150,6 +156,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# V toggles first-person / third-person, like a modern open-world RPG.
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_V:
+		_toggle_camera_mode()
+		get_viewport().set_input_as_handled()
+		return
+
 	# 1. Escape toggles mouse capture (captured for gameplay, visible for UI/menu)
 	if event.is_action_pressed("pause_menu") or (event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE):
 		_setup_mouse_capture(not is_mouse_captured)
@@ -176,6 +188,91 @@ func _unhandled_input(event: InputEvent) -> void:
 # =============================================================================
 # MOUSE LOOK & CAPTURE
 # =============================================================================
+
+func _toggle_camera_mode() -> void:
+	camera_mode = 1 - camera_mode
+	_apply_camera_mode()
+
+
+func _apply_camera_mode() -> void:
+	var third_person: bool = camera_mode == 1
+	if third_person_camera != null:
+		third_person_camera.current = third_person
+	if camera != null:
+		camera.current = not third_person
+	if _character_visual != null:
+		_character_visual.visible = third_person
+
+
+func _ensure_character_visual() -> void:
+	if _character_visual != null:
+		return
+	_character_visual = Node3D.new()
+	_character_visual.name = "CharacterVisual"
+	add_child(_character_visual)
+
+	var coat := StandardMaterial3D.new()
+	coat.albedo_color = Color(0.86, 0.89, 0.93)
+	coat.roughness = 0.75
+	var skin := StandardMaterial3D.new()
+	skin.albedo_color = Color(0.72, 0.52, 0.40)
+	skin.roughness = 0.65
+	var trousers := StandardMaterial3D.new()
+	trousers.albedo_color = Color(0.14, 0.16, 0.19)
+	trousers.roughness = 0.85
+	var hair := StandardMaterial3D.new()
+	hair.albedo_color = Color(0.20, 0.14, 0.11)
+	hair.roughness = 0.9
+
+	var torso_mesh := CapsuleMesh.new()
+	torso_mesh.radius = 0.23
+	torso_mesh.height = 0.92
+	var torso := MeshInstance3D.new()
+	torso.name = "Torso"
+	torso.mesh = torso_mesh
+	torso.material_override = coat
+	torso.position = Vector3(0, 1.10, 0)
+	_character_visual.add_child(torso)
+
+	var head_mesh := SphereMesh.new()
+	head_mesh.radius = 0.145
+	head_mesh.height = 0.29
+	var head_visual := MeshInstance3D.new()
+	head_visual.name = "HeadVisual"
+	head_visual.mesh = head_mesh
+	head_visual.material_override = skin
+	head_visual.position = Vector3(0, 1.70, 0)
+	_character_visual.add_child(head_visual)
+
+	var hair_mesh := SphereMesh.new()
+	hair_mesh.radius = 0.15
+	hair_mesh.height = 0.18
+	var hair_visual := MeshInstance3D.new()
+	hair_visual.mesh = hair_mesh
+	hair_visual.material_override = hair
+	hair_visual.position = Vector3(0, 1.77, -0.01)
+	_character_visual.add_child(hair_visual)
+
+	for side in [-1.0, 1.0]:
+		var arm_mesh := CapsuleMesh.new()
+		arm_mesh.radius = 0.065
+		arm_mesh.height = 0.62
+		var arm := MeshInstance3D.new()
+		arm.mesh = arm_mesh
+		arm.material_override = coat
+		arm.position = Vector3(side * 0.30, 1.12, 0)
+		arm.rotation_degrees.z = side * 7.0
+		_character_visual.add_child(arm)
+
+		var leg_mesh := CapsuleMesh.new()
+		leg_mesh.radius = 0.085
+		leg_mesh.height = 0.80
+		var leg := MeshInstance3D.new()
+		leg.mesh = leg_mesh
+		leg.material_override = trousers
+		leg.position = Vector3(side * 0.12, 0.42, 0)
+		_character_visual.add_child(leg)
+
 
 func _setup_mouse_capture(captured: bool) -> void:
 	is_mouse_captured = captured

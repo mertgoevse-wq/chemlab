@@ -54,7 +54,7 @@ The tracking subsystem abstracts raw monocular webcam frames into filtered anato
 +---------------------------------------------------------------------------------------+
 |                       DUAL INPUT ARBITRATION & IPC BRIDGE                             |
 |  - Seamless Degradation & Handover to Mouse & Keyboard                                |
-|  - JSON-RPC / IPC TCP Bridge (Port 8765 / 9876) to Blender 3D Engine & Qt Desktop GUI |
+|  - JSON-RPC / IPC TCP Bridge (Port 8765 / 9877) to Blender 3D Engine & Qt Desktop GUI |
 +---------------------------------------------------------------------------------------+
 ```
 
@@ -560,7 +560,7 @@ class HandTrackingResult:
 ```
 
 ### 8.3 IPC Socket Transport Protocol
-Filtered telemetry is serialized into JSON-RPC 2.0 datagrams and transmitted over localhost TCP sockets (`127.0.0.1:8765` or fallback port `9876`) to the Blender 3D runtime and PySide6 desktop GUI.
+Filtered telemetry is serialized into JSON-RPC 2.0 datagrams and transmitted over localhost TCP sockets (`127.0.0.1:8765` or fallback port `9877`) to the Blender 3D runtime and PySide6 desktop GUI.
 
 #### Telemetry Packet Example (Volumetric Pouring State):
 ```json

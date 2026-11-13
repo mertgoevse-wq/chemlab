@@ -1,0 +1,87 @@
+{
+  "version": "1.0.0",
+  "description": "Teaching formulations for the Athanor pyrotechnics laboratory. Compositions are historical reference mixtures used to teach oxygen balance, burn rate and flame colour. They are not manufacturing instructions.",
+  "formulations": [
+    {
+      "id": "black_powder",
+      "name": "Black Powder (75/15/10)",
+      "effect": "Lift charge and burst charge",
+      "colorant": "none",
+      "confinement": 0.0,
+      "components": [
+        {"substance": "potassium_nitrate", "fraction": 0.75},
+        {"substance": "charcoal", "fraction": 0.15},
+        {"substance": "sulfur", "fraction": 0.10}
+      ],
+      "notes": "The oldest pyrotechnic composition. Burns best when granulated, not as a fine dust."
+    },
+    {
+      "id": "red_star",
+      "name": "Strontium Red Star",
+      "effect": "Red colour star",
+      "colorant": "strontium",
+      "confinement": 0.0,
+      "components": [
+        {"substance": "potassium_perchlorate", "fraction": 0.55},
+        {"substance": "strontium_nitrate", "fraction": 0.20},
+        {"substance": "charcoal", "fraction": 0.15},
+        {"substance": "dextrin", "fraction": 0.10}
+      ],
+      "notes": "Strontium emits at 606 nm. Dextrin is the binder; stars are dampened and rolled."
+    },
+    {
+      "id": "green_star",
+      "name": "Barium Green Star",
+      "effect": "Green colour star",
+      "colorant": "barium",
+      "confinement": 0.0,
+      "components": [
+        {"substance": "potassium_perchlorate", "fraction": 0.55},
+        {"substance": "barium_nitrate", "fraction": 0.25},
+        {"substance": "charcoal", "fraction": 0.10},
+        {"substance": "dextrin", "fraction": 0.10}
+      ],
+      "notes": "Barium salts are toxic. The 524 nm line needs a chlorine donor to dominate."
+    },
+    {
+      "id": "blue_star",
+      "name": "Copper Blue Star",
+      "effect": "Blue colour star",
+      "colorant": "copper",
+      "confinement": 0.0,
+      "components": [
+        {"substance": "potassium_perchlorate", "fraction": 0.50},
+        {"substance": "copper_ii_oxide", "fraction": 0.25},
+        {"substance": "charcoal", "fraction": 0.15},
+        {"substance": "dextrin", "fraction": 0.10}
+      ],
+      "notes": "Blue is the hardest colour: CuCl emits at 590 nm only in a cool flame."
+    },
+    {
+      "id": "whistle",
+      "name": "Potassium Perchlorate Whistle",
+      "effect": "Whistle / report",
+      "colorant": "none",
+      "confinement": 0.8,
+      "components": [
+        {"substance": "potassium_perchlorate", "fraction": 0.70},
+        {"substance": "sodium_benzoate", "fraction": 0.30}
+      ],
+      "notes": "Whistle compositions are pressed tightly and burn with a resonant gas oscillation."
+    },
+    {
+      "id": "white_fountain",
+      "name": "Titanium White Fountain",
+      "effect": "Silver-white sparks",
+      "colorant": "none",
+      "confinement": 0.0,
+      "components": [
+        {"substance": "potassium_nitrate", "fraction": 0.55},
+        {"substance": "charcoal", "fraction": 0.20},
+        {"substance": "titanium", "fraction": 0.20},
+        {"substance": "dextrin", "fraction": 0.05}
+      ],
+      "notes": "Titanium burns with bright white sparks. Never use fine titanium dust in an open room."
+    }
+  ]
+}

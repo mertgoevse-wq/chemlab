@@ -14,12 +14,19 @@ Execution:
 & "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background --python tools/generate_apparatus_models.py
 """
 
+import os
 import sys
 import math
 from pathlib import Path
 import bpy
+from mathutils import Vector
 
-OUTPUT_DIR = Path(__file__).resolve().parent.parent / "game" / "assets" / "apparatus"
+# When executed through the Blender MCP bridge __file__ is "<mcp>", so resolve
+# against the workspace explicitly instead of the script location.
+WORKSPACE = Path(os.environ.get("ATHANOR_WORKSPACE", Path.cwd())).resolve()
+OUTPUT_DIR = WORKSPACE / "game" / "assets" / "apparatus"
+if not (WORKSPACE / "game" / "project.godot").exists():
+    raise RuntimeError(f"Not an Athanor workspace: {WORKSPACE}")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -87,8 +94,123 @@ def setup_materials():
     }
 
 
+def _detail_material(name, color, metallic=0.0, roughness=0.4, emission=None):
+    mat = bpy.data.materials.get(name)
+    if mat:
+        return mat
+    mat = bpy.data.materials.new(name=name)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = color
+        bsdf.inputs["Metallic"].default_value = metallic
+        bsdf.inputs["Roughness"].default_value = roughness
+        if emission is not None:
+            bsdf.inputs["Emission Color"].default_value = emission
+            bsdf.inputs["Emission Strength"].default_value = 4.0
+    return mat
+
+
+def _scene_bounds(meshes):
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for obj in meshes:
+        for corner in obj.bound_box:
+            world = obj.matrix_world @ Vector(corner)
+            for axis in range(3):
+                lo[axis] = min(lo[axis], world[axis])
+                hi[axis] = max(hi[axis], world[axis])
+    return lo, hi
+
+
+def _add_detail_box(name, size, location, material):
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=location)
+    obj = bpy.context.active_object
+    obj.name = name
+    obj.scale = size
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    obj.data.materials.append(material)
+    return obj
+
+
+def detail_pass():
+    """Adds game-ready detail that every apparatus benefits from.
+
+    Bevel + weighted normals remove the hard CG edge look; a rating plate,
+    panel screws, a status LED and a cable gland give the silhouettes readable
+    industrial detail at gameplay distance. Geometry stays low-poly: the bevel
+    is 2 segments and the props are a few dozen triangles each.
+    """
+    meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
+    if not meshes:
+        return
+
+    lo, hi = _scene_bounds(meshes)
+    dims = hi - lo
+    if min(dims.x, dims.y, dims.z) < 0.02:
+        return
+
+    for obj in meshes:
+        obj_dims = obj.dimensions
+        if min(obj_dims.x, obj_dims.y, obj_dims.z) < 0.01 or len(obj.data.polygons) < 8:
+            continue
+        bevel = obj.modifiers.new("DetailBevel", 'BEVEL')
+        bevel.width = min(0.0035, min(obj_dims) * 0.04)
+        bevel.segments = 2
+        bevel.limit_method = 'ANGLE'
+        bevel.angle_limit = math.radians(30.0)
+        normal = obj.modifiers.new("DetailNormals", 'WEIGHTED_NORMAL')
+        normal.keep_sharp = True
+
+    steel = _detail_material("M_DetailSteel", (0.55, 0.57, 0.60, 1.0), 0.85, 0.28)
+    dark = _detail_material("M_DetailPlate", (0.05, 0.06, 0.07, 1.0), 0.4, 0.45)
+    led = _detail_material("M_DetailLED", (0.10, 0.85, 0.95, 1.0), 0.0, 0.2, (0.10, 0.85, 0.95, 1.0))
+
+    centre_x = (lo.x + hi.x) * 0.5
+    front_y = lo.y - 0.0015
+
+    # Rating plate and status LED on the front face.
+    plate_w = max(0.06, min(dims.x * 0.22, 0.24))
+    plate_h = max(0.025, min(dims.z * 0.06, 0.05))
+    _add_detail_box(
+        "Detail_RatingPlate",
+        (plate_w, 0.002, plate_h),
+        (centre_x, front_y, lo.z + dims.z * 0.42),
+        dark,
+    )
+    bpy.ops.mesh.primitive_uv_sphere_add(
+        radius=max(0.006, min(dims.x, dims.z) * 0.012),
+        location=(hi.x - dims.x * 0.06, front_y - 0.002, hi.z - dims.z * 0.08),
+    )
+    indicator = bpy.context.active_object
+    indicator.name = "Detail_StatusLED"
+    indicator.data.materials.append(led)
+
+    # Panel screws at the four front corners.
+    screw_r = max(0.004, min(dims.x, dims.z) * 0.008)
+    for sx in (lo.x + dims.x * 0.06, hi.x - dims.x * 0.06):
+        for sz in (lo.z + dims.z * 0.08, hi.z - dims.z * 0.08):
+            bpy.ops.mesh.primitive_cylinder_add(
+                radius=screw_r, depth=0.003, location=(sx, front_y - 0.001, sz)
+            )
+            screw = bpy.context.active_object
+            screw.rotation_euler[0] = math.radians(90.0)
+            screw.data.materials.append(steel)
+
+    # Cable gland at the rear.
+    bpy.ops.mesh.primitive_cylinder_add(
+        radius=max(0.008, dims.x * 0.012),
+        depth=0.02,
+        location=(centre_x, hi.y + 0.005, lo.z + dims.z * 0.12),
+    )
+    gland = bpy.context.active_object
+    gland.rotation_euler[0] = math.radians(90.0)
+    gland.data.materials.append(steel)
+
+
 def export_glb(filepath):
     """Exports all scene objects into an optimized binary GLTF (.glb) file."""
+    detail_pass()
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.export_scene.gltf(
         filepath=str(filepath),

@@ -6,7 +6,7 @@ The repository shipped an MCP server and a Blender add-on that could not talk to
 
 | Component | Port | Message types |
 |---|---|---|
-| `blender_mcp_server.mjs` (MCP side) | 9876 | `execute_code`, `get_scene_info` |
+| `blender_mcp_server.mjs` (MCP side) | 9877 | `execute_code`, `get_scene_info` |
 | `package/addon/simple_mcp_addon.py` (Blender side) | 8765 | `code`, `fetch-scene` |
 
 Port 8765 is also claimed by the project's own `Blender Live Bridge` add-on, which auto-starts

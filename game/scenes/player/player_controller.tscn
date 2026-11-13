@@ -39,6 +39,17 @@ fov = 75.0
 near = 0.05
 far = 100.0
 
+[node name="SpringArm3D" type="SpringArm3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+spring_length = 3.4
+collision_mask = 1
+margin = 0.25
+
+[node name="ThirdPersonCamera" type="Camera3D" parent="Head/SpringArm3D"]
+fov = 70.0
+near = 0.05
+far = 120.0
+
 [node name="InteractionRay" type="RayCast3D" parent="Head"]
 target_position = Vector3(0, 0, -2.5)
 collide_with_areas = true

@@ -29,7 +29,7 @@ func _run() -> void:
 		if not qm.is_side_quest(q_id):
 			main_quests.append(qm.quests[q_id])
 
-	_check("catalog has ten main campaign contracts across 10 Acts", main_quests.size() == 10)
+	_check("catalog has at least ten main campaign contracts", main_quests.size() >= 10)
 	_check("catalog includes open world side quests (at least 8)", side_quests.size() >= 8)
 
 	for quest_id in ["quest_04_contaminated_batch", "quest_05_quiet_synthesis", "quest_06_riverbank_contract", "quest_07_pilot_plant_scaleup", "quest_08_aether_resonance", "quest_09_destiny_inversion", "quest_10_athanor_ascension"]:

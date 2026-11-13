@@ -182,7 +182,7 @@ func _update_sop_display() -> void:
 		return
 
 	if _btn_skip_tutorial != null:
-		_btn_skip_tutorial.text = "🚀 Skip Tutorial / Direct Sandbox Mode"
+		_btn_skip_tutorial.text = "🚀 Skip Tutorial"
 
 	var step: Dictionary = sop_steps[clampi(current_sop_step_idx, 0, sop_steps.size() - 1)]
 	if _lbl_sop_step_title != null:
@@ -228,16 +228,15 @@ func _setup_3d_viewport_and_scene() -> void:
 	_build_benchtop_accessories()
 	_build_reagent_bottles()
 	_build_wall_ghs_placards()
-	_build_3d_spatial_labels()
 	_build_guide_arrow()
 
 func _setup_environment_and_lighting() -> void:
 	# Camera Setup (First-Person Laboratory View matching beispiel1, 2, 3)
 	_camera = Camera3D.new()
 	_camera.name = "LabCamera"
-	_camera.position = Vector3(0.0, 0.48, 0.95)
-	_camera.look_at_from_position(_camera.position, Vector3(0.0, 0.28, -0.05))
-	_camera.fov = 48.0
+	_camera.position = Vector3(0.0, 0.54, 1.10)
+	_camera.look_at_from_position(_camera.position, Vector3(0.0, 0.24, -0.02))
+	_camera.fov = 50.0
 	_world_root.add_child(_camera)
 
 	# WorldEnvironment with ACES Tonemapping & Subtle Glow
@@ -245,14 +244,14 @@ func _setup_environment_and_lighting() -> void:
 	env_node.name = "WorldEnv"
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.85, 0.88, 0.92, 1.0) # Clean white clinical daylight
+	env.background_color = Color(0.32, 0.35, 0.39, 1.0) # Neutral studio grey, keeps highlights readable
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.78, 0.82, 0.88, 1.0)
-	env.ambient_light_energy = 0.65
+	env.ambient_light_color = Color(0.72, 0.77, 0.84, 1.0)
+	env.ambient_light_energy = 0.42
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_exposure = 1.05
+	env.tonemap_exposure = 0.88
 	env.glow_enabled = true
-	env.glow_intensity = 0.25
+	env.glow_intensity = 0.15
 	env.glow_bloom = 0.05
 	env_node.environment = env
 	_world_root.add_child(env_node)
@@ -262,7 +261,7 @@ func _setup_environment_and_lighting() -> void:
 	key_light.name = "CeilingKeyLight"
 	key_light.rotation_degrees = Vector3(-55.0, 30.0, 0.0)
 	key_light.light_color = Color(0.98, 0.99, 1.0)
-	key_light.light_energy = 1.35
+	key_light.light_energy = 0.95
 	key_light.shadow_enabled = true
 	_world_root.add_child(key_light)
 
@@ -271,8 +270,8 @@ func _setup_environment_and_lighting() -> void:
 	bench_spot.name = "BenchTaskLight"
 	bench_spot.position = Vector3(0.0, 1.10, 0.20)
 	bench_spot.light_color = Color(1.0, 0.98, 0.95)
-	bench_spot.light_energy = 1.50
-	bench_spot.omni_range = 3.5
+	bench_spot.light_energy = 1.05
+	bench_spot.omni_range = 2.9
 	bench_spot.omni_attenuation = 1.0
 	_world_root.add_child(bench_spot)
 
@@ -313,8 +312,8 @@ func _build_room_and_bench() -> void:
 	wall_inst.mesh = wall_mesh
 	wall_inst.position = Vector3(0.0, 0.85, -0.65)
 	var mat_wall := StandardMaterial3D.new()
-	mat_wall.albedo_color = Color(0.78, 0.82, 0.84, 1.0)
-	mat_wall.roughness = 0.40
+	mat_wall.albedo_color = Color(0.46, 0.49, 0.52, 1.0)
+	mat_wall.roughness = 0.55
 	wall_inst.material_override = mat_wall
 	_world_root.add_child(wall_inst)
 
@@ -325,8 +324,8 @@ func _build_room_and_bench() -> void:
 	cab_inst.mesh = cab_mesh
 	cab_inst.position = Vector3(0.0, 1.55, -0.45)
 	var mat_cab := StandardMaterial3D.new()
-	mat_cab.albedo_color = Color(0.92, 0.93, 0.94)
-	mat_cab.roughness = 0.35
+	mat_cab.albedo_color = Color(0.66, 0.68, 0.70)
+	mat_cab.roughness = 0.48
 	cab_inst.material_override = mat_cab
 	_world_root.add_child(cab_inst)
 
@@ -813,6 +812,7 @@ func _build_analytical_balance_station() -> void:
 	_balance_weight_display = Label3D.new()
 	_balance_weight_display.text = "0.0000 g"
 	_balance_weight_display.font_size = 28
+	_balance_weight_display.pixel_size = 0.0012
 	_balance_weight_display.modulate = Color(0.05, 0.10, 0.15, 1.0)
 	_balance_weight_display.outline_modulate = Color(0.9, 0.95, 0.9, 1.0)
 	_balance_weight_display.rotation_degrees = Vector3(-65.0, 0.0, 0.0)
@@ -905,6 +905,7 @@ func _build_magnetic_stirrer_station() -> void:
 	_stirrer_temp_display = Label3D.new()
 	_stirrer_temp_display.text = "78.4"
 	_stirrer_temp_display.font_size = 22
+	_stirrer_temp_display.pixel_size = 0.0012
 	_stirrer_temp_display.modulate = Color(1.0, 0.25, 0.20, 1.0) # Glowing Red LED
 	_stirrer_temp_display.rotation_degrees = Vector3(-45.0, 0.0, 0.0)
 	_stirrer_temp_display.position = Vector3(-0.048, 0.075, 0.095)
@@ -913,6 +914,7 @@ func _build_magnetic_stirrer_station() -> void:
 	_stirrer_rpm_display = Label3D.new()
 	_stirrer_rpm_display.text = "450"
 	_stirrer_rpm_display.font_size = 22
+	_stirrer_rpm_display.pixel_size = 0.0012
 	_stirrer_rpm_display.modulate = Color(1.0, 0.25, 0.20, 1.0)
 	_stirrer_rpm_display.rotation_degrees = Vector3(-45.0, 0.0, 0.0)
 	_stirrer_rpm_display.position = Vector3(0.048, 0.075, 0.095)
@@ -1266,24 +1268,7 @@ func _build_wall_ghs_placards() -> void:
 		lbl.position = spec["pos"] + Vector3(0.0, 0.0, 0.005)
 		_world_root.add_child(lbl)
 
-func _build_3d_spatial_labels() -> void:
-	# Bench Surface Spatial Text Annotations (from beispiel1.jpg)
-	var labels_data := [
-		{"pos": Vector3(-0.25, 0.045, 0.18), "text": "Etanol ve su karışımı\n(Ethanol / Water Feed)"},
-		{"pos": Vector3(-0.06, 0.045, 0.18), "text": "Isıtıcı düğmesi\n(Heat / Stir Actuator)"},
-		{"pos": Vector3(0.24, 0.045, 0.18), "text": "Etanol ayrımı\n(Distillate Fraction)"},
-		{"pos": Vector3(0.65, 0.045, 0.25), "text": "Analitik Terazi\n(Analytical Balance ±0.1mg)"}
-	]
 
-	for l_data in labels_data:
-		var lbl := Label3D.new()
-		lbl.text = l_data["text"]
-		lbl.font_size = 18
-		lbl.modulate = Color(0.92, 0.95, 0.98, 0.95)
-		lbl.outline_modulate = Color(0.02, 0.05, 0.08, 0.95)
-		lbl.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
-		lbl.position = l_data["pos"]
-		_world_root.add_child(lbl)
 
 func _build_guide_arrow() -> void:
 	# 3D Glowing Green Interaction Target Arrow (from beispiel3.jpg)
@@ -1421,15 +1406,21 @@ func _setup_ui_overlay() -> void:
 	_lbl_sop_step_title.text = "📋 PRACTICUM SOP [Step 1/5]: Weigh Precursor Analyte"
 	_lbl_sop_step_title.add_theme_font_size_override("font_size", 13)
 	_lbl_sop_step_title.add_theme_color_override("font_color", COLOR_CYAN)
+	_lbl_sop_step_title.clip_text = true
+	_lbl_sop_step_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sop_top_row.add_child(_lbl_sop_step_title)
 
 	_btn_skip_tutorial = Button.new()
-	_btn_skip_tutorial.text = "🚀 Skip Tutorial / Direct Sandbox Mode"
+	_btn_skip_tutorial.text = "🚀 Skip Tutorial"
+	_btn_skip_tutorial.clip_text = true
+	_btn_skip_tutorial.add_theme_font_size_override("font_size", 11)
 	_btn_skip_tutorial.pressed.connect(_on_toggle_sandbox_mode)
 	sop_top_row.add_child(_btn_skip_tutorial)
 
 	_btn_auto_charge = Button.new()
-	_btn_auto_charge.text = "⚡ Auto-Charge Precursors"
+	_btn_auto_charge.text = "⚡ Auto-Charge"
+	_btn_auto_charge.clip_text = true
+	_btn_auto_charge.add_theme_font_size_override("font_size", 11)
 	_btn_auto_charge.pressed.connect(_on_auto_charge_precursor)
 	sop_top_row.add_child(_btn_auto_charge)
 
@@ -1452,18 +1443,23 @@ func _setup_ui_overlay() -> void:
 
 	# 3. Right Action Menu / Reagent Rack (beispiel3.jpg action list)
 	var right_panel := Panel.new()
-	right_panel.position = Vector2(982, 16)
-	right_panel.size = Vector2(282, 688)
+	right_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	right_panel.offset_left = -300
+	right_panel.offset_right = -12
+	right_panel.offset_top = 16
+	right_panel.offset_bottom = 704
 	var rp_style := StyleBoxFlat.new()
 	rp_style.bg_color = COLOR_PANEL
 	rp_style.corner_radius_top_left = 6
 	rp_style.corner_radius_bottom_left = 6
 	right_panel.add_theme_stylebox_override("panel", rp_style)
+	right_panel.clip_contents = true
 	add_child(right_panel)
 
 	var right_vbox := VBoxContainer.new()
-	right_vbox.position = Vector2(14, 14)
-	right_vbox.size = Vector2(254, 660)
+	right_vbox.position = Vector2(12, 14)
+	right_vbox.size = Vector2(274, 660)
+	right_vbox.clip_contents = true
 	right_vbox.add_theme_constant_override("separation", 8)
 	right_panel.add_child(right_vbox)
 
@@ -1481,25 +1477,27 @@ func _setup_ui_overlay() -> void:
 
 	_opt_protocol = OptionButton.new()
 	_opt_protocol.custom_minimum_size = Vector2(254, 30)
+	_opt_protocol.clip_text = true
+	_opt_protocol.fit_to_longest_item = false
 	var protos := [
-		{"name": "Albert Hofmann: LSD-25 Semisynthesis", "id": "lsd_25_semisynthesis"},
-		{"name": "Albert Hofmann: Lysergic Acid Cleavage", "id": "lysergic_acid_alkaline_cleavage"},
-		{"name": "Albert Hofmann: Psilocybin Total Synthesis", "id": "psilocybin_total_synthesis_hofmann"},
-		{"name": "Albert Hofmann: Psilocybe Mexicana Isolation", "id": "psilocybe_mexicana_hofmann_isolation"},
-		{"name": "Albert Hofmann: Methergine Semisynthesis", "id": "methergine_semisynthesis"},
-		{"name": "Albert Hofmann: Hydergine Hydrogenation", "id": "hydergine_dihydroergot_hydrogenation"},
-		{"name": "Albert Hofmann: ALD-52 Acetylation", "id": "ald_52_acetylation"},
-		{"name": "Albert Hofmann: LSA Ergine Extraction", "id": "lsa_ergine_morning_glory_extraction"},
-		{"name": "Ergot Mutterkorn Extraction", "id": "ergot_alkaloid_mutterkorn_extraction"},
-		{"name": "LSD-25 Diastereomer Resolution", "id": "lsd_iso_isomerization_purification"},
-		{"name": "Robinson Tropinone Biomimetic (Vogel)", "id": "robinson_tropinone"},
-		{"name": "Atropine Total Synthesis", "id": "atropine_total_synthesis"},
-		{"name": "Triphenylmethanol Grignard (Vogel)", "id": "triphenylmethanol_grignard"},
-		{"name": "Anthracene Diels-Alder (Vogel)", "id": "anthracene_diels_alder"},
-		{"name": "Manske Harmala Salting-Out", "id": "manske_harmala_extraction"},
-		{"name": "Quinine Cinchona Extraction", "id": "quinine_cinchona_extraction"},
-		{"name": "Paracetamol Industrial API", "id": "paracetamol"},
-		{"name": "Aspirin Synthesis", "id": "aspirin"}
+		{"name": "Hofmann: LSD-25", "id": "lsd_25_semisynthesis"},
+		{"name": "Hofmann: Lysergic Cleavage", "id": "lysergic_acid_alkaline_cleavage"},
+		{"name": "Hofmann: Psilocybin", "id": "psilocybin_total_synthesis_hofmann"},
+		{"name": "Hofmann: Psilocybe Isolation", "id": "psilocybe_mexicana_hofmann_isolation"},
+		{"name": "Hofmann: Methergine", "id": "methergine_semisynthesis"},
+		{"name": "Hofmann: Hydergine", "id": "hydergine_dihydroergot_hydrogenation"},
+		{"name": "Hofmann: ALD-52", "id": "ald_52_acetylation"},
+		{"name": "Hofmann: LSA Ergine", "id": "lsa_ergine_morning_glory_extraction"},
+		{"name": "Ergot Alkaloids", "id": "ergot_alkaloid_mutterkorn_extraction"},
+		{"name": "LSD Diastereomers", "id": "lsd_iso_isomerization_purification"},
+		{"name": "Robinson Tropinone", "id": "robinson_tropinone"},
+		{"name": "Atropine Synthesis", "id": "atropine_total_synthesis"},
+		{"name": "Triphenylmethanol", "id": "triphenylmethanol_grignard"},
+		{"name": "Anthracene Diels-Alder", "id": "anthracene_diels_alder"},
+		{"name": "Manske Harmala", "id": "manske_harmala_extraction"},
+		{"name": "Quinine Extraction", "id": "quinine_cinchona_extraction"},
+		{"name": "Paracetamol API", "id": "paracetamol"},
+		{"name": "Aspirin", "id": "aspirin"}
 	]
 	for p_idx in range(protos.size()):
 		var p_info: Dictionary = protos[p_idx]
@@ -1509,28 +1507,32 @@ func _setup_ui_overlay() -> void:
 	right_vbox.add_child(_opt_protocol)
 
 	var btn_run_rx := Button.new()
-	btn_run_rx.text = "🧪 Run Reaction & Stoichiometric HPLC"
+	btn_run_rx.text = "🧪 Run Reaction & HPLC"
 	btn_run_rx.custom_minimum_size = Vector2(254, 34)
+	btn_run_rx.clip_text = true
+	btn_run_rx.add_theme_font_size_override("font_size", 11)
 	btn_run_rx.pressed.connect(_on_run_reaction_clicked)
 	right_vbox.add_child(btn_run_rx)
 
 	var actions := [
 		{"label": "Place Beaker on Stirrer", "fn": _on_place_beaker},
 		{"label": "Place Sensor Probe", "fn": _on_place_sensor},
-		{"label": "Tare Analytical Balance", "fn": _on_tare_clicked},
-		{"label": "Weigh Citric Acid (10.0 g)", "fn": func(): _add_reagent_to_balance("Citric acid", 10.0000)},
-		{"label": "Weigh Sodium Bicarbonate (8.4 g)", "fn": func(): _add_reagent_to_balance("Baking soda", 8.4000)},
-		{"label": "Charge Precursor to Flask", "fn": _charge_precursor_to_flask},
-		{"label": "Toggle Magnetic Stirrer (450 RPM)", "fn": _toggle_stirrer},
-		{"label": "Toggle Heating Mantle (78 °C)", "fn": _toggle_heating},
-		{"label": "Collect Distillate Fraction", "fn": _collect_fraction},
-		{"label": "Reset Benchtop State", "fn": _reset_benchtop}
+		{"label": "Tare Balance", "fn": _on_tare_clicked},
+		{"label": "Weigh Citric Acid 10 g", "fn": func(): _add_reagent_to_balance("Citric acid", 10.0000)},
+		{"label": "Weigh NaHCO3 8.4 g", "fn": func(): _add_reagent_to_balance("Baking soda", 8.4000)},
+		{"label": "Charge Flask", "fn": _charge_precursor_to_flask},
+		{"label": "Stirrer 450 RPM", "fn": _toggle_stirrer},
+		{"label": "Mantle 78 C", "fn": _toggle_heating},
+		{"label": "Collect Fraction", "fn": _collect_fraction},
+		{"label": "Reset Bench", "fn": _reset_benchtop}
 	]
 
 	for act in actions:
 		var btn := Button.new()
 		btn.text = act["label"]
 		btn.custom_minimum_size = Vector2(254, 34)
+		btn.clip_text = true
+		btn.add_theme_font_size_override("font_size", 11)
 		btn.pressed.connect(act["fn"])
 		right_vbox.add_child(btn)
 

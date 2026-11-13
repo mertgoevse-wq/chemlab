@@ -1217,6 +1217,150 @@ func _initialize_quest_catalog() -> void:
 					"osha_ref": "Helvetica Chimica Acta 1959"
 				}
 			]
+		},
+		# =========================================================================
+		# PYROTECHNICS ARC (Licensed test bay)
+		# =========================================================================
+		"side_quest_pyro_licensing": {
+			"id": "side_quest_pyro_licensing",
+			"tier": 3,
+			"title": "Class 1.4 Licensing Board",
+			"category": "Pyrotechnics & Process Safety",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Bay Safety Officer",
+			"briefing": "Before you touch a composition, prove you understand quantity-distance, static control and magazine separation. The board wants a written hazard assessment, a grounded bench check and a verified Type D magazine inventory.",
+			"description": "Qualify for the licensed pyrotechnics test bay.",
+			"xp_reward": 1800,
+			"skill_rewards": { "pyrotechnics": 600, "lab_safety": 900 },
+			"item_rewards": [{ "id": "pyro_bay_keycard", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "side_quest_pyro_black_powder",
+			"unlocked_apparatus": ["Burn_Pad", "Blast_Shield", "Magazine_Type_D"],
+			"unlocked_reagents": [],
+			"objectives": [
+				{"id": "pyro_hazard_assessment", "title": "Write the Hazard Assessment", "description": "Document quantity-distance and exclusion zones for the test bay", "current": 0.0, "target": 1.0, "unit": "document", "is_completed": false, "is_active": true, "osha_ref": "NFPA 1124"},
+				{"id": "pyro_static_grounding", "title": "Verify Static Grounding", "description": "Measure bench-to-earth resistance below 10 ohm", "current": 0.0, "target": 1.0, "unit": "check", "is_completed": false, "is_active": false, "osha_ref": "NFPA 495"},
+				{"id": "pyro_magazine_inventory", "title": "Inventory the Magazine", "description": "Reconcile oxidiser and fuel stores in the Type D magazine", "current": 0.0, "target": 1.0, "unit": "audit", "is_completed": false, "is_active": false, "osha_ref": "ATF 27 CFR 555"}
+			]
+		},
+		"side_quest_pyro_black_powder": {
+			"id": "side_quest_pyro_black_powder",
+			"tier": 3,
+			"title": "The 75/15/10 Standard",
+			"category": "Pyrotechnics & Process Safety",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Bay Safety Officer",
+			"briefing": "Mill, screen and granulate a black-powder reference batch. Measure the burn rate in the sand tray and explain why the mixture is deliberately fuel-rich.",
+			"description": "Produce and characterise a black-powder reference batch.",
+			"xp_reward": 2200,
+			"skill_rewards": { "pyrotechnics": 1000, "metrology": 400 },
+			"item_rewards": [{ "id": "burn_rate_chart", "quantity": 1 }],
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "side_quest_pyro_color_stars",
+			"unlocked_apparatus": ["Ball_Mill", "Test_Sieve_Set"],
+			"unlocked_reagents": ["Potassium_Nitrate", "Charcoal_Airfloat", "Sulfur_Flowers"],
+			"objectives": [
+				{"id": "pyro_mill_batch", "title": "Mill and Screen the Batch", "description": "Mill 75 g nitrate, 15 g charcoal and 10 g sulfur to a uniform powder", "current": 0.0, "target": 1.0, "unit": "batch", "is_completed": false, "is_active": true, "osha_ref": "NFPA 495"},
+				{"id": "pyro_granulate", "title": "Granulate and Dry", "description": "Granulate with 4% water and dry below 40 C", "current": 0.0, "target": 1.0, "unit": "batch", "is_completed": false, "is_active": false, "osha_ref": "Pyrotechnic SOP"},
+				{"id": "pyro_burn_rate", "title": "Measure Burn Rate", "description": "Run a burn test and record the rate in mm/s", "current": 0.0, "target": 1.0, "unit": "test", "is_completed": false, "is_active": false, "osha_ref": "NFPA 1124"}
+			]
+		},
+		"side_quest_pyro_color_stars": {
+			"id": "side_quest_pyro_color_stars",
+			"tier": 4,
+			"title": "Colour Chemistry: Red, Green, Blue",
+			"category": "Pyrotechnics & Process Safety",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Colour Development Lead",
+			"briefing": "Strontium gives red at 606 nm, barium green at 524 nm, copper blue at 590 nm only in a cool flame. Build three stars, measure the emission and explain why blue is the hardest colour to keep.",
+			"description": "Develop red, green and blue colour stars.",
+			"xp_reward": 3200,
+			"skill_rewards": { "pyrotechnics": 1500, "analytical_chemistry": 700, "metrology": 400 },
+			"item_rewards": [{ "id": "spectroscope_handheld", "quantity": 1 }],
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "side_quest_pyro_display_choreography",
+			"unlocked_apparatus": ["Handheld_Spectroscope", "Star_Roller"],
+			"unlocked_reagents": ["Strontium_Nitrate", "Barium_Nitrate", "Copper_II_Oxide", "Dextrin"],
+			"objectives": [
+				{"id": "pyro_red_star", "title": "Cast the Red Star", "description": "Strontium nitrate star with perchlorate oxidiser", "current": 0.0, "target": 1.0, "unit": "star", "is_completed": false, "is_active": true, "osha_ref": "NFPA 1124"},
+				{"id": "pyro_green_star", "title": "Cast the Green Star", "description": "Barium nitrate star, respirator required", "current": 0.0, "target": 1.0, "unit": "star", "is_completed": false, "is_active": false, "osha_ref": "GHS barium salts"},
+				{"id": "pyro_blue_star", "title": "Cast the Blue Star", "description": "Copper oxide star in a cool flame", "current": 0.0, "target": 1.0, "unit": "star", "is_completed": false, "is_active": false, "osha_ref": "NFPA 1124"}
+			]
+		},
+		"side_quest_pyro_display_choreography": {
+			"id": "side_quest_pyro_display_choreography",
+			"tier": 5,
+			"title": "Choreography Under the Safety Envelope",
+			"category": "Pyrotechnics & Process Safety",
+			"quest_type": "side",
+			"is_side_quest": true,
+			"speaker": "Display Director",
+			"briefing": "Design a nine-cue display that fits the fallout zone, the noise limit and the wind forecast. Every cue needs a duration, a colour and an abort condition.",
+			"description": "Choreograph a compliant display sequence.",
+			"xp_reward": 4200,
+			"skill_rewards": { "pyrotechnics": 1800, "lab_safety": 900, "physics": 500 },
+			"item_rewards": [{ "id": "display_controller_9cue", "quantity": 1 }],
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Nine_Cue_Firing_System", "Anemometer"],
+			"unlocked_reagents": [],
+			"objectives": [
+				{"id": "pyro_fallout_zone", "title": "Map the Fallout Zone", "description": "Calculate the fallout radius for the largest shell", "current": 0.0, "target": 1.0, "unit": "map", "is_completed": false, "is_active": true, "osha_ref": "NFPA 1123"},
+				{"id": "pyro_noise_limit", "title": "Check the Noise Limit", "description": "Keep peak level under the local limit at the property line", "current": 0.0, "target": 1.0, "unit": "check", "is_completed": false, "is_active": false, "osha_ref": "Local ordinance"},
+				{"id": "pyro_nine_cue", "title": "Program Nine Cues", "description": "Sequence nine cues with abort conditions and wind limits", "current": 0.0, "target": 9.0, "unit": "cues", "is_completed": false, "is_active": false, "osha_ref": "NFPA 1123"}
+			]
+		},
+		# =========================================================================
+		# ACT II — THE NITROGEN AGE
+		# =========================================================================
+		"quest_act2_nitrogen_fixation": {
+			"id": "quest_act2_nitrogen_fixation",
+			"tier": 5,
+			"title": "The Nitrogen Age",
+			"category": "Main Campaign",
+			"quest_type": "main",
+			"is_side_quest": false,
+			"speaker": "Dr. Aris Thorne",
+			"briefing": "Every fertiliser, every explosive and every protein starts with fixed nitrogen. Rebuild the Haber-Bosch bench-scale demonstration and prove the ammonia yield before the Institute will fund the pilot plant.",
+			"description": "Demonstrate catalytic nitrogen fixation at bench scale.",
+			"xp_reward": 5200,
+			"skill_rewards": { "chemistry": 1800, "process_engineering": 1200, "lab_safety": 600 },
+			"item_rewards": [{ "id": "haber_bosch_microreactor", "quantity": 1 }],
+			"status": QuestStatus.AVAILABLE,
+			"next_quest_id": "quest_act2_ammonia_pilot",
+			"unlocked_apparatus": ["Haber_Bosch_Microreactor", "Gas_Chromatograph"],
+			"unlocked_reagents": ["Iron_Catalyst_Promoted", "Nitrogen_Gas", "Hydrogen_Gas"],
+			"objectives": [
+				{"id": "n2_h2_feed", "title": "Prepare the 1:3 Feed", "description": "Charge nitrogen and hydrogen at a 1:3 molar ratio", "current": 0.0, "target": 1.0, "unit": "charge", "is_completed": false, "is_active": true, "osha_ref": "NFPA 55"},
+				{"id": "haber_pressure", "title": "Reach 200 bar at 450 C", "description": "Bring the microreactor to operating pressure and temperature", "current": 0.0, "target": 200.0, "unit": "bar", "is_completed": false, "is_active": false, "osha_ref": "ASME BPVC"},
+				{"id": "ammonia_yield", "title": "Measure Ammonia Yield", "description": "Titrate the scrubber liquor and report conversion", "current": 0.0, "target": 15.0, "unit": "%", "is_completed": false, "is_active": false, "osha_ref": "Haber-Bosch 1913"}
+			]
+		},
+		"quest_act2_ammonia_pilot": {
+			"id": "quest_act2_ammonia_pilot",
+			"tier": 6,
+			"title": "Pilot Plant, Real Constraints",
+			"category": "Main Campaign",
+			"quest_type": "main",
+			"is_side_quest": false,
+			"speaker": "Institute Process Board",
+			"briefing": "Scale the bench result into the pilot plant without pretending thermodynamics scales linearly. Recover waste heat, keep the loop gas dry and prove the safety case for 200 bar hydrogen.",
+			"description": "Scale ammonia synthesis into the pilot plant.",
+			"xp_reward": 6800,
+			"skill_rewards": { "process_engineering": 2200, "chemistry": 1200, "lab_safety": 900 },
+			"item_rewards": [{ "id": "pilot_plant_platinum_seal", "quantity": 1 }],
+			"status": QuestStatus.LOCKED,
+			"next_quest_id": "",
+			"unlocked_apparatus": ["Pilot_Reactor_Loop", "Heat_Exchanger", "Gas_Dryer"],
+			"unlocked_reagents": [],
+			"objectives": [
+				{"id": "pilot_heat_recovery", "title": "Recover Loop Heat", "description": "Recover at least 60% of reaction heat into the feed preheater", "current": 0.0, "target": 60.0, "unit": "%", "is_completed": false, "is_active": true, "osha_ref": "ISO 50001"},
+				{"id": "pilot_dew_point", "title": "Keep the Loop Dry", "description": "Hold loop dew point below -20 C to protect the catalyst", "current": 0.0, "target": 1.0, "unit": "check", "is_completed": false, "is_active": false, "osha_ref": "Catalyst SOP"},
+				{"id": "pilot_hydrogen_case", "title": "Approve the Hydrogen Case", "description": "Complete the 200 bar hydrogen hazard review", "current": 0.0, "target": 1.0, "unit": "approval", "is_completed": false, "is_active": false, "osha_ref": "NFPA 55"}
+			]
 		}
 	}
 

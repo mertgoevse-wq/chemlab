@@ -1,5 +1,6 @@
 """
-ChemLab Blender Live Server (Port 9876).
+ChemLab Blender Live Server (Port 9877). Legacy helper: the MCP headless bridge
+uses the same port, so run only one of them at a time.
 Runs inside Blender to communicate with blender_mcp_server.mjs / Claude Code.
 Provides live code execution and scene inspection with viewport redraw.
 """
@@ -7,6 +8,7 @@ Provides live code execution and scene inspection with viewport redraw.
 import io
 import json
 import logging
+import os
 import queue
 import socket
 import sys
@@ -20,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BlenderLiveServer")
 
 HOST = "127.0.0.1"
-PORT = 9876
+PORT = int(os.environ.get("BLENDER_LIVE_PORT", "9877"))
 
 # Command queue for thread-safe execution on Blender main thread
 _command_queue = queue.Queue()
