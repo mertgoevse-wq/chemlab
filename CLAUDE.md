@@ -31,7 +31,7 @@
 - CharacterBody3D player with smooth camera
 - Webcam hand tracking (MediaPipe) for pinch/pour/turn gestures
 - Keyboard/mouse, Joy-Con, and GameSir Nova Lite input methods
-- Radial wheel quick-access (Assassin's Creed style)
+- Radial wheel quick-access (Athanor-style)
 
 ### Quest & Narrative System
 - 10 Acts, 3 starting backgrounds (Academic / Hobbyist / Ex-Pharma)

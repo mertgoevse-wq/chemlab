@@ -45,7 +45,7 @@ Companion creatures providing laboratory support and, later, controlled combat:
 
 ### 3.3 Perspective & Navigation
 - **Primary**: First-person ego-shooter perspective for tactile, immersive laboratory manipulation
-- **Optional**: Third-person toggle (Assassin's Creed / Call of Duty style controls)
+- **Optional**: Third-person toggle (Athanor / tactical-shooter style controls)
 - **Dual Control Schemes**: Webcam-based hand tracking (OneEuroFilter, pinch Schmitt triggers) + standard keyboard/mouse
 
 ### 3.4 Advanced Genetics & Molecular Biology Lab

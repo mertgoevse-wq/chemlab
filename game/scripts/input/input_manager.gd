@@ -270,7 +270,7 @@ func get_gamesir_mapping() -> Dictionary:
 	}
 
 # =============================================================================
-# RADIAL WHEEL (Assassin's Creed Style)
+# RADIAL WHEEL (Athanor-style)
 # =============================================================================
 
 func toggle_radial_wheel() -> void:

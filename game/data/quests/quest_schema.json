@@ -315,7 +315,7 @@
     },
     "investigation_mode": {
       "type": "object",
-      "description": "Assassin's Creed Eagle Vision equivalent for this quest",
+      "description": "Athanor Eagle Vision equivalent for this quest",
       "properties": {
         "enabled": { "type": "boolean", "default": false },
         "vision_modes": {

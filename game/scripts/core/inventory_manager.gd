@@ -1,4 +1,4 @@
-# Athanor Ascension - Inventory System (Assassin's Creed Style)
+# Athanor Ascension - Inventory System (Athanor-style)
 # Autoload: InventoryManager
 # Handles: Equipment slots, quick wheel, crafting, visual appearance
 
@@ -20,7 +20,7 @@ func _get_data() -> Dictionary:
 
 var _equipment_slots_map: Dictionary = {}
 
-# Equipment slots (Assassin's Creed style)
+# Equipment slots (Athanor-style)
 var equipment: Dictionary = {}  # slot_id -> item_id or null
 var quick_slots: Array[String] = []  # 8 quick slots
 var inventory: Dictionary = {}  # item_id -> quantity (general inventory)

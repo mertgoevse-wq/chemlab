@@ -60,7 +60,7 @@ func _ready() -> void:
 	_build_briefing_card()
 	_connect_to_quest_manager()
 	_refresh_hud_display()
-	# AC-style contextual fade: the quest card dims after 3s of no lean, so the
+	# Athanor-style contextual fade: the quest card dims after 3s of no lean, so the
 	# 3D laboratory stays the focus and the overlay only reappears on lean.
 	if _root_control:
 		_root_control.modulate.a = 1.0
@@ -208,7 +208,7 @@ func _render_objectives_list(objectives: Array) -> void:
 	# Clear existing objective row widgets
 	for child in objectives_container.get_children():
 		child.queue_free()
-	# AC-style visual pass: thick copper-amber tier label, narrow objective rows.
+	# Athanor-style visual pass: thick copper-amber tier label, narrow objective rows.
 	if quest_title_label:
 		quest_title_label.add_theme_font_size_override("font_size", 14)
 		quest_title_label.add_theme_color_override("font_color", Color(0.92, 0.72, 0.32))

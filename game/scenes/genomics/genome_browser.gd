@@ -1,7 +1,7 @@
 # Athanor Ascension — Interactive Genome Archive
 # Zoomable karyotype -> locus -> base-pair browser with live mutation consequences.
 #
-# Design intent (Assassin's Creed-style "memory as genome" overview): the whole
+# Design intent (Athanor-style "memory as genome" overview): the whole
 # karyotype is a navigable map; every curated gene is a landmark; mutations appear
 # in real time as lollipops on the chromosome and as genotype/phenotype readouts.
 #

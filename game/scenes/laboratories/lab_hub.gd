@@ -7,6 +7,11 @@ extends Node3D
 
 class_name LabHub
 
+const FLOOR_EPOXY_ALBEDO: String = "res://assets/textures/floor_epoxy_albedo.png"
+const FLOOR_EPOXY_NORMAL: String = "res://assets/textures/floor_epoxy_normal.png"
+const STEEL_BRUSHED_ALBEDO: String = "res://assets/textures/steel_brushed_albedo.png"
+const STEEL_BRUSHED_NORMAL: String = "res://assets/textures/steel_brushed_normal.png"
+
 @export var auto_load_labs: bool = true
 
 # Lab archetypes from labs.json
@@ -92,6 +97,33 @@ func _init_shared_materials() -> void:
 	_mat_glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_mat_glass.roughness = 0.05
 	_mat_glass.metallic = 0.1
+
+	_apply_generated_textures()
+
+
+func _apply_generated_textures() -> void:
+	# PBR maps baked in Blender (tools/blender/build_lab_textures.py).
+	# Guarded so the hub still renders on a checkout without generated assets.
+	if ResourceLoader.exists(FLOOR_EPOXY_ALBEDO):
+		_mat_floor.albedo_texture = load(FLOOR_EPOXY_ALBEDO)
+		_mat_floor.uv1_scale = Vector3(8.0, 8.0, 1.0)
+		if ResourceLoader.exists(FLOOR_EPOXY_NORMAL):
+			_mat_floor.normal_enabled = true
+			_mat_floor.normal_texture = load(FLOOR_EPOXY_NORMAL)
+			_mat_floor.normal_scale = 0.55
+
+	if ResourceLoader.exists(STEEL_BRUSHED_ALBEDO):
+		var steel: Texture2D = load(STEEL_BRUSHED_ALBEDO)
+		var steel_normal: Texture2D = null
+		if ResourceLoader.exists(STEEL_BRUSHED_NORMAL):
+			steel_normal = load(STEEL_BRUSHED_NORMAL)
+		for material in [_mat_pillar, _mat_arch]:
+			material.albedo_texture = steel
+			material.uv1_scale = Vector3(2.0, 2.0, 1.0)
+			if steel_normal != null:
+				material.normal_enabled = true
+				material.normal_texture = steel_normal
+				material.normal_scale = 0.75
 
 
 func _create_hub_architecture() -> void:

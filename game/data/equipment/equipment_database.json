@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "description": "Assassin's Creed-style equipment system for Athanor Ascension. Equipment slots, tiers, sets, crafting, visual appearance.",
+  "description": "Athanor-style equipment system for Athanor Ascension. Equipment slots, tiers, sets, crafting, visual appearance.",
   "equipment_slots": [
     { "id": "head", "name": "Head", "icon": "helmet", "description": "Helmets, goggles, respirators, hoods" },
     { "id": "body", "name": "Body", "icon": "chest", "description": "Lab coats, hazmat suits, armor, vests" },

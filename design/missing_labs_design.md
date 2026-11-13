@@ -24,7 +24,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/electrochem_physics.gd` (new physics module), reagent database entry for H₂SO₄/NaCl/KCl electrolytes, `game/scripts/core/player_vitals.gd` (chemical exposure tracking for acid/contact).
 
-**Assassin's Creed flavor:** The lab is located in a hidden underground facility beneath the Athanor complex, with a vaulted brick ceiling, copper tubing running along the walls for cooling, and the player's hand tracked by a webcam-driven gesture system that reaches toward the potentiostat knobs — the architecture reflects early 20th-century electrochemical research labs, with the AC aesthetic of warm ambient lighting against cold metal.
+**Athanor flavor:** The lab is located in a hidden underground facility beneath the Athanor complex, with a vaulted brick ceiling, copper tubing running along the walls for cooling, and the player's hand tracked by a webcam-driven gesture system that reaches toward the potentiostat knobs — the architecture reflects early 20th-century electrochemical research labs, with the Athanor aesthetic of warm ambient lighting against cold metal.
 
 ---
 
@@ -48,7 +48,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/cell_culture_physics.gd` (new physics module), species database entry for common cell lines (HEK293, CHO), `game/scripts/core/player_vitals.gd` (chemical/aerosol exposure tracking).
 
-**Assassin's Creed flavor:** The suite occupies a sealedwing of the Athanor orbital research station, with positive-pressure HEPA-filtered corridors, airlock-entry protocols, and the player must don a full-face respirator (ABEK P3) before entry — the AC aesthetic features sleek curved walls, cool blue indirect lighting, and a view of Earth through the orbital porthole that reminds the player they are off-world.
+**Athanor flavor:** The suite occupies a sealedwing of the Athanor orbital research station, with positive-pressure HEPA-filtered corridors, airlock-entry protocols, and the player must don a full-face respirator (ABEK P3) before entry — the Athanor aesthetic features sleek curved walls, cool blue indirect lighting, and a view of Earth through the orbital porthole that reminds the player they are off-world.
 
 ---
 
@@ -72,7 +72,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/nuclear_physics.gd` (new physics module — Bateman equations, attenuation), isotope database (Mo-99, Tc-99m, I-131, Cs-137), `game/scripts/core/player_vitals.gd` (radiation dose tracking).
 
-**Assassin's Creed flavor:** The hot cell is buried deep within the Athanor complex's lower levels, with walls of thick lead brick arranged in a herringbone pattern, illuminated by filtered red emergency lighting that preserves the player's night vision for phosphor screening, and the remote manipulators' haptic feedback has a subtle medieval-esque mechanical resistance feel — the AC aesthetic juxtaposes ancient masonry with cutting-edge nuclear instrumentation.
+**Athanor flavor:** The hot cell is buried deep within the Athanor complex's lower levels, with walls of thick lead brick arranged in a herringbone pattern, illuminated by filtered red emergency lighting that preserves the player's night vision for phosphor screening, and the remote manipulators' haptic feedback has a subtle medieval-esque mechanical resistance feel — the Athanor aesthetic juxtaposes ancient masonry with cutting-edge nuclear instrumentation.
 
 ---
 
@@ -96,7 +96,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/materials_physics.gd` (new physics module — Cu-Ag phase diagram, Scheil cooling, Vickers hardness model), arc furnace simulation module, reagent database for Cu and Ag shot sizes.
 
-**Assassin's Creed flavor:** The lab occupies a repurposed wing of the Athanor complex with exposed steel I-beams, soot-stained concrete floors, and the arc furnace glows orange through a floor-mounted viewport — the AC aesthetic of industrial utilitarianism meets scientific precision, with the player's webcam gesture controls appearing as glowing runes on the furnace console.
+**Athanor flavor:** The lab occupies a repurposed wing of the Athanor complex with exposed steel I-beams, soot-stained concrete floors, and the arc furnace glows orange through a floor-mounted viewport — the Athanor aesthetic of industrial utilitarianism meets scientific precision, with the player's webcam gesture controls appearing as glowing runes on the furnace console.
 
 ---
 
@@ -120,7 +120,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/cleanroom_physics.gd` (new physics module — ISO particle stats, gowning attenuation, resist thickness model), photolithography equipment data, `game/scripts/core/player_vitals.gd` (chemical vapor exposure tracking).
 
-**Assassin's Creed flavor:** The cleanroom is a windowless white volume with glowing circular overhead panels that emit a soft, sterile illumination; the player must pass through an airlock where the pressure differential is audible (soft hiss), and the AC aesthetic features minimalist cubic geometry, hidden seams, and the player's gesture controls are represented as translucent orange wisps that appear when the player's hands enter the clean zone.
+**Athanor flavor:** The cleanroom is a windowless white volume with glowing circular overhead panels that emit a soft, sterile illumination; the player must pass through an airlock where the pressure differential is audible (soft hiss), and the Athanor aesthetic features minimalist cubic geometry, hidden seams, and the player's gesture controls are represented as translucent orange wisps that appear when the player's hands enter the clean zone.
 
 ---
 
@@ -144,7 +144,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/pilot_plant_physics.gd` (new physics module — CSTR model, RTD, heat duty), pump and valve control module, reagent database for acetic acid/ethanol/ethyl acetate/water.
 
-**Assassin's Creed flavor:** The pilot plant occupies the Athanor complex's east wing, a two-story industrial volume with riveted steel plates, pipework snake-curving along concrete walls, and the control room lined with walnut-paneled consoles — the AC aesthetic of hidden blades and vaulted spaces is reimagined as hidden sensors and interlocks embedded in the industrial infrastructure, with the player's gesture controls triggering valve operations as if by instinct.
+**Athanor flavor:** The pilot plant occupies the Athanor complex's east wing, a two-story industrial volume with riveted steel plates, pipework snake-curving along concrete walls, and the control room lined with walnut-paneled consoles — the Athanor aesthetic of hidden blades and vaulted spaces is reimagined as hidden sensors and interlocks embedded in the industrial infrastructure, with the player's gesture controls triggering valve operations as if by instinct.
 
 ---
 
@@ -168,7 +168,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/forensic_physics.gd` (new physics module — retention time model, calibration curve), GC-MS simulation data, reagent database for blood draw simulation kits.
 
-**Assassin's Creed flavor:** The lab is a dimly lit chamber with evidence boards covered in leather, the GC-MS humming in the background, and the player's webcam gesture controls appear as ghostly white outlines over the sample vials — the AC aesthetic of shadows and hidden details, where the player must carefully examine each piece of "evidence" to uncover the truth.
+**Athanor flavor:** The lab is a dimly lit chamber with evidence boards covered in leather, the GC-MS humming in the background, and the player's webcam gesture controls appear as ghostly white outlines over the sample vials — the Athanor aesthetic of shadows and hidden details, where the player must carefully examine each piece of "evidence" to uncover the truth.
 
 ---
 
@@ -192,7 +192,7 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/microgravity_physics.gd` (new physics module — diffusion-limited growth, Péclet number, Ostwald-Freundlich), orbital station environmental control data, comparison dataset of 1-g vs. 0-g crystal growth.
 
-**Assassin's Creed flavor:** The orbital station 'Apex' features a circular corridor with portholes showing the Earth's curvature, the clean lab module has anti-gravity visual effects (particles floating motionless), and the player's gesture controls float weightlessly — the AC aesthetic of the hidden blade becomes the hidden gravitational control, with the player's movements influencing the subtle rotation dial that tweaks artificial gravity.
+**Athanor flavor:** The orbital station 'Apex' features a circular corridor with portholes showing the Earth's curvature, the clean lab module has anti-gravity visual effects (particles floating motionless), and the player's gesture controls float weightlessly — the Athanor aesthetic of the hidden blade becomes the hidden gravitational control, with the player's movements influencing the subtle rotation dial that tweaks artificial gravity.
 
 ---
 
@@ -216,13 +216,13 @@ Each lab design follows the roadmap specification: (1) terminal scene driven by 
 
 **Dependencies:** `game/scripts/labs/cryo_physics.gd` (new physics module — JT coefficient, boiling point model, cool-down scheduling), cryostat equipment data, liquid helium/ nitrogen supply simulation.
 
-**Assassin's AC flavor:** The cryogenic lab is accessed through a sub-level of the Athanor complex where the air is so cold it leaves a visible frost mist in the airlock, the copper pipes are etched with frost patterns, and the player's gesture controls leave trailing white mist — the AC aesthetic of cold beauty, where the hidden blade's metal is chilled to the bone, and the player's very presence triggers the subtle cooling system to adjust.
+**Assassin's AC flavor:** The cryogenic lab is accessed through a sub-level of the Athanor complex where the air is so cold it leaves a visible frost mist in the airlock, the copper pipes are etched with frost patterns, and the player's gesture controls leave trailing white mist — the Athanor aesthetic of cold beauty, where the hidden blade's metal is chilled to the bone, and the player's very presence triggers the subtle cooling system to adjust.
 
 ---
 
 # Summary
 
-This document has been created at `C:\Users\Win11 Pro\Desktop\chemlab\design\missing_labs_design.md` with 9 sections, each containing the 8 required fields: Lab name & archetype, Core physics, Terminal scene layout, Unit operation, Failure modes, Success criteria, Dependencies, and Assassin's Creed flavor.
+This document has been created at `C:\Users\Win11 Pro\Desktop\chemlab\design\missing_labs_design.md` with 9 sections, each containing the 8 required fields: Lab name & archetype, Core physics, Terminal scene layout, Unit operation, Failure modes, Success criteria, Dependencies, and Athanor flavor.
 
 Each design is scientifically accurate, references real physical equations and constants (Nernst, Butler-Volmer, Noyes-Whitney, Bateman, ISO 14644-1, Arrhenius, Scheil, Vickers hardness, Péclet, Ostwald-Freundlich, Joule-Thomson), and follows the roadmap ordering: electrochemistry → cell culture → radiochemistry → materials → cleanroom → pilot plant → forensic → orbital → cryogenic.
 

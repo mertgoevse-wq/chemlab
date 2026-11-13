@@ -48,3 +48,6 @@ Desktop.ini
 .superpowers/
 Claude-Code-Game-Studios/
 HANDOFF.md
+
+# Vendored third-party skill checkout (fetch on demand)
+tools/vendor/game-dev/

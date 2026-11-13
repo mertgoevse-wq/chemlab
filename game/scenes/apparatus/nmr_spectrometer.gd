@@ -301,7 +301,6 @@ func _try_remove_sample(player: Node) -> void:
 	if current_sample is RigidBody3D:
 		var rb = current_sample as RigidBody3D
 		rb.freeze = false
-		rb.freeze_mode = RigidBody3D.FREEZE_MODE_NONE
 		rb.linear_velocity = Vector3.ZERO
 		rb.angular_velocity = Vector3.ZERO
 

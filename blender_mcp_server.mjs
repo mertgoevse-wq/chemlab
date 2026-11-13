@@ -14,8 +14,15 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
-const BLENDER_HOST = "127.0.0.1";
-const BLENDER_PORT = 9876;
+const BLENDER_HOST = process.env.BLENDER_HOST || "127.0.0.1";
+const BLENDER_PORT = Number(process.env.BLENDER_PORT || 8765);
+
+// The Blender add-on speaks a flat protocol: { type: "code", code } and
+// { type: "fetch-scene" }. Map the MCP tool names onto it.
+const COMMAND_BUILDERS = {
+  execute_code: (params) => ({ type: "code", code: params.code ?? "" }),
+  get_scene_info: () => ({ type: "fetch-scene" }),
+};
 
 function sendToBlender(commandType, params = {}, timeoutMs = 60000) {
   return new Promise((resolve, reject) => {
@@ -32,14 +39,17 @@ function sendToBlender(commandType, params = {}, timeoutMs = 60000) {
     }, timeoutMs);
 
     client.on("connect", () => {
-      const payload = { type: commandType, params };
+      const build = COMMAND_BUILDERS[commandType];
+      const payload = build ? build(params) : { type: commandType, ...params };
       client.write(JSON.stringify(payload) + "\n");
     });
 
     client.on("data", (chunk) => {
       buffer += chunk.toString("utf8");
+      const newline = buffer.indexOf("\n");
+      const candidate = newline === -1 ? buffer : buffer.slice(0, newline);
       try {
-        const parsed = JSON.parse(buffer);
+        const parsed = JSON.parse(candidate);
         if (!completed) {
           completed = true;
           clearTimeout(timer);

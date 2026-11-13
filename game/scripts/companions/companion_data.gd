@@ -271,7 +271,7 @@ static func get_level_for_xp(xp: int) -> int:
 	return level
 
 static func calculate_stat(base: float, growth: float, level: int, iv: float = 0.0, ev: float = 0.0) -> int:
-	"""Calculate stat at given level with IV/EV system (Pokemon-style)."""
+	"""Calculate stat at given level with IV/EV system (IV/EV-style)."""
 	# Formula: floor((2 * base + iv + ev/4) * level / 100) + level + 10 (for HP) or +5 (others)
 	var stat = (2.0 * base + iv + ev / 4.0) * level / 100.0
 	return int(floor(stat)) + level + 5

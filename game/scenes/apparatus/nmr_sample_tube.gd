@@ -145,7 +145,6 @@ func drop(apply_impulse: bool = true) -> void:
 
 	# Restore physics
 	freeze = false
-	freeze_mode = RigidBody3D.FREEZE_MODE_NONE
 
 	if apply_impulse:
 		# Gentle toss forward
@@ -177,7 +176,6 @@ func place_on_surface(target_surface: Node, world_position: Vector3, surface_nor
 
 	# Restore physics
 	freeze = false
-	freeze_mode = RigidBody3D.FREEZE_MODE_NONE
 	linear_velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO
 
@@ -246,7 +244,6 @@ func _remove_from_nmr() -> void:
 
 	# Restore physics
 	freeze = false
-	freeze_mode = RigidBody3D.FREEZE_MODE_NONE
 	collision_layer = 1
 	collision_mask = 1
 

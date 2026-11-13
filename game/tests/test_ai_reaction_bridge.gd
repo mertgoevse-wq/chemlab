@@ -64,11 +64,12 @@ func _test_local_ai_endpoint_configuration(bridge: Node) -> int:
 	print("\nTesting local AI endpoint registration...")
 	var f: int = 0
 
-	var recorded_resp = {}
+	var recorded: Array = []
 	var callback = func(resp: Dictionary):
-		recorded_resp = resp
+		recorded.append(resp)
 
 	bridge.configure_local_ai_endpoint("http://127.0.0.1:11434/v1", "llama3.2", 1, callback)
+	var recorded_resp: Dictionary = recorded[0] if not recorded.is_empty() else {}
 	f += _assert(recorded_resp.has("provider") or recorded_resp.has("status"), "Configured local AI callback executed")
 	return f
 
@@ -76,10 +77,11 @@ func _test_get_ai_providers(bridge: Node) -> int:
 	print("\nTesting get AI providers list...")
 	var f: int = 0
 
-	var recorded_resp = {}
+	var recorded: Array = []
 	var callback = func(resp: Dictionary):
-		recorded_resp = resp
+		recorded.append(resp)
 
 	bridge.get_ai_providers(callback)
+	var recorded_resp: Dictionary = recorded[0] if not recorded.is_empty() else {}
 	f += _assert(recorded_resp.has("providers") or recorded_resp.has("provider_order"), "AI providers list received")
 	return f

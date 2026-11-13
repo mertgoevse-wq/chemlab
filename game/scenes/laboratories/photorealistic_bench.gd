@@ -113,11 +113,13 @@ func _ready() -> void:
 	set_process(true)
 
 func _load_initial_protocol() -> void:
-	current_protocol = Catalog.get_protocol("lsd_25_semisynthesis")
-	if current_protocol.is_empty():
-		current_protocol = Catalog.get_protocol("limonene_citrus_steam_distillation")
+	# This bench is built around the fractional distillation rig, so start with a
+	# protocol whose reflux temperature actually exercises the heating mantle.
+	current_protocol = Catalog.get_protocol("limonene_citrus_steam_distillation")
 	if current_protocol.is_empty():
 		current_protocol = Catalog.get_protocol("aspirin")
+	if current_protocol.is_empty():
+		current_protocol = Catalog.get_protocol("lsd_25_semisynthesis")
 	_apply_protocol(current_protocol)
 
 func _apply_protocol(proto: Dictionary) -> void:
